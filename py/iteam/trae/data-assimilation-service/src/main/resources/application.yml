@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: data-assimilation-service
+  
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/data_assimilation?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  # JPA配置
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+# 服务器配置
+server:
+  port: 8084
+  servlet:
+    context-path: /api
+
+# 同化服务配置
+assimilation:
+  # Python脚本路径
+  python-script: ${user.dir}/src/main/python/bayesian_assimilation.py
+  # 处理超时时间
+  timeout: 60000
+  # 算法参数
+  algorithm:
+    background-error: 0.1
+    observation-error: 0.05
+    max-iterations: 100

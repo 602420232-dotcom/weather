@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-04-26T13:18:24.367Z",
+  "source_files": [
+    "deployments/database/optimize.sql",
+    "uav-path-planning-system/database/create_tables.sql"
+  ],
+  "tables": [
+    {
+      "name": "user",
+      "schema": "public",
+      "columns": [],
+      "indexes": [],
+      "foreign_keys": []
+    },
+    {
+      "name": "drone",
+      "schema": "public",
+      "columns": [],
+      "indexes": [],
+      "foreign_keys": []
+    },
+    {
+      "name": "task",
+      "schema": "public",
+      "columns": [],
+      "indexes": [],
+      "foreign_keys": []
+    },
+    {
+      "name": "weather_data",
+      "schema": "public",
+      "columns": [],
+      "indexes": [],
+      "foreign_keys": []
+    },
+    {
+      "name": "path_plan",
+      "schema": "public",
+      "columns": [],
+      "indexes": [],
+      "foreign_keys": []
+    },
+    {
+      "name": "operation_log",
+      "schema": "public",
+      "columns": [],
+      "indexes": [],
+      "foreign_keys": []
+    }
+  ],
+  "relationships": []
+}

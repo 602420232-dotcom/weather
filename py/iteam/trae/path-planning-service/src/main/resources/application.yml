@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: path-planning-service
+  
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/path_planning?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  # JPA配置
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+# 服务器配置
+server:
+  port: 8083
+  servlet:
+    context-path: /api
+
+# 路径规划配置
+planning:
+  # Python脚本路径
+  python-script: ${user.dir}/src/main/python/three_layer_planner.py
+  # 处理超时时间
+  timeout: 60000
+  # 算法参数
+  algorithm:
+    vrptw:
+      max-iterations: 1000
+      savings-weight: 0.5
+    astar:
+      grid-size: 10
+      heuristic-weight: 1.0
+    dwa:
+      max-speed: 5.0
+      max-acceleration: 2.0
+      obstacle-threshold: 1.0

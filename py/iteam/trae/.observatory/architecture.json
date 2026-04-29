@@ -1,0 +1,983 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-04-29T08:06:01.699Z",
+  "modules": [
+    {
+      "id": "__root__",
+      "name": "__root__",
+      "path": "./",
+      "type": "package",
+      "language": "python",
+      "files": [
+        {
+          "path": "check_system.py",
+          "lines": 255,
+          "functions": 9,
+          "classes": 0
+        },
+        {
+          "path": "test_system.py",
+          "lines": 122,
+          "functions": 8,
+          "classes": 0
+        }
+      ],
+      "imports_from": [],
+      "imported_by": [],
+      "capability_ids": [],
+      "stats": {
+        "total_lines": 377,
+        "total_functions": 17,
+        "total_classes": 0
+      }
+    },
+    {
+      "id": "tests",
+      "name": "tests",
+      "path": "tests/",
+      "type": "package",
+      "language": "python",
+      "files": [
+        {
+          "path": "tests/test_algorithm.py",
+          "lines": 248,
+          "functions": 11,
+          "classes": 1
+        },
+        {
+          "path": "tests/test_basic.py",
+          "lines": 133,
+          "functions": 5,
+          "classes": 1
+        },
+        {
+          "path": "tests/test_optimized_algorithm.py",
+          "lines": 165,
+          "functions": 4,
+          "classes": 1
+        }
+      ],
+      "imports_from": [],
+      "imported_by": [],
+      "capability_ids": [],
+      "stats": {
+        "total_lines": 546,
+        "total_functions": 20,
+        "total_classes": 3
+      }
+    },
+    {
+      "id": "data-assimilation-platform",
+      "name": "data-assimilation-platform",
+      "path": "data-assimilation-platform/",
+      "type": "package",
+      "language": "python",
+      "files": [
+        {
+          "path": "data-assimilation-platform/algorithm_core/setup.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/benchmarks/conftest.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/benchmarks/test_3dvar_performance.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/benchmarks/test_4dvar_performance.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/benchmarks/test_enkf_scaling.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/benchmarks/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/scripts/benchmark.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/scripts/test_installation.py",
+          "lines": 111,
+          "functions": 3,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/examples/advanced_usage.py",
+          "lines": 1073,
+          "functions": 24,
+          "classes": 3
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/examples/basic_usage.py",
+          "lines": 370,
+          "functions": 13,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/examples/cuda_acceleration.py",
+          "lines": 334,
+          "functions": 6,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/examples/demos.py",
+          "lines": 190,
+          "functions": 4,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/examples/fair_parallel_demo.py",
+          "lines": 787,
+          "functions": 12,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/examples/gpu_acceleration.py",
+          "lines": 521,
+          "functions": 9,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/examples/parallel_demo.py",
+          "lines": 409,
+          "functions": 8,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/examples/real_world_case.py",
+          "lines": 1583,
+          "functions": 39,
+          "classes": 4
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/examples/real_world_case_simple.py",
+          "lines": 1019,
+          "functions": 24,
+          "classes": 3
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/examples/test_adapters.py",
+          "lines": 907,
+          "functions": 13,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/tests/conftest.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/tests/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/__init__.py",
+          "lines": 14,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/__version__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/data_sources/base.py",
+          "lines": 72,
+          "functions": 6,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/data_sources/buoy.py",
+          "lines": 214,
+          "functions": 8,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/data_sources/factory.py",
+          "lines": 76,
+          "functions": 3,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/data_sources/ground_station.py",
+          "lines": 204,
+          "functions": 8,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/data_sources/radar.py",
+          "lines": 181,
+          "functions": 9,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/data_sources/satellite.py",
+          "lines": 169,
+          "functions": 9,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/data_sources/__init__.py",
+          "lines": 18,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/main.py",
+          "lines": 87,
+          "functions": 3,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/multi_protocol.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/accelerators/base.py",
+          "lines": 152,
+          "functions": 10,
+          "classes": 3
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/accelerators/cpu.py",
+          "lines": 303,
+          "functions": 17,
+          "classes": 3
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/accelerators/cuda.py",
+          "lines": 391,
+          "functions": 16,
+          "classes": 3
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/accelerators/gpu.py",
+          "lines": 79,
+          "functions": 5,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/accelerators/jax.py",
+          "lines": 478,
+          "functions": 24,
+          "classes": 4
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/accelerators/__init__.py",
+          "lines": 33,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/api/cli.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/api/rest.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/api/web.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/api/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/adapters/data.py",
+          "lines": 210,
+          "functions": 9,
+          "classes": 3
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/adapters/grid.py",
+          "lines": 243,
+          "functions": 9,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/adapters/io.py",
+          "lines": 241,
+          "functions": 10,
+          "classes": 3
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/adapters/uav_adapter.py",
+          "lines": 177,
+          "functions": 5,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/adapters/__init__.py",
+          "lines": 63,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/components/block_decomp.py",
+          "lines": 86,
+          "functions": 5,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/components/covariance.py",
+          "lines": 82,
+          "functions": 3,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/components/gpu.py",
+          "lines": 179,
+          "functions": 5,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/components/incremental.py",
+          "lines": 93,
+          "functions": 7,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/components/resolution.py",
+          "lines": 84,
+          "functions": 5,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/components/__init__.py",
+          "lines": 18,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/assimilator.py",
+          "lines": 232,
+          "functions": 7,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/assimilator_advanced.py",
+          "lines": 323,
+          "functions": 11,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/base.py",
+          "lines": 91,
+          "functions": 7,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/compatible_assimilator.py",
+          "lines": 182,
+          "functions": 8,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/context.py",
+          "lines": 58,
+          "functions": 3,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/covariance.py",
+          "lines": 121,
+          "functions": 7,
+          "classes": 2
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/operators.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/solvers.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/statistics.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/strategy.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/__init__.py",
+          "lines": 2,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/base.py",
+          "lines": 46,
+          "functions": 3,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/enhanced_bayesian.py",
+          "lines": 355,
+          "functions": 15,
+          "classes": 2
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/enkf.py",
+          "lines": 136,
+          "functions": 5,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/four_dimensional_var.py",
+          "lines": 333,
+          "functions": 9,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/hybrid.py",
+          "lines": 90,
+          "functions": 4,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/three_dimensional_var.py",
+          "lines": 164,
+          "functions": 8,
+          "classes": 2
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/variance_field_optimizer.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/__init__.py",
+          "lines": 18,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/parallel/base.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/parallel/block.py",
+          "lines": 240,
+          "functions": 6,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/parallel/dask.py",
+          "lines": 449,
+          "functions": 20,
+          "classes": 3
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/parallel/mpi.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/parallel/ray.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/parallel/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/strategies/base.py",
+          "lines": 38,
+          "functions": 5,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/strategies/block.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/strategies/full.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/strategies/hybrid.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/strategies/incremental.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/strategies/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/utils/config.py",
+          "lines": 131,
+          "functions": 3,
+          "classes": 5
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/utils/logging.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/utils/metrics.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/utils/profiler.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/utils/validation.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/utils/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/visualization/animator.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/visualization/dashboards.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/visualization/plots.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/visualization/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/core/assimilation_service.py",
+          "lines": 149,
+          "functions": 6,
+          "classes": 2
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/core/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/workflows/batch.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/workflows/pipeline.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/workflows/streaming.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/workflows/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/middleware/cors.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/middleware/error_handler.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/middleware/logging.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/middleware/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/models/request.py",
+          "lines": 57,
+          "functions": 0,
+          "classes": 4
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/models/response.py",
+          "lines": 60,
+          "functions": 0,
+          "classes": 6
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/models/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/routes/assimilation.py",
+          "lines": 161,
+          "functions": 5,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/routes/batch.py",
+          "lines": 65,
+          "functions": 2,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/routes/monitoring.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/routes/variance_field.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/routes/__init__.py",
+          "lines": 8,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/parallel/dask.py",
+          "lines": 63,
+          "functions": 5,
+          "classes": 1
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/services/job_service.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/services/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/utils/serializers.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/utils/validators.py",
+          "lines": 94,
+          "functions": 3,
+          "classes": 0
+        },
+        {
+          "path": "data-assimilation-platform/service_python/src/api/utils/__init__.py",
+          "lines": 1,
+          "functions": 0,
+          "classes": 0
+        }
+      ],
+      "imports_from": [],
+      "imported_by": [],
+      "capability_ids": [],
+      "stats": {
+        "total_lines": 14972,
+        "total_functions": 473,
+        "total_classes": 82
+      }
+    },
+    {
+      "id": "uav-edge-sdk",
+      "name": "uav-edge-sdk",
+      "path": "uav-edge-sdk/",
+      "type": "package",
+      "language": "python",
+      "files": [
+        {
+          "path": "uav-edge-sdk/src/edge_sdk.py",
+          "lines": 572,
+          "functions": 28,
+          "classes": 5
+        }
+      ],
+      "imports_from": [],
+      "imported_by": [],
+      "capability_ids": [],
+      "stats": {
+        "total_lines": 572,
+        "total_functions": 28,
+        "total_classes": 5
+      }
+    },
+    {
+      "id": "uav-path-planning-system",
+      "name": "uav-path-planning-system",
+      "path": "uav-path-planning-system/",
+      "type": "package",
+      "language": "python",
+      "files": [
+        {
+          "path": "uav-path-planning-system/algorithm-core/path-planning/three_layer_planner.py",
+          "lines": 781,
+          "functions": 30,
+          "classes": 9
+        },
+        {
+          "path": "uav-path-planning-system/algorithm-core/assimilation/bayesian_assimilation.py",
+          "lines": 443,
+          "functions": 19,
+          "classes": 2
+        },
+        {
+          "path": "uav-path-planning-system/algorithm-core/wrf/wrf_parser.py",
+          "lines": 54,
+          "functions": 2,
+          "classes": 0
+        },
+        {
+          "path": "uav-path-planning-system/algorithm-core/wrf/wrf_processor.py",
+          "lines": 342,
+          "functions": 19,
+          "classes": 1
+        },
+        {
+          "path": "uav-path-planning-system/algorithm-core/prediction/meteor_correction.py",
+          "lines": 101,
+          "functions": 3,
+          "classes": 1
+        },
+        {
+          "path": "uav-path-planning-system/algorithm-core/prediction/meteor_forecast.py",
+          "lines": 432,
+          "functions": 13,
+          "classes": 2
+        }
+      ],
+      "imports_from": [],
+      "imported_by": [],
+      "capability_ids": [],
+      "stats": {
+        "total_lines": 2153,
+        "total_functions": 86,
+        "total_classes": 15
+      }
+    },
+    {
+      "id": "data-assimilation-service",
+      "name": "data-assimilation-service",
+      "path": "data-assimilation-service/",
+      "type": "package",
+      "language": "python",
+      "files": [
+        {
+          "path": "data-assimilation-service/src/main/python/bayesian_assimilation.py",
+          "lines": 321,
+          "functions": 6,
+          "classes": 1
+        }
+      ],
+      "imports_from": [],
+      "imported_by": [],
+      "capability_ids": [],
+      "stats": {
+        "total_lines": 321,
+        "total_functions": 6,
+        "total_classes": 1
+      }
+    },
+    {
+      "id": "path-planning-service",
+      "name": "path-planning-service",
+      "path": "path-planning-service/",
+      "type": "package",
+      "language": "python",
+      "files": [
+        {
+          "path": "path-planning-service/src/main/python/advanced_planners.py",
+          "lines": 846,
+          "functions": 34,
+          "classes": 5
+        },
+        {
+          "path": "path-planning-service/src/main/python/optimized_planner.py",
+          "lines": 602,
+          "functions": 21,
+          "classes": 8
+        },
+        {
+          "path": "path-planning-service/src/main/python/reinforcement_learning.py",
+          "lines": 631,
+          "functions": 27,
+          "classes": 4
+        },
+        {
+          "path": "path-planning-service/src/main/python/three_layer_planner.py",
+          "lines": 973,
+          "functions": 34,
+          "classes": 10
+        }
+      ],
+      "imports_from": [],
+      "imported_by": [],
+      "capability_ids": [],
+      "stats": {
+        "total_lines": 3052,
+        "total_functions": 116,
+        "total_classes": 27
+      }
+    },
+    {
+      "id": "meteor-forecast-service",
+      "name": "meteor-forecast-service",
+      "path": "meteor-forecast-service/",
+      "type": "package",
+      "language": "python",
+      "files": [
+        {
+          "path": "meteor-forecast-service/src/main/python/meteor_forecast.py",
+          "lines": 642,
+          "functions": 17,
+          "classes": 2
+        }
+      ],
+      "imports_from": [],
+      "imported_by": [],
+      "capability_ids": [],
+      "stats": {
+        "total_lines": 642,
+        "total_functions": 17,
+        "total_classes": 2
+      }
+    },
+    {
+      "id": "wrf-processor-service",
+      "name": "wrf-processor-service",
+      "path": "wrf-processor-service/",
+      "type": "package",
+      "language": "python",
+      "files": [
+        {
+          "path": "wrf-processor-service/src/main/python/wrf_processor.py",
+          "lines": 218,
+          "functions": 8,
+          "classes": 1
+        }
+      ],
+      "imports_from": [],
+      "imported_by": [],
+      "capability_ids": [],
+      "stats": {
+        "total_lines": 218,
+        "total_functions": 8,
+        "total_classes": 1
+      }
+    }
+  ],
+  "edges": [],
+  "layers": []
+}

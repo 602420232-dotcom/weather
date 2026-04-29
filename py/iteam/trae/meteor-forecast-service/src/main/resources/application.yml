@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: meteor-forecast-service
+  
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/meteor_forecast?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  # JPA配置
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+# 服务器配置
+server:
+  port: 8082
+  servlet:
+    context-path: /api
+
+# 预测服务配置
+forecast:
+  # 模型路径
+  model-path: ${user.dir}/models
+  # Python脚本路径
+  python-script: ${user.dir}/src/main/python/meteor_forecast.py
+  # 处理超时时间
+  timeout: 60000

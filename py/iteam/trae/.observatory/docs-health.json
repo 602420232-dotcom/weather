@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-04-29T08:06:19.734Z",
+  "overall_score": 50,
+  "checks": [
+    {
+      "check": "business_doc_id_coverage",
+      "description": "代码源文件中的 business_doc_id 标注覆盖率（多语言启发式）",
+      "score": 0,
+      "details": {
+        "total_modules": 196,
+        "annotated_modules": 0,
+        "missing": [
+          "check_system.py",
+          "data-assimilation-platform/algorithm_core/setup.py",
+          "data-assimilation-platform/benchmarks/conftest.py",
+          "data-assimilation-platform/benchmarks/__init__.py",
+          "data-assimilation-platform/scripts/benchmark.py",
+          "uav-edge-sdk/src/edge_sdk.py",
+          "uav-path-planning-system/frontend-vue/vite.config.js",
+          "data-assimilation-platform/algorithm_core/examples/advanced_usage.py",
+          "data-assimilation-platform/algorithm_core/examples/basic_usage.py",
+          "data-assimilation-platform/algorithm_core/examples/cuda_acceleration.py"
+        ]
+      }
+    },
+    {
+      "check": "doc_index_consistency",
+      "description": "ai-doc-index.json presence",
+      "score": 100,
+      "details": {
+        "total_entries": 0,
+        "consistent": 0,
+        "orphan_entries": [],
+        "missing_entries": []
+      }
+    }
+  ]
+}

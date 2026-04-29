@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  # MySQL数据库服务
+  mysql:
+    image: mysql:8.0
+    container_name: uav-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: uav_platform
+      MYSQL_USER: uav
+      MYSQL_PASSWORD: uav123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/create_tables.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+
+  # Redis缓存服务
+  redis:
+    image: redis:6.2
+    container_name: uav-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: always
+
+  # WRF处理服务
+  wrf-processor:
+    build: ./wrf-processor-service
+    container_name: wrf-processor
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/wrf_processor?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: uav
+      SPRING_DATASOURCE_PASSWORD: uav123
+    restart: always
+
+  # 贝叶斯同化服务（使用现有的data_assimilation_platform）
+  data-assimilation:
+    build: ./data_assimilation_platform
+    container_name: data-assimilation
+    ports:
+      - "8084:8084"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/data_assimilation?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: uav
+      SPRING_DATASOURCE_PASSWORD: uav123
+      PYTHON_SERVICE_HOST: 0.0.0.0
+      PYTHON_SERVICE_PORT: 8000
+    restart: always
+
+  # 气象预测服务
+  meteor-forecast:
+    build: ./meteor-forecast-service
+    container_name: meteor-forecast
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/meteor_forecast?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: uav
+      SPRING_DATASOURCE_PASSWORD: uav123
+    restart: always
+
+  # 路径规划服务
+  path-planning:
+    build: ./path-planning-service
+    container_name: path-planning
+    ports:
+      - "8083:8083"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/path_planning?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: uav
+      SPRING_DATASOURCE_PASSWORD: uav123
+    restart: always
+
+  # 主平台服务
+  uav-platform:
+    build: ./uav-platform-service
+    container_name: uav-platform
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - redis
+      - wrf-processor
+      - data-assimilation
+      - meteor-forecast
+      - path-planning
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/uav_platform?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: uav
+      SPRING_DATASOURCE_PASSWORD: uav123
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SERVICES_WRF_PROCESSOR_URL: http://wrf-processor:8081/api/wrf
+      SERVICES_DATA_ASSIMILATION_URL: http://data-assimilation:8084/api/assimilation
+      SERVICES_METEOR_FORECAST_URL: http://meteor-forecast:8082/api/forecast
+      SERVICES_PATH_PLANNING_URL: http://path-planning:8083/api/planning
+    restart: always
+
+volumes:
+  mysql-data:
+  redis-data:
