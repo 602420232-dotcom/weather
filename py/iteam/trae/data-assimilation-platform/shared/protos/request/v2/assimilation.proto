@@ -1,0 +1,17 @@
+// shared/protos/request/v2/assimilation.proto（新建文件，不修改v1）
+syntax = "proto3";
+package bayesian.request.v2;
+
+import "common/v1/types.proto";  // common仍然是v1！
+
+message AssimilationRequest {
+    string job_id = 1;
+    bayesian.common.v1.Grid2D background_field = 2;
+    
+    // v2新增：大网格分块传输
+    bool use_streaming = 3;           // 新增字段
+    int32 chunk_size_mb = 4;            // 新增字段
+    bytes compressed_chunk = 5;         // 新增字段（用于流式）
+}
+
+// 旧客户端继续用 v1，新功能用 v2

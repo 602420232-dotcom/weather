@@ -1,0 +1,84 @@
+# deployments/docker_compose.full.yml（增强版）
+
+version: '3.8'
+
+services:
+  # Java业务网关
+  spring-gateway:
+    build: ../service_spring
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVICES_PYTHON_URL=http://python-assimilation:8000
+      - SERVICES_PYTHON_PROTOCOL=REST
+      - REDIS_URL=redis:6379
+      - DB_URL=jdbc:postgresql://postgres:5432/bayesian
+    depends_on:
+      - postgres
+      - redis
+      - python-assimilation
+    networks:
+      - backend
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+  # Python计算服务（GPU版本）
+  python-assimilation:
+    build:
+      context: ../service_python
+      dockerfile: Dockerfile.gpu  # 使用CUDA加速
+    runtime: nvidia  # 需要NVIDIA Container Toolkit
+    environment:
+      - DASK_WORKERS=4
+      - CUDA_VISIBLE_DEVICES=0
+      - OMP_NUM_THREADS=8
+    volumes:
+      - assimilation-data:/data
+    networks:
+      - backend
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # 纯算法库容器（离线批处理）
+  algorithm-batch:
+    build: ../algorithm_core
+    command: python -m workflows.batch --config /configs/production.yaml
+    volumes:
+      - ./configs:/configs
+      - /mnt/nfs/wrf-data:/data:ro
+    networks:
+      - backend
+    profiles: ["batch"]  # 默认不启动，手动触发
+
+  # 监控与可视化
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../algorithm_core/src/visualization/dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - backend
+
+  # 消息队列（削峰填谷）
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - backend
+
+volumes:
+  assimilation-data:
+
+networks:
+  backend:
+    driver: bridge

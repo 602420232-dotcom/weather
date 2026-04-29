@@ -1,0 +1,68 @@
+2026-04-18 22:19:13,863 - DEBUG - Using selector: SelectSelector
+2026-04-18 22:19:13,864 - DEBUG - Using selector: SelectSelector
+2026-04-18 22:19:13,869 - DEBUG - Using selector: SelectSelector
+2026-04-18 22:19:13,875 - DEBUG - Using selector: SelectSelector
+2026-04-18 22:19:14,009 - INFO -       Start worker at:      tcp://127.0.0.1:58221
+2026-04-18 22:19:14,009 - INFO -          Listening to:      tcp://127.0.0.1:58221
+2026-04-18 22:19:14,010 - INFO -           Worker name:                          0
+2026-04-18 22:19:14,010 - INFO -       Start worker at:      tcp://127.0.0.1:58220
+2026-04-18 22:19:14,011 - INFO - Waiting to connect to:      tcp://127.0.0.1:58191
+2026-04-18 22:19:14,011 - INFO -          Listening to:      tcp://127.0.0.1:58220
+2026-04-18 22:19:14,011 - INFO -           Worker name:                          3
+2026-04-18 22:19:14,011 - INFO -           Worker name:                          1
+2026-04-18 22:19:14,011 - INFO - -------------------------------------------------
+2026-04-18 22:19:14,011 - INFO -          dashboard at:            127.0.0.1:58224
+2026-04-18 22:19:14,011 - INFO - Waiting to connect to:      tcp://127.0.0.1:58191
+2026-04-18 22:19:14,011 - INFO -               Threads:                          2
+2026-04-18 22:19:14,011 - INFO - -------------------------------------------------
+2026-04-18 22:19:14,011 - INFO -          dashboard at:            127.0.0.1:58223
+2026-04-18 22:19:14,011 - INFO -                Memory:                   7.93 GiB
+2026-04-18 22:19:14,011 - INFO - Waiting to connect to:      tcp://127.0.0.1:58191
+2026-04-18 22:19:14,011 - INFO -               Threads:                          2
+2026-04-18 22:19:14,011 - INFO -       Local Directory: C:\Users\DITHIO~1\AppData\Local\Temp\dask-scratch-space\worker-xqvef7uc
+2026-04-18 22:19:14,011 - INFO - -------------------------------------------------
+2026-04-18 22:19:14,011 - INFO -                Memory:                   7.93 GiB
+2026-04-18 22:19:14,011 - INFO - -------------------------------------------------
+2026-04-18 22:19:14,011 - INFO -       Local Directory: C:\Users\DITHIO~1\AppData\Local\Temp\dask-scratch-space\worker-8awmzmo4
+2026-04-18 22:19:14,011 - INFO -                Memory:                   7.93 GiB
+2026-04-18 22:19:14,011 - INFO - -------------------------------------------------
+2026-04-18 22:19:14,012 - INFO -       Local Directory: C:\Users\DITHIO~1\AppData\Local\Temp\dask-scratch-space\worker-p8v2rh4_
+2026-04-18 22:19:14,012 - INFO - -------------------------------------------------
+2026-04-18 22:19:14,035 - INFO -       Start worker at:      tcp://127.0.0.1:58228
+2026-04-18 22:19:14,035 - INFO -          Listening to:      tcp://127.0.0.1:58228
+2026-04-18 22:19:14,035 - INFO -           Worker name:                          2
+2026-04-18 22:19:14,035 - INFO -          dashboard at:            127.0.0.1:58229
+2026-04-18 22:19:14,035 - INFO - Waiting to connect to:      tcp://127.0.0.1:58191
+2026-04-18 22:19:14,035 - INFO - -------------------------------------------------
+2026-04-18 22:19:14,035 - INFO -               Threads:                          2
+2026-04-18 22:19:14,036 - INFO -                Memory:                   7.93 GiB
+2026-04-18 22:19:14,036 - INFO -       Local Directory: C:\Users\DITHIO~1\AppData\Local\Temp\dask-scratch-space\worker-uisiru_2
+2026-04-18 22:19:14,036 - INFO - -------------------------------------------------
+2026-04-18 22:19:14,054 - INFO - Starting Worker plugin shuffle
+2026-04-18 22:19:14,056 - INFO -         Registered to:      tcp://127.0.0.1:58191
+2026-04-18 22:19:14,056 - INFO - -------------------------------------------------
+2026-04-18 22:19:14,056 - INFO - Starting Worker plugin shuffle
+2026-04-18 22:19:14,057 - INFO - Starting established connection to tcp://127.0.0.1:58191
+2026-04-18 22:19:14,057 - INFO -         Registered to:      tcp://127.0.0.1:58191
+2026-04-18 22:19:14,058 - INFO - -------------------------------------------------
+2026-04-18 22:19:14,058 - INFO - Starting Worker plugin shuffle
+2026-04-18 22:19:14,059 - INFO - Starting established connection to tcp://127.0.0.1:58191
+2026-04-18 22:19:14,060 - INFO -         Registered to:      tcp://127.0.0.1:58191
+2026-04-18 22:19:14,060 - INFO - -------------------------------------------------
+2026-04-18 22:19:14,061 - INFO - Starting established connection to tcp://127.0.0.1:58191
+2026-04-18 22:19:14,076 - INFO - Starting Worker plugin shuffle
+2026-04-18 22:19:14,077 - INFO -         Registered to:      tcp://127.0.0.1:58191
+2026-04-18 22:19:14,077 - INFO - -------------------------------------------------
+2026-04-18 22:19:14,079 - INFO - Starting established connection to tcp://127.0.0.1:58191
+2026-04-18 22:19:16,310 - INFO - Stopping worker at tcp://127.0.0.1:58221. Reason: nanny-close
+2026-04-18 22:19:16,310 - INFO - Stopping worker at tcp://127.0.0.1:58220. Reason: nanny-close
+2026-04-18 22:19:16,310 - INFO - Stopping worker at tcp://127.0.0.1:58219. Reason: nanny-close
+2026-04-18 22:19:16,310 - INFO - Stopping worker at tcp://127.0.0.1:58228. Reason: nanny-close
+2026-04-18 22:19:16,310 - INFO - Removing Worker plugin shuffle
+2026-04-18 22:19:16,311 - INFO - Removing Worker plugin shuffle
+2026-04-18 22:19:16,311 - INFO - Removing Worker plugin shuffle
+2026-04-18 22:19:16,311 - INFO - Removing Worker plugin shuffle
+2026-04-18 22:19:16,314 - INFO - Connection to tcp://127.0.0.1:58191 has been closed.
+2026-04-18 22:19:16,315 - INFO - Connection to tcp://127.0.0.1:58191 has been closed.
+2026-04-18 22:19:16,315 - INFO - Connection to tcp://127.0.0.1:58191 has been closed.
+2026-04-18 22:19:16,315 - INFO - Connection to tcp://127.0.0.1:58191 has been closed.

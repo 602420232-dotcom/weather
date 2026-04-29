@@ -1,0 +1,118 @@
+2026-04-19 10:30:36,229 - INFO - 智能迭代规划: medium规模
+2026-04-19 10:30:36,229 - INFO -    目标点数: 848,421 点
+2026-04-19 10:30:36,229 - INFO -    估算单次耗时: 0.40 秒
+2026-04-19 10:30:36,230 - INFO -    计划迭代次数: 20 次
+2026-04-19 10:30:36,230 - INFO -    预计总耗时: 8.0 秒
+2026-04-19 10:30:36,230 - INFO - MemoryWarning 内存安全检查:
+2026-04-19 10:30:36,230 - INFO - 内存安全检查:
+2026-04-19 10:30:36,230 - INFO -    单次数据内存需求: 0.05 GB
+2026-04-19 10:30:36,231 - INFO -    20次迭代总需求: 1.01 GB
+2026-04-19 10:30:36,231 - INFO -    系统可用内存: 4.13 GB
+2026-04-19 10:30:36,231 - INFO - 创建 medium 规模合成数据...
+2026-04-19 10:30:36,231 - INFO - 创建数据: 201×201×21 = 848,421 点
+2026-04-19 10:30:36,232 - INFO - 观测数: 200
+2026-04-19 10:30:36,496 - INFO - 创建Dask集群: 4 workers...
+2026-04-19 10:30:40,881 - INFO - Dask集群已启动: 4 workers
+2026-04-19 10:30:40,881 - INFO - 初始化网格: 201×201×21, 分辨率: 20.0m
+2026-04-19 10:30:41,541 - INFO - 初始化网格: 201×201×21, 分辨率: 20.0m
+2026-04-19 10:30:41,541 - INFO - 预热分块并行...
+2026-04-19 10:30:41,675 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:41,675 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:41,675 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:41,676 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:46,687 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:46,688 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:46,688 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:46,688 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:51,202 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:51,202 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:51,203 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:51,203 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:55,743 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:55,743 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:55,744 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:30:55,744 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:00,400 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:00,400 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:00,401 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:00,401 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:05,025 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:05,025 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:05,026 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:05,026 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:09,617 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:09,617 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:09,617 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:09,617 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:14,183 - INFO -   迭代 5/20 完成
+2026-04-19 10:31:14,206 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:14,206 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:14,206 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:14,207 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:18,994 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:18,994 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:18,995 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:18,995 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:23,968 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:23,968 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:23,968 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:23,969 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:29,522 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:29,522 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:29,522 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:29,523 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:34,463 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:34,463 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:34,463 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:34,464 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:39,611 - INFO -   迭代 10/20 完成
+2026-04-19 10:31:39,637 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:39,637 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:39,637 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:39,638 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:44,931 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:44,932 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:44,932 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:44,932 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:49,866 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:49,867 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:49,867 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:49,867 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:54,797 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:54,798 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:54,798 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:54,798 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:59,712 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:59,712 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:59,712 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:31:59,713 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:04,574 - INFO -   迭代 15/20 完成
+2026-04-19 10:32:04,597 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:04,598 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:04,598 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:04,598 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:09,926 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:09,926 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:09,926 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:09,926 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:14,906 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:14,906 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:14,906 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:14,906 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:20,030 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:20,030 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:20,030 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:20,031 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:32:27,028 - INFO - 初始化网格: 201×201×21, 分辨率: 20.0m
+2026-04-19 10:32:27,028 - INFO - 预热Dask集群...
+2026-04-19 10:32:48,077 - INFO -   Dask迭代 3/20 完成
+2026-04-19 10:32:58,566 - INFO -   Dask迭代 6/20 完成
+2026-04-19 10:33:08,967 - INFO -   Dask迭代 9/20 完成
+2026-04-19 10:33:18,768 - INFO -   Dask迭代 12/20 完成
+2026-04-19 10:33:28,907 - INFO -   Dask迭代 15/20 完成
+2026-04-19 10:33:44,359 - INFO -   Dask迭代 18/20 完成
+2026-04-19 10:33:49,831 - INFO - Dask集群已关闭
+2026-04-19 10:33:49,831 - INFO - 
+============================================================
+2026-04-19 10:33:49,832 - INFO - 基准测试完成
+2026-04-19 10:33:49,832 - INFO - ============================================================

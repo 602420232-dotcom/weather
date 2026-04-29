@@ -1,0 +1,56 @@
+<!-- service_spring/pom.xml -->
+<dependencies>
+    <!-- Resilience4j 核心 -->
+    <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-spring-boot3</artifactId>
+        <version>2.1.0</version>
+    </dependency>
+    
+    <!-- 熔断器 -->
+    <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-circuitbreaker</artifactId>
+        <version>2.1.0</version>
+    </dependency>
+    
+    <!-- 重试 -->
+    <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-retry</artifactId>
+        <version>2.1.0</version>
+    </dependency>
+    
+    <!-- 限流 -->
+    <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-ratelimiter</artifactId>
+        <version>2.1.0</version>
+    </dependency>
+    
+    <!-- 隔离舱（防止级联故障） -->
+    <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-bulkhead</artifactId>
+        <version>2.1.0</version>
+    </dependency>
+    
+    <!-- 监控端点（可选） -->
+    <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-micrometer</artifactId>
+        <version>2.1.0</version>
+    </dependency>
+    
+    <!-- Spring Boot Actuator（必需，用于健康检查） -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    
+    <!-- AOP支持（注解方式必需） -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-aop</artifactId>
+    </dependency>
+</dependencies>

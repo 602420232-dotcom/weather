@@ -1,0 +1,41 @@
+{
+  "status": "passed",
+  "timestamp": "2026-04-29 17:03:28",
+  "tests": [
+    {
+      "name": "WRF Data Adapter",
+      "status": "passed"
+    },
+    {
+      "name": "Observation Data Adapter",
+      "status": "passed"
+    },
+    {
+      "name": "UAV Data Adapter",
+      "status": "passed"
+    },
+    {
+      "name": "Grid Adapter",
+      "status": "passed"
+    },
+    {
+      "name": "IO Adapter",
+      "status": "passed"
+    },
+    {
+      "name": "Performance Test",
+      "status": "passed"
+    }
+  ],
+  "performance": {
+    "points": 10800000,
+    "duration": 0.00030303001403808594,
+    "speed": 35640033988.985054,
+    "memory_used": 0.0,
+    "interpolate_duration": 0.7846634387969971,
+    "convert_duration": 0.0019676685333251953,
+    "obs_adapter_duration": 8.058547973632812e-05,
+    "grid_to_points_duration": 0.00040268898010253906,
+    "success": true
+  }
+}

@@ -1,0 +1,23 @@
+// shared/protos/common/v1/types.proto
+syntax = "proto3";
+package bayesian.common.v1;
+
+message Grid2D {
+    int32 nx = 1;
+    int32 ny = 2;
+    double resolution = 3;
+    repeated double data = 4;
+}
+// 这个文件发布后，永远不再修改！
+
+// shared/protos/request/v1/assimilation.proto
+syntax = "proto3";
+package bayesian.request.v1;
+
+import "common/v1/types.proto";
+
+message AssimilationRequest {
+    string job_id = 1;
+    bayesian.common.v1.Grid2D background_field = 2;  // 引用common
+    // ... 其他字段
+}

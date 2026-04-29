@@ -1,0 +1,2 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites><testsuite name="数据适配器测试" tests="6" failures="0" errors="0" time="0.00030303001403808594" timestamp="2026-04-29 17:03:28"><testcase name="WRF Data Adapter" status="passed" /><testcase name="Observation Data Adapter" status="passed" /><testcase name="UAV Data Adapter" status="passed" /><testcase name="Grid Adapter" status="passed" /><testcase name="IO Adapter" status="passed" /><testcase name="Performance Test" status="passed" /></testsuite></testsuites>

@@ -1,0 +1,3 @@
+2026-04-19 11:00:33,967 - ERROR - 块 0 计算失败: unsupported operand type(s) for /: 'float' and 'NoneType'
+2026-04-19 11:00:34,021 - ERROR - 块 1 计算失败: unsupported operand type(s) for /: 'float' and 'NoneType'
+2026-04-19 11:00:34,057 - ERROR - 块 2 计算失败: unsupported operand type(s) for /: 'float' and 'NoneType'

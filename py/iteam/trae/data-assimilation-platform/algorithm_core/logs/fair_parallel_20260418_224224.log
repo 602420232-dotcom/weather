@@ -1,0 +1,70 @@
+2026-04-18 22:42:25,262 - DEBUG - Using selector: SelectSelector
+2026-04-18 22:42:25,267 - DEBUG - Using selector: SelectSelector
+2026-04-18 22:42:25,270 - DEBUG - Using selector: SelectSelector
+2026-04-18 22:42:25,272 - DEBUG - Using selector: SelectSelector
+2026-04-18 22:42:25,363 - INFO -       Start worker at:      tcp://127.0.0.1:21619
+2026-04-18 22:42:25,363 - INFO -          Listening to:      tcp://127.0.0.1:21619
+2026-04-18 22:42:25,363 - INFO -           Worker name:                          1
+2026-04-18 22:42:25,363 - INFO -          dashboard at:            127.0.0.1:21620
+2026-04-18 22:42:25,363 - INFO - Waiting to connect to:      tcp://127.0.0.1:21588
+2026-04-18 22:42:25,363 - INFO - -------------------------------------------------
+2026-04-18 22:42:25,364 - INFO -               Threads:                          2
+2026-04-18 22:42:25,364 - INFO -                Memory:                   7.93 GiB
+2026-04-18 22:42:25,364 - INFO -       Local Directory: C:\Users\DITHIO~1\AppData\Local\Temp\dask-scratch-space\worker-q1p0qdk9
+2026-04-18 22:42:25,364 - INFO - -------------------------------------------------
+2026-04-18 22:42:25,382 - INFO -       Start worker at:      tcp://127.0.0.1:21623
+2026-04-18 22:42:25,383 - INFO -          Listening to:      tcp://127.0.0.1:21623
+2026-04-18 22:42:25,383 - INFO -           Worker name:                          3
+2026-04-18 22:42:25,383 - INFO -          dashboard at:            127.0.0.1:21624
+2026-04-18 22:42:25,383 - INFO -       Start worker at:      tcp://127.0.0.1:21622
+2026-04-18 22:42:25,383 - INFO - Waiting to connect to:      tcp://127.0.0.1:21588
+2026-04-18 22:42:25,383 - INFO - -------------------------------------------------
+2026-04-18 22:42:25,383 - INFO -           Worker name:                          0
+2026-04-18 22:42:25,383 - INFO -               Threads:                          2
+2026-04-18 22:42:25,383 - INFO -          dashboard at:            127.0.0.1:21625
+2026-04-18 22:42:25,383 - INFO -                Memory:                   7.93 GiB
+2026-04-18 22:42:25,383 - INFO -       Local Directory: C:\Users\DITHIO~1\AppData\Local\Temp\dask-scratch-space\worker-6_4ntw6u
+2026-04-18 22:42:25,383 - INFO - -------------------------------------------------
+2026-04-18 22:42:25,383 - INFO -               Threads:                          2
+2026-04-18 22:42:25,383 - INFO -                Memory:                   7.93 GiB
+2026-04-18 22:42:25,383 - INFO -       Local Directory: C:\Users\DITHIO~1\AppData\Local\Temp\dask-scratch-space\worker-5t273rwh
+2026-04-18 22:42:25,383 - INFO - -------------------------------------------------
+2026-04-18 22:42:25,383 - INFO - -------------------------------------------------
+2026-04-18 22:42:25,386 - INFO - Starting Worker plugin shuffle
+2026-04-18 22:42:25,387 - INFO -         Registered to:      tcp://127.0.0.1:21588
+2026-04-18 22:42:25,387 - INFO - -------------------------------------------------
+2026-04-18 22:42:25,389 - INFO - Starting established connection to tcp://127.0.0.1:21588
+2026-04-18 22:42:25,400 - INFO - Starting Worker plugin shuffle
+2026-04-18 22:42:25,401 - INFO -         Registered to:      tcp://127.0.0.1:21588
+2026-04-18 22:42:25,401 - INFO - Starting Worker plugin shuffle
+2026-04-18 22:42:25,401 - INFO - -------------------------------------------------
+2026-04-18 22:42:25,402 - INFO -         Registered to:      tcp://127.0.0.1:21588
+2026-04-18 22:42:25,402 - INFO - -------------------------------------------------
+2026-04-18 22:42:25,403 - INFO - Starting established connection to tcp://127.0.0.1:21588
+2026-04-18 22:42:25,403 - INFO - Starting established connection to tcp://127.0.0.1:21588
+2026-04-18 22:42:25,419 - INFO -       Start worker at:      tcp://127.0.0.1:21628
+2026-04-18 22:42:25,420 - INFO -          Listening to:      tcp://127.0.0.1:21628
+2026-04-18 22:42:25,420 - INFO -           Worker name:                          2
+2026-04-18 22:42:25,420 - INFO -          dashboard at:            127.0.0.1:21629
+2026-04-18 22:42:25,420 - INFO - Waiting to connect to:      tcp://127.0.0.1:21588
+2026-04-18 22:42:25,420 - INFO - -------------------------------------------------
+2026-04-18 22:42:25,420 - INFO -               Threads:                          2
+2026-04-18 22:42:25,420 - INFO -                Memory:                   7.93 GiB
+2026-04-18 22:42:25,420 - INFO -       Local Directory: C:\Users\DITHIO~1\AppData\Local\Temp\dask-scratch-space\worker-nn_dw5qe
+2026-04-18 22:42:25,420 - INFO - -------------------------------------------------
+2026-04-18 22:42:25,434 - INFO - Starting Worker plugin shuffle
+2026-04-18 22:42:25,435 - INFO -         Registered to:      tcp://127.0.0.1:21588
+2026-04-18 22:42:25,435 - INFO - -------------------------------------------------
+2026-04-18 22:42:25,436 - INFO - Starting established connection to tcp://127.0.0.1:21588
+2026-04-18 22:42:28,840 - INFO - Stopping worker at tcp://127.0.0.1:21622. Reason: nanny-close
+2026-04-18 22:42:28,841 - INFO - Removing Worker plugin shuffle
+2026-04-18 22:42:28,841 - INFO - Stopping worker at tcp://127.0.0.1:21619. Reason: nanny-close
+2026-04-18 22:42:28,841 - INFO - Removing Worker plugin shuffle
+2026-04-18 22:42:28,842 - INFO - Stopping worker at tcp://127.0.0.1:21628. Reason: nanny-close
+2026-04-18 22:42:28,842 - INFO - Stopping worker at tcp://127.0.0.1:21623. Reason: nanny-close
+2026-04-18 22:42:28,842 - INFO - Removing Worker plugin shuffle
+2026-04-18 22:42:28,842 - INFO - Removing Worker plugin shuffle
+2026-04-18 22:42:28,843 - INFO - Connection to tcp://127.0.0.1:21588 has been closed.
+2026-04-18 22:42:28,845 - INFO - Connection to tcp://127.0.0.1:21588 has been closed.
+2026-04-18 22:42:28,845 - INFO - Connection to tcp://127.0.0.1:21588 has been closed.
+2026-04-18 22:42:28,845 - INFO - Connection to tcp://127.0.0.1:21588 has been closed.

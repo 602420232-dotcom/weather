@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="JavaCoverageOptionsProvider">
+    <option name="myTestModulesCoverage" value="true" />
+    <option name="myTestTracking" value="true" />
+  </component>
+  <component name="Kotlin2JsCompilerArguments">
+    <option name="moduleKind" value="plain" />
+  </component>
+  <component name="KotlinNotebookOptionsProvider">
+    <option name="jdkName" value="21" />
+    <option name="jvmTargetForSnippets" value="21" />
+    <option name="shouldAddProjectLibrariesToClasspath" value="true" />
+    <option name="shouldLimitTypeHintsByActiveCell" value="true" />
+  </component>
+  <component name="MarkdownSettings">
+    <option name="fileGroupingEnabled" value="true" />
+  </component>
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/service_spring/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="Pandoc.Settings">
+    <option name="pathToImages" value="G:\Users\Dithiothreitol\Pictures\Feedback" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id>属性文件</id>
+          </State>
+          <State>
+            <id>常规</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>属性文件</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectResources">
+    <xml-schema-version>XMLSchema_1_1</xml-schema-version>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="21" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+  <component name="TypeScriptCompiler">
+    <option name="recompileOnChanges" value="true" />
+  </component>
+</project>

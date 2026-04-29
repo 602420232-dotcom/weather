@@ -1,0 +1,42 @@
+2026-04-19 10:50:44,838 - INFO - 智能迭代规划: large规模
+2026-04-19 10:50:44,838 - INFO -    目标点数: 6,592,841 点
+2026-04-19 10:50:44,838 - INFO -    估算单次耗时: 3.00 秒
+2026-04-19 10:50:44,838 - INFO -    计划迭代次数: 3 次
+2026-04-19 10:50:44,839 - INFO -    预计总耗时: 9.0 秒
+2026-04-19 10:50:44,839 - INFO - MemoryWarning 内存安全检查:
+2026-04-19 10:50:44,839 - INFO - 内存安全检查:
+2026-04-19 10:50:44,839 - INFO -    单次数据内存需求: 0.39 GB
+2026-04-19 10:50:44,840 - INFO -    3次迭代总需求: 1.18 GB
+2026-04-19 10:50:44,840 - INFO -    系统可用内存: 7.05 GB
+2026-04-19 10:50:44,840 - INFO - 创建 large 规模合成数据...
+2026-04-19 10:50:44,840 - INFO - 创建数据: 401×401×41 = 6,592,841 点
+2026-04-19 10:50:44,840 - INFO - 观测数: 500
+2026-04-19 10:50:45,108 - INFO - 创建Dask集群: 14 workers...
+2026-04-19 10:50:53,083 - INFO - Dask集群已启动: 14 workers
+2026-04-19 10:50:53,083 - INFO - 初始化网格: 401×401×41, 分辨率: 15.0m
+2026-04-19 10:50:54,237 - INFO - 初始化网格: 401×401×41, 分辨率: 15.0m
+2026-04-19 10:50:54,237 - INFO - 预热分块并行...
+2026-04-19 10:50:54,262 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:50:54,262 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:50:54,263 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:50:54,263 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:51:00,175 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:51:00,175 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:51:00,175 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:51:00,175 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:51:05,401 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:51:05,401 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:51:05,401 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:51:05,402 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:51:10,396 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:51:10,396 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:51:10,396 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:51:10,397 - ERROR - 获取结果失败: Can't get local object 'BlockParallelAssimilator.assimilate_block_parallel.<locals>.process_block'
+2026-04-19 10:51:16,709 - INFO - 中等数据规模 (50.3MB)，使用优化的Dask配置
+2026-04-19 10:51:16,709 - INFO - 初始化网格: 401×401×41, 分辨率: 15.0m
+2026-04-19 10:51:16,710 - ERROR - Dask并行计算失败: cannot access local variable 'data_points' where it is not associated with a value
+2026-04-19 10:51:18,397 - INFO - Dask集群已关闭
+2026-04-19 10:51:18,398 - INFO - 
+============================================================
+2026-04-19 10:51:18,398 - INFO - 基准测试完成
+2026-04-19 10:51:18,398 - INFO - ============================================================

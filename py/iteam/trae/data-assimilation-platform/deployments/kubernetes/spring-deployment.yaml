@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-assimilation-spring
+  namespace: data-assimilation
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: data-assimilation-spring
+  template:
+    metadata:
+      labels:
+        app: data-assimilation-spring
+    spec:
+      containers:
+      - name: data-assimilation-spring
+        image: data-assimilation-spring:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://mysql:3306/data_assimilation?useSSL=false&serverTimezone=UTC"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "root"
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: data-assimilation-secrets
+              key: spring.datasource.password
+        - name: SPRING_REDIS_HOST
+          value: "redis"
+        - name: SPRING_REDIS_PORT
+          value: "6379"
+        - name: SPRING_REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: data-assimilation-secrets
+              key: redis.password
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: data-assimilation-secrets
+              key: jwt.secret
+        - name: WEATHER_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: data-assimilation-secrets
+              key: weather.api.key
+        - name: PYTHON_SERVICE_URL
+          value: "http://data-assimilation-python:8000"
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 15

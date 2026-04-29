@@ -1,0 +1,44 @@
+{
+  "timestamp": "20260424_102327",
+  "data_config": {
+    "domain_size": [
+      5000,
+      5000,
+      1000
+    ],
+    "background_shape": [
+      50,
+      50,
+      10
+    ],
+    "n_observations": 60,
+    "n_stations": 20
+  },
+  "assimilation_result": {
+    "analysis_shape": [
+      50,
+      50,
+      10
+    ],
+    "analysis_range": [
+      4.177958568072983,
+      7.426616734207386
+    ],
+    "variance_range": [
+      0.4982703030967881,
+      2.249995937506891
+    ],
+    "mean_analysis": 5.884856253360265,
+    "mean_variance": 2.2485945569993633
+  },
+  "risk_analysis": {
+    "risk_threshold": 2.347647478031965,
+    "risk_percentage": 0.0,
+    "composite_risk_percentage": 0.0,
+    "high_risk_points": 0,
+    "max_composite_risk": 0,
+    "risk_zones": [
+      "低风险: 整体风险可控"
+    ]
+  }
+}

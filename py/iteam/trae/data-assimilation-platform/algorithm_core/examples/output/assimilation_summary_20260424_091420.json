@@ -1,0 +1,42 @@
+{
+  "timestamp": "20260424_091420",
+  "data_config": {
+    "domain_size": [
+      5000,
+      5000,
+      1000
+    ],
+    "background_shape": [
+      50,
+      50,
+      10
+    ],
+    "n_observations": 40,
+    "n_stations": 20
+  },
+  "assimilation_result": {
+    "analysis_shape": [
+      50,
+      50,
+      10
+    ],
+    "analysis_range": [
+      3.4304357269139905,
+      83.3
+    ],
+    "variance_range": [
+      0.2801559622777662,
+      2.249995937506891
+    ]
+  },
+  "risk_analysis": {
+    "risk_threshold": 2.359806460565072,
+    "risk_percentage": 0.0,
+    "composite_risk_percentage": 0.08,
+    "high_risk_points": 0,
+    "max_composite_risk": 4,
+    "risk_zones": [
+      "LOW RISK: Overall risk is controllable"
+    ]
+  }
+}

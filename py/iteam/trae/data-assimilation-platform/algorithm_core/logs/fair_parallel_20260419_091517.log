@@ -1,0 +1,12 @@
+2026-04-19 09:15:17,836 - DEBUG - Using selector: SelectSelector
+2026-04-19 09:15:17,837 - DEBUG - Using selector: SelectSelector
+2026-04-19 09:15:17,865 - DEBUG - Using selector: SelectSelector
+2026-04-19 09:15:17,869 - DEBUG - Using selector: SelectSelector
+2026-04-19 09:15:18,052 - INFO - Starting established connection to tcp://127.0.0.1:27305
+2026-04-19 09:15:18,055 - INFO - Starting established connection to tcp://127.0.0.1:27305
+2026-04-19 09:15:18,056 - INFO - Starting established connection to tcp://127.0.0.1:27305
+2026-04-19 09:15:18,057 - INFO - Starting established connection to tcp://127.0.0.1:27305
+2026-04-19 09:15:18,129 - INFO - Connection to tcp://127.0.0.1:27305 has been closed.
+2026-04-19 09:15:18,130 - INFO - Connection to tcp://127.0.0.1:27305 has been closed.
+2026-04-19 09:15:18,131 - INFO - Connection to tcp://127.0.0.1:27305 has been closed.
+2026-04-19 09:15:18,131 - INFO - Connection to tcp://127.0.0.1:27305 has been closed.
