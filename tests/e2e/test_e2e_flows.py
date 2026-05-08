@@ -22,8 +22,8 @@ import time
 
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8088")
 API_GATEWAY = BASE_URL
-TEST_USERNAME = "testuser"
-TEST_PASSWORD = "Test@123456"
+TEST_USERNAME = os.environ.get("TEST_USERNAME", "testuser")
+TEST_PASSWORD = os.environ.get("TEST_PASSWORD", "Test@123456")  # noqa: S105
 
 
 class TestAuthenticationFlow:
