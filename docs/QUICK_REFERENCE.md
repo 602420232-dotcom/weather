@@ -307,12 +307,13 @@ pytest test_performance.py -v -s
 
 | 需要什么 | 查看这个 |
 |---------|---------|
-| 项目概览 | [README.md](README.md) |
+| 项目概览 | [README.md](../README.md) |
 | 部署指南 | [DEPLOYMENT.md](DEPLOYMENT.md) |
-| 架构设计 | [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) |
-| 熔断器使用 | [docs/CIRCUIT_BREAKER_GUIDE.md](docs/CIRCUIT_BREAKER_GUIDE.md) |
-| 监控配置 | [docs/deployments/monitoring/README.md](docs/deployments/monitoring/README.md) |
+| 架构设计 | [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) |
+| 熔断器使用 | [CIRCUIT_BREAKER_GUIDE.md](guides/CIRCUIT_BREAKER_GUIDE.md) |
+| 监控配置 | [deployments/monitoring/README.md](../deployments/monitoring/README.md) |
 | 更新日志 | [CHANGELOG.md](CHANGELOG.md) |
+| 故障排除 | [TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md) |
 
 ---
 
@@ -324,11 +325,9 @@ pytest test_performance.py -v -s
 - Alertmanager: http://localhost:9093
 - Jaeger: http://localhost:16686
 
----
+------
 
-**最后更新**: 2026-05-08  
-**版本**: 2.0.0
----
+
 
 > **最后更新**: 2026-05-08  
 > **版本**: 2.1  
