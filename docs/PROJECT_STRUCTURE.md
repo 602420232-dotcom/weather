@@ -14,7 +14,7 @@ trae/
 │   ├── data-assimilation-service/  # 数据同化服务 (端口 8084)
 │   ├── uav-weather-collector/  # 气象数据采集 (端口 8086)
 │   ├── common-utils/            # 公共工具模块 ⭐
-│   └── common-dependencies/    # 公共依赖管理
+│   │       └── common-dependencies/  # 已合并为 parent pom.xml BOM
 │
 ├── 🐍 算法模块 (Python)
 │   ├── data-assimilation-platform/  # 贝叶斯同化平台
@@ -32,10 +32,10 @@ trae/
 │   └── uav-edge-sdk/           # 端侧SDK
 │
 ├── 📋 部署配置
-│   ├── kubernetes/             # K8s部署
-│   ├── docker-compose.yml      # Docker编排
-│   ├── monitoring/             # 监控配置
-│   ├── service-mesh/            # Istio服务网格
+│   ├── deployments/
+│   │   ├── kubernetes/          # K8s部署
+│   │   ├── monitoring/          # 监控配置
+│   │   └── docker-compose.yml   # Docker编排
 │   └── edge-device/            # 边缘设备部署
 │
 ├── 📖 文档
@@ -299,30 +299,39 @@ monitoring/
 ```
 docs/
 ├── README.md                    # 文档索引
+├── PROJECT_STRUCTURE.md        # 项目结构
 ├── architecture.md             # 架构设计
 ├── DEPLOYMENT.md              # 部署指南
 ├── DOCKER.md                  # Docker说明
-├── API文档/
-│   └── README.md
-├── 安全相关/
-│   ├── security_audit_report.md
+├── api/                       # API文档
+│   ├── README.md
+│   ├── API_DOCUMENTATION.md
+│   ├── edge-cloud-coordinator/
+│   ├── path-planning-service/
+│   └── data-assimilation-service/
+├── deployment/                # 部署指南
+│   ├── DEPLOYMENT.md
+│   ├── DEPLOY_GUIDE.md
+│   └── DISASTER_RECOVERY_PLAN.md
+├── guides/                   # 使用指南
 │   ├── CIRCUIT_BREAKER_GUIDE.md
-│   └── CIRCUIT_BREAKER_USAGE_EXAMPLES.md
-└── 改进相关/
-    ├── IMPROVEMENTS_COMPLETED_REPORT.md
-    ├── AUTO_FIXES_SUMMARY.md
-    └── PROJECT_QUALITY_AUDIT_FINAL_REPORT.md
+│   ├── CIRCUIT_BREAKER_USAGE_EXAMPLES.md
+│   ├── EXCEPTION_HTTP_STATUS_GUIDE.md
+│   └── PRODUCTION_SECRETS_GUIDE.md
+└── reports/                  # 报告
+    ├── COMPREHENSIVE_AUDIT_REPORT_v2.1.md
+    └── COMPREHENSIVE_QUALITY_ASSESSMENT.md
 ```
 
 ### 关键文档
 
 | 文档 | 说明 | 优先级 |
 |------|------|--------|
-| README.md | 项目总览和快速开始 | ⭐⭐⭐ |
-| DEPLOYMENT.md | 完整部署指南 | ⭐⭐⭐ |
-| CHANGELOG.md | 版本更新历史 | ⭐⭐ |
-| CIRCUIT_BREAKER_GUIDE.md | 熔断器使用指南 | ⭐⭐⭐ |
-| IMPROVEMENTS_COMPLETED_REPORT.md | 改进总结报告 | ⭐⭐ |
+| README.md | 项目总览和快速开始 | *** |
+| docs/PROJECT_STRUCTURE.md | 项目结构指南 | *** |
+| docs/DEPLOYMENT.md | 完整部署指南 | *** |
+| docs/guides/CIRCUIT_BREAKER_GUIDE.md | 熔断器使用指南 | *** |
+| docs/deployment/DEPLOYMENT.md | 部署与维护方案 | ** |
 
 ---
 
@@ -455,10 +464,10 @@ docker-compose up -d
 
 ## 📚 更多资源
 
-- [项目Wiki](https://wiki.example.com)
-- [API文档](docs/api/README.md)
-- [部署指南](DEPLOYMENT.md)
-- [监控配置](deployments/monitoring/README.md)
+- [项目Wiki](https://github.com/602420232-dotcom/weather/wiki)
+- [API文档](api/README.md)
+- [部署指南](deployment/DEPLOYMENT.md)
+- [监控配置](../deployments/monitoring/README.md)
 
 
 ---
