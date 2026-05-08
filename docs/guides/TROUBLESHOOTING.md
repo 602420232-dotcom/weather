@@ -273,12 +273,12 @@ http://localhost:16686
 
 如果问题仍未解决：
 
-1. 查看 [改进建议](docs/improvement_suggestions.md)
-2. 查看 [常见问题FAQ](docs/README.md)
+1. 查看 [改进建议](../improvement_suggestions.md)
+2. 查看 [常见问题FAQ](../README.md)
 3. 提交 Issue 到 [GitHub](https://github.com/602420232-dotcom/weather/issues)
 
 ---
 
 > **最后更新**: 2026-05-08  
-> **版本**: 1.0.0  
+> **版本**: 2.1 
 > **维护者**: DITHIOTHREITOL
