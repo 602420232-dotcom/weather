@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package request.v1;
+
+option java_package = "com.bayesian.request.v1";
+option java_multiple_files = true;
+
+import "common/v1/types.proto";
+import "common/v1/geometry.proto";
+import "common/v1/metadata.proto";
+
+message AssimilationRequest {
+  string job_id = 1;
+  string algorithm = 2;
+  GridDefinition background_grid = 3;
+  map<string, bytes> background_variables = 4;
+  repeated Observation observations = 5;
+  AssimilationConfig config = 6;
+}
+
+message Observation {
+  GeoPoint location = 1;
+  string variable = 2;
+  double value = 3;
+  double error = 4;
+  Timestamp time = 5;
+}
+
+message AssimilationConfig {
+  int32 max_iterations = 1;
+  double tolerance = 2;
+  bool parallel = 3;
+  int32 ensemble_size = 4;
+  double inflation_factor = 5;
+  double localization_radius = 6;
+}

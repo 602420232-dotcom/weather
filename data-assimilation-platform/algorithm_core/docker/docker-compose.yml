@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # REST API 服务
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: bayesian_assimilation_api
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    volumes:
+      - ../data:/app/data
+      - ../output:/app/output
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - assimilation_net
+    restart: unless-stopped
+
+  # Web 界面服务
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: bayesian_assimilation_web
+    command: web
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    volumes:
+      - ../data:/app/data
+      - ../output:/app/output
+    depends_on:
+      - api
+    networks:
+      - assimilation_net
+    restart: unless-stopped
+
+networks:
+  assimilation_net:
+    driver: bridge

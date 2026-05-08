@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package request.v1;
+
+option java_package = "com.bayesian.request.v1";
+option java_multiple_files = true;
+
+import "request/v1/assimilation.proto";
+
+message BatchRequest {
+  repeated AssimilationRequest jobs = 1;
+  bool stop_on_error = 2;
+}

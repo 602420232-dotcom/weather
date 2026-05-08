@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package request.v2;
+
+option java_package = "com.bayesian.request.v2";
+option java_multiple_files = true;
+
+import "common/v1/geometry.proto";
+import "common/v1/metadata.proto";
+
+message AssimilationRequest {
+  string request_id = 1;
+  string algorithm = 2;
+  common.v1.GridDefinition domain = 3;
+  map<string, VariableData> inputs = 4;
+  AlgorithmParams params = 5;
+}
+
+message VariableData {
+  repeated double values = 1;
+  common.v1.VariableMetadata metadata = 2;
+}
+
+message AlgorithmParams {
+  int32 max_iterations = 1;
+  double convergence_tolerance = 2;
+  bool use_gpu = 3;
+  string parallel_backend = 4;
+}

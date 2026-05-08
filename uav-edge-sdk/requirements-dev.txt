@@ -1,0 +1,11 @@
+# UAV Edge SDK - Development Dependencies
+# ========================================
+
+# Core testing
+-r requirements.txt
+
+# Development tools
+ipython>=8.0.0         # Interactive Python
+jupyter>=1.0.0          # Jupyter notebooks
+matplotlib>=3.5.0      # Visualization
+scipy>=1.8.0           # Scientific computing

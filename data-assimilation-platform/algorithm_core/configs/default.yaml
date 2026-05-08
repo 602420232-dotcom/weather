@@ -1,0 +1,63 @@
+# 默认配置文件
+# 此文件包含贝叶斯同化系统的默认配置
+
+# 同化配置
+assimilation:
+  method: 3dvar
+  domain_size: [100, 100, 50]
+  resolution: 1000.0
+  max_iterations: 100
+  tolerance: 1e-6
+  verbose: false
+
+# 误差配置
+errors:
+  background_error_scale: 1.5
+  observation_error_scale: 0.8
+  covariance_type: gaussian
+
+# 并行计算配置
+parallel:
+  enabled: false
+  num_workers: 4
+  backend: dask
+  block_size: 25
+
+# 数据配置
+data:
+  input_dir: ./data
+  output_dir: ./output
+  format: netcdf
+  compression: true
+
+# 质量控制配置
+quality_control:
+  enabled: true
+  outlier_threshold: 3.0
+  missing_value_threshold: 0.1
+
+# 风险评估配置
+risk_assessment:
+  enabled: false
+  thresholds:
+    low: 0.3
+    medium: 0.6
+    high: 0.85
+
+# 可视化配置
+visualization:
+  enabled: true
+  output_format: png
+  dpi: 300
+  show_plots: false
+
+# 日志配置
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: null
+
+# GPU 配置
+gpu:
+  enabled: false
+  device: 0

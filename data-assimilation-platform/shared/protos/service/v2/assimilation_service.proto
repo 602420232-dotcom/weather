@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package service.v2;
+
+option java_package = "com.bayesian.service.v2";
+option java_multiple_files = true;
+
+import "request/v2/assimilation.proto";
+import "request/v2/streaming.proto";
+import "response/v2/assimilation.proto";
+import "response/v1/stream.proto";
+
+service AssimilationService {
+  rpc Assimilate(request.v2.AssimilationRequest) returns (response.v2.AssimilationResponse);
+  rpc StreamAssimilate(stream request.v2.DataChunk) returns (stream response.v1.StreamResponse);
+}

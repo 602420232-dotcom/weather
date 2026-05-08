@@ -1,0 +1,74 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Run OWASP Dependency Check
+        run: mvn dependency-check:check -DskipTests=true
+
+      - name: Run Unit Tests (Java)
+        run: mvn test -Dspring.profiles.active=test
+
+      - name: Run Python Syntax Checks
+        run: |
+          python -m pip install --upgrade pip
+          python tests/check_syntax.py
+          python tests/check_imports.py
+
+      - name: Run Security Scan
+        run: python tests/check_security.py
+
+      - name: Generate JaCoCo Coverage Report
+        run: mvn jacoco:report -Dspring.profiles.active=test
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            **/target/site/jacoco/
+            **/target/dependency-check-reports/
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/target/surefire-reports/'
+
+      - name: Enforce Coverage Threshold
+        run: |
+          mvn jacoco:check \
+            -Djacoco.haltOnFailure=true \
+            -Djacoco.lineCoverageMinimum=0.80 \
+            -Djacoco.branchCoverageMinimum=0.70

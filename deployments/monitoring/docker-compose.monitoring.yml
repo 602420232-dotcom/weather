@@ -1,0 +1,170 @@
+version: '3.8'
+
+services:
+  # Prometheus - Metrics collection
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: uav-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  # Grafana - Metrics visualization
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: uav-grafana
+    ports:
+      - "3030:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-changeme123}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=https://monitoring.example.com
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+
+  # Alertmanager - Alert routing
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    container_name: uav-alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  # Elasticsearch - Log storage
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+    container_name: uav-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:-changeme123}
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    restart: unless-stopped
+    networks:
+      - monitoring
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Logstash - Log processing
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.9.0
+    container_name: uav-logstash
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+    environment:
+      - "LS_JAVA_OPTS=-Xms1g -Xmx1g"
+      - ELASTICSEARCH_HOSTS=elasticsearch:9200
+    restart: unless-stopped
+    depends_on:
+      - elasticsearch
+    networks:
+      - monitoring
+
+  # Kibana - Log visualization
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.9.0
+    container_name: uav-kibana
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD:-changeme123}
+    restart: unless-stopped
+    depends_on:
+      - elasticsearch
+    networks:
+      - monitoring
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:5601/api/status | grep -q 'available'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Jaeger - Distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:1.47
+    container_name: uav-jaeger
+    ports:
+      - "16686:16686"  # UI
+      - "14268:14268"  # Collector
+      - "6831:6831/udp"  # Agent (compact)
+      - "6832:6832/udp"  # Agent (binary)
+      - "4317:4317"  # gRPC
+      - "4318:4318"  # HTTP
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - SPAN_STORAGE_TYPE=elasticsearch
+      - ES_SERVER_URLS=http://elasticsearch:9200
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:-changeme123}
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  # Prometheus Alert Webhook (for Slack/Email notifications)
+  alert-webhook:
+    image: python:3.9-slim
+    container_name: uav-alert-webhook
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./alert-webhook:/app
+    command: python app.py
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  alertmanager_data:
+  elasticsearch_data:
+
+networks:
+  monitoring:
+    driver: bridge

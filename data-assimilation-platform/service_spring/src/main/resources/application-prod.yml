@@ -1,0 +1,23 @@
+server:
+  port: 8094
+
+spring:
+  datasource:
+    url: jdbc:mysql://mysql:3306/data_assimilation?useSSL=true&requireSSL=true&serverTimezone=UTC
+    username: uav
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  redis:
+    host: redis
+    port: 6379
+
+logging:
+  level:
+    com.bayesian: INFO
+
+python:
+  service:
+    url: http://python-assimilation:8000

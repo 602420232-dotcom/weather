@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package response.v1;
+
+option java_package = "com.bayesian.response.v1";
+option java_multiple_files = true;
+
+message StatusResponse {
+  string service = 1;
+  string version = 2;
+  bool healthy = 3;
+  int64 uptime_seconds = 4;
+  ResourceUsage resources = 5;
+}
+
+message ResourceUsage {
+  double cpu_percent = 1;
+  double memory_mb = 2;
+  bool gpu_available = 3;
+  int32 active_jobs = 4;
+}

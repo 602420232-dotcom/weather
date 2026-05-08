@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: uav-mysql-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme123}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-uav_platform}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-dev-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    deploy:
+      resources:
+        limits: { memory: 512M }
+
+  redis:
+    image: redis:6.2
+    container_name: uav-redis-dev
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits: { memory: 256M }
+
+  nacos:
+    image: nacos/nacos-server:v2.3.0
+    container_name: uav-nacos-dev
+    environment:
+      - MODE=standalone
+    ports:
+      - "8848:8848"
+    deploy:
+      resources:
+        limits: { memory: 512M }
+
+volumes:
+  mysql-dev-data:

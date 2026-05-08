@@ -1,0 +1,270 @@
+# ============================================
+# Script Ignore - 脚本处理排除规则
+# ============================================
+# 此文件用于排除不需要脚本处理的文件和目录
+# 类似于 .gitignore 的语法
+# ============================================
+
+# ============================================
+# Python 相关
+# ============================================
+
+# Python 虚拟环境
+venv/
+env/
+.venv/
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+
+# .pytest 和测试
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# setup.py 构建
+build/
+dist/
+*.egg-info/
+*.egg
+
+# 类型缓存
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ============================================
+# Node.js 相关
+# ============================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+package-lock.json
+yarn.lock
+
+# ============================================
+# Java / Maven 相关
+# ============================================
+
+# Maven 构建目录
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# ============================================
+# 文档和测试
+# ============================================
+
+# Markdown 文档（不需要类型注解）
+*.md
+*.markdown
+*.txt
+
+# 测试文件（不需要处理）
+test_*.py
+*_test.py
+tests/
+__tests__/
+
+# ============================================
+# 日志和临时文件
+# ============================================
+
+*.log
+logs/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ============================================
+# 数据库和配置
+# ============================================
+
+*.db
+*.sqlite
+*.sqlite3
+.env
+.env.local
+.env.*.local
+*.ini
+*.conf
+
+# 密钥文件
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+
+# ============================================
+# 第三方库和依赖
+# ============================================
+
+# C/C++
+*.a
+*.o
+*.so
+*.dylib
+
+# Go
+vendor/
+*.sum
+
+# Rust
+target/
+Cargo.lock
+
+# Ruby
+vendor/bundle/
+*.gem
+
+# ============================================
+# 特殊目录
+# ============================================
+
+# Git
+.git/
+.gitignore
+
+# Docker
+.docker/
+
+# Kubernetes
+kubectl/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# ============================================
+# 大文件和二进制
+# ============================================
+
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.ico
+*.svg
+
+*.mp3
+*.mp4
+*.avi
+*.mov
+
+# ============================================
+# 数据文件
+# ============================================
+
+*.csv
+*.json
+*.xml
+*.yaml
+*.yml
+
+data/
+datasets/
+models/
+checkpoints/
+
+# ============================================
+# 编译文件
+# ============================================
+
+*.class
+*.dll
+*.exe
+*.dylib
+*.jar
+*.war
+
+# ============================================
+# 最小化文件
+# ============================================
+
+*.min.js
+*.min.css
+*.min.html
+
+# ============================================
+# 特定工具排除
+# ============================================
+
+# 自动化脚本自身
+batch_fix_print.ps1
+fix_print_statements.py
+auto_generate_tests.py
+apply_type_annotations.py
+
+# 输出报告
+*_report.txt
+*_report.md
+report_*.txt
+report_*.md
+
+# ============================================
+# 注释说明
+# ============================================
+
+# 格式说明：
+# - 空行会被忽略
+# - 以 # 开头的行是注释
+# - 可以使用通配符：* 匹配任意字符，** 匹配路径
+# - 以 / 结尾表示目录
+# - 以 ! 开头表示取反（包含）
+#
+# 示例：
+#   *.py          - 排除所有 .py 文件
+#   src/          - 排除 src 目录
+#   !src/test.py  - 但包含 src/test.py
+# ============================================

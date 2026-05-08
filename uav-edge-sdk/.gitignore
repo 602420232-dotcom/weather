@@ -1,0 +1,49 @@
+# Build directories
+build/
+cmake-build-*/
+cmake_install.cmake
+install_manifest.txt
+CMakeCache.txt
+CMakeFiles/
+
+# C++ compilation files
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Python module (compiled)
+*.pyd
+*.pyc
+*.pyo
+__pycache__/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test
+.pytest_cache/
+htmlcov/
+.coverage
+*.cover
+
+# Environment
+.env
+venv/
+env/

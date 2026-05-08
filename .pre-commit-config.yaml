@@ -1,0 +1,67 @@
+# ===========================================
+# 基于WRF气象驱动的无人机VRP智能路径规划系统
+# 项目根目录 pre-commit 配置
+# ===========================================
+
+repos:
+  # 基础检查
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: ['--allow-multiple-documents']
+      - id: check-json
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: detect-private-key
+
+  # Python 代码格式化
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        args: ['--line-length=100']
+        files: \.py$
+
+  # Python import 排序
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        args: ['--profile=black']
+        files: \.py$
+
+  # Python Linting
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        args: ['--max-line-length=100', '--extend-ignore=E203,W503']
+        files: \.py$
+
+  # JavaScript / Vue 格式化
+  - repo: https://github.com/prettier/prettier
+    rev: v3.2.4
+    hooks:
+      - id: prettier
+        args: ['--tab-width=2', '--single-quote=true', '--trailing-comma=es5']
+        types: [javascript, vue]
+
+  # YAML 格式化
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.3
+    hooks:
+      - id: prettier
+        args: ['--parser=yaml']
+        files: \.ya?ml$
+
+  # Maven / Gradle 格式化
+  - repo: https://github.com/spotless/spotless-maven-plugin
+    rev: v2.37.0
+    hooks:
+      - id: spotless
+        name: Spotless (Maven)
+        stages: [commit]
+        language_version: python3.11

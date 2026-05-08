@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package service.v1;
+
+option java_package = "com.bayesian.service.v1";
+option java_multiple_files = true;
+
+import "request/v1/assimilation.proto";
+import "request/v1/batch.proto";
+import "response/v1/assimilation.proto";
+import "response/v1/status.proto";
+import "common/v1/variance_field.proto";
+
+service AssimilationService {
+  rpc Assimilate(request.v1.AssimilationRequest) returns (response.v1.AssimilationResponse);
+  rpc BatchAssimilate(request.v1.BatchRequest) returns (stream response.v1.AssimilationResponse);
+  rpc ComputeVariance(common.v1.VarianceRequest) returns (common.v1.VarianceResponse);
+  rpc GetStatus(google.protobuf.Empty) returns (response.v1.StatusResponse);
+}

@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uav-platform-service
+  namespace: uav-path-planning
+  labels:
+    app: uav-platform-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: uav-platform-service
+  template:
+    metadata:
+      labels:
+        app: uav-platform-service
+    spec:
+      containers:
+      - name: uav-platform-service
+        image: uav-platform-service:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://mysql:3306/uav_platform?useSSL=false&serverTimezone=UTC"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "root"
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: uav-platform-secrets
+              key: spring.datasource.password
+        - name: SPRING_REDIS_HOST
+          value: "redis"
+        - name: SPRING_REDIS_PORT
+          value: "6379"
+        - name: SPRING_REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: uav-platform-secrets
+              key: redis.password
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: uav-platform-secrets
+              key: jwt.secret
+        - name: WEATHER_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: uav-platform-secrets
+              key: weather.api.key
+        - name: WRF_PROCESSOR_URL
+          value: "http://wrf-processor-service:8081"
+        - name: METEOR_FORECAST_URL
+          value: "http://meteor-forecast-service:8082"
+        - name: PATH_PLANNING_URL
+          value: "http://path-planning-service:8083"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: uav-platform-service
+  namespace: uav-path-planning
+spec:
+  selector:
+    app: uav-platform-service
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP

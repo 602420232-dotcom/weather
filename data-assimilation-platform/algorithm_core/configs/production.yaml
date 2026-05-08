@@ -1,0 +1,46 @@
+# 生产环境配置
+# 此配置用于生产环境
+
+# 继承默认配置
+inherit_from: default.yaml
+
+# 覆盖生产环境特定配置
+assimilation:
+  verbose: false
+  max_iterations: 200
+  tolerance: 1e-8
+
+# 并行计算配置
+parallel:
+  enabled: true
+  num_workers: 8
+  backend: dask
+
+# 数据配置
+data:
+  input_dir: /data/input
+  output_dir: /data/output
+
+# 质量控制配置
+quality_control:
+  enabled: true
+  outlier_threshold: 2.5
+  missing_value_threshold: 0.05
+
+# 风险评估配置
+risk_assessment:
+  enabled: true
+
+# 可视化配置
+visualization:
+  enabled: false
+
+# 日志配置
+logging:
+  level: INFO
+  file: /var/log/bayesian_assimilation.log
+
+# GPU 配置
+gpu:
+  enabled: true
+  device: 0

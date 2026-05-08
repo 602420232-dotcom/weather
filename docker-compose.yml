@@ -1,0 +1,298 @@
+version: '3.8'
+
+services:
+  # ===== 基础设施层 =====
+  mysql:
+    image: mysql:8.0
+    container_name: uav-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: uav_platform
+      MYSQL_USER: uav
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./uav-path-planning-system/database/create_tables.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits: { memory: 512M }
+        reservations: { memory: 256M }
+
+  redis:
+    image: redis:6.2
+    container_name: uav-redis
+    command: redis-server --databases 16 --save 900 1 --save 300 10 --save 60 10000
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "-n", "0", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  nacos:
+    image: nacos/nacos-server:v2.3.0
+    container_name: uav-nacos
+    environment:
+      - MODE=standalone
+    ports:
+      - "8848:8848"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits: { memory: 512M }
+
+  # ===== 微服务层 =====
+  api-gateway:
+    build: ./api-gateway
+    container_name: uav-gateway
+    ports:
+      - "8088:8088"
+    depends_on:
+      nacos:
+        condition: service_healthy
+    environment:
+      - NACOS_SERVER=nacos:8848
+      - REDIS_HOST=redis
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits: { memory: 512M }
+        reservations: { memory: 256M }
+
+  wrf-processor:
+    build: ./wrf-processor-service
+    container_name: wrf-processor
+    ports:
+      - "8081:8081"
+    depends_on:
+      mysql: { condition: service_healthy }
+      nacos: { condition: service_healthy }
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/wrf_processor?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: uav
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+
+      NACOS_SERVER: nacos:8848
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits: { memory: 512M }
+        reservations: { memory: 256M }
+
+  data-assimilation:
+    build: ./data-assimilation-service
+    container_name: data-assimilation
+    ports:
+      - "8084:8084"
+    depends_on:
+      mysql: { condition: service_healthy }
+      nacos: { condition: service_healthy }
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/data_assimilation?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: uav
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      NACOS_SERVER: nacos:8848
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits: { memory: 512M }
+        reservations: { memory: 256M }
+
+  meteor-forecast:
+    build: ./meteor-forecast-service
+    container_name: meteor-forecast
+    ports:
+      - "8082:8082"
+    depends_on:
+      mysql: { condition: service_healthy }
+      nacos: { condition: service_healthy }
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/meteor_forecast?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: uav
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      NACOS_SERVER: nacos:8848
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits: { memory: 512M }
+        reservations: { memory: 256M }
+
+  path-planning:
+    build: ./path-planning-service
+    container_name: path-planning
+    ports:
+      - "8083:8083"
+    depends_on:
+      mysql: { condition: service_healthy }
+      nacos: { condition: service_healthy }
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/path_planning?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: uav
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      NACOS_SERVER: nacos:8848
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits: { memory: 512M }
+        reservations: { memory: 256M }
+
+  uav-platform:
+    build: ./uav-platform-service
+    container_name: uav-platform
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      nacos: { condition: service_healthy }
+      wrf-processor: { condition: service_started }
+      data-assimilation: { condition: service_started }
+      meteor-forecast: { condition: service_started }
+      path-planning: { condition: service_started }
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/uav_platform?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: uav
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      NACOS_SERVER: nacos:8848
+      SERVICES_WRF_PROCESSOR_URL: http://wrf-processor:8081/api/wrf
+      SERVICES_DATA_ASSIMILATION_URL: http://data-assimilation:8084/api/assimilation
+      SERVICES_METEOR_FORECAST_URL: http://meteor-forecast:8082/api/forecast
+      SERVICES_PATH_PLANNING_URL: http://path-planning:8083/api/planning
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits: { memory: 512M }
+        reservations: { memory: 256M }
+
+  uav-weather-collector:
+    build: ./uav-weather-collector
+    container_name: uav-weather
+    ports:
+      - "8086:8086"
+    depends_on:
+      mysql: { condition: service_healthy }
+      nacos: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/uav_weather?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: uav
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_REDIS_HOST: redis
+      NACOS_SERVER: nacos:8848
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits: { memory: 512M }
+        reservations: { memory: 256M }
+
+  edge-cloud-coordinator:
+    build: ./edge-cloud-coordinator
+    container_name: uav-edge-cloud
+    ports:
+      - "8000:8000"
+      - "8765:8765"
+    depends_on:
+      kafka: { condition: service_started }
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    restart: always
+    deploy:
+      resources:
+        limits: { memory: 512M }
+        reservations: { memory: 256M }
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: uav-kafka
+    depends_on:
+      zookeeper: { condition: service_started }
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    deploy:
+      resources:
+        limits: { memory: 1G }
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: uav-zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    deploy:
+      resources:
+        limits: { memory: 256M }
+
+volumes:
+  mysql-data:
+  redis-data:

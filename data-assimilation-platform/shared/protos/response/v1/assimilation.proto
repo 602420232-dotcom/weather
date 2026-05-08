@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package response.v1;
+
+option java_package = "com.bayesian.response.v1";
+option java_multiple_files = true;
+
+import "common/v1/geometry.proto";
+import "common/v1/variance_field.proto";
+
+message AssimilationResponse {
+  string job_id = 1;
+  bool success = 2;
+  string message = 3;
+  map<string, bytes> analysis_variables = 4;
+  common.v1.VarianceField variance = 5;
+  AssimilationMetrics metrics = 6;
+}
+
+message AssimilationMetrics {
+  int32 iterations = 1;
+  double final_cost = 2;
+  double reduction_rate = 3;
+  double elapsed_seconds = 4;
+}

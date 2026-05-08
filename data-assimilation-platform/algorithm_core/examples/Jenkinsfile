@@ -1,0 +1,25 @@
+// Jenkinsfile for Data Adapter Tests
+pipeline {
+    agent any
+    stages {
+        stage('测试') {
+            steps {
+                script {
+                    def exitCode = sh(
+                        script: 'python algorithm_core/examples/test_adapters.py --ci',
+                        returnStatus: true
+                    )
+                    if (exitCode != 0) {
+                        error("测试失败，退出码: ${exitCode}")
+                    }
+                }
+            }
+            post {
+                always {
+                    publishTestResults testResultsPattern: 'algorithm_core/examples/test_output/test_report.xml'
+                    archiveArtifacts artifacts: 'algorithm_core/examples/test_output/*', allowEmptyArchive: true
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package common.v1;
+
+option java_package = "com.bayesian.common.v1";
+option java_multiple_files = true;
+
+import "common/v1/types.proto";
+
+message BoundingBox {
+  double min_lat = 1;
+  double max_lat = 2;
+  double min_lon = 3;
+  double max_lon = 4;
+}
+
+message GridDefinition {
+  repeated double latitudes = 1;
+  repeated double longitudes = 2;
+  repeated double levels = 3;
+}
+
+message Polygon {
+  repeated GeoPoint points = 1;
+}
+
+message Circle {
+  GeoPoint center = 1;
+  double radius_meters = 2;
+}

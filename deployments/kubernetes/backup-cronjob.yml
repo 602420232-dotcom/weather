@@ -1,0 +1,90 @@
+# K8s CronJob — MySQL 自动备份
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mysql-backup
+  namespace: uav-system
+spec:
+  schedule: "0 2 * * *"
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: mysql-backup
+              image: mysql:8.0
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  mysqldump -h ${MYSQL_HOST} -u ${MYSQL_USER} -p${MYSQL_PASSWORD} --all-databases --single-transaction --routines --triggers | gzip > /backup/mysql-$(date +%Y%m%d-%H%M%S).sql.gz
+                  find /backup -name "mysql-*.sql.gz" -mtime +7 -delete
+                  echo "Backup completed: $(ls -la /backup | grep mysql)"
+              env:
+                - name: MYSQL_HOST
+                  value: mysql.uav-system.svc.cluster.local
+                - name: MYSQL_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: mysql-secrets
+                      key: username
+                - name: MYSQL_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: mysql-secrets
+                      key: password
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backup
+          restartPolicy: OnFailure
+          volumes:
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: backup-pvc
+---
+# K8s CronJob — Nacos 配置备份
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nacos-backup
+  namespace: uav-system
+spec:
+  schedule: "0 3 * * *"
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: nacos-backup
+              image: curlimages/curl:8.2
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  curl -s "http://nacos:8848/nacos/v1/cs/configs?dataId=&group=&tenant=" > /backup/nacos-config-$(date +%Y%m%d-%H%M%S).json
+                  echo "Nacos config backup completed"
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backup
+          restartPolicy: OnFailure
+          volumes:
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: backup-pvc
+---
+# PersistentVolumeClaim — 备份存储
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-pvc
+  namespace: uav-system
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi

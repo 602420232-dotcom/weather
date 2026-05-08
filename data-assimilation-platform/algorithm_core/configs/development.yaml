@@ -1,0 +1,29 @@
+# 开发环境配置
+# 此配置用于开发和测试环境
+
+# 继承默认配置
+inherit_from: default.yaml
+
+# 覆盖开发环境特定配置
+assimilation:
+  verbose: true
+  max_iterations: 10
+
+# 并行计算配置
+parallel:
+  enabled: false
+  num_workers: 2
+
+# 数据配置
+data:
+  input_dir: ./dev_data
+  output_dir: ./dev_output
+
+# 日志配置
+logging:
+  level: DEBUG
+  file: ./logs/development.log
+
+# GPU 配置
+gpu:
+  enabled: false

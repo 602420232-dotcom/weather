@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package common.v1;
+
+option java_package = "com.bayesian.common.v1";
+option java_multiple_files = true;
+
+import "common/v1/types.proto";
+
+message VariableMetadata {
+  string name = 1;
+  string unit = 2;
+  string description = 3;
+  DataType data_type = 4;
+}
+
+enum DataType {
+  DATA_TYPE_UNSPECIFIED = 0;
+  DATA_TYPE_TEMPERATURE = 1;
+  DATA_TYPE_HUMIDITY = 2;
+  DATA_TYPE_WIND_SPEED = 3;
+  DATA_TYPE_WIND_DIRECTION = 4;
+  DATA_TYPE_PRESSURE = 5;
+  DATA_TYPE_PRECIPITATION = 6;
+}
+
+message DataSource {
+  string source_id = 1;
+  string source_type = 2;
+  Timestamp timestamp = 3;
+  string description = 4;
+}

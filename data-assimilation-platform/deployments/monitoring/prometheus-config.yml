@@ -1,0 +1,59 @@
+# Prometheus配置文件
+
+global:
+  scrape_interval: 15s  # 抓取间隔
+  evaluation_interval: 15s  # 评估间隔
+
+# 告警配置
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      # - alertmanager:9093
+
+# 告警规则
+rule_files:
+  - "alert-rules.yml"
+
+# 抓取配置
+scrape_configs:
+  # 监控Prometheus自身
+  - job_name: 'prometheus'
+    static_configs:
+    - targets: ['localhost:9090']
+
+  # 监控Spring Boot服务
+  - job_name: 'spring-boot'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+    - targets: 
+      - 'data-assimilation:8084'
+      - 'uav-platform:8080'
+      - 'wrf-processor:8081'
+      - 'meteor-forecast:8082'
+      - 'path-planning:8083'
+
+  # 监控Python服务
+  - job_name: 'python-service'
+    metrics_path: '/metrics'
+    static_configs:
+    - targets: 
+      - 'data-assimilation:8000'  # Python服务的指标端点
+
+  # 监控Node Exporter（主机监控）
+  - job_name: 'node'
+    static_configs:
+    - targets: 
+      - 'node-exporter:9100'
+
+  # 监控Redis
+  - job_name: 'redis'
+    static_configs:
+    - targets: 
+      - 'redis:9121'  # Redis Exporter
+
+  # 监控MySQL
+  - job_name: 'mysql'
+    static_configs:
+    - targets: 
+      - 'mysql-exporter:9104'  # MySQL Exporter

@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  edge-device:
+    build:
+      context: ../../
+      dockerfile: deployments/edge-device/Dockerfile
+    container_name: uav-edge-device
+    ports:
+      - "8080:8080"
+      - "8765:8765"
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - MODEL_PRECISION=int8
+      - INFERENCE_BACKEND=onnx
+      - EDGE_NODE_ID=edge-001
+    volumes:
+      - edge-models:/app/models
+      - edge-data:/app/data
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { memory: 256M, cpus: '1.0' }
+        reservations: { memory: 128M, cpus: '0.5' }
+    networks:
+      - uav-edge-net
+
+volumes:
+  edge-models:
+  edge-data:
+
+networks:
+  uav-edge-net:
+    driver: bridge

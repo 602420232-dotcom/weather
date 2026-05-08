@@ -1,0 +1,6 @@
+{
+  "domain_size": [1000, 1000, 100],
+  "target_resolution": 50.0,
+  "background_error_scale": 1.5,
+  "observation_error_scale": 0.8
+}

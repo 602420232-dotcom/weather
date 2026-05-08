@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edge-cloud-coordinator
+  namespace: uav-platform
+  labels:
+    app: edge-cloud-coordinator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edge-cloud-coordinator
+  template:
+    metadata:
+      labels:
+        app: edge-cloud-coordinator
+    spec:
+      containers:
+        - name: coordinator
+          image: uav-registry/edge-cloud-coordinator:v1.0.0
+          ports:
+            - containerPort: 8000
+              name: http
+            - containerPort: 8765
+              name: ws
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: kafka:9092
+            - name: REDIS_HOST
+              value: redis
+          livenessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            limits: { memory: 512Mi, cpu: 500m }
+            requests: { memory: 256Mi, cpu: 200m }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: edge-cloud-coordinator
+  namespace: uav-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: edge-cloud-coordinator
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+    - name: ws
+      port: 8765
+      targetPort: 8765

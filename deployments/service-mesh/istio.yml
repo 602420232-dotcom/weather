@@ -1,0 +1,140 @@
+# Istio 服务网格配置
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: uav-istio
+spec:
+  profile: default
+  components:
+    egressGateways:
+      - name: istio-egressgateway
+        enabled: true
+    ingressGateways:
+      - name: istio-ingressgateway
+        enabled: true
+        k8s:
+          service:
+            ports:
+              - port: 80
+                targetPort: 8080
+                name: http
+              - port: 443
+                targetPort: 8443
+                name: https
+  meshConfig:
+    enableTracing: true
+    defaultConfig:
+      tracing:
+        sampling: 100
+    accessLogFile: /dev/stdout
+    accessLogEncoding: JSON
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: path-planning-vs
+  namespace: uav-platform
+spec:
+  hosts:
+    - path-planning
+  http:
+    - match:
+        - headers:
+            priority:
+              exact: high
+      route:
+        - destination:
+            host: path-planning
+            subset: v2
+          weight: 100
+    - route:
+        - destination:
+            host: path-planning
+            subset: v1
+          weight: 90
+        - destination:
+            host: path-planning
+            subset: v2
+          weight: 10
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: uav-platform-vs
+  namespace: uav-platform
+spec:
+  hosts:
+    - uav-platform
+  http:
+    - route:
+        - destination:
+            host: uav-platform
+            port:
+              number: 8080
+      retries:
+        attempts: 3
+        perTryTimeout: 5s
+      timeout: 30s
+    - fault:
+        abort:
+          percentage:
+            value: 1
+          httpStatus: 500
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: path-planning-dr
+  namespace: uav-platform
+spec:
+  host: path-planning
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 50
+        maxRequestsPerConnection: 10
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 30s
+      baseEjectionTime: 60s
+    loadBalancer:
+      consistentHash:
+        httpHeaderName: x-request-id
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: uav-gateway
+  namespace: uav-platform
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "api.uav-platform.com"
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: uav-tls-cert
+      hosts:
+        - "api.uav-platform.com"

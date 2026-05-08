@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package response.v2;
+
+option java_package = "com.bayesian.response.v2";
+option java_multiple_files = true;
+
+import "common/v1/variance_field.proto";
+
+message AssimilationResponse {
+  string request_id = 1;
+  bool success = 2;
+  string error_message = 3;
+  map<string, VariableResult> results = 4;
+  common.v1.VarianceField uncertainty = 5;
+  ComputationStats stats = 6;
+}
+
+message VariableResult {
+  repeated double values = 1;
+  repeated double variance = 2;
+}
+
+message ComputationStats {
+  double elapsed_seconds = 1;
+  int32 iterations = 2;
+  double final_cost = 3;
+  string parallel_backend = 4;
+}

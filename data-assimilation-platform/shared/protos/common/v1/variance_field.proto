@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package common.v1;
+
+option java_package = "com.bayesian.common.v1";
+option java_multiple_files = true;
+
+import "common/v1/types.proto";
+import "common/v1/geometry.proto";
+
+message VarianceField {
+  GridDefinition grid = 1;
+  repeated double values = 2;
+  string variable_name = 3;
+  double background_error_scale = 4;
+  double observation_error_scale = 5;
+}
+
+message VarianceRequest {
+  GridDefinition grid = 1;
+  double correlation_length = 2;
+  double vertical_correlation = 3;
+}
+
+message VarianceResponse {
+  VarianceField variance_field = 1;
+  double mean_variance = 2;
+  double max_variance = 3;
+}

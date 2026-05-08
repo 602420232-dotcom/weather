@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.uav</groupId>
+    <artifactId>uav-path-planning</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <name>UAV Path Planning System</name>
+    <description>基于WRF气象驱动的无人机VRP智能路径规划系统</description>
+
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <spring-boot.version>3.2.0</spring-boot.version>
+        <spring-cloud.version>2023.0.3</spring-cloud.version>
+        <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
+        <spring-cloud-bootstrap.version>4.1.3</spring-cloud-bootstrap.version>
+
+        <skywalking.version>8.16.0</skywalking.version>
+        <grpc.version>1.59.0</grpc.version>
+        <jjwt.version>0.11.5</jjwt.version>
+        <mybatis-plus.version>3.5.5</mybatis-plus.version>
+        <guava.version>32.1.2-jre</guava.version>
+        <jython.version>2.7.3</jython.version>
+        <resilience4j.version>2.1.0</resilience4j.version>
+
+        <sonar.projectKey>uav-path-planning</sonar.projectKey>
+        <sonar.projectName>UAV Path Planning System</sonar.projectName>
+        <sonar.host.url>${env.SONAR_HOST_URL}</sonar.host.url>
+        <sonar.login>${env.SONAR_TOKEN}</sonar.login>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.exclusions>**/Application.java,**/config/**,**/dto/**,**/model/**</sonar.exclusions>
+    </properties>
+
+    <modules>
+        <module>common-utils</module>
+        <!-- common-dependencies 已合并到父POM -->
+        <module>wrf-processor-service</module>
+        <module>data-assimilation-service</module>
+        <module>meteor-forecast-service</module>
+        <module>path-planning-service</module>
+        <module>uav-platform-service</module>
+        <module>api-gateway</module>
+        <module>uav-path-planning-system/backend-spring</module>
+        <module>uav-weather-collector</module>
+        <!-- data-assimilation-platform/service_spring: 独立parent pom，使用独立构建 -->
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring Boot BOM -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            
+            <!-- Spring Cloud BOM -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            
+            <!-- Spring Cloud Alibaba BOM -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            
+            <!-- 公共依赖管理 (从 common-dependencies 合并) -->
+            
+            <!-- Web基础 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            
+            <!-- 安全 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            
+            <!-- 监控 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            
+            <!-- 数据访问 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-jpa</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            
+            <!-- MySQL驱动 -->
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>8.0.33</version>
+                <scope>runtime</scope>
+            </dependency>
+            
+            <!-- 测试 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>${spring-boot.version}</version>
+                <scope>test</scope>
+            </dependency>
+            
+            <!-- 配置处理器 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-configuration-processor</artifactId>
+                <version>${spring-boot.version}</version>
+                <optional>true</optional>
+            </dependency>
+            
+            <!-- Spring Cloud Bootstrap -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-bootstrap</artifactId>
+                <version>${spring-cloud-bootstrap.version}</version>
+            </dependency>
+            
+            <!-- Nacos服务发现 -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+            </dependency>
+            
+            <!-- Nacos配置中心 -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+            </dependency>
+            
+            <!-- SkyWalking链路追踪 -->
+            <dependency>
+                <groupId>org.apache.skywalking</groupId>
+                <artifactId>apm-toolkit-trace</artifactId>
+                <version>${skywalking.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.skywalking</groupId>
+                <artifactId>apm-toolkit-logback-1.x</artifactId>
+                <version>${skywalking.version}</version>
+            </dependency>
+            
+            <!-- 项目内部模块 -->
+            <dependency>
+                <groupId>com.uav</groupId>
+                <artifactId>common-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            
+            <!-- MyBatis Plus -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            
+            <!-- Guava -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            
+            <!-- Jython -->
+            <dependency>
+                <groupId>com.github.albfernandez</groupId>
+                <artifactId>jython-standalone</artifactId>
+                <version>${jython.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                    <configuration>
+                        <executable>true</executable>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>9.2.0</version>
+                    <configuration>
+                        <format>HTML,JSON</format>
+                        <outputDirectory>${project.build.directory}/dependency-check-reports</outputDirectory>
+                        <failBuildOnCVSS>7</failBuildOnCVSS>
+                        <suppressionFile>owasp-suppressions.xml</suppressionFile>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.12</version>
+                    <configuration>
+                        <excludes>
+                            <exclude>**/*Application.class</exclude>
+                            <exclude>**/config/*.class</exclude>
+                        </excludes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>prepare-agent</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>check</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <configuration>
+                                <haltOnFailure>true</haltOnFailure>
+                                <rules>
+                                    <rule>
+                                        <element>BUNDLE</element>
+                                        <limits>
+                                            <limit>
+                                                <counter>LINE</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>0.80</minimum>
+                                            </limit>
+                                            <limit>
+                                                <counter>BRANCH</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>0.70</minimum>
+                                            </limit>
+                                        </limits>
+                                    </rule>
+                                    <rule>
+                                        <element>CLASS</element>
+                                        <limits>
+                                            <limit>
+                                                <counter>LINE</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>0.50</minimum>
+                                            </limit>
+                                        </limits>
+                                        <excludes>
+                                            <exclude>*Application</exclude>
+                                            <exclude>*Config</exclude>
+                                        </excludes>
+                                    </rule>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

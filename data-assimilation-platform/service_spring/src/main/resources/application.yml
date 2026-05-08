@@ -1,0 +1,138 @@
+server:
+  port: 8094
+
+resilience4j:
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: 25s
+        cancel-running-future: true
+    instances:
+      assimilationTimeLimiter:
+        base-config: default
+        timeout-duration: 30s  # 同化计算允许更长
+  circuitbreaker:
+    configs:
+      # 默认配置
+      default:
+        # 熔断器状态转换阈值
+        failure-rate-threshold: 50          # 失败率超过50%触发熔断
+        slow-call-rate-threshold: 80        # 慢调用率超过80%触发熔断
+        slow-call-duration-threshold: 20s     # 超过20秒视为慢调用
+        
+        # 窗口设置
+        sliding-window-type: COUNT_BASED    # 基于计数
+        sliding-window-size: 100            # 统计最近100次调用
+        minimum-number-of-calls: 20         # 至少20次调用才计算失败率
+        
+        # 熔断持续时间
+        wait-duration-in-open-state: 30s    # 熔断后30秒进入半开状态
+        max-wait-duration-in-half-open-state: 10s  # 半开状态最多10秒
+        
+        # 半开状态允许试探请求数
+        permitted-number-of-calls-in-half-open-state: 5
+        
+        # 自动从半开转闭合的失败率阈值
+        failure-rate-threshold-in-half-open-state: 30
+        
+        # 忽略的异常（不计入失败）
+        ignore-exceptions:
+          - com.bayesian.exception.BusinessException
+        
+        # 记录的异常（计入失败）
+        record-exceptions:
+          - java.util.concurrent.TimeoutException
+          - java.net.ConnectException
+          - org.springframework.web.reactive.function.client.WebClientResponseException
+          - com.bayesian.exception.AssimilationException
+      
+      # 同化计算专用配置（更严格）
+      assimilation:
+        base-config: default
+        failure-rate-threshold: 30          # 同化计算更敏感，30%失败即熔断
+        slow-call-duration-threshold: 25s   # 同化允许更长时间
+        sliding-window-size: 50             # 样本更小，反应更快
+        wait-duration-in-open-state: 60s    # 熔断时间更长，给Python服务恢复时间
+      
+      # 批量处理配置（更宽松）
+      batch:
+        base-config: default
+        failure-rate-threshold: 70          # 批量任务容忍更高失败率
+        slow-call-duration-threshold: 60s   # 批量任务允许更慢
+
+    instances:
+      # 具体熔断器实例
+      pythonAssimilation:
+        base-config: assimilation
+        # 可以覆盖特定参数
+        wait-duration-in-open-state: 45s
+      
+      pythonBatch:
+        base-config: batch
+      
+      pythonHealthCheck:
+        base-config: default
+        failure-rate-threshold: 80          # 健康检查更宽松
+        sliding-window-size: 10
+
+  retry:
+    configs:
+      default:
+        max-attempts: 3                       # 最多重试3次
+        wait-duration: 1s                     # 首次间隔1秒
+        exponential-backoff-multiplier: 2     # 指数退避，1s -> 2s -> 4s
+        max-wait-duration: 10s                # 最大间隔10秒
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException
+          - java.net.ConnectException
+          - org.springframework.web.client.HttpServerErrorException.ServiceUnavailable
+        ignore-exceptions:
+          - com.bayesian.exception.ValidationException  # 参数错误不重试
+
+    instances:
+      assimilationRetry:
+        base-config: default
+        max-attempts: 2                       # 同化只重试2次（计算成本高）
+
+  bulkhead:
+    configs:
+      default:
+        max-concurrent-calls: 20              # 最多20个并发调用
+        max-wait-duration: 0                  # 不等待，立即拒绝
+
+    instances:
+      pythonServiceBulkhead:
+        max-concurrent-calls: 10              # Python服务限制10并发
+        max-wait-duration: 5s                 # 等待5秒后拒绝
+
+  ratelimiter:
+    configs:
+      default:
+        limit-for-period: 100                 # 每周期100次
+        limit-refresh-period: 1s              # 周期1秒
+        timeout-duration: 0                   # 不等待
+
+    instances:
+      assimilationLimiter:
+        limit-for-period: 10                  # 同化计算限制10次/秒
+        limit-refresh-period: 1s
+
+# Python服务配置
+python:
+  service:
+    url: http://localhost:8000
+    timeout: 30000
+
+# Actuator监控端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,circuitbreakers,retries,bulkheads,ratelimiters
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+    circuitbreakers:
+      enabled: true
+

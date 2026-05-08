@@ -1,0 +1,71 @@
+# Spring Boot日志配置
+# 统一日志配置文件
+
+# 日志级别配置
+logging:
+  # 日志级别
+  level:
+    # 根日志级别
+    root: warn
+    # 应用日志级别
+    com.uav: info
+    com.wrf: info
+    com.meteor: info
+    com.path: info
+    com.algorithm: info
+    com.assimilation: info
+
+    # 第三方库日志级别
+    org.springframework: warn
+    org.hibernate: warn
+    org.apache: warn
+    io.swagger: warn
+
+    # 调试模式(仅开发环境启用)
+    # com.uav: debug
+
+  # 日志文件配置
+  file:
+    name: ${LOG_PATH:-./logs}/${spring.application.name:-app}.log
+    max-size: 100MB
+    max-history: 30
+    total-size-cap: 10GB
+
+  # 日志格式
+  pattern:
+    # 控制台输出格式
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    # 文件输出格式
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+  # Logback配置
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 30
+
+# 生产环境特定配置
+spring:
+  profiles: prod
+  logging:
+    level:
+      root: warn
+      com.uav: info
+    file:
+      name: /var/log/${spring.application.name}/application.log
+
+# 开发环境特定配置
+spring:
+  profiles: dev
+  logging:
+    level:
+      root: info
+      com.uav: debug
+
+# 测试环境特定配置
+spring:
+  profiles: test
+  logging:
+    level:
+      root: warn
+      com.uav: debug

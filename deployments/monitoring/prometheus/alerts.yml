@@ -1,0 +1,284 @@
+# Prometheus Alert Rules
+groups:
+  - name: uav_platform_alerts
+    interval: 30s
+    rules:
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: cpu_usage_percent > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 80% for more than 5 minutes"
+          runbook_url: "https://wiki.example.com/runbooks/high-cpu"
+
+      # Very high CPU usage
+      - alert: CriticalCPUUsage
+        expr: cpu_usage_percent > 95
+        for: 2m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "Critical CPU usage detected"
+          description: "CPU usage is above 95% for more than 2 minutes"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: memory_usage_percent > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 85% for more than 5 minutes"
+
+      # Critical memory usage
+      - alert: CriticalMemoryUsage
+        expr: memory_usage_percent > 95
+        for: 1m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "Critical memory usage detected"
+          description: "Memory usage is above 95% for more than 1 minute"
+
+      # High disk usage
+      - alert: HighDiskUsage
+        expr: disk_usage_percent > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High disk usage detected"
+          description: "Disk usage is above 85%"
+
+      # Disk space critical
+      - alert: DiskSpaceCritical
+        expr: disk_usage_percent > 95
+        for: 1m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "Disk space critical"
+          description: "Disk usage is above 95%"
+
+  - name: uav_service_alerts
+    interval: 30s
+    rules:
+      # Service down
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: service
+        annotations:
+          summary: "Service is down"
+          description: "{{ $labels.job }} has been down for more than 1 minute"
+
+      # High error rate
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: application
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is above 5% for more than 5 minutes"
+
+      # Very high error rate
+      - alert: CriticalErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.20
+        for: 2m
+        labels:
+          severity: critical
+          component: application
+        annotations:
+          summary: "Critical error rate detected"
+          description: "Error rate is above 20% for more than 2 minutes"
+
+      # High response time
+      - alert: HighResponseTime
+        expr: http_request_duration_seconds{quantile="0.95"} > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: application
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is above 2 seconds"
+
+      # Critical response time
+      - alert: CriticalResponseTime
+        expr: http_request_duration_seconds{quantile="0.99"} > 5
+        for: 2m
+        labels:
+          severity: critical
+          component: application
+        annotations:
+          summary: "Critical response time detected"
+          description: "99th percentile response time is above 5 seconds"
+
+      # High request rate
+      - alert: HighRequestRate
+        expr: rate(http_requests_total[5m]) > 1000
+        for: 5m
+        labels:
+          severity: info
+          component: application
+        annotations:
+          summary: "High request rate"
+          description: "Request rate is above 1000 req/s"
+
+  - name: database_alerts
+    interval: 30s
+    rules:
+      # MySQL down
+      - alert: MySQLDown
+        expr: mysql_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "MySQL is down"
+          description: "MySQL database has been down for more than 1 minute"
+
+      # High MySQL connection usage
+      - alert: MySQLHighConnectionUsage
+        expr: mysql_global_status_threads_connected / mysql_global_variables_max_connections * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "High MySQL connection usage"
+          description: "MySQL connection usage is above 80%"
+
+      # Slow queries
+      - alert: MySQLSlowQueries
+        expr: rate(mysql_global_status_slow_queries[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Many slow queries detected"
+          description: "More than 10 slow queries per second"
+
+  - name: cache_alerts
+    interval: 30s
+    rules:
+      # Redis down
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: cache
+        annotations:
+          summary: "Redis is down"
+          description: "Redis cache has been down for more than 1 minute"
+
+      # High Redis memory usage
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "High Redis memory usage"
+          description: "Redis memory usage is above 80%"
+
+      # Redis high connection usage
+      - alert: RedisHighConnectionUsage
+        expr: redis_connected_clients > 1000
+        for: 5m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "High Redis connection count"
+          description: "Redis has more than 1000 connected clients"
+
+  - name: business_alerts
+    interval: 60s
+    rules:
+      # High authentication failures
+      - alert: HighAuthFailureRate
+        expr: rate(authentication_failures_total[5m]) > 10
+        for: 10m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "High authentication failure rate"
+          description: "Authentication failures are above 10/minute for 10 minutes"
+
+      # Possible brute force attack
+      - alert: PossibleBruteForceAttack
+        expr: increase(authentication_failures_total[5m]) > 50
+        for: 5m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Possible brute force attack detected"
+          description: "More than 50 authentication failures in 5 minutes"
+
+      # Weather data collection failure
+      - alert: WeatherDataCollectionFailure
+        expr: weather_data_collection_total{status="failure"} / weather_data_collection_total > 0.1
+        for: 15m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "Weather data collection failure"
+          description: "Weather data collection failure rate is above 10%"
+
+      # UAV path planning failure
+      - alert: PathPlanningFailure
+        expr: path_planning_requests_total{status="failure"} / path_planning_requests_total > 0.05
+        for: 10m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "Path planning failure rate increased"
+          description: "Path planning failure rate is above 5%"
+
+  - name: scaling_alerts
+    interval: 60s
+    rules:
+      # High CPU, consider scaling
+      - alert: ConsiderScalingUp
+        expr: cpu_usage_percent > 70
+        for: 10m
+        labels:
+          severity: info
+          component: scaling
+        annotations:
+          summary: "High CPU usage, consider scaling up"
+          description: "CPU usage has been above 70% for 10 minutes"
+
+      # Low CPU, consider scaling down
+      - alert: ConsiderScalingDown
+        expr: cpu_usage_percent < 20
+        for: 30m
+        labels:
+          severity: info
+          component: scaling
+        annotations:
+          summary: "Low CPU usage, consider scaling down"
+          description: "CPU usage has been below 20% for 30 minutes"

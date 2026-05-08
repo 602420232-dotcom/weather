@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: uav-platform
+  labels:
+    app: api-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: uav-registry/api-gateway:v1.0.0
+          ports:
+            - containerPort: 8088
+              name: http
+          env:
+            - name: NACOS_SERVER
+              value: nacos:8848
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+          livenessProbe:
+            httpGet: { path: /actuator/health, port: 8088 }
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /actuator/health, port: 8088 }
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          resources:
+            limits: { memory: 512Mi, cpu: 500m }
+            requests: { memory: 256Mi, cpu: 200m }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: uav-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: api-gateway
+  ports:
+    - name: http
+      port: 8088
+      targetPort: 8088

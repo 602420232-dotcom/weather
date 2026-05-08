@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-spring
+  namespace: uav-platform
+  labels:
+    app: backend-spring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-spring
+  template:
+    metadata:
+      labels:
+        app: backend-spring
+    spec:
+      containers:
+        - name: backend
+          image: uav-registry/backend-spring:v1.0.0
+          ports:
+            - containerPort: 8089
+              name: http
+          env:
+            - name: SERVER_PORT
+              value: "8089"
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3306/uav_platform?useSSL=false
+            - name: SPRING_DATASOURCE_USERNAME
+              value: uav
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: uav-secrets
+                  key: db-password
+            - name: SPRING_REDIS_HOST
+              value: redis
+          livenessProbe:
+            httpGet: { path: /actuator/health, port: 8089 }
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /actuator/health, port: 8089 }
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          resources:
+            limits: { memory: 512Mi, cpu: 500m }
+            requests: { memory: 256Mi, cpu: 200m }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-spring
+  namespace: uav-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: backend-spring
+  ports:
+    - name: http
+      port: 8089
+      targetPort: 8089

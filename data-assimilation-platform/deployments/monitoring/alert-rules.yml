@@ -1,0 +1,183 @@
+# 告警规则配置
+
+groups:
+  # 系统资源告警
+  - name: system-resources
+    rules:
+    # CPU使用率告警
+    - alert: HighCPUUsage
+      expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100 > 80
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "高CPU使用率"
+        description: "实例 {{ $labels.instance }} 的CPU使用率超过80%，当前值: {{ $value }}%"
+
+    # 内存使用率告警
+    - alert: HighMemoryUsage
+      expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "高内存使用率"
+        description: "实例 {{ $labels.instance }} 的内存使用率超过85%，当前值: {{ $value }}%"
+
+    # 磁盘使用率告警
+    - alert: HighDiskUsage
+      expr: (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_free_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} * 100 > 80
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "高磁盘使用率"
+        description: "实例 {{ $labels.instance }} 的磁盘使用率超过80%，当前值: {{ $value }}%"
+
+  # 服务状态告警
+  - name: service-status
+    rules:
+    # 服务不可用告警
+    - alert: ServiceDown
+      expr: up == 0
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "服务不可用"
+        description: "服务 {{ $labels.instance }} 已停止响应"
+
+    # 服务响应时间告警
+    - alert: HighResponseTime
+      expr: http_request_duration_seconds_sum / http_request_duration_seconds_count > 1
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "服务响应时间过长"
+        description: "服务 {{ $labels.instance }} 的平均响应时间超过1秒，当前值: {{ $value }}秒"
+
+  # 贝叶斯同化服务告警
+  - name: assimilation-service
+    rules:
+    # 同化计算失败率告警
+    - alert: HighAssimilationFailureRate
+      expr: rate(assimilation_failure_total[5m]) / rate(assimilation_total[5m]) > 0.1
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "同化计算失败率过高"
+        description: "贝叶斯同化服务的失败率超过10%，当前值: {{ $value * 100 }}%"
+
+    # 同化计算时间告警
+    - alert: HighAssimilationDuration
+      expr: avg(assimilation_duration_seconds) > 30
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "同化计算时间过长"
+        description: "贝叶斯同化服务的平均计算时间超过30秒，当前值: {{ $value }}秒"
+
+  # 路径规划服务告警
+  - name: planning-service
+    rules:
+    # 路径规划失败率告警
+    - alert: HighPlanningFailureRate
+      expr: rate(planning_failure_total[5m]) / rate(planning_total[5m]) > 0.1
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "路径规划失败率过高"
+        description: "路径规划服务的失败率超过10%，当前值: {{ $value * 100 }}%"
+
+    # 路径规划时间告警
+    - alert: HighPlanningDuration
+      expr: avg(planning_duration_seconds) > 10
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "路径规划时间过长"
+        description: "路径规划服务的平均计算时间超过10秒，当前值: {{ $value }}秒"
+
+  # 数据库告警
+  - name: database
+    rules:
+    # MySQL连接数告警
+    - alert: HighMySQLConnections
+      expr: mysql_global_status_threads_connected > 100
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "MySQL连接数过高"
+        description: "MySQL连接数超过100，当前值: {{ $value }}"
+
+    # Redis内存使用率告警
+    - alert: HighRedisMemoryUsage
+      expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 80
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Redis内存使用率过高"
+        description: "Redis内存使用率超过80%，当前值: {{ $value }}%"
+
+  # 气象数据告警
+  - name: weather-data
+    rules:
+    # 风速过高告警
+    - alert: HighWindSpeed
+      expr: weather_wind_speed > 15
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "风速过高"
+        description: "当前风速超过15m/s，可能影响无人机飞行安全，当前值: {{ $value }}m/s"
+
+    # 湍流强度告警
+    - alert: HighTurbulence
+      expr: weather_turbulence_intensity > 0.8
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "湍流强度过高"
+        description: "当前湍流强度超过0.8，不适合无人机飞行，当前值: {{ $value }}"
+
+  # 系统整体告警
+  - name: system-overall
+    rules:
+    # 任务积压告警
+    - alert: TaskBacklog
+      expr: pending_tasks > 50
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "任务积压过多"
+        description: "系统待处理任务超过50个，当前值: {{ $value }}"
+
+    # 系统错误率告警
+    - alert: HighErrorRate
+      expr: rate(error_total[5m]) / rate(request_total[5m]) > 0.05
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "系统错误率过高"
+        description: "系统错误率超过5%，当前值: {{ $value * 100 }}%"
+
+    # 服务可用性告警
+    - alert: ServiceAvailability
+      expr: avg(up{job="spring-boot"}) < 0.8
+      for: 10m
+      labels:
+        severity: critical
+      annotations:
+        summary: "服务可用性低"
+        description: "Spring Boot服务的可用性低于80%，当前值: {{ $value * 100 }}%"

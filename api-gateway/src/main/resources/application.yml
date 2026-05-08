@@ -1,0 +1,106 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      default-filters:
+        - name: RequestRateLimiter
+          args:
+            key-resolver: '#{@ipKeyResolver}'
+            redis-rate-limiter:
+              replenishRate: 100
+              burstCapacity: 200
+              requestedTokens: 1
+        - name: Retry
+          args:
+            retries: 3
+            statuses: BAD_GATEWAY, SERVICE_UNAVAILABLE
+            methods: GET,POST
+      routes:
+        - id: uav-platform
+          uri: lb://uav-platform-service
+          predicates:
+            - Path=/api/v1/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: uavPlatformCB
+                fallbackUri: forward:/fallback/platform
+
+        - id: wrf-processor
+          uri: lb://wrf-processor-service
+          predicates:
+            - Path=/api/wrf/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: '#{@ipKeyResolver}'
+                redis-rate-limiter:
+                  replenishRate: 50
+                  burstCapacity: 100
+            - name: CircuitBreaker
+              args:
+                name: wrfProcessorCB
+
+        - id: meteor-forecast
+          uri: lb://meteor-forecast-service
+          predicates:
+            - Path=/api/forecast/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: '#{@ipKeyResolver}'
+                redis-rate-limiter:
+                  replenishRate: 30
+                  burstCapacity: 60
+
+        - id: path-planning
+          uri: lb://path-planning-service
+          predicates:
+            - Path=/api/planning/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: '#{@ipKeyResolver}'
+                redis-rate-limiter:
+                  replenishRate: 20
+                  burstCapacity: 40
+
+        - id: data-assimilation
+          uri: lb://data-assimilation-service
+          predicates:
+            - Path=/api/assimilation/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: '#{@ipKeyResolver}'
+                redis-rate-limiter:
+                  replenishRate: 15
+                  burstCapacity: 30
+
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+  redis:
+    host: ${REDIS_HOST:redis}
+    port: ${REDIS_PORT:6379}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,metrics
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    reactor.netty.http.server: INFO

@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AssimilationRequest",
+  "description": "贝叶斯同化请求的 JSON Schema",
+  "type": "object",
+  "required": ["algorithm", "background", "observations"],
+  "properties": {
+    "algorithm": {
+      "type": "string",
+      "enum": ["3dvar", "4dvar", "enkf", "hybrid"],
+      "description": "同化算法类型"
+    },
+    "background": {
+      "type": "object",
+      "required": ["grid", "variables"],
+      "properties": {
+        "grid": {
+          "type": "object",
+          "required": ["lat", "lon", "lev"],
+          "properties": {
+            "lat": { "type": "array", "items": { "type": "number" } },
+            "lon": { "type": "array", "items": { "type": "number" } },
+            "lev": { "type": "array", "items": { "type": "number" } }
+          }
+        },
+        "variables": {
+          "type": "object",
+          "additionalProperties": { "type": "array" }
+        }
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["lat", "lon", "value"],
+        "properties": {
+          "lat": { "type": "number" },
+          "lon": { "type": "number" },
+          "lev": { "type": "number" },
+          "variable": { "type": "string" },
+          "value": { "type": "number" },
+          "error": { "type": "number", "minimum": 0 }
+        }
+      }
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "max_iterations": { "type": "integer", "minimum": 1, "default": 10 },
+        "tolerance": { "type": "number", "minimum": 0, "default": 1e-6 },
+        "parallel": { "type": "boolean", "default": false }
+      }
+    }
+  }
+}

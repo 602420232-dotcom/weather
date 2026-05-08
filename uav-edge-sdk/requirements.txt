@@ -1,0 +1,20 @@
+# UAV Edge SDK - Python Dependencies
+# ====================================
+
+# Core dependencies (minimal)
+# Note: numpy is optional, used for performance optimization
+numpy>=1.20.0
+
+# Development dependencies
+pytest>=7.0.0          # Testing framework
+pytest-cov>=3.0.0      # Code coverage
+black>=22.0.0          # Code formatting
+flake8>=4.0.0          # Linting
+mypy>=0.950            # Type checking
+
+# Build dependencies
+cmake>=3.10.0          # Build system
+pybind11>=2.10.0       # C++/Python binding (can also use system pybind11)
+
+# Optional dependencies for specific features
+pyserial>=3.5           # Serial communication (for flight controller)
