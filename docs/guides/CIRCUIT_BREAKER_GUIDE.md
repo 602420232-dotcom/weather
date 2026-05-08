@@ -2,10 +2,6 @@
 
 ## 📚 熔断器（Circuit Breaker）实现指南
 
-**创建时间**: 2026-05-08  
-**版本**: 1.0.0  
-**状态**: ✅ **已完成**
-
 ---
 
 ## 🔥 为什么需要熔断器？
@@ -498,25 +494,14 @@ public class CircuitBreakerIntegrationTest {
 
 ## 🔗 相关配置
 
-- [监控配置](deployments/monitoring/README.md)
-- [日志配置](deployments/logging/README.md)
-- [告警配置](deployments/monitoring/prometheus/alerts.yml)
+- [监控配置](../../deployments/monitoring/README.md)
+- [日志配置](../../deployments/monitoring/logstash/pipeline/logstash.conf)
+- [告警配置](../../deployments/monitoring/prometheus/alerts.yml)
+- [ELK日志配置](../../deployments/elk/logstash.conf)
 
----
+------
 
-## 📞 支持
 
-如有问题，请查看：
-- Resilience4j GitHub: https://github.com/resilience4j/resilience4j
-- 项目 Wiki: https://wiki.example.com
-- 联系: devops@example.com
-
----
-
-**最后更新**: 2026-05-08 16:30  
-**维护者**: DevOps Team  
-**版本**: 1.0.0
----
 
 > **最后更新**: 2026-05-08  
 > **版本**: 2.1  

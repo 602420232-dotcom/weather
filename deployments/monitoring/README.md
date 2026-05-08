@@ -432,15 +432,6 @@ curl -X POST http://localhost:5000/webhook \
    - 备份 Prometheus 数据
    - 测试恢复流程
 
----
-
-## 📞 支持
-
-如有问题，请查看：
-- 项目 Wiki: https://wiki.example.com
-- 故障排查指南: `docs/TROUBLESHOOTING.md`
-- 联系: support@example.com
-
 
 ---
 

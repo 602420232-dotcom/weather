@@ -1,0 +1,16 @@
+server:
+  port: 5601
+  host: "0.0.0.0"
+
+elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+  username: elastic
+  password: ${ELASTIC_PASSWORD:-changeme123}
+
+# Kibana logging
+logging:
+  appenders:
+    console:
+      type: console
+  root:
+    appenders: [console]
