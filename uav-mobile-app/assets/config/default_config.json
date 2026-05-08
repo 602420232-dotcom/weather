@@ -1,0 +1,29 @@
+{
+  "api_base_url": "http://localhost:8088",
+  "edge_server_url": "http://localhost:8000",
+  "default_location": {
+    "latitude": 39.9042,
+    "longitude": 116.4074,
+    "zoom": 13
+  },
+  "planning": {
+    "default_algorithm": "vrptw",
+    "max_waypoints": 50,
+    "grid_size": 100
+  },
+  "weather": {
+    "refresh_interval_seconds": 300,
+    "wind_speed_threshold": 10.0,
+    "visibility_threshold": 3.0
+  },
+  "offline": {
+    "cache_max_age_hours": 24,
+    "map_cache_dir": "map_tiles"
+  },
+  "features": {
+    "dark_mode": false,
+    "biometric_auth": false,
+    "push_notifications": true,
+    "offline_maps": true
+  }
+}
