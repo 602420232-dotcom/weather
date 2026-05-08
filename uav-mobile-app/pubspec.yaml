@@ -1,0 +1,82 @@
+name: uav_path_planning_app
+description: 无人机气象驱动智能路径规划系统 - 移动客户端
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # 状态管理
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+
+  # 网络请求
+  dio: ^5.4.0
+  retrofit: ^4.1.0
+  connectivity_plus: ^5.0.2
+
+  # 路由
+  go_router: ^13.0.0
+
+  # 本地存储
+  shared_preferences: ^2.2.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  flutter_secure_storage: ^9.0.0
+
+  # 地图
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
+
+  # 图表
+  fl_chart: ^0.66.1
+
+  # UI 组件
+  cupertino_icons: ^1.0.6
+  flutter_svg: ^2.0.9
+  shimmer: ^3.0.0
+  pull_to_refresh: ^2.0.0
+
+  # 工具
+  intl: ^0.19.0
+  logger: ^2.0.2+1
+  json_annotation: ^4.8.1
+  freezed_annotation: ^2.4.1
+  permission_handler: ^11.2.0
+  path_provider: ^2.1.2
+  package_info_plus: ^5.0.1
+
+  # 安全与加密
+  crypto: ^3.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  build_runner: ^2.4.8
+  json_serializable: ^6.7.1
+  freezed: ^2.4.7
+  retrofit_generator: ^8.1.0
+  hive_generator: ^2.0.1
+  riverpod_generator: ^2.3.9
+  mockito: ^5.4.4
+  mocktail: ^1.0.2
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/config/
+
+  fonts:
+    - family: AppIcons
+      fonts:
+        - asset: assets/fonts/AppIcons.ttf

@@ -84,7 +84,7 @@ class PathPlannerFallback:
         self,
         start: Tuple[int, int],
         goal: Tuple[int, int],
-        obstacles: List[Tuple[int, int]]
+        obstacles: Optional[List[Tuple[int, int]]] = None
     ) -> List[Tuple[int, int]]:
         """
         使用 A* 算法规划路径
@@ -98,7 +98,7 @@ class PathPlannerFallback:
             路径点列表
         """
         # 设置障碍物
-        self.obstacles = obstacles
+        self.obstacles = obstacles if obstacles is not None else []
         
         # 检查起点终点
         if not self.is_valid(start) or not self.is_valid(goal):

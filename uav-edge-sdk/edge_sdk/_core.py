@@ -12,14 +12,21 @@ License: Apache 2.0
 import sys
 import os
 from typing import List, Tuple, Dict, Any, Optional
+import logging
+
+# 配置日志
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 # 尝试导入 C++ 模块，如果失败则使用纯 Python 回退
+HAS_CPP_MODULE = False
+edge_sdk_cpp = None
+
 try:
     from . import edge_sdk_cpp
     HAS_CPP_MODULE = True
 except ImportError:
-    HAS_CPP_MODULE = False
-    logger.info("[EdgeSDK] Warning: C++ module not found, using pure Python fallback")
+    logger.info("[EdgeSDK] C++ module not found, using pure Python fallback")
 
 from .config import SDKConfig
 from .logger import get_logger
