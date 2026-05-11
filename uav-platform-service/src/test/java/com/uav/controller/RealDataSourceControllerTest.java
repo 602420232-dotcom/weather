@@ -1,5 +1,6 @@
 package com.uav.controller;
 
+import com.uav.config.SecurityAuditConfig;
 import com.uav.service.RealDataSourceService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,6 +24,9 @@ class RealDataSourceControllerTest {
 
     @Mock
     private RealDataSourceService realDataSourceService;
+
+    @Mock
+    private SecurityAuditConfig securityAuditConfig;
 
     @InjectMocks
     private RealDataSourceController controller;

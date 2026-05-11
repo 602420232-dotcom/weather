@@ -2,7 +2,6 @@ package com.uav.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -182,7 +181,7 @@ public class JwtKeyRotationService {
     }
 
     private KeyPair generateKeyPair() {
-        return Keys.keyPairFor(SignatureAlgorithm.RS256);
+        return Jwts.SIG.RS256.keyPair().build();
     }
 
     public String extractUsername(String token) {
@@ -211,22 +210,22 @@ public class JwtKeyRotationService {
         if (key == null) {
             for (Map.Entry<String, Key> entry : keyVersionMap.entrySet()) {
                 try {
-                    claims = Jwts.parserBuilder()
+                    claims = Jwts.parser()
                         .setSigningKey(entry.getValue())
                         .build()
-                        .parseClaimsJws(token)
-                        .getBody();
+                        .parseSignedClaims(token)
+                        .getPayload();
                     break;
                 } catch (Exception e) {
                     continue;
                 }
             }
         } else {
-            claims = Jwts.parserBuilder()
+            claims = Jwts.parser()
                 .setSigningKey(key)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
         }
 
         if (claims == null) {
@@ -256,21 +255,21 @@ public class JwtKeyRotationService {
             throw new IllegalArgumentException("Invalid key version: " + keyVersion);
         }
         return Jwts.builder()
-            .setClaims(claims)
-            .setSubject(userDetails.getUsername())
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + expiration))
-            .signWith(key, SignatureAlgorithm.RS256)
+            .claims(claims)
+            .subject(userDetails.getUsername())
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + expiration))
+            .signWith(key)
             .compact();
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
-            .setClaims(claims)
-            .setSubject(subject)
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + expiration))
-            .signWith(getSigningKey(), SignatureAlgorithm.RS256)
+            .claims(claims)
+            .subject(subject)
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + expiration))
+            .signWith(getSigningKey())
             .compact();
     }
 

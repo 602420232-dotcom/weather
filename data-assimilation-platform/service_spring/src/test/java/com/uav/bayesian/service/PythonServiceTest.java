@@ -29,6 +29,7 @@ class PythonServiceTest {
 
     @BeforeEach
     void setUp() {
+        assertNotNull(service, "service should not be null");
         ReflectionTestUtils.setField(service, "pythonServiceUrl", "http://localhost:8000");
     }
 

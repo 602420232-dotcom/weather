@@ -1,6 +1,7 @@
 package com.uav.controller;
 
 import com.uav.common.exception.DataNotFoundException;
+import com.uav.config.SecurityAuditConfig;
 import com.uav.service.DataSourceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +27,9 @@ class DataSourceControllerTest {
 
     @Mock
     private DataSourceService dataSourceService;
+
+    @Mock
+    private SecurityAuditConfig securityAuditConfig;
 
     @InjectMocks
     private DataSourceController controller;

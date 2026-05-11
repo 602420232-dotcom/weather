@@ -73,22 +73,22 @@ void main() {
     });
 
     test('UserModel admin 判断', () {
-      final admin = UserModel(id: 1, username: 'admin', role: 'ADMIN');
+      const admin = UserModel(id: 1, username: 'admin', role: 'ADMIN');
       expect(admin.isAdmin, true);
 
-      final user = UserModel(id: 2, username: 'user', role: 'USER');
+      const user = UserModel(id: 2, username: 'user', role: 'USER');
       expect(user.isAdmin, false);
     });
 
     test('DataSourceModel typeLabel', () {
-      final source = DataSourceModel(
+      const source = DataSourceModel(
         id: '1',
         name: 'test',
         type: 'ground_station',
       );
       expect(source.typeLabel, '地面站');
 
-      final buoy = DataSourceModel(id: '2', name: 'test', type: 'buoy');
+      const buoy = DataSourceModel(id: '2', name: 'test', type: 'buoy');
       expect(buoy.typeLabel, '浮标');
     });
 
@@ -141,7 +141,7 @@ void main() {
 
   group('模型 copyWith 测试', () {
     test('DroneModel copyWith', () {
-      final drone = DroneModel(
+      const drone = DroneModel(
         id: 'D001',
         name: '原始',
         model: 'M300',

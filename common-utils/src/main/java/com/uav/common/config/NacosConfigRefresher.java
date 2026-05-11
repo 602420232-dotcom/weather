@@ -7,7 +7,6 @@ import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +19,6 @@ import java.util.function.Consumer;
 @Slf4j
 @Component
 @ConditionalOnClass(NacosConfigManager.class)
-@RefreshScope
 public class NacosConfigRefresher {
 
     private final Map<String, Consumer<String>> listeners = new ConcurrentHashMap<>();
@@ -72,6 +70,7 @@ public class NacosConfigRefresher {
         }
     }
 
+    @Nullable
     public String getConfig(String dataId, long timeoutMs) {
         if (nacosConfigManager == null) return null;
         try {

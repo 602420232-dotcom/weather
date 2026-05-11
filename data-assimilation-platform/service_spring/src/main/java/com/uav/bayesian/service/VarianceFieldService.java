@@ -15,7 +15,7 @@ public class VarianceFieldService {
         log.info("计算方差场");
         return Map.of(
                 "status", "success",
-                "variance", Map.of("mean", 0.5, "max", 1.2),
+                "variance", Map.of("mean", 0.5, "max", 1.2, "min", 0.3),
                 "message", "方差场计算完成"
         );
     }

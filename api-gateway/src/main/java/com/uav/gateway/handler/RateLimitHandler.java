@@ -1,30 +1,42 @@
 package com.uav.gateway.handler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
-
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.reactivestreams.Publisher;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 @Component
 public class RateLimitHandler {
 
     private final ObjectMapper objectMapper;
 
-    public RateLimitHandler(ObjectMapper objectMapper) {
+    public RateLimitHandler(@NonNull ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-    @SuppressWarnings("null")
-    public Mono<Void> handle(ServerWebExchange exchange) {
+    @NonNull
+    private byte[] createResponseBytes(@NonNull Map<String, Object> body) {
+        try {
+            return Objects.requireNonNull(objectMapper.writeValueAsBytes(body));
+        } catch (JsonProcessingException e) {
+            return Objects.requireNonNull(
+                    "{\"code\":429,\"message\":\"Rate limit exceeded\"}".getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    public Mono<Void> handle(@NonNull ServerWebExchange exchange) {
         exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
         
@@ -35,17 +47,8 @@ public class RateLimitHandler {
         body.put("retry-after", 60);
         
         byte[] bytes = createResponseBytes(body);
-        @SuppressWarnings("null")
         DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(bytes);
-        return exchange.getResponse().writeWith(Mono.just(buffer));
-    }
-    
-    private byte[] createResponseBytes(Map<String, Object> body) {
-        try {
-            byte[] result = objectMapper.writeValueAsBytes(body);
-            return (result != null) ? result : "{}".getBytes(StandardCharsets.UTF_8);
-        } catch (JsonProcessingException e) {
-            return "{\"code\":429,\"message\":\"Rate limit exceeded\"}".getBytes(StandardCharsets.UTF_8);
-        }
+        Publisher<? extends DataBuffer> publisher = Objects.requireNonNull(Mono.just(buffer));
+        return exchange.getResponse().writeWith(publisher);
     }
 }

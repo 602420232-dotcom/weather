@@ -2,7 +2,6 @@ package com.uav.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +31,11 @@ public class JwtUtil {
     @PostConstruct
     public void init() {
         byte[] keyBytes = secret.getBytes();
-        if (keyBytes.length < MIN_KEY_LENGTH_BYTES) {
-            log.warn("JWT 密钥长度不足 {} 字节 (当前 {} 字节)，自动生成安全密钥", MIN_KEY_LENGTH_BYTES, keyBytes.length);
-            this.signingKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-        } else {
+        if (keyBytes.length >= MIN_KEY_LENGTH_BYTES) {
             this.signingKey = Keys.hmacShaKeyFor(keyBytes);
+        } else {
+            this.signingKey = Jwts.SIG.HS256.key().build();
+            log.warn("JWT secret is too short ({} bytes), auto-generated secure key", keyBytes.length);
         }
     }
 
@@ -58,11 +57,11 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-            .setSigningKey(getSigningKey())
+        return Jwts.parser()
+            .verifyWith((javax.crypto.SecretKey) getSigningKey())
             .build()
-            .parseClaimsJws(token)
-            .getBody();
+            .parseSignedClaims(token)
+            .getPayload();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -76,11 +75,11 @@ public class JwtUtil {
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
-            .setClaims(claims)
-            .setSubject(subject)
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + expiration))
-            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+            .claims(claims)
+            .subject(subject)
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + expiration))
+            .signWith(getSigningKey())
             .compact();
     }
 
@@ -89,7 +88,7 @@ public class JwtUtil {
             final String username = extractUsername(token);
             return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
         } catch (Exception e) {
-            log.warn("JWT 令牌验证失败: {}", e.getMessage());
+            log.warn("JWT token validation failed: {}", e.getMessage());
             return false;
         }
     }

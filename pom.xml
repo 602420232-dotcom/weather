@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.5</version>
+        <version>3.5.14</version>
         <relativePath/>
     </parent>
 
@@ -24,21 +24,21 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- 跳过 Spring IO 依赖检查，解决网络问题 -->
         <springfrog.skip>true</springfrog.skip>
 
-        <spring-boot.version>3.2.5</spring-boot.version>
-        <spring-cloud.version>2023.0.3</spring-cloud.version>
-        <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
-        <spring-cloud-bootstrap.version>4.1.3</spring-cloud-bootstrap.version>
+        <spring-boot.version>3.5.14</spring-boot.version>
+        <spring-cloud.version>2025.0.2</spring-cloud.version>
+        <spring-cloud-alibaba.version>2025.0.0.0</spring-cloud-alibaba.version>
+        <spring-cloud-bootstrap.version>5.0.0</spring-cloud-bootstrap.version>
+        <spring-cloud-starters.version>5.0.0</spring-cloud-starters.version>
 
-        <skywalking.version>8.16.0</skywalking.version>
-        <grpc.version>1.59.0</grpc.version>
-        <jjwt.version>0.11.5</jjwt.version>
-        <mybatis-plus.version>3.5.5</mybatis-plus.version>
-        <guava.version>32.1.2-jre</guava.version>
-        <jython.version>2.7.3</jython.version>
-        <resilience4j.version>2.1.0</resilience4j.version>
+        <skywalking.version>9.1.0</skywalking.version>
+        <grpc.version>1.65.0</grpc.version>
+        <jjwt.version>0.12.6</jjwt.version>
+        <mybatis-plus.version>3.5.9</mybatis-plus.version>
+        <guava.version>33.3.1-jre</guava.version>
+        <jython.version>2.7.4</jython.version>
+        <resilience4j.version>2.2.0</resilience4j.version>
 
         <sonar.projectKey>uav-path-planning</sonar.projectKey>
         <sonar.projectName>UAV Path Planning System</sonar.projectName>
@@ -50,7 +50,6 @@
 
     <modules>
         <module>common-utils</module>
-        <!-- common-dependencies 已合并到父POM -->
         <module>wrf-processor-service</module>
         <module>data-assimilation-service</module>
         <module>meteor-forecast-service</module>
@@ -64,7 +63,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Spring Boot BOM -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -73,7 +71,6 @@
                 <scope>import</scope>
             </dependency>
             
-            <!-- Spring Cloud BOM -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -82,7 +79,6 @@
                 <scope>import</scope>
             </dependency>
             
-            <!-- Spring Cloud Alibaba BOM -->
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
@@ -90,38 +86,31 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            
-            <!-- 公共依赖管理 (从 common-dependencies 合并) -->
-            
-            <!-- Web基础 -->
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
             
-            <!-- 安全 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-security</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
             
-            <!-- 监控 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-actuator</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
             
-            <!-- 数据访问 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-jpa</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
             
-            <!-- MySQL驱动 -->
             <dependency>
                 <groupId>com.mysql</groupId>
                 <artifactId>mysql-connector-j</artifactId>
@@ -129,7 +118,6 @@
                 <scope>runtime</scope>
             </dependency>
             
-            <!-- 测试 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
@@ -137,7 +125,6 @@
                 <scope>test</scope>
             </dependency>
             
-            <!-- 配置处理器 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-configuration-processor</artifactId>
@@ -145,35 +132,42 @@
                 <optional>true</optional>
             </dependency>
             
-            <!-- Spring Cloud Bootstrap -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-bootstrap</artifactId>
                 <version>${spring-cloud-bootstrap.version}</version>
             </dependency>
             
-            <!-- OpenFeign -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-openfeign</artifactId>
-                <version>4.1.0</version>
+                <version>${spring-cloud-starters.version}</version>
             </dependency>
             
-            <!-- Nacos服务发现 -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+                <version>${spring-cloud-starters.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+                <version>${spring-cloud-starters.version}</version>
+            </dependency>
+            
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
                 <version>${spring-cloud-alibaba.version}</version>
             </dependency>
             
-            <!-- Nacos配置中心 -->
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
                 <version>${spring-cloud-alibaba.version}</version>
             </dependency>
             
-            <!-- SkyWalking链路追踪 -->
             <dependency>
                 <groupId>org.apache.skywalking</groupId>
                 <artifactId>apm-toolkit-trace</artifactId>
@@ -185,28 +179,24 @@
                 <version>${skywalking.version}</version>
             </dependency>
             
-            <!-- 项目内部模块 -->
             <dependency>
                 <groupId>com.uav</groupId>
                 <artifactId>common-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
             
-            <!-- MyBatis Plus -->
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
             
-            <!-- Guava -->
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
             
-            <!-- Jython -->
             <dependency>
                 <groupId>org.python</groupId>
                 <artifactId>jython-standalone</artifactId>
@@ -225,13 +215,6 @@
                     <configuration>
                         <executable>true</executable>
                     </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>repackage</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.owasp</groupId>

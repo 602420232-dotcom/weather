@@ -35,7 +35,7 @@ class SecurityConfigTest {
     @DisplayName("认证管理器创建")
     void testAuthenticationManager() throws Exception {
         AuthenticationConfiguration authConfig = mock(AuthenticationConfiguration.class);
-        when(authConfig.getAuthenticationManager()).thenReturn(null);
+        when(authConfig.getAuthenticationManager()).thenReturn(mock(org.springframework.security.authentication.AuthenticationManager.class));
         
         assertNotNull(securityConfig.authenticationManager(authConfig));
     }
@@ -85,13 +85,17 @@ class SecurityAuditConfigTest {
     @DisplayName("记录认证成功")
     void testLogAuthenticationSuccess() {
         SecurityAuditConfig config = new SecurityAuditConfig();
-        assertDoesNotThrow(() -> config.logAuthenticationSuccess("testuser", null));
+        jakarta.servlet.http.HttpServletRequest mockRequest = mock(jakarta.servlet.http.HttpServletRequest.class);
+        when(mockRequest.getRemoteAddr()).thenReturn("127.0.0.1");
+        assertDoesNotThrow(() -> config.logAuthenticationSuccess("testuser", mockRequest));
     }
 
     @Test
     @DisplayName("记录认证失败")
     void testLogAuthenticationFailure() {
         SecurityAuditConfig config = new SecurityAuditConfig();
-        assertDoesNotThrow(() -> config.logAuthenticationFailure("testuser", "凭证错误", null));
+        jakarta.servlet.http.HttpServletRequest mockRequest = mock(jakarta.servlet.http.HttpServletRequest.class);
+        when(mockRequest.getRemoteAddr()).thenReturn("127.0.0.1");
+        assertDoesNotThrow(() -> config.logAuthenticationFailure("testuser", "凭证错误", mockRequest));
     }
 }

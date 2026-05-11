@@ -11,6 +11,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -19,17 +20,14 @@ public class CommonSecurityConfig {
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-            // CORS配置
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            // CSRF保护 - 启用并使用Cookie方式（适合前后端分离架构）
             .csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                // API端点和登录端点禁用CSRF（这些端点使用JWT认证）
                 .ignoringRequestMatchers("/api/**", "/auth/**", "/actuator/**")
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
-                .requestMatchers("/auth/**").permitAll()  // 登录接口
+                .requestMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated()
             )
             .httpBasic(httpBasic -> {});
@@ -45,7 +43,7 @@ public class CommonSecurityConfig {
             "https://*.example.com"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Collections.singletonList("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
         

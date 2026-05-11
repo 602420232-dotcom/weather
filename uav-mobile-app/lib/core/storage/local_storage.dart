@@ -3,15 +3,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// 本地存储管理器
 /// 使用 SharedPreferences 存储非敏感数据
 class LocalStorage {
-  static SharedPreferences? _prefs;
-  static LocalStorage? _instance;
-
   LocalStorage._();
 
   factory LocalStorage() {
     _instance ??= LocalStorage._();
     return _instance!;
   }
+  static SharedPreferences? _prefs;
+  static LocalStorage? _instance;
 
   /// 初始化存储
   static Future<void> init() async {
@@ -21,7 +20,9 @@ class LocalStorage {
   /// 获取实例
   static SharedPreferences get prefs {
     if (_prefs == null) {
-      throw Exception('LocalStorage not initialized. Call LocalStorage.init() first.');
+      throw Exception(
+        'LocalStorage not initialized. Call LocalStorage.init() first.',
+      );
     }
     return _prefs!;
   }

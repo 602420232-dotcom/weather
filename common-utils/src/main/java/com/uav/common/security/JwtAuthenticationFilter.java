@@ -78,8 +78,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
-            Claims claims = Jwts.parserBuilder().setSigningKey(key).build()
-                    .parseClaimsJws(header.substring(7)).getBody();
+            Claims claims = Jwts.parser().verifyWith(key).build()
+                    .parseSignedClaims(header.substring(7)).getPayload();
 
             String username = claims.getSubject();
             List<?> rawRoles = claims.get("roles", List.class);

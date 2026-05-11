@@ -24,8 +24,13 @@ public class CacheService {
         try {
             ValueOperations<String, Object> ops = redisTemplate.opsForValue();
             if (ops != null) {
-                ops.set(key, value, ttlSeconds, TimeUnit.SECONDS);
-                log.debug("缓存设置: {} (TTL={}s)", key, ttlSeconds);
+                if (value != null) {
+                    ops.set(key, value, ttlSeconds, TimeUnit.SECONDS);
+                    log.debug("缓存设置: {} (TTL={}s)", key, ttlSeconds);
+                } else {
+                    redisTemplate.delete(key);
+                    log.debug("缓存删除（值为null）: {}", key);
+                }
             }
         } catch (Exception e) {
             log.warn("缓存写入失败: {}", e.getMessage());
@@ -53,10 +58,7 @@ public class CacheService {
     public Object get(@NonNull String key) {
         try {
             ValueOperations<String, Object> ops = redisTemplate.opsForValue();
-            if (ops != null) {
-                return ops.get(key);
-            }
-            return null;
+            return ops.get(key);
         } catch (Exception e) {
             log.warn("缓存读取失败: {}", e.getMessage());
             return null;

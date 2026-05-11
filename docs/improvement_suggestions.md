@@ -1,4 +1,4 @@
-﻿# 项目改进建议报告
+# 项目改进建议报告
 
 > 生成日期: 2026-05-06
 > 基于对全?6 ?Java 服务Python 核心算法库和部署配置的全面检查
@@ -44,7 +44,7 @@
 **修复方案**统一返回通用错误信息 `"处理失败"`详细错误记录在服务端日志?
 
 ### 1.5 javax ?jakarta 迁移已修复 - 10个文件
-伴随 Spring Boot 3.2.0 升级所?`javax.*` 导入已迁移至 `jakarta.*`涉及
+伴随 Spring Boot 3.5.14 升级所?`javax.*` 导入已迁移至 `jakarta.*`涉及
 - User.java, Role.java `javax.persistence` `jakarta.persistence`
 - JwtFilter.java, SecurityAuditConfig.java, AuthController.java `javax.servlet` `jakarta.servlet`
 - GrpcClientUtil.java, UserController.java, PlatformController.java `javax.annotation` `jakarta.annotation`

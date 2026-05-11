@@ -158,7 +158,7 @@ class AuthControllerTest {
         // Then
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertEquals("用户名或密码错误", response.getBody());
-        verify(securityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("密码错误"), any());
+        verify(securityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("凭证错误"), any());
     }
 
     @Test
@@ -209,14 +209,14 @@ class AuthControllerTest {
         // Then
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertEquals("用户名或密码错误", response.getBody());
-        verify(securityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("用户不存在"), any());
+        verify(securityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("凭证错误"), any());
     }
 
     @Test
     @DisplayName("测试成功登录")
     void testSuccessfulLogin() throws Exception {
         // Given
-        doNothing().when(authenticationManager).authenticate(any());
+        when(authenticationManager.authenticate(any())).thenReturn(mock(org.springframework.security.core.Authentication.class));
 
         UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
             .username("testuser")

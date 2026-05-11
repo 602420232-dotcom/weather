@@ -24,7 +24,7 @@ class WeatherCollectorTests {
     void setUp() {
         weatherController = new WeatherController();
         weatherCollectorService = new WeatherCollectorService();
-        ReflectionTestUtils.setField(weatherController, "weatherCollectorService", weatherCollectorService);
+        ReflectionTestUtils.setField(weatherController, "weatherService", weatherCollectorService);
     }
 
     @Test

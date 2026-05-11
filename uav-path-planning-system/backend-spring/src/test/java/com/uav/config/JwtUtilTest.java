@@ -80,7 +80,8 @@ class JwtUtilTest {
     @DisplayName("短密钥自动生成安全密钥")
     void testShortKeyAutoGenerates() {
         JwtUtil shortKeyUtil = new JwtUtil();
-        ReflectionTestUtils.setField(shortKeyUtil, "secret", "short");
+        String shortSecret = "short"; // 5 bytes, less than minimum
+        ReflectionTestUtils.setField(shortKeyUtil, "secret", shortSecret);
         ReflectionTestUtils.setField(shortKeyUtil, "expiration", 3600000L);
         shortKeyUtil.init();
 

@@ -4,6 +4,7 @@ import com.uav.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +17,9 @@ class UserControllerTest {
     @BeforeEach
     void setUp() {
         userController = new UserController();
-        ReflectionTestUtils.setField(userController, "initDefaultUsers", "true");
+        ReflectionTestUtils.setField(userController, "initDefaultUsers", true);
+        ReflectionTestUtils.setField(userController, "passwordEncoder", new BCryptPasswordEncoder());
+        ReflectionTestUtils.setField(userController, "defaultPassword", "Uav@2024!Secure");
         userController.init();
     }
 
@@ -32,7 +35,8 @@ class UserControllerTest {
     @DisplayName("跳过初始化")
     void testInitSkipped() {
         UserController controller = new UserController();
-        ReflectionTestUtils.setField(controller, "initDefaultUsers", "false");
+        ReflectionTestUtils.setField(controller, "initDefaultUsers", false);
+        ReflectionTestUtils.setField(controller, "passwordEncoder", new BCryptPasswordEncoder());
         controller.init();
         var users = controller.getUsers();
         assertTrue(users.isEmpty());

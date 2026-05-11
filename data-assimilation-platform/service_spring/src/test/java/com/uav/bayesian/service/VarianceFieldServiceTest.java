@@ -5,14 +5,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("VarianceFieldService 单元测试")
@@ -28,14 +25,19 @@ class VarianceFieldServiceTest {
         assertEquals("success", result.get("status"));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     @DisplayName("computeVariance 包含方差信息")
     void shouldContainVarianceInfo() {
         Map<String, Object> result = service.computeVariance(Map.of("domain", "100x100"));
         assertNotNull(result.get("variance"));
         Map<String, Object> variance = (Map<String, Object>) result.get("variance");
+        assertNotNull(variance.get("mean"));
+        assertNotNull(variance.get("max"));
+        assertNotNull(variance.get("min"));
         assertEquals(0.5, variance.get("mean"));
         assertEquals(1.2, variance.get("max"));
+        assertEquals(0.3, variance.get("min"));
     }
 
     @Test
