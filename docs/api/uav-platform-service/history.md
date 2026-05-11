@@ -1,6 +1,6 @@
-# 历史数据接口
+﻿# 历史数据接口
 
-> ⚠️ **注意**: 以下接口为计划中的 API 定义，当前版本尚未实现。历史数据功能待后续版本开发。
+>  **注意**: 以下接口为计划中?API 定义当前版本尚未实现历史数据功能待后续版本开发?
 
 ## 获取历史任务记录
 
@@ -11,17 +11,17 @@ GET /api/v1/history/tasks
 Authorization: Bearer <JWT令牌>
 ```
 
-**查询参数：**
+**查询参数?*
 
-- `startDate`: 开始日期 (ISO格式，如 2024-01-01T00:00:00Z)
-- `endDate`: 结束日期 (ISO格式，如 2024-01-31T23:59:59Z)
-- `status`: 任务状态 (如 COMPLETED, FAILED)
+- `startDate`: 开始日?(ISO格式如 2024-01-01T00:00:00Z)
+- `endDate`: 结束日期 (ISO格式如 2024-01-31T23:59:59Z)
+- `status`: 任务状?(?COMPLETED, FAILED)
 - `page`: 页码 (默认 1)
 - `size`: 每页大小 (默认 10)
 
 ### 响应
 
-**成功：**
+**成功?*
 
 ```json
 {
@@ -34,7 +34,7 @@ Authorization: Bearer <JWT令牌>
     "items": [
       {
         "id": 1,
-        "name": "巡逻任务1",
+        "name": "巡逻任?",
         "status": "COMPLETED",
         "startTime": "2024-01-01T00:00:00Z",
         "endTime": "2024-01-01T02:00:00Z",
@@ -48,7 +48,7 @@ Authorization: Bearer <JWT令牌>
         "startTime": "2024-01-01T01:00:00Z",
         "endTime": "2024-01-01T03:00:00Z",
         "actualEndTime": "2024-01-01T01:30:00Z",
-        "errorMessage": "无人机电池电量不足",
+        "errorMessage": "无人机电池电量不?,
         "createdAt": "2024-01-01T00:30:00Z"
       }
     ]
@@ -56,7 +56,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败：**
+**失败?*
 
 ```json
 {
@@ -75,9 +75,9 @@ GET /api/v1/history/paths
 Authorization: Bearer <JWT令牌>
 ```
 
-**查询参数：**
+**查询参数?*
 
-- `startDate`: 开始日期 (ISO格式)
+- `startDate`: 开始日?(ISO格式)
 - `endDate`: 结束日期 (ISO格式)
 - `droneId`: 无人机ID
 - `page`: 页码 (默认 1)
@@ -85,7 +85,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功：**
+**成功?*
 
 ```json
 {
@@ -117,7 +117,7 @@ Authorization: Bearer <JWT令牌>
         "actualDuration": 30,
         "estimatedBatteryUsage": 20,
         "actualBatteryUsage": 15,
-        "errorMessage": "无人机电池电量不足",
+        "errorMessage": "无人机电池电量不?,
         "createdAt": "2024-01-01T01:00:00Z",
         "completedAt": "2024-01-01T01:30:00Z"
       }
@@ -126,7 +126,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败：**
+**失败?*
 
 ```json
 {
@@ -136,7 +136,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-## 获取无人机历史状态
+## 获取无人机历史状?
 
 ### 请求
 
@@ -145,21 +145,21 @@ GET /api/v1/history/drones/{droneId}/status
 Authorization: Bearer <JWT令牌>
 ```
 
-**查询参数：**
+**查询参数?*
 
-- `startDate`: 开始日期 (ISO格式)
+- `startDate`: 开始日?(ISO格式)
 - `endDate`: 结束日期 (ISO格式)
 - `page`: 页码 (默认 1)
 - `size`: 每页大小 (默认 10)
 
 ### 响应
 
-**成功：**
+**成功?*
 
 ```json
 {
   "code": 200,
-  "message": "获取无人机历史状态成功",
+  "message": "获取无人机历史状态成?,
   "data": {
     "total": 200,
     "page": 1,
@@ -194,7 +194,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败：**
+**失败?*
 
 ```json
 {
@@ -213,9 +213,9 @@ GET /api/v1/history/weather
 Authorization: Bearer <JWT令牌>
 ```
 
-**查询参数：**
+**查询参数?*
 
-- `startDate`: 开始日期 (ISO格式)
+- `startDate`: 开始日?(ISO格式)
 - `endDate`: 结束日期 (ISO格式)
 - `latitude`: 纬度
 - `longitude`: 经度
@@ -223,7 +223,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功：**
+**成功?*
 
 ```json
 {
@@ -256,7 +256,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败：**
+**失败?*
 
 ```json
 {
@@ -267,6 +267,7 @@ Authorization: Bearer <JWT令牌>
 ```
 ---
 
-> **最后更新**: 2026-05-08  
+> **最后更新*: 2026-05-09  
 > **版本**: 2.1  
-> **维护者**: DITHIOTHREITOL
+> **维护者*: DITHIOTHREITOL
+

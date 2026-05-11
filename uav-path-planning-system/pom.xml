@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.uav</groupId>
+        <artifactId>uav-path-planning</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>uav-path-planning-system</artifactId>
+    <packaging>pom</packaging>
+    <name>UAV Path Planning System</name>
+    <description>无人机路径规划系统 - 完整的端到端解决方案</description>
+
+    <modules>
+        <module>backend-spring</module>
+    </modules>
+
+</project>

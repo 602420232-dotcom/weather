@@ -1,35 +1,35 @@
-# Shared Resources - 共享资源
+﻿# Shared Resources - 共享资源
 
-## 📋 概述
+##  概述
 
-共享资源模块，包含 Protocol Buffers 定义、JSON Schema、共享配置等跨服务共用资源。
+共享资源模块包?Protocol Buffers 定义JSON Schema共享配置等跨服务共用资源?
 
 ---
 
-## 📁 目录结构
+##  目录结构
 
 ```
 shared/
-├── protos/                    # Protocol Buffers 定义
-│   ├── common/               # 公共消息类型
-│   │   ├── common.proto
-│   │   ├── types.proto
-│   │   └── README.md
-│   ├── assimilation/         # 数据同化消息
-│   │   ├── request.proto
-│   │   └── response.proto
-│   └── README.md
-│
-├── schemas/                 # JSON Schema 定义
-│   ├── assimilation/
-│   └── validation/
-│
-└── README.md                # 本文档
+ protos/                    # Protocol Buffers 定义
+?   common/               # 公共消息类型
+?  ?   common.proto
+?  ?   types.proto
+?  ?   README.md
+?   assimilation/         # 数据同化消息
+?  ?   request.proto
+?  ?   response.proto
+?   README.md
+?
+ schemas/                 # JSON Schema 定义
+?   assimilation/
+?   validation/
+?
+ README.md                # 本文?
 ```
 
 ---
 
-## 📦 Protos 子模块
+##  Protos 子模?
 
 ### Protocol Buffers 定义
 
@@ -114,7 +114,7 @@ AssimilationResponse response = stub.assimilate(request);
 
 ---
 
-## 📋 JSON Schema
+##  JSON Schema
 
 ### 位置
 
@@ -172,7 +172,7 @@ if (errors.isEmpty()) {
 
 ---
 
-## 🔧 共享配置
+##  共享配置
 
 ### 配置格式
 
@@ -216,18 +216,18 @@ production:
 
 ---
 
-## 📚 相关文档
+##  相关文档
 
 | 文档 | 说明 |
 |------|------|
 | [Protos README](protos/README.md) | Protocol Buffers 详细说明 |
 | [Common Types README](protos/common/README.md) | 公共类型说明 |
-| [Algorithm Core](../algorithm_core/README.md) | 核心算法库 |
+| [Algorithm Core](../algorithm_core/README.md) | 核心算法?|
 | [Service Spring](../service_spring/README.md) | Spring Boot 服务 |
 
 ---
 
-## 🚀 快速开始
+##  快速开?
 
 ### 1. 克隆项目
 
@@ -257,19 +257,19 @@ mvn protobuf:compile
 
 ---
 
-## 🔄 版本管理
+##  版本管理
 
 ### Proto 版本控制
 
-**版本号规则**:
+**版本号规?*:
 ```
 major.minor.patch
 ```
 
 **示例**:
 - `v1.0.0` - 初始版本
-- `v1.1.0` - 添加新字段
-- `v2.0.0` - 不兼容更改
+- `v1.1.0` - 添加新字?
+- `v2.0.0` - 不兼容更?
 
 ### 向后兼容
 
@@ -278,19 +278,19 @@ major.minor.patch
 message DataRequest {
     string id = 1;
     int32 timeout = 2;
-    // 添加新字段（必须添加默认值）
+    // 添加新字段必须添加默认值
     string new_field = 3 [default = ""];
 }
 ```
 
-**不兼容更改** (需要新版本):
-- 重命名字段
+**不兼容更?* (需要新版本):
+- 重命名字?
 - 更改字段类型
 - 修改字段编号
 
 ---
 
-## 🧪 测试
+##  测试
 
 ### Proto 单元测试
 
@@ -314,11 +314,11 @@ mvn test -Dtest=*SchemaTest
 
 ---
 
-## 📦 发布
+##  发布
 
 ### 发布流程
 
-1. **更新版本号**
+1. **更新版本：*
    ```bash
    # 修改 proto 文件中的 version 注释
    ```
@@ -346,7 +346,7 @@ mvn test -Dtest=*SchemaTest
 
 ---
 
-## 🤝 贡献指南
+##  贡献指南
 
 ### 添加新的 Proto 定义
 
@@ -367,7 +367,7 @@ mvn test -Dtest=*SchemaTest
 
 3. **添加文档注释**:
    ```protobuf
-   // 这是一个示例消息
+   // 这是一个示例消?
    message ExampleMessage {
        // 字段说明
        string id = 1;
@@ -385,13 +385,14 @@ mvn test -Dtest=*SchemaTest
 
 ---
 
-## 📄 许可证
+##  许可?
 
-本目录遵循项目整体许可证。
+本目录遵循项目整体许可证?
 
 
 ---
 
-> **最后更新**: 2026-05-08  
+> **最后更新*: 2026-05-09  
 > **版本**: 2.1  
-> **维护者**: DITHIOTHREITOL
+> **维护者*: DITHIOTHREITOL
+

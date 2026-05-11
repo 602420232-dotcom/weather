@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "wrf.data-path",
+      "type": "java.lang.String",
+      "description": "WRF数据存储路径"
+    },
+    {
+      "name": "wrf.python-script",
+      "type": "java.lang.String",
+      "description": "Python处理脚本路径"
+    },
+    {
+      "name": "wrf.timeout",
+      "type": "java.lang.Integer",
+      "description": "处理超时时间(毫秒)"
+    }
+  ]
+}

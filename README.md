@@ -1,12 +1,11 @@
 # 基于WRF气象驱动的无人机VRP智能路径规划系统
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Java Version](https://img.shields.io/badge/Java-17%2B-blue)](https://openjdk.java.net/)
-[![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2-brightgreen)](https://spring.io/projects/spring-boot)
-[![Docker](https://img.shields.io/badge/Docker-Compose-blue)](https://www.docker.com/)
+[![Java 17+](https://img.shields.io/badge/Java-17%2B-blue)](https://openjdk.java.net/)
+[![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
+[![Spring Boot 3.2](https://img.shields.io/badge/Spring%20Boot-3.2-brightgreen)](https://spring.io/projects/spring-boot)[![Docker](https://img.shields.io/badge/Docker-Compose-blue)](https://www.docker.com/)
 
-## 📋 目录
+## 目录
 
 - [项目简介](#项目简介)
 - [核心特性](#核心特性)
@@ -26,7 +25,7 @@
 - [许可证](#许可证)
 - [团队](#团队)
 
----
+***
 
 ## 项目简介
 
@@ -37,223 +36,260 @@
 - **气象优先**：将WRF气象数据作为路径规划的核心约束条件
 - **算法驱动**：采用3D-VAR/4D-VAR/EnKF多算法融合的数据同化技术
 - **微服务架构**：基于Spring Cloud的分布式微服务架构
-- **弹性可靠**：内置Resilience4j熔断器，保障系统高可用
+- **弹性可靠**：内置Resilience4j熔断器保障系统高可用
 - **边云协同**：支持边缘端离线计算与云端智能决策协同
 
----
+***
 
 ## 核心特性
 
 ### 🌤️ 气象数据处理
+
 - **WRF模型解析**：支持NetCDF4格式的WRF气象数据解析
 - **多源数据融合**：整合卫星、雷达、地面站、浮标等多源气象数据
 - **5分钟级更新**：高频气象数据更新，实时响应气象变化
 - **AI气象订正**：基于ConvLSTM+XGBoost的气象预测订正
 
 ### 🔬 数据同化
+
 - **多算法支持**：3D-VAR、4D-VAR、EnKF、混合同化算法
 - **GPU加速**：支持CUDA、JAX等GPU加速框架
-- **分布式计算**：基于Dask、Ray、MPI的并行计算
+- **分布式计算**：基于Dask/Ray/MPI的并行计算
 - **不确定性分析**：贝叶斯不确定性量化与风险评估
 
-### 🛣️ 路径规划
+### 🚁 路径规划
+
 - **VRPTW算法**：带时间窗的车辆路径问题求解
 - **三层规划架构**：
   - 全局规划：VRPTW + NSGA-II多目标优化
-  - 局部规划：DE-RRT*动态路径调整
+  - 局部规划：DE-RRT\* 动态路径调整
   - 动态避障：DWA动态窗口法
 - **气象约束**：风速、降水、能见度等气象条件约束
-- **动态重规划**：5秒内响应气象突变，自动调整路径
+- **动态重规划**：秒级响应气象突变自动调整路径
 
-### ☁️ 微服务架构
+### 🏗️ 微服务架构
+
 - **API网关**：统一入口、限流、熔断、路由
 - **服务注册**：Nacos服务发现与配置中心
 - **熔断器保护**：Resilience4j弹性机制
 - **链路追踪**：集成Jaeger分布式追踪
 
-### 🖥️ 边云协同
+### 📡 边云协同
+
 - **边缘SDK**：C++/Python端侧离线路径规划
 - **实时通信**：WebSocket/Kafka消息队列
 - **联邦学习**：支持FedAvg联邦学习框架
 - **模型压缩**：TensorRT/ONNX INT8量化加速
 
----
+***
 
 ## 应用场景
 
-| 场景 | 说明 |
-|------|------|
-| **城市低空物流** | 外卖、快递配送，避开气象风险区域 |
-| **电力巡检** | 高压线路巡检，智能规划巡检路线 |
-| **应急救援** | 灾害现场物资投放，快速响应路径 |
-| **农林植保** | 农药喷洒，根据气象条件优化作业 |
-| **城市管理** | 交通监控、城市巡查，多任务调度 |
+| 场景         | 说明              |
+| ---------- | --------------- |
+| **城市低空物流** | 外卖快递配送，避开气象风险区域 |
+| **电力巡检**   | 高压线路巡检，智能规划巡检路线 |
+| **应急救援**   | 灾害现场物资投放，快速响应路径 |
+| **农林植保**   | 农药喷洒，根据气象条件优化作业 |
+| **城市管理**   | 交通监控、城市巡查，多任务调度 |
 
----
+***
 
 ## 系统架构
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                              客户端层                                         │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
-│  │   Web UI     │  │  Mobile App  │  │  Drone SDK   │  │   Admin      │   │
-│  │   (Vue3)     │  │             │  │  (C++/Python)│  │   Console    │   │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘   │
-└─────────┼──────────────────┼──────────────────┼──────────────────┼──────────┘
-          │                  │                  │                  │
-          └──────────────────┴──────────────────┴──────────────────┘
-                                              │
-                                              ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                            API网关层 (8088)                                   │
-│              ┌─────────────────────────────────────────┐                    │
-│              │  Spring Cloud Gateway                   │                    │
-│              │  • 限流 (Rate Limiting)                 │                    │
-│              │  • 熔断 (Circuit Breaker)               │                    │
-│              │  • 路由 (Routing)                       │                    │
-│              └─────────────────────────────────────────┘                    │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                              │
-                      ┌───────────────────────┼───────────────────────┐
-                      │                       │                       │
-                      ▼                       ▼                       ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                            微服务层                                           │
-│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐   │
-│  │  Platform Service│  │WRF Processor     │  │Meteor Forecaster │   │
-│  │  (8080)          │  │  (8081)          │  │  (8082)          │   │
-│  │  • 用户认证      │  │  • WRF解析       │  │  • AI预测        │   │
-│  │  • 任务管理      │  │  • 数据预处理    │  │  • 气象订正      │   │
-│  │  • 无人机管理    │  │                  │  │                  │   │
-│  └──────────────────┘  └──────────────────┘  └──────────────────┘   │
-│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐   │
-│  │Path Planning    │  │Data Assimilation │  │Weather Collector │   │
-│  │  (8083)          │  │  (8084)          │  │  (8086)          │   │
-│  │  • VRPTW求解     │  │  • 3D-VAR        │  │  • 多源采集      │   │
-│  │  • DE-RRT*       │  │  • EnKF          │  │  • 数据融合      │   │
-│  │  • DWA避障       │  │  • 不确定性分析  │  │                  │   │
-│  └──────────────────┘  └──────────────────┘  └──────────────────┘   │
-│  ┌──────────────────┐                                                  │
-│  │Edge-Cloud Coord. │                                                  │
-│  │  (8000/8765)     │                                                  │
-│  │  • WebSocket     │                                                  │
-│  │  • Kafka         │                                                  │
-│  │  • 联邦学习      │                                                  │
-│  └──────────────────┘                                                  │
-└─────────────────────────────────────────────────────────────────────────────┘
-                      │                       │                       │
-                      └───────────────────────┼───────────────────────┘
-                                              │
-                      ┌───────────────────────┼───────────────────────┐
-                      │                       │                       │
-                      ▼                       ▼                       ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                            数据与基础设施层                                   │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐   │
-│  │   MySQL     │  │    Redis    │  │   Nacos     │  │   Kafka     │   │
-│  │  (3306)     │  │  (6379)     │  │  (8848)     │  │  (9092)     │   │
-│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘   │
-│  ┌──────────────────────────────────────────────────────────────────┐   │
-│  │                    算法核心层 (Python)                            │   │
-│  │  ┌──────────────────────────────────────────────────────────┐   │   │
-│  │  │  Bayesian Assimilation Core                             │   │   │
-│  │  │  • 3D-VAR / 4D-VAR / EnKF                               │   │   │
-│  │  │  • GPU/MPI/Dask 并行计算                                │   │   │
-│  │  │  • 可视化分析                                           │   │   │
-│  │  └──────────────────────────────────────────────────────────┘   │   │
-│  └──────────────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                              │
-                                              ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                            可观测性层                                         │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐   │
-│  │ Prometheus  │  │   Grafana   │  │   Jaeger    │  │  ELK Stack  │   │
-│  │  (9090)     │  │  (3000)     │  │  (16686)    │  │  (5601)     │   │
-│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘   │
-└─────────────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph LR
+    classDef bigNode font-size:16px,height:60px;
+    classDef layer font-size:18px,font-weight:bold;
+
+    subgraph CLIENT["📱 客户端层"]
+        direction TB
+        A["🌐 Web Dashboard<br/>Vue3<br/>• 任务可视化<br/>• 气象地图<br/>• 无人机监控"]:::bigNode
+        B["📱 Mobile App<br/>Flutter<br/>• 离线路径规划<br/>• 实时追踪<br/>• 任务同步"]:::bigNode
+        C["🛸 Edge SDK<br/>C++/Python<br/>• 离线路径计算<br/>• 动态避障<br/>• 数据采集"]:::bigNode
+        D["⚙️ Admin Console<br/>React<br/>• 系统监控<br/>• 用户管理<br/>• 配置管理"]:::bigNode
+    end
+
+    subgraph GATEWAY["🚪 API网关层 (8088)"]
+        E["🔐 Spring Cloud Gateway<br/>• 统一路由<br/>• 限流保护<br/>• 熔断降级<br/>• JWT认证<br/>• 访问日志"]:::bigNode
+    end
+
+    subgraph SERVICES["🔧 微服务层"]
+        direction TB
+        F["🖥️ UAV Platform<br/>(8080)<br/>• 用户认证<br/>• 任务管理<br/>• 无人机管理<br/>• 地理信息"]:::bigNode
+        G["🌦️ WRF Processor<br/>(8081)<br/>• NetCDF解析<br/>• 数据预处理<br/>• 质量检查<br/>• 数据分发"]:::bigNode
+        H["🌤️ Meteor Forecast<br/>(8082)<br/>• ConvLSTM预测<br/>• XGBoost订正<br/>• 气象约束<br/>• 5分钟更新"]:::bigNode
+        I["🛣️ Path Planning<br/>(8083)<br/>• VRPTW求解<br/>• NSGA-II优化<br/>• DE-RRT*规划<br/>• DWA避障"]:::bigNode
+        J["🔬 Data Assimilation<br/>(8084)<br/>• 3D-VAR/4D-VAR<br/>• EnKF同化<br/>• 不确定性量化"]:::bigNode
+        K["📡 Weather Collector<br/>(8086)<br/>• 多源采集<br/>• 数据融合<br/>• 质量控制"]:::bigNode
+        L["☁️ Edge-Cloud Coord<br/>(8000/8765)<br/>• WebSocket推送<br/>• Kafka消息<br/>• 边缘调度<br/>• 联邦学习"]:::bigNode
+    end
+
+    subgraph DATA["💾 数据与基础设施层"]
+        direction TB
+        M["🗄️ MySQL<br/>(3306)<br/>• 业务数据<br/>• 用户数据"]:::bigNode
+        N["⚡ Redis<br/>(6379)<br/>• 缓存<br/>• 会话"]:::bigNode
+        O["🔍 Nacos<br/>(8848)<br/>• 服务注册<br/>• 配置中心"]:::bigNode
+        P["📨 Kafka<br/>(9092)<br/>• 消息队列<br/>• 事件流"]:::bigNode
+        Q["📦 MinIO<br/>(9000)<br/>• 文件存储<br/>• WRF数据"]:::bigNode
+        R["🦓 ZooKeeper<br/>(2181)<br/>• Kafka协调"]:::bigNode
+    end
+
+    subgraph ALGORITHM["🧠 算法核心层 (Python)"]
+        S["📊 Bayesian Platform<br/>• 数据同化引擎<br/>• 气象预测模型<br/>• 路径规划算法<br/>• 并行计算框架<br/>• 不确定性分析"]:::bigNode
+    end
+
+    subgraph OBSERVABILITY["📈 可观测性层"]
+        direction TB
+        T["📊 Prometheus<br/>(9090)<br/>• 指标采集<br/>• 告警规则"]:::bigNode
+        U["📉 Grafana<br/>(3000)<br/>• 监控仪表<br/>• 可视化"]:::bigNode
+        V["🔍 Jaeger<br/>(16686)<br/>• 链路追踪<br/>• 性能分析"]:::bigNode
+        W["📝 ELK Stack<br/>(5601)<br/>• 日志聚合<br/>• 日志检索"]:::bigNode
+        X["✈️ SkyWalking<br/>(12800)<br/>• APM监控<br/>• 拓扑图"]:::bigNode
+    end
+
+    A --> E
+    B --> E
+    C --> E
+    D --> E
+    
+    E --> F
+    E --> G
+    E --> H
+    E --> I
+    E --> J
+    E --> K
+    E --> L
+    
+    F --> M
+    F --> N
+    G --> Q
+    G --> P
+    H --> P
+    I --> N
+    J --> P
+    K --> P
+    L --> P
+    
+    G --> S
+    H --> S
+    I --> S
+    J --> S
+    
+    F --> T
+    G --> T
+    H --> T
+    I --> T
+    J --> T
+    K --> T
+    L --> T
+    
+    T --> U
+    F --> V
+    F --> W
+    F --> X
+
+    class CLIENT,GATEWAY,SERVICES,DATA,ALGORITHM,OBSERVABILITY layer;
 ```
 
+### 架构说明
+
+1. **📱 客户端层**：提供多种访问方式，包括Web管理端、移动端APP、边缘端SDK和运维控制台
+2. **🚪 API网关层**：统一入口，提供路由、限流、熔断、认证等功能
+3. **🔧 微服务层**：7个核心微服务，职责明确，通过Nacos注册发现
+4. **💾 数据与基础设施层**：提供数据库、缓存、消息队列、对象存储等基础服务
+5. **🧠 算法核心层**：Python实现的贝叶斯同化平台，提供气象数据处理和路径规划算法
+6. **📈 可观测性层**：完整的监控、日志、追踪体系
+
 ---
+
+**如果Mermaid无法渲染，请查看：**
+- GitHub/GitLab需要开启Mermaid支持
+- 或使用在线Mermaid编辑器：https://mermaid.live/
+- 或查看项目其他文档中的架构图
+
+***
 
 ## 技术栈
 
 ### 后端技术
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| **Java** | 17+ | 主要开发语言 |
-| **Spring Boot** | 3.2 | 应用框架 |
-| **Spring Cloud** | 2023.0.3 | 微服务框架 |
-| **MyBatis-Plus** | 最新 | ORM框架 |
-| **Resilience4j** | 2.1.0 | 熔断器/弹性机制 |
-| **Nacos** | 2.3.0 | 服务注册与配置中心 |
-| **MySQL** | 8.0+ | 关系型数据库 |
-| **Redis** | 6.2+ | 缓存/会话存储 |
-| **Kafka** | 7.4.0 | 消息队列 |
+
+| 技术               | 版本       | 用途        |
+| ---------------- | -------- | --------- |
+| **Java**         | 17+      | 主要开发语言    |
+| **Spring Boot**  | 3.2      | 应用框架      |
+| **Spring Cloud** | 2023.0.3 | 微服务框架     |
+| **MyBatis-Plus** | 最新       | ORM框架     |
+| **Resilience4j** | 2.1.0    | 熔断与弹性机制   |
+| **Nacos**        | 2.3.0    | 服务注册与配置中心 |
+| **MySQL**        | 8.0+     | 关系型数据库    |
+| **Redis**        | 6.2+     | 缓存/会话存储   |
+| **Kafka**        | 7.4.0    | 消息队列      |
 
 ### 算法与AI
-| 技术 | 用途 |
-|------|------|
-| **Python** | 3.8+ | 算法开发语言 |
-| **WRF Model** | 气象数值预报 |
-| **NetCDF4** | 气象数据格式 |
-| **NumPy/SciPy** | 科学计算 |
-| **Dask/Ray/MPI** | 并行计算 |
+
+| 技术                     | 用途     |
+| ---------------------- | ------ |
+| **Python** 3.8+        | 算法开发语言 |
+| **WRF Model**          | 气象数值预报 |
+| **NetCDF4**            | 气象数据格式 |
+| **NumPy/SciPy**        | 科学计算   |
+| **Dask/Ray/MPI**       | 并行计算   |
 | **PyTorch/TensorFlow** | 深度学习框架 |
-| **ConvLSTM** | 时序气象预测 |
-| **XGBoost** | 气象订正 |
-| **CUDA/JAX** | GPU加速 |
+| **ConvLSTM**           | 时序气象预测 |
+| **XGBoost**            | 气象订正   |
+| **CUDA/JAX**           | GPU加速  |
 
 ### 前端技术
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| **Vue** | 3.3+ | 前端框架 |
-| **Vite** | 4.0+ | 构建工具 |
-| **Pinia** | 最新 | 状态管理 |
-| **Vue Router** | 4.0 | 路由管理 |
-| **Ant Design Vue** | 最新 | UI组件库 |
-| **Leaflet** | 最新 | 地图组件 |
-| **ECharts** | 最新 | 数据可视化 |
-| **Cesium** | 最新 | 3D地图/轨迹 |
+
+| 技术                 | 版本   | 用途      |
+| ------------------ | ---- | ------- |
+| **Vue**            | 3.3+ | 前端框架    |
+| **Vite**           | 4.0+ | 构建工具    |
+| **Pinia**          | 最新   | 状态管理    |
+| **Vue Router**     | 4.0  | 路由管理    |
+| **Ant Design Vue** | 最新   | UI组件库   |
+| **Leaflet**        | 最新   | 地图组件    |
+| **ECharts**        | 最新   | 数据可视化   |
+| **Cesium**         | 最新   | 3D地图/轨迹 |
 
 ### 边缘计算
-| 技术 | 用途 |
-|------|------|
-| **C++** | 高性能核心算法 |
-| **pybind11** | Python绑定 |
-| **TensorRT** | 模型推理加速 |
-| **ONNX Runtime** | 跨平台推理 |
-| **WebSocket** | 实时通信 |
+
+| 技术               | 用途       |
+| ---------------- | -------- |
+| **C++**          | 高性能核心算法  |
+| **pybind11**     | Python绑定 |
+| **TensorRT**     | 模型推理加速   |
+| **ONNX Runtime** | 跨平台推理    |
+| **WebSocket**    | 实时通信     |
 
 ### DevOps
-| 技术 | 用途 |
-|------|------|
-| **Docker** | 容器化 |
-| **Docker Compose** | 本地编排 |
-| **Kubernetes** | 容器编排 |
-| **Istio** | 服务网格 |
-| **Argo CD** | GitOps部署 |
-| **GitHub Actions** | CI/CD |
-| **Prometheus** | 监控指标 |
-| **Grafana** | 监控仪表板 |
-| **Jaeger** | 链路追踪 |
-| **ELK Stack** | 日志聚合 |
 
----
+| 技术                 | 用途       |
+| ------------------ | -------- |
+| **Docker**         | 容器化      |
+| **Docker Compose** | 本地编排     |
+| **Kubernetes**     | 容器编排     |
+| **Istio**          | 服务网格     |
+| **Argo CD**        | GitOps部署 |
+| **GitHub Actions** | CI/CD    |
+| **Prometheus**     | 监控指标     |
+| **Grafana**        | 监控仪表板    |
+| **Jaeger**         | 链路追踪     |
+| **ELK Stack**      | 日志聚合     |
+
+***
 
 ## 快速开始
 
 ### 前置要求
 
-确保你的系统已安装以下软件：
-
 - **Docker** 20.10+
 - **Docker Compose** 2.0+
 - **Git** 2.0+
-- **（可选）** Java 17+（如需本地开发）
-- **（可选）** Python 3.8+（如需本地算法开发）
-- **（可选）** Node.js 16+（如需本地前端开发）
+- Java 17+
+- Python 3.8+
+- Node.js 16+
 
 ### 1. 克隆项目
 
@@ -268,7 +304,7 @@ cd trae
 # 复制环境变量模板
 cp .env.example .env
 
-# 编辑 .env 文件，填入必要的配置
+# 编辑 .env 文件填入必要的配置
 # 至少需要修改：
 # - DB_PASSWORD: 数据库密码
 # - JWT_SECRET_KEY: JWT密钥（至少32字符）
@@ -305,22 +341,20 @@ docker-compose logs -f uav-platform
 1. **基础设施**：MySQL → Redis → Nacos → Kafka/ZooKeeper
 2. **微服务**：WRF Processor → Data Assimilation → Meteor Forecast → Path Planning → UAV Platform → Weather Collector → Edge-Cloud Coordinator
 3. **网关**：API Gateway
-4. **前端**：（可选，通过网关访问）
+4. **前端**（可选）：通过网关访问
 
 ### 4. 验证安装
 
 访问以下地址验证服务是否正常启动：
 
-| 服务 | URL | 说明 |
-|------|-----|------|
-| **API网关健康检查** | http://localhost:8088/actuator/health | 检查网关状态 |
-| **Nacos控制台** | http://localhost:8848/nacos | 服务注册中心（默认账号：nacos/nacos） |
-| **前端应用** | http://localhost:3000 | Web管理界面 |
-| **Swagger UI** | http://localhost:8080/swagger-ui.html | API文档（如果启用） |
+| 服务             | URL                                     | 说明                      |
+| -------------- | --------------------------------------- | ----------------------- |
+| **API网关健康检查**  | <http://localhost:8088/actuator/health> | 检查网关状态                  |
+| **Nacos控制台**   | <http://localhost:8848/nacos>           | 服务注册中心（默认账号nacos/nacos） |
+| **前端应用**       | <http://localhost:3000>                 | Web管理界面                 |
+| **Swagger UI** | <http://localhost:8080/swagger-ui.html> | API文档                   |
 
 ### 5. 快速测试
-
-使用curl测试API：
 
 ```bash
 # 测试网关健康检查
@@ -330,24 +364,26 @@ curl http://localhost:8088/actuator/health
 curl http://localhost:8080/actuator/health
 ```
 
----
+***
 
 ## 安装指南
 
-### 环境要求详细说明
+### 环境要求
 
 #### 硬件要求
 
-**开发环境（最小）：**
+**开发环境（最小）**：
+
 - CPU: 4核
 - 内存: 8GB RAM
 - 磁盘: 20GB 可用空间
 
-**生产环境（推荐）：**
+**生产环境（推荐）**：
+
 - CPU: 8+ 核
 - 内存: 16GB+ RAM
 - 磁盘: 50GB+ SSD
-- GPU: （可选）NVIDIA GPU 用于算法加速
+- GPU: 可选（NVIDIA GPU 用于算法加速）
 
 #### 操作系统支持
 
@@ -359,7 +395,7 @@ curl http://localhost:8080/actuator/health
 
 #### 方式一：Docker Compose 完整部署（推荐）
 
-适用于快速体验和开发环境。
+适用于快速体验和开发环境：
 
 ```bash
 # 1. 克隆项目
@@ -383,7 +419,7 @@ docker-compose ps
 
 #### 方式二：Kubernetes 部署
 
-适用于生产环境。详细步骤请参考 [部署指南](docs/deployment/DEPLOYMENT.md)。
+适用于生产环境，详细步骤请参考[部署指南](docs/deployment/DEPLOYMENT.md)：
 
 ```bash
 # 1. 创建命名空间
@@ -403,7 +439,8 @@ kubectl get pods -n uav-system
 
 适用于需要修改代码的开发者。
 
-**后端服务：**
+**后端服务**：
+
 ```bash
 # 1. 启动基础设施
 docker-compose up -d mysql redis nacos kafka
@@ -417,21 +454,23 @@ cd ../uav-platform-service
 mvn spring-boot:run
 ```
 
-**前端应用：**
+**前端应用**：
+
 ```bash
 cd uav-path-planning-system/frontend-vue
 npm install
 npm run dev
 ```
 
-**算法模块：**
+**算法模块**：
+
 ```bash
 cd data-assimilation-platform/algorithm_core
 pip install -e .[dev]
 python examples/basic_usage.py
 ```
 
----
+***
 
 ## 配置说明
 
@@ -511,9 +550,9 @@ resilience4j:
         base-config: default
 ```
 
-详细配置请参考 [熔断器指南](docs/guides/CIRCUIT_BREAKER_GUIDE.md)。
+详细配置请参考[熔断器指南](docs/guides/CIRCUIT_BREAKER_GUIDE.md)。
 
----
+***
 
 ## 使用指南
 
@@ -530,7 +569,8 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
   }'
 ```
 
-**响应：**
+**响应示例**：
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -592,7 +632,7 @@ curl -X POST http://localhost:8080/api/v1/tasks \
       {"lat": 39.9142, "lng": 116.4174, "order": 2},
       {"lat": 39.9242, "lng": 116.4274, "order": 3}
     ],
-    "departureTime": "2026-05-08T10:00:00Z",
+    "departureTime": "2026-05-09T10:00:00Z",
     "constraints": {
       "maxWindSpeed": 10,
       "minVisibility": 5000
@@ -614,7 +654,7 @@ curl http://localhost:8080/api/v1/tasks/1/path \
 ```bash
 curl -X POST http://localhost:8081/api/wrf/upload \
   -H "Authorization: Bearer YOUR_TOKEN" \
-  -F "file=@wrfout_d01_2026-05-08_00_00_00.nc"
+  -F "file=@wrfout_d01_2026-05-09_00_00_00.nc"
 ```
 
 #### 获取气象预报
@@ -624,7 +664,7 @@ curl "http://localhost:8082/api/forecast?lat=39.9042&lng=116.4074&hours=24" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
----
+***
 
 ## API文档
 
@@ -632,13 +672,13 @@ curl "http://localhost:8082/api/forecast?lat=39.9042&lng=116.4074&hours=24" \
 
 服务启动后可访问 Swagger UI：
 
-| 服务 | Swagger URL |
-|------|-------------|
-| UAV Platform Service | http://localhost:8080/swagger-ui.html |
-| WRF Processor Service | http://localhost:8081/swagger-ui.html |
-| Meteor Forecast Service | http://localhost:8082/swagger-ui.html |
-| Path Planning Service | http://localhost:8083/swagger-ui.html |
-| Data Assimilation Service | http://localhost:8084/swagger-ui.html |
+| 服务                        | Swagger URL                             |
+| ------------------------- | --------------------------------------- |
+| UAV Platform Service      | <http://localhost:8080/swagger-ui.html> |
+| WRF Processor Service     | <http://localhost:8081/swagger-ui.html> |
+| Meteor Forecast Service   | <http://localhost:8082/swagger-ui.html> |
+| Path Planning Service     | <http://localhost:8083/swagger-ui.html> |
+| Data Assimilation Service | <http://localhost:8084/swagger-ui.html> |
 
 ### 详细API文档
 
@@ -653,7 +693,7 @@ curl "http://localhost:8082/api/forecast?lat=39.9042&lng=116.4074&hours=24" \
 - [WRF处理API](docs/api/wrf-processor-service/wrf.md)
 - [数据同化API](docs/api/data-assimilation-service/assimilation.md)
 
----
+***
 
 ## 开发指南
 
@@ -662,7 +702,7 @@ curl "http://localhost:8082/api/forecast?lat=39.9042&lng=116.4074&hours=24" \
 ```
 trae/
 ├── api-gateway/                    # API网关
-├── common-utils/                   # 公共工具模块 ⭐
+├── common-utils/                   # 公共工具模块
 ├── uav-platform-service/           # 主平台服务
 ├── wrf-processor-service/          # WRF气象处理服务
 ├── meteor-forecast-service/        # 气象预测服务
@@ -670,12 +710,12 @@ trae/
 ├── data-assimilation-service/      # 数据同化服务
 ├── uav-weather-collector/          # 气象数据采集服务
 ├── edge-cloud-coordinator/         # 边云协同服务
-├── data-assimilation-platform/     # 贝叶斯同化平台（Python）
+├── data-assimilation-platform/     # 贝叶斯同化平台(Python)
 │   ├── algorithm_core/             # 核心算法库
 │   ├── service_spring/             # Java服务封装
 │   └── shared/protos/              # Protocol Buffers
 ├── uav-edge-sdk/                   # 边缘SDK
-├── uav-path-planning-system/       # 旧版系统（包含前端）
+├── uav-path-planning-system/       # 路径规划系统(含前端)
 │   └── frontend-vue/               # Vue3前端应用
 ├── deployments/                    # 部署配置
 │   ├── kubernetes/                 # K8s配置
@@ -686,21 +726,22 @@ trae/
 ├── scripts/                        # 工具脚本
 ├── docker-compose.yml              # Docker编排
 ├── .env.example                    # 环境变量模板
-└── README.md                       # 本文件
+└── README.md                       # 本文档
 ```
 
-详细项目结构请参考 [项目结构指南](docs/PROJECT_STRUCTURE.md)。
+详细项目结构请参考[项目结构指南](docs/PROJECT_STRUCTURE.md)。
 
 ### 开发环境设置
 
 #### 1. 后端开发（Java）
 
-**前置要求：**
+**前置要求**：
+
 - JDK 17+
 - Maven 3.8+
-- IDE：IntelliJ IDEA（推荐）或 Eclipse
+- IDE（IntelliJ IDEA推荐 / Eclipse）
 
-**设置步骤：**
+**设置步骤**：
 
 ```bash
 # 1. 安装公共模块到本地Maven仓库
@@ -711,7 +752,7 @@ mvn clean install
 # 在IDEA中选择 "Open"，选择项目根目录的pom.xml
 
 # 3. 配置IDE
-# - 设置JDK为17
+# - 设置JDK 17
 # - 配置Maven settings
 
 # 4. 运行服务
@@ -723,11 +764,12 @@ mvn spring-boot:run
 
 #### 2. 前端开发（Vue3）
 
-**前置要求：**
-- Node.js 16+
-- npm 8+ 或 pnpm 8+
+**前置要求**：
 
-**设置步骤：**
+- Node.js 16+
+- npm 8+ / pnpm 8+
+
+**设置步骤**：
 
 ```bash
 cd uav-path-planning-system/frontend-vue
@@ -747,20 +789,20 @@ npm run lint
 
 #### 3. 算法开发（Python）
 
-**前置要求：**
+**前置要求**：
+
 - Python 3.8+
 - pip / conda
 
-**设置步骤：**
+**设置步骤**：
 
 ```bash
 cd data-assimilation-platform/algorithm_core
 
 # 创建虚拟环境
 python -m venv venv
-source venv/bin/activate  # Linux/macOS
-# 或
-venv\Scripts\activate     # Windows
+source venv/bin/activate    # Linux/macOS
+# venv\Scripts\activate     # Windows
 
 # 安装依赖（开发模式）
 pip install -e .[dev]
@@ -834,7 +876,7 @@ pytest tests/integration/
 pytest --cov=bayesian_assimilation --cov-report=html
 ```
 
----
+***
 
 ## 部署指南
 
@@ -846,7 +888,7 @@ pytest --cov=bayesian_assimilation --cov-report=html
 
 ### 生产环境检查清单
 
-部署到生产环境前，请确认：
+部署到生产环境前请确认：
 
 - [ ] 所有密码和密钥已更新（不要使用默认值）
 - [ ] TLS/SSL证书已配置
@@ -856,9 +898,9 @@ pytest --cov=bayesian_assimilation --cov-report=html
 - [ ] 资源限制已设置
 - [ ] 自动扩缩容已配置
 - [ ] 灾备方案已制定
-- [ ] 安全审计已启用
+- [ ] 安全审计已启动
 
----
+***
 
 ## 监控与运维
 
@@ -866,13 +908,13 @@ pytest --cov=bayesian_assimilation --cov-report=html
 
 部署监控服务后可访问：
 
-| 服务 | URL | 默认账号 |
-|------|-----|----------|
-| **Grafana** | http://localhost:3000 | admin/admin |
-| **Prometheus** | http://localhost:9090 | - |
-| **Jaeger** | http://localhost:16686 | - |
-| **Alertmanager** | http://localhost:9093 | - |
-| **Kibana** | http://localhost:5601 | - |
+| 服务               | URL                      | 默认账号        |
+| ---------------- | ------------------------ | ----------- |
+| **Grafana**      | <http://localhost:3000>  | admin/admin |
+| **Prometheus**   | <http://localhost:9090>  | -           |
+| **Jaeger**       | <http://localhost:16686> | -           |
+| **Alertmanager** | <http://localhost:9093>  | -           |
+| **Kibana**       | <http://localhost:5601>  | -           |
 
 ### 常用运维命令
 
@@ -938,7 +980,7 @@ cp .env .env.backup
 kubectl get configmap -n uav-system -o yaml > configmaps-backup.yaml
 ```
 
----
+***
 
 ## 故障排除
 
@@ -946,9 +988,10 @@ kubectl get configmap -n uav-system -o yaml > configmaps-backup.yaml
 
 #### 1. 服务启动失败
 
-**症状：** 某个服务一直处于 restarting 状态
+**症状**：某个服务一直处于 restarting 状态。
 
-**排查步骤：**
+**排查步骤**：
+
 ```bash
 # 查看服务日志
 docker-compose logs [service-name]
@@ -960,16 +1003,18 @@ docker-compose ps
 netstat -tulpn | grep [port]
 ```
 
-**常见原因：**
-- 数据库连接失败 → 检查 `DB_PASSWORD` 配置
-- Nacos未启动 → 等待Nacos完全启动
-- 端口被占用 → 修改端口或停止占用程序
+**常见原因**：
+
+- 数据库连接失败：检查 `DB_PASSWORD` 配置
+- Nacos未启动：等待Nacos完全启动
+- 端口被占用：修改端口或停止占用程序
 
 #### 2. 前端无法连接后端
 
-**症状：** 前端显示网络错误
+**症状**：前端显示网络错误。
 
-**排查步骤：**
+**排查步骤**：
+
 ```bash
 # 检查网关是否正常
 curl http://localhost:8088/actuator/health
@@ -978,14 +1023,15 @@ curl http://localhost:8088/actuator/health
 # 确认 .env 中的 CORS_ORIGINS 包含前端地址
 
 # 检查浏览器控制台错误
-# F12 打开开发者工具查看 Network 标签
+# F12 打开开发者工具，查看 Network 标签
 ```
 
 #### 3. 算法调用超时
 
-**症状：** 路径规划或数据同化请求超时
+**症状**：路径规划或数据同化请求超时。
 
-**排查步骤：**
+**排查步骤**：
+
 ```bash
 # 检查Python Executor日志
 docker-compose logs uav-platform
@@ -1005,7 +1051,7 @@ docker stats
 2. 查看 [改进报告](docs/improvement_suggestions.md)
 3. 提交 Issue 到 GitHub
 
----
+***
 
 ## 贡献指南
 
@@ -1031,13 +1077,13 @@ docker stats
 
 查看 [更新日志](docs/CHANGELOG.md) 了解项目进展。
 
----
+***
 
 ## 许可证
 
-本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
+本项目采用 MIT 许可证。详见 [LICENSE](LICENSE) 文件。
 
----
+***
 
 ## 团队
 
@@ -1049,7 +1095,7 @@ docker stats
 
 感谢所有为本项目做出贡献的开发者！
 
----
+***
 
 ## 致谢
 
@@ -1057,16 +1103,16 @@ docker stats
 - 感谢 Spring 社区提供的优秀微服务框架
 - 感谢所有开源贡献者的努力
 
----
+***
 
 ## 联系方式
 
-- **项目地址**: https://github.com/602420232-dotcom/weather
+- **项目地址**: <https://github.com/602420232-dotcom/weather>
 - **文档中心**: [docs/README.md](docs/README.md)
-- **问题反馈**: GitHub Issues
 
----
+***
 
-> **最后更新**: 2026-05-08  
-> **版本**: 2.1  
+> **最后更新**: 2026-05-10\
+> **版本**: 2.2\
 > **维护者**: DITHIOTHREITOL
+

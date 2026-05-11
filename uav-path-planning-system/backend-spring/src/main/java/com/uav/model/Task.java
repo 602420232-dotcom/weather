@@ -1,7 +1,13 @@
 package com.uav.model;
 import lombok.Data;
 import java.time.LocalDateTime;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
 @Data
 @Entity
@@ -14,26 +20,20 @@ public class Task {
     private String name;
     private String description;
     
-    // 任务点坐标
     private Double latitude;
     private Double longitude;
     private Double altitude;
     
-    // 任务需求
     private Double demand;
     
-    // 时间窗
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private Integer serviceTime; // 服务时间（分钟）
+    private Integer serviceTime;
     
-    // 优先级
     private Integer priority;
     
-    // 任务状态
-    private String status; // PENDING, IN_PROGRESS, COMPLETED, FAILED
+    private String status;
     
-    // 创建和更新时间
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
@@ -47,4 +47,6 @@ public class Task {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+    
+    private String type;
 }

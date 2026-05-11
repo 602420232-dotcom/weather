@@ -1,22 +1,22 @@
-# UAV Path Planning Frontend - Vue3 Application
+﻿# UAV Path Planning Frontend - Vue3 Application
 
-## 📋 应用概述
+##  应用概述
 
-Vue3 + Vite 前端应用，为无人机路径规划系统提供 Web 界面。
+Vue3 + Vite 前端应用为无人机路径规划系统提?Web 界面?
 
 **技术栈**:
 - Vue 3 (Composition API)
 - Vite (构建工具)
 - Vue Router (路由)
-- Pinia (状态管理)
-- Axios (HTTP 客户端)
-- Ant Design Vue (UI 组件库)
-- ECharts (数据可视化)
+- Pinia (状态管?
+- Axios (HTTP 客户?
+- Ant Design Vue (UI 组件?
+- ECharts (数据可视?
 - Leaflet (地图组件)
 
 ---
 
-## 🔌 端口配置
+##  端口配置
 
 ### 开发服务器端口
 
@@ -46,32 +46,31 @@ export default defineConfig({
 | `/api` | `http://localhost:8080` | API 网关代理 |
 
 **代理规则**:
-- 请求 `/api/v1/**` → `http://localhost:8080/v1/**`
-- 请求 `/api/forecast/**` → `http://localhost:8080/forecast/**`
-- 请求 `/api/planning/**` → `http://localhost:8080/planning/**`
+- 请求 `/api/v1/**` `http://localhost:8080/v1/**`
+- 请求 `/api/forecast/**` `http://localhost:8080/forecast/**`
+- 请求 `/api/planning/**` `http://localhost:8080/planning/**`
 
 ---
 
-## 🚀 快速开始
+##  快速开?
 
 ### 环境要求
 
 - **Node.js**: 16+ (推荐 18.x)
-- **npm**: 8+ 或 **pnpm**: 8+
+- **npm**: 8+ ?**pnpm**: 8+
 
 ### 安装依赖
 
 ```bash
 cd uav-path-planning-system/frontend-vue
 npm install
-# 或
-pnpm install
+# pnpm install
 ```
 
 ### 启动开发服务器
 
 ```bash
-# 开发模式 (端口 3000)
+# 开发模块(端口 3000)
 npm run dev
 
 # 生产构建
@@ -83,32 +82,32 @@ npm run preview
 
 ### 访问应用
 
-开发服务器启动后，访问: **http://localhost:3000**
+开发服务器启动后访问: **http://localhost:3000**
 
 ---
 
-## 📁 项目结构
+##  项目结构
 
 ```
 frontend-vue/
-├── src/
-│   ├── components/      # Vue 组件
-│   ├── views/          # 页面视图
-│   ├── stores/         # Pinia 状态管理
-│   ├── api/            # API 调用
-│   ├── router/         # Vue Router 配置
-│   ├── App.vue         # 根组件
-│   └── main.js         # 应用入口
-├── public/            # 静态资源
-├── index.html         # HTML 入口
-├── vite.config.js     # Vite 配置 (端口配置)
-├── package.json
-└── README.md
+ src/
+-   components/      # Vue 组件
+-   views/          # 页面视图
+-   stores/         # Pinia 状态管?
+-   api/            # API 调用
+-   router/         # Vue Router 配置
+-   App.vue         # 根组?
+-   main.js         # 应用入口
+ public/            # 静态资?
+ index.html         # HTML 入口
+ vite.config.js     # Vite 配置 (端口配置)
+ package.json
+ README.md
 ```
 
 ---
 
-## ⚙️ 配置说明
+##  配置说明
 
 ### 开发环境配置
 
@@ -116,8 +115,8 @@ frontend-vue/
 ```javascript
 server: {
   port: 3000,              // 开发服务器端口
-  host: '0.0.0.0',        // 监听所有网卡
-  open: true,             // 自动打开浏览器
+  host: '0.0.0.0',        // 监听所有网?
+  open: true,             // 自动打开浏览?
   cors: true              // 允许跨域
 }
 ```
@@ -135,16 +134,16 @@ VITE_APP_TITLE=UAV Path Planning
 
 ---
 
-## 🔗 API 集成
+##  API 集成
 
 ### 后端服务连接
 
-前端通过 API 网关与后端服务通信：
+前端通过 API 网关与后端服务通信?
 
-| 后端服务 | 端口 | API 前缀 | 用途 |
+| 后端服务 | 端口 | API 前缀 | 用?|
 |----------|------|----------|------|
 | **API Gateway** | 8088 | `/api` | 统一入口 |
-| **Platform Service** | 8080 | `/api/v1` | 用户认证、任务管理 |
+| **Platform Service** | 8080 | `/api/v1` | 用户认证任务管?|
 | **Meteor Forecast** | 8082 | `/api/forecast` | 气象预报 |
 | **Path Planning** | 8083 | `/api/planning` | 路径规划 |
 | **Data Assimilation** | 8084 | `/api/assimilation` | 数据同化 |
@@ -161,7 +160,7 @@ const api = axios.create({
   timeout: 30000
 })
 
-// 请求拦截器
+// 请求拦截?
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token')
   if (token) {
@@ -170,12 +169,12 @@ api.interceptors.request.use(config => {
   return config
 })
 
-// 响应拦截器
+// 响应拦截?
 api.interceptors.response.use(
   response => response.data,
   error => {
     if (error.response?.status === 401) {
-      // 处理未授权
+      // 处理未授?
       router.push('/login')
     }
     return Promise.reject(error)
@@ -187,9 +186,9 @@ export default api
 
 ---
 
-## 🐳 Docker 部署
+##  Docker 部署
 
-### 开发环境 Docker
+### 开发环?Docker
 
 ```yaml
 # docker-compose.dev.yml
@@ -222,19 +221,19 @@ docker run -d -p 3000:80 uav-frontend:latest
 
 ---
 
-## 🔧 常用命令
+##  常用命令
 
 | 命令 | 说明 | 端口 |
 |------|------|------|
 | `npm run dev` | 启动开发服务器 | 3000 |
 | `npm run build` | 生产构建 | - |
 | `npm run preview` | 预览构建结果 | 4173 |
-| `npm run lint` | 代码检查 | - |
+| `npm run lint` | 代码检查| - |
 | `npm run test` | 运行测试 | - |
 
 ---
 
-## 🌐 生产部署
+##  生产部署
 
 ### Nginx 配置
 
@@ -262,7 +261,7 @@ server {
         try_files $uri $uri/ /index.html;
     }
     
-    # 静态资源缓存
+    # 静态资源缓?
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
         expires 1y;
         add_header Cache-Control "public, immutable";
@@ -273,6 +272,7 @@ server {
 
 ---
 
-> **最后更新**: 2026-05-08  
+> **最后更新*: 2026-05-09  
 > **版本**: 2.1  
-> **维护者**: DITHIOTHREITOL
+> **维护者*: DITHIOTHREITOL
+

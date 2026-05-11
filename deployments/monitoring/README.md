@@ -1,14 +1,14 @@
-# UAV Platform Monitoring & Logging Guide
+﻿# UAV Platform Monitoring & Logging Guide
 
-## 📊 监控和日志聚合系统
+##  监控和日志聚合系?
 
-本指南说明了如何配置和使用UAV平台的监控告警和日志聚合系统。
+本指南说明了如何配置和使用UAV平台的监控告警和日志聚合系统?
 
 ---
 
-## 🚀 快速开始
+##  快速开?
 
-### 1. 启动监控栈
+### 1. 启动监控?
 
 ```bash
 # 进入监控目录
@@ -23,7 +23,7 @@ docker-compose -f docker-compose.monitoring.yml ps
 
 ### 2. 访问监控界面
 
-| 服务 | URL | 默认用户名 | 默认密码 |
+| 服务 | URL | 默认用户?| 默认密码 |
 |------|-----|----------|---------|
 | Grafana | http://localhost:3000 | admin | changeme123 |
 | Prometheus | http://localhost:9090 | - | - |
@@ -33,7 +33,7 @@ docker-compose -f docker-compose.monitoring.yml ps
 
 ### 3. 配置环境变量
 
-创建 `.env` 文件：
+创建 `.env` 文件?
 
 ```bash
 # Monitoring Configuration
@@ -49,11 +49,11 @@ SMTP_PASSWORD=your_smtp_password
 
 ---
 
-## 📈 Prometheus 监控
+##  Prometheus 监控
 
 ### Prometheus 配置
 
-Prometheus 自动从以下服务收集指标：
+Prometheus 自动从以下服务收集指标
 
 1. **Spring Boot 应用**
    - `uav-platform-service:8080/actuator/prometheus`
@@ -73,9 +73,9 @@ Prometheus 自动从以下服务收集指标：
 ### 关键指标
 
 #### 系统指标
-- `cpu_usage_percent`: CPU使用率
-- `memory_usage_percent`: 内存使用率
-- `disk_usage_percent`: 磁盘使用率
+- `cpu_usage_percent`: CPU使用?
+- `memory_usage_percent`: 内存使用?
+- `disk_usage_percent`: 磁盘使用?
 
 #### 应用指标
 - `http_requests_total`: HTTP请求总数
@@ -83,54 +83,54 @@ Prometheus 自动从以下服务收集指标：
 - `jvm_memory_used_bytes`: JVM内存使用
 
 #### 业务指标
-- `weather_data_collection_total`: 气象数据采集数
-- `path_planning_requests_total`: 路径规划请求数
+- `weather_data_collection_total`: 气象数据采集?
+- `path_planning_requests_total`: 路径规划请求?
 - `authentication_failures_total`: 认证失败次数
 
 ### 告警规则
 
-告警分为以下级别：
+告警分为以下级别?
 
-1. **Critical（严重）**
+1. **Critical严重**
    - 服务宕机
-   - 错误率 > 20%
-   - CPU/内存使用率 > 95%
+   - 错误?> 20%
+   - CPU/内存使用?> 95%
 
-2. **Warning（警告）**
+2. **Warning警告**
    - 高错误率 > 5%
-   - 高延迟 > 2秒
-   - CPU/内存使用率 > 80%
+   - 高延?> 2?
+   - CPU/内存使用?> 80%
 
-3. **Info（信息）**
-   - 建议扩缩容
+3. **Info信息**
+   - 建议扩缩?
    - 性能指标
 
 ### 查询示例
 
 ```promql
-# CPU使用率
+# CPU使用?
 cpu_usage_percent
 
-# 错误率
+# 错误?
 rate(http_requests_total{status=~"5.."}[5m])
 
 # P95延迟
 http_request_duration_seconds{quantile="0.95"}
 
-# 请求率
+# 请求?
 rate(http_requests_total[5m])
 ```
 
 ---
 
-## 📉 Grafana 仪表板
+##  Grafana 仪表?
 
-### 导入仪表板
+### 导入仪表?
 
 1. 登录 Grafana
-2. 点击 "+" → "Import"
+2. 点击 "+" ?"Import"
 3. 上传 `grafana/dashboards/*.json` 文件
-4. 选择 Prometheus 数据源
+4. 选择 Prometheus 数据?
 
 ### 预配置仪表板
 
@@ -174,14 +174,14 @@ rate(http_requests_total[5m])
 
 ---
 
-## 📋 ELK Stack 日志聚合
+##  ELK Stack 日志聚合
 
 ### Elasticsearch 索引
 
-日志自动按以下方式索引：
+日志自动按以下方式索引
 
 ```
-uav-logs-YYYY.MM.DD          # 普通日志
+uav-logs-YYYY.MM.DD          # 普通日?
 uav-logs-error-YYYY.MM.DD    # 错误日志
 uav-metrics-YYYY.MM.DD       # 性能指标
 ```
@@ -190,9 +190,9 @@ uav-metrics-YYYY.MM.DD       # 性能指标
 
 #### 1. 创建索引模式
 
-1. 进入 Kibana → Management → Index Patterns
+1. 进入 Kibana ?Management ?Index Patterns
 2. 创建 `uav-logs-*` 索引模式
-3. 设置 `@timestamp` 为时间字段
+3. 设置 `@timestamp` 为时间字?
 
 #### 2. 常用查询
 
@@ -213,36 +213,34 @@ level:ERROR AND logger_name:com.uav.auth
 @timestamp:[now-1h TO now]
 ```
 
-#### 3. 可视化
+#### 3. 可视?
 
-创建以下可视化：
-- 错误率时间序列
+创建以下可视化
+- 错误率时间序?
 - 日志级别分布饼图
 - Top 10 错误
 - 请求延迟热图
 
 ### Logstash 管道
 
-日志处理流程：
+日志处理流程?
 
 ```
-Filebeat/Application → Logstash → Elasticsearch → Kibana
+Filebeat/Application ?Logstash ?Elasticsearch ?Kibana
 ```
 
-自定义处理规则在 `logstash/pipeline/logstash.conf` 中配置。
+自定义处理规则在 `logstash/pipeline/logstash.conf` 中配置?
 
 ---
 
-## 🔔 Alertmanager 告警
+##  Alertmanager 告警
 
 ### 告警流程
 
 ```
-Prometheus → Alertmanager → Slack/Email/PagerDuty
-            ↓
-         Webhook
-            ↓
-      Alert Webhook App → Slack
+Prometheus ?Alertmanager ?Slack/Email/PagerDuty
+            -          Webhook
+            -       Alert Webhook App ?Slack
 ```
 
 ### 配置通知渠道
@@ -256,7 +254,7 @@ Prometheus → Alertmanager → Slack/Email/PagerDuty
 
 #### Email
 
-在 `alertmanager.yml` 中配置 SMTP：
+?`alertmanager.yml` 中配置SMTP?
 
 ```yaml
 global:
@@ -268,7 +266,7 @@ global:
 
 #### PagerDuty
 
-添加 PagerDuty 接收器：
+添加 PagerDuty 接收器
 
 ```yaml
 - name: 'pagerduty'
@@ -279,18 +277,18 @@ global:
 
 ### 告警抑制
 
-防止告警风暴：
+防止告警风暴?
 - 相同告警合并
 - 抑制低优先级告警
 - 重复间隔控制
 
 ---
 
-## 🔍 Jaeger 链路追踪
+##  Jaeger 链路追踪
 
 ### 配置应用
 
-在 Spring Boot 应用中添加：
+?Spring Boot 应用中添加
 
 ```yaml
 spring:
@@ -300,7 +298,7 @@ spring:
     endpoint: http://jaeger:14268/api/traces
 ```
 
-在 Python 应用中：
+?Python 应用中
 
 ```python
 from jaeger_client import Config
@@ -318,39 +316,39 @@ tracer = config.initialize_tracer()
 
 1. 访问 http://localhost:16686
 2. 选择服务
-3. 查看分布式追踪
+3. 查看分布式追?
 
 ---
 
-## 📊 性能基准
+##  性能基准
 
 ### 性能目标
 
-| 指标 | 目标值 | 告警阈值 |
+| 指标 | 目标?| 告警阈?|
 |------|--------|---------|
 | API响应时间 (P95) | < 200ms | > 2s |
 | API响应时间 (P99) | < 500ms | > 5s |
-| 错误率 | < 0.1% | > 5% |
-| 可用性 | > 99.9% | < 99% |
-| CPU使用率 | < 70% | > 80% |
-| 内存使用率 | < 80% | > 85% |
+| 错误?| < 0.1% | > 5% |
+| 可用?| > 99.9% | < 99% |
+| CPU使用?| < 70% | > 80% |
+| 内存使用?| < 80% | > 85% |
 
 ### 容量规划
 
-根据当前负载：
+根据当前负载?
 
-- **CPU**: 每100 RPS需要约1核
-- **内存**: 每100 RPS需要约512MB
+- **CPU**: ?00 RPS需要约1?
+- **内存**: ?00 RPS需要约512MB
 - **磁盘**: 日志保留30天约需50GB
 
 ---
 
-## 🛠 故障排查
+##  故障排查
 
-### Prometheus 不工作
+### Prometheus 不工?
 
 ```bash
-# 检查 Prometheus 日志
+# 检查Prometheus 日志
 docker-compose logs prometheus
 
 # 检查目标状态
@@ -360,20 +358,20 @@ curl http://localhost:9090/api/v1/targets
 curl -X POST http://localhost:9093/-/reload
 ```
 
-### Elasticsearch 不工作
+### Elasticsearch 不工?
 
 ```bash
 # 检查健康状态
 curl http://localhost:9200/_cluster/health
 
-# 检查索引
+# 检查索?
 curl http://localhost:9200/_cat/indices
 
 # 查看磁盘使用
 curl http://localhost:9200/_cat/allocation
 ```
 
-### Alertmanager 不工作
+### Alertmanager 不工?
 
 ```bash
 # 查看告警状态
@@ -387,7 +385,7 @@ curl -X POST http://localhost:5000/webhook \
 
 ---
 
-## 📚 资源
+##  资源
 
 ### 文档链接
 
@@ -406,18 +404,18 @@ curl -X POST http://localhost:5000/webhook \
 
 ---
 
-## 🔐 安全建议
+##  安全建议
 
 ### 网络安全
 
 1. **限制访问**
    - 仅在需要时暴露端口
-   - 使用防火墙规则
+   - 使用防火墙规?
    - 启用 HTTPS
 
 2. **认证**
    - 更改默认密码
-   - 使用强密码
+   - 使用强密?
    - 启用 RBAC
 
 ### 数据安全
@@ -435,6 +433,7 @@ curl -X POST http://localhost:5000/webhook \
 
 ---
 
-> **最后更新**: 2026-05-08  
+> **最后更新*: 2026-05-09  
 > **版本**: 2.1  
-> **维护者**: DITHIOTHREITOL
+> **维护者*: DITHIOTHREITOL
+

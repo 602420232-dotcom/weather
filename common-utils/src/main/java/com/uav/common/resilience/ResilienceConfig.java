@@ -1,15 +1,14 @@
 package com.uav.common.resilience;
 
-import io.github.resilience4j.circuitbreaker.*;
-import io.github.resilience4j.circuitbreaker.event.*;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
-import io.github.resilience4j.timelimiter.TimeLimiter;
 import io.github.resilience4j.timelimiter.TimeLimiterConfig;
 import io.github.resilience4j.timelimiter.TimeLimiterRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -26,11 +25,10 @@ import java.util.concurrent.TimeoutException;
  * Resilience4j 熔断器配置类
  * 为微服务间调用提供熔断、重试、限流保护
  */
+@Slf4j
 @Configuration
 @EnableConfigurationProperties
 public class ResilienceConfig {
-    
-    private static final Logger log = LoggerFactory.getLogger(ResilienceConfig.class);
     
     @Value("${spring.application.name:unknown}")
     private String applicationName;

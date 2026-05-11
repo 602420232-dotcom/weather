@@ -4,7 +4,7 @@ spring:
   
   # 数据库配置
   datasource:
-    url: jdbc:mysql://localhost:3306/uav_platform?useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/uav_platform?useSSL=true&requireSSL=true&serverTimezone=UTC
     username: ${DB_USER:root}
     password: ${DB_PASSWORD}  # 移除默认值，强制要求配置
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -18,7 +18,7 @@ spring:
   # Spring Security配置
   security:
     user:
-      name: admin
+      name: ${SECURITY_USER_NAME:admin}
       password: ${SECURITY_USER_PASSWORD}  # 移除默认值，强制要求配置
       roles: ADMIN
 

@@ -1,4 +1,4 @@
-# UAV Path Planning App - Assets Directory
+﻿# UAV Path Planning App - Assets Directory
 
 This directory contains static assets for the application.
 
@@ -6,14 +6,14 @@ This directory contains static assets for the application.
 
 ```
 assets/
-├── config/
-│   └── default_config.json    # Default application configuration
-├── images/
-│   └── .gitkeep              # App images (logos, backgrounds, etc.)
-├── icons/
-│   └── .gitkeep              # Custom icons
-└── fonts/
-    └── .gitkeep              # Custom fonts (if needed)
+ config/
+?   default_config.json    # Default application configuration
+ images/
+?   .gitkeep              # App images (logos, backgrounds, etc.)
+ icons/
+?   .gitkeep              # Custom icons
+ fonts/
+     .gitkeep              # Custom fonts (if needed)
 ```
 
 ## Usage
@@ -32,3 +32,4 @@ Place custom fonts in `fonts/`
 ## Configuration
 
 Edit `config/default_config.json` to modify default settings.
+

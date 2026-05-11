@@ -1,7 +1,6 @@
 package com.uav.controller;
 
 import com.uav.service.RealDataSourceService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -9,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -39,10 +39,14 @@ class RealDataSourceControllerTest {
             when(realDataSourceService.getGroundStationData()).thenReturn(data);
 
             ResponseEntity<Map<String, Object>> response = controller.getGroundStationData();
+            HttpStatusCode statusCode = response.getStatusCode();
+            Map<String, Object> body = response.getBody();
 
-            assertEquals(200, response.getStatusCodeValue());
-            assertEquals(200, response.getBody().get("code"));
-            assertEquals(data, response.getBody().get("data"));
+            assertNotNull(statusCode);
+            assertEquals(200, statusCode.value());
+            assertNotNull(body);
+            assertEquals(200, body.get("code"));
+            assertEquals(data, body.get("data"));
         }
 
         @Test
@@ -51,8 +55,10 @@ class RealDataSourceControllerTest {
             when(realDataSourceService.getGroundStationData()).thenReturn(List.of());
 
             ResponseEntity<Map<String, Object>> response = controller.getGroundStationData();
+            HttpStatusCode statusCode = response.getStatusCode();
 
-            assertEquals(200, response.getStatusCodeValue());
+            assertNotNull(statusCode);
+            assertEquals(200, statusCode.value());
         }
     }
 
@@ -68,9 +74,13 @@ class RealDataSourceControllerTest {
             when(realDataSourceService.getBuoyData()).thenReturn(data);
 
             ResponseEntity<Map<String, Object>> response = controller.getBuoyData();
+            HttpStatusCode statusCode = response.getStatusCode();
+            Map<String, Object> body = response.getBody();
 
-            assertEquals(200, response.getStatusCodeValue());
-            assertEquals(data, response.getBody().get("data"));
+            assertNotNull(statusCode);
+            assertEquals(200, statusCode.value());
+            assertNotNull(body);
+            assertEquals(data, body.get("data"));
         }
     }
 
@@ -86,9 +96,13 @@ class RealDataSourceControllerTest {
             when(realDataSourceService.getDataSourceStatus()).thenReturn(status);
 
             ResponseEntity<Map<String, Object>> response = controller.getDataSourceStatus();
+            HttpStatusCode statusCode = response.getStatusCode();
+            Map<String, Object> body = response.getBody();
 
-            assertEquals(200, response.getStatusCodeValue());
-            assertEquals(status, response.getBody().get("data"));
+            assertNotNull(statusCode);
+            assertEquals(200, statusCode.value());
+            assertNotNull(body);
+            assertEquals(status, body.get("data"));
         }
 
         @Test
@@ -97,9 +111,11 @@ class RealDataSourceControllerTest {
             when(realDataSourceService.getDataSourceStatus()).thenReturn(Map.of());
 
             ResponseEntity<Map<String, Object>> response = controller.getDataSourceStatus();
+            Map<String, Object> body = response.getBody();
 
-            assertNotNull(response.getBody().get("code"));
-            assertNotNull(response.getBody().get("message"));
+            assertNotNull(body);
+            assertNotNull(body.get("code"));
+            assertNotNull(body.get("message"));
         }
     }
 
@@ -113,9 +129,16 @@ class RealDataSourceControllerTest {
             when(realDataSourceService.getBuoyData()).thenReturn(List.of());
             when(realDataSourceService.getDataSourceStatus()).thenReturn(Map.of());
 
-            assertEquals(200, controller.getGroundStationData().getStatusCodeValue());
-            assertEquals(200, controller.getBuoyData().getStatusCodeValue());
-            assertEquals(200, controller.getDataSourceStatus().getStatusCodeValue());
+            HttpStatusCode gsStatus = controller.getGroundStationData().getStatusCode();
+            HttpStatusCode buoyStatus = controller.getBuoyData().getStatusCode();
+            HttpStatusCode statusStatus = controller.getDataSourceStatus().getStatusCode();
+
+            assertNotNull(gsStatus);
+            assertNotNull(buoyStatus);
+            assertNotNull(statusStatus);
+            assertEquals(200, gsStatus.value());
+            assertEquals(200, buoyStatus.value());
+            assertEquals(200, statusStatus.value());
         }
     }
 }

@@ -22,8 +22,11 @@ import time
 
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8088")
 API_GATEWAY = BASE_URL
-TEST_USERNAME = os.environ.get("TEST_USERNAME", "testuser")
-TEST_PASSWORD = os.environ.get("TEST_PASSWORD", "Test@123456")  # noqa: S105
+try:
+    TEST_USERNAME = os.environ["TEST_USERNAME"]
+    TEST_PASSWORD = os.environ["TEST_PASSWORD"]
+except KeyError as e:
+    raise EnvironmentError(f"缺少必需的环境变量: {e}. 请设置 TEST_USERNAME 和 TEST_PASSWORD") from e
 
 
 class TestAuthenticationFlow:

@@ -1,30 +1,30 @@
-# Data Assimilation Benchmarks
+﻿# Data Assimilation Benchmarks
 
-## 📋 概述
+##  概述
 
-性能基准测试套件，用于评估数据同化算法的性能。
+性能基准测试套件用于评估数据同化算法的性能?
 
 ---
 
-## 📁 目录结构
+##  目录结构
 
 ```
 benchmarks/
-├── data/                  # 测试数据
-├── results/              # 测试结果
-├── run_benchmarks.py     # 运行脚本
-├── test_*.py            # 测试文件
-└── README.md            # 本文档
+ data/                  # 测试数据
+ results/              # 测试结果
+ run_benchmarks.py     # 运行脚本
+ test_*.py            # 测试文件
+ README.md            # 本文?
 ```
 
 ---
 
-## 🚀 运行测试
+##  运行测试
 
 ### 基本用法
 
 ```bash
-# 运行所有基准测试
+# 运行所有基准测?
 python run_benchmarks.py
 
 # 测试特定算法
@@ -45,17 +45,17 @@ python run_benchmarks.py --report --output results/report.html
 
 ---
 
-## 📊 性能指标
+##  性能指标
 
 | 指标 | 3D-VAR | 4D-VAR | EnKF |
 |------|--------|--------|------|
 | 平均耗时 | 2.3s | 5.1s | 3.8s |
-| 吞吐量 | 150/s | 80/s | 120/s |
+| 吞吐?| 150/s | 80/s | 120/s |
 | 内存使用 | 1.2GB | 2.1GB | 1.8GB |
 
 ---
 
-## 📈 查看结果
+##  查看结果
 
 ```bash
 # 查看历史结果
@@ -68,6 +68,7 @@ python compare_results.py --baseline results/baseline.json --current results/cur
 
 ---
 
-> **最后更新**: 2026-05-08  
+> **最后更新*: 2026-05-09  
 > **版本**: 2.1  
-> **维护者**: DITHIOTHREITOL
+> **维护者*: DITHIOTHREITOL
+

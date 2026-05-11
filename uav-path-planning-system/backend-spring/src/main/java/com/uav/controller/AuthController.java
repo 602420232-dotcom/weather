@@ -33,15 +33,18 @@ public class AuthController {
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final SecurityAuditConfig securityAuditConfig;
 
     public AuthController(AuthenticationManager authenticationManager,
                           CustomUserDetailsService userDetailsService,
                           JwtUtil jwtUtil,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          SecurityAuditConfig securityAuditConfig) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
+        this.securityAuditConfig = securityAuditConfig;
     }
 
     @PostMapping("/login")
@@ -64,7 +67,7 @@ public class AuthController {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             String token = jwtUtil.generateToken(userDetails);
 
-            SecurityAuditConfig.logAuthenticationSuccess(username, httpRequest);
+            securityAuditConfig.logAuthenticationSuccess(username, httpRequest);
 
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
@@ -73,21 +76,21 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
             // 统一错误消息，不暴露是用户名错误还是密码错误
-            SecurityAuditConfig.logAuthenticationFailure(username, "凭证错误", httpRequest);
+            securityAuditConfig.logAuthenticationFailure(username, "凭证错误", httpRequest);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("用户名或密码错误");
         } catch (DisabledException e) {
-            SecurityAuditConfig.logAuthenticationFailure(username, "账户已禁用", httpRequest);
+            securityAuditConfig.logAuthenticationFailure(username, "账户已禁用", httpRequest);
             // 注意：这里仍然暴露账户状态，但这是必要的用户体验反馈
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("账户已被禁用");
         } catch (LockedException e) {
-            SecurityAuditConfig.logAuthenticationFailure(username, "账户已锁定", httpRequest);
+            securityAuditConfig.logAuthenticationFailure(username, "账户已锁定", httpRequest);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("账户已被锁定");
         } catch (UsernameNotFoundException e) {
             // 重要：不能暴露用户是否存在，统一错误消息
-            SecurityAuditConfig.logAuthenticationFailure(username, "凭证错误", httpRequest);
+            securityAuditConfig.logAuthenticationFailure(username, "凭证错误", httpRequest);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("用户名或密码错误");
         } catch (AuthenticationException e) {
-            SecurityAuditConfig.logAuthenticationFailure(username, "认证失败", httpRequest);
+            securityAuditConfig.logAuthenticationFailure(username, "认证失败", httpRequest);
             throw new BusinessException("AUTH_ERROR", "登录失败，请稍后重试");
         }
     }
@@ -140,9 +143,9 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest httpRequest) {
-        String username = SecurityAuditConfig.getCurrentUsername();
+        String username = securityAuditConfig.getCurrentUsername();
 
-        SecurityAuditConfig.logUserActivity(username, "登出", "用户主动登出");
+        securityAuditConfig.logUserActivity(username, "登出", "用户主动登出");
 
         return ResponseEntity.ok("登出成功");
     }

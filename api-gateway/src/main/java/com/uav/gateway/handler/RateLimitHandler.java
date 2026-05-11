@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,7 @@ public class RateLimitHandler {
         this.objectMapper = objectMapper;
     }
 
+    @SuppressWarnings("null")
     public Mono<Void> handle(ServerWebExchange exchange) {
         exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
@@ -32,14 +34,18 @@ public class RateLimitHandler {
         body.put("timestamp", LocalDateTime.now().toString());
         body.put("retry-after", 60);
         
-        byte[] bytes;
-        try {
-            bytes = objectMapper.writeValueAsBytes(body);
-        } catch (JsonProcessingException e) {
-            bytes = "{\"code\":429,\"message\":\"Rate limit exceeded\"}".getBytes();
-        }
-        
+        byte[] bytes = createResponseBytes(body);
+        @SuppressWarnings("null")
         DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(bytes);
         return exchange.getResponse().writeWith(Mono.just(buffer));
+    }
+    
+    private byte[] createResponseBytes(Map<String, Object> body) {
+        try {
+            byte[] result = objectMapper.writeValueAsBytes(body);
+            return (result != null) ? result : "{}".getBytes(StandardCharsets.UTF_8);
+        } catch (JsonProcessingException e) {
+            return "{\"code\":429,\"message\":\"Rate limit exceeded\"}".getBytes(StandardCharsets.UTF_8);
+        }
     }
 }

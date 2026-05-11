@@ -87,17 +87,18 @@ spring:
           enabled: true
           lower-case-service-id: true
 
-  redis:
-    host: ${REDIS_HOST:redis}
-    port: ${REDIS_PORT:6379}
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway,metrics
-  metrics:
-    tags:
+        include: health,info,gateway,metrics,prometheus
+  observations:
+    key-values:
       application: ${spring.application.name}
 
 logging:

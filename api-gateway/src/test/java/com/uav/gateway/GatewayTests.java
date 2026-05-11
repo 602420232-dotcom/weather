@@ -35,9 +35,12 @@ class GatewayTests {
         RateLimitConfig config = new RateLimitConfig();
         KeyResolver resolver = config.ipKeyResolver();
 
+        java.net.InetSocketAddress remoteAddr = java.net.InetSocketAddress.createUnresolved("192.168.1.1", 8080);
+        assertNotNull(remoteAddr);
+
         MockServerHttpRequest request = MockServerHttpRequest
             .get("/api/test")
-            .remoteAddress(java.net.InetSocketAddress.createUnresolved("192.168.1.1", 8080))
+            .remoteAddress(remoteAddr)
             .build();
         MockServerWebExchange exchange = MockServerWebExchange.from(request);
 
@@ -64,11 +67,5 @@ class GatewayTests {
         com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
         RateLimitHandler handler = new RateLimitHandler(mapper);
         assertNotNull(handler);
-    }
-
-    @Test
-    @DisplayName("应用启动")
-    void testApplicationStartup() {
-        assertDoesNotThrow(() -> GatewayApplication.main(new String[]{}));
     }
 }

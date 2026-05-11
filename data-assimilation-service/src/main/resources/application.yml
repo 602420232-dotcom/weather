@@ -4,7 +4,7 @@ spring:
   
   # 数据库配置
   datasource:
-    url: jdbc:mysql://localhost:3306/data_assimilation?useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/data_assimilation?useSSL=true&requireSSL=true&serverTimezone=UTC
     username: ${DB_USER:root}
     password: ${DB_PASSWORD}  # 移除默认值，强制要求配置
     driver-class-name: com.mysql.cj.jdbc.Driver

@@ -2,22 +2,24 @@ server:
   port: 8094
 
 spring:
+  application:
+    name: bayesian-assimilation-service
   datasource:
-    url: jdbc:mysql://mysql:3306/data_assimilation?useSSL=true&requireSSL=true&serverTimezone=UTC
-    username: uav
+    url: jdbc:mysql://${DB_HOST:mysql}:3306/data_assimilation?useSSL=true&requireSSL=true&serverTimezone=UTC
+    username: ${DB_USER:uav}
     password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: validate
     show-sql: false
   redis:
-    host: redis
-    port: 6379
+    host: ${REDIS_HOST:redis}
+    port: ${REDIS_PORT:6379}
 
 logging:
   level:
-    com.bayesian: INFO
+    com.uav.bayesian: INFO
 
 python:
   service:
-    url: http://python-assimilation:8000
+    url: ${PYTHON_SERVICE_URL:http://python-assimilation:8000}

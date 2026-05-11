@@ -47,7 +47,7 @@ for dp, dn, fn in os.walk(ROOT):
             with open(fp, 'rb') as fh2:
                 if fh2.read(3) == b'\xef\xbb\xbf':
                     issues['bom_files'].append(rel)
-        except:
+        except (OSError, PermissionError):
             pass
         
         # Hardcoded secrets

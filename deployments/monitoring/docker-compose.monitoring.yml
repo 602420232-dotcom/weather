@@ -1,4 +1,5 @@
-version: '3.8'
+# Docker Compose Monitoring Stack - 优化版
+# 使用环境变量管理敏感信息，无硬编码密码
 
 services:
   # Prometheus - Metrics collection
@@ -20,6 +21,20 @@ services:
     restart: unless-stopped
     networks:
       - monitoring
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.1'
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   # Grafana - Metrics visualization
   grafana:
@@ -33,14 +48,35 @@ services:
       - grafana_data:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-changeme123}
+      # 密码从环境变量读取，无默认值
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_SERVER_ROOT_URL=https://monitoring.example.com
+      - GF_SECURITY_ALLOW_EMBEDDING=false
+      - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
     restart: unless-stopped
     depends_on:
-      - prometheus
+      prometheus:
+        condition: service_healthy
     networks:
       - monitoring
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.3'
+        reservations:
+          memory: 128M
+          cpus: '0.1'
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    user: "472"
 
   # Alertmanager - Alert routing
   alertmanager:
@@ -57,18 +93,32 @@ services:
     restart: unless-stopped
     networks:
       - monitoring
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.2'
+        reservations:
+          memory: 64M
+          cpus: '0.05'
+    security_opt:
+      - no-new-privileges:true
 
-  # Elasticsearch - Log storage
+  # Elasticsearch - Log storage (使用Secrets)
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
     container_name: uav-elasticsearch
     environment:
       - discovery.type=single-node
       - ELASTIC_USERNAME=elastic
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:-changeme123}
-      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      # 密码从环境变量读取，无默认值
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g -XX:+UseG1GC -XX:G1ReservePercent=25"
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - cluster.name=uav-monitoring
+      - node.name=uav-es-node-1
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -77,11 +127,29 @@ services:
     restart: unless-stopped
     networks:
       - monitoring
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'"]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 60s
+    security_opt:
+      - no-new-privileges:true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
 
   # Logstash - Log processing
   logstash:
@@ -94,15 +162,28 @@ services:
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
       - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
     environment:
-      - "LS_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "LS_JAVA_OPTS=-Xms512m -Xmx512m -XX:+UseG1GC"
       - ELASTICSEARCH_HOSTS=elasticsearch:9200
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     restart: unless-stopped
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     networks:
       - monitoring
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.2'
+    security_opt:
+      - no-new-privileges:true
 
-  # Kibana - Log visualization
+  # Kibana - Log visualization (使用Secrets)
   kibana:
     image: docker.elastic.co/kibana/kibana:8.9.0
     container_name: uav-kibana
@@ -113,19 +194,34 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=elastic
-      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD:-changeme123}
+      # 密码从环境变量读取，无默认值
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - SERVER_NAME=uav-kibana
+      - SERVER_HOST=0.0.0.0
     restart: unless-stopped
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     networks:
       - monitoring
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.1'
     healthcheck:
       test: ["CMD-SHELL", "curl -s http://localhost:5601/api/status | grep -q 'available'"]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 60s
+    security_opt:
+      - no-new-privileges:true
 
-  # Jaeger - Distributed tracing
+  # Jaeger - Distributed tracing (使用Secrets)
   jaeger:
     image: jaegertracing/all-in-one:1.47
     container_name: uav-jaeger
@@ -141,12 +237,26 @@ services:
       - SPAN_STORAGE_TYPE=elasticsearch
       - ES_SERVER_URLS=http://elasticsearch:9200
       - ELASTIC_USERNAME=elastic
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:-changeme123}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - SPAN_STORAGE_TYPE=badger
+      - BADGER_EPHEMERAL=false
+      - BADGER_DIRECTORY_VALUE=/tmp/badger-data
+      - BADGER_DIRECTORY_KEY=/tmp/badger-key
     restart: unless-stopped
     networks:
       - monitoring
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.1'
+    security_opt:
+      - no-new-privileges:true
 
-  # Prometheus Alert Webhook (for Slack/Email notifications)
+  # Prometheus Alert Webhook
   alert-webhook:
     image: python:3.9-slim
     container_name: uav-alert-webhook
@@ -158,6 +268,19 @@ services:
     restart: unless-stopped
     networks:
       - monitoring
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.2'
+        reservations:
+          memory: 64M
+          cpus: '0.05'
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
 
 volumes:
   prometheus_data:
@@ -168,3 +291,9 @@ volumes:
 networks:
   monitoring:
     driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-monitoring
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16

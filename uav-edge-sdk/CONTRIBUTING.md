@@ -1,8 +1,8 @@
-# Contributing to UAV Edge SDK
+﻿# Contributing to UAV Edge SDK
 
 Thank you for your interest in contributing to UAV Edge SDK!
 
-## 📋 Table of Contents
+##  Table of Contents
 
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
@@ -133,11 +133,12 @@ def example_function(param1: int, param2: str) -> bool:
 - Keep first line under 72 characters
 - Add detailed description after blank line
 
-## 🙏 Thank You!
+##  Thank You!
 
 Every contribution is appreciated. Thank you for making UAV Edge SDK better!
 ---
 
-> **最后更新**: 2026-05-08  
+> **最后更新*: 2026-05-09  
 > **版本**: 2.1  
-> **维护者**: DITHIOTHREITOL
+> **维护者*: DITHIOTHREITOL
+

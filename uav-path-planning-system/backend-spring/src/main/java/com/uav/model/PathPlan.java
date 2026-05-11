@@ -1,7 +1,13 @@
 package com.uav.model;
 import lombok.Data;
 import java.time.LocalDateTime;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
 @Data
 @Entity
@@ -14,22 +20,18 @@ public class PathPlan {
     private String name;
     private String description;
     
-    // 规划参数
     private Integer droneCount;
     private Integer taskCount;
     private Double totalDistance;
     private Double totalTime;
     private Double totalRisk;
     
-    // 规划结果
-    private String routesJson; // JSON格式的路径信息
-    private String status; // PENDING, COMPLETED, FAILED
+    private String routesJson;
+    private String status;
     
-    // 气象数据关联
     private String weatherDataId;
     private Double riskThreshold;
     
-    // 创建和更新时间
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
@@ -43,4 +45,6 @@ public class PathPlan {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+    
+    private String droneId;
 }

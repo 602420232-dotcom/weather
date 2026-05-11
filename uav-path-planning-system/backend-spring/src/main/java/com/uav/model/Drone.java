@@ -1,7 +1,13 @@
 package com.uav.model;
 import lombok.Data;
 import java.time.LocalDateTime;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
 @Data
 @Entity
@@ -15,25 +21,20 @@ public class Drone {
     private String model;
     private String serialNumber;
     
-    // 无人机参数
-    private Double maxSpeed; // 最大速度（m/s）
-    private Double maxCapacity; // 最大载重（kg）
-    private Double maxBattery; // 最大续航时间（分钟）
-    private Double cruiseSpeed; // 巡航速度（m/s）
-    private Double windResistance; // 抗风等级（m/s）
+    private Double maxSpeed;
+    private Double maxCapacity;
+    private Double maxBattery;
+    private Double cruiseSpeed;
+    private Double windResistance;
     
-    // 状态
-    private String status; // IDLE, BUSY, MAINTENANCE, FAILED
+    private String status;
     
-    // 位置信息
     private Double currentLatitude;
     private Double currentLongitude;
     private Double currentAltitude;
     
-    // 电池电量
-    private Integer batteryLevel; // 百分比
+    private Integer batteryLevel;
     
-    // 创建和更新时间
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
@@ -47,4 +48,10 @@ public class Drone {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+    
+    private Double latitude;
+    private Double longitude;
+    private Double altitude;
+    private Double speed;
+    private Integer battery;
 }

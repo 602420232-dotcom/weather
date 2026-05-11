@@ -1,9 +1,9 @@
-# 无人机管理接口
+﻿# 无人机管理接?
 
-> ⚠️ **注意**: 以下接口为计划中的 API 定义，当前版本尚未实现完整 CRUD。
-> 当前可用的无人机接口：`GET /api/platform/drones`（PlatformController）
+>  **注意**: 以下接口为计划中?API 定义当前版本尚未实现完?CRUD?
+> 当前可用的无人机接口`GET /api/platform/drones`PlatformController?
 
-## 获取无人机列表
+## 获取无人机列?
 
 ### 请求
 
@@ -14,12 +14,12 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功：**
+**成功?*
 
 ```json
 {
   "code": 200,
-  "message": "获取无人机列表成功",
+  "message": "获取无人机列表成?,
   "data": [
     {
       "id": 1,
@@ -51,7 +51,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败：**
+**失败?*
 
 ```json
 {
@@ -61,7 +61,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-## 获取无人机详情
+## 获取无人机详?
 
 ### 请求
 
@@ -72,12 +72,12 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功：**
+**成功?*
 
 ```json
 {
   "code": 200,
-  "message": "获取无人机详情成功",
+  "message": "获取无人机详情成?,
   "data": {
     "id": 1,
     "name": "Drone-001",
@@ -98,7 +98,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败：**
+**失败?*
 
 ```json
 {
@@ -108,7 +108,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-## 创建无人机
+## 创建无人?
 
 ### 请求
 
@@ -118,7 +118,7 @@ Content-Type: application/json
 Authorization: Bearer <JWT令牌>
 ```
 
-**请求体：**
+**请求体**
 
 ```json
 {
@@ -132,12 +132,12 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功：**
+**成功?*
 
 ```json
 {
   "code": 200,
-  "message": "创建无人机成功",
+  "message": "创建无人机成?,
   "data": {
     "id": 3,
     "name": "Drone-003",
@@ -152,7 +152,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败：**
+**失败?*
 
 ```json
 {
@@ -162,7 +162,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-## 更新无人机
+## 更新无人?
 
 ### 请求
 
@@ -172,7 +172,7 @@ Content-Type: application/json
 Authorization: Bearer <JWT令牌>
 ```
 
-**请求体：**
+**请求体**
 
 ```json
 {
@@ -184,12 +184,12 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功：**
+**成功?*
 
 ```json
 {
   "code": 200,
-  "message": "更新无人机成功",
+  "message": "更新无人机成?,
   "data": {
     "id": 1,
     "name": "Updated Drone",
@@ -206,7 +206,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败：**
+**失败?*
 
 ```json
 {
@@ -216,7 +216,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-## 删除无人机
+## 删除无人?
 
 ### 请求
 
@@ -227,17 +227,17 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功：**
+**成功?*
 
 ```json
 {
   "code": 200,
-  "message": "删除无人机成功",
+  "message": "删除无人机成?,
   "data": null
 }
 ```
 
-**失败：**
+**失败?*
 
 ```json
 {
@@ -248,6 +248,7 @@ Authorization: Bearer <JWT令牌>
 ```
 ---
 
-> **最后更新**: 2026-05-08  
+> **最后更新*: 2026-05-09  
 > **版本**: 2.1  
-> **维护者**: DITHIOTHREITOL
+> **维护者*: DITHIOTHREITOL
+

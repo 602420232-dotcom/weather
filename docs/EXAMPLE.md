@@ -1,4 +1,4 @@
-# 无人机路径规划系统使用示例
+﻿﻿﻿﻿# 无人机路径规划系统使用示?
 
 ## 1. 系统部署
 
@@ -14,41 +14,41 @@ docker-compose ps
 
 ### 1.2 服务访问地址
 
-- API网关：http://localhost:8088/api
-- 主平台服务：http://localhost:8080/api
-- WRF处理服务：http://localhost:8081/api/wrf
-- 贝叶斯同化服务：http://localhost:8084/api/assimilation
-- 气象预测服务：http://localhost:8082/api/forecast
-- 路径规划服务：http://localhost:8083/api/planning
-- 气象收集服务：http://localhost:8086/api/weather
-- 边云协同服务：http://localhost:8000/docs
-- 前端界面：http://localhost:5173
+- API网关http://localhost:8088/api
+- 主平台服务http://localhost:8080/api
+- WRF处理服务http://localhost:8081/api/wrf
+- 贝叶斯同化服务http://localhost:8084/api/assimilation
+- 气象预测服务http://localhost:8082/api/forecast
+- 路径规划服务http://localhost:8083/api/planning
+- 气象收集服务http://localhost:8086/api/weather
+- 边云协同服务http://localhost:8000/docs
+- 前端界面http://localhost:5173
 
 ## 2. 完整路径规划示例
 
 ### 2.1 前端操作流程
 
-1. **登录系统**：访问前端界面，使用默认账号密码（admin/admin）登录
+1. **登录系统**访问前端界面使用默认账号密码admin/admin登?
 
-2. **进入路径规划页面**：点击左侧菜单中的"路径规划"
+2. **进入路径规划页面** 点击左侧菜单中的"路径规划"
 
-3. **配置任务点**：
-   - 点击"添加任务点"按钮
+3. **配置任务?*?
+   - 点击"添加任务"按钮
    - 或在地图上点击添加任务点
-   - 每个任务点包含位置、需求等信息
+   - 每个任务点包含位置需求等信息
 
-4. **选择无人机**：从下拉菜单中选择无人机数量和类型
+4. **选择无人?*从下拉菜单中选择无人机数量和类型
 
-5. **选择气象数据**：选择"最新数据"或"自定义数据"
+5. **选择气象数据**选择"最新数据/自定义数据"
 
-6. **设置风险阈值**：调整风险阈值滑块，控制路径规划的安全性
+6. **设置风险阈?*调整风险阈值滑块控制路径规划的安全?
 
-7. **执行路径规划**：点击"执行路径规划"按钮
+7. **执行路径规划**点击"执行路径规划"按钮
 
-8. **查看结果**：
+8. **查看结果**?
    - 地图上显示规划路径
-   - 下方显示规划结果详情，包括无人机数量、任务点数量、总距离、总时间等
-   - 查看每条路径的详细信息
+   - 下方显示规划结果详情包括无人机数量任务点数量总距离总时间等
+   - 查看每条路径的详细信?
 
 ### 2.2 API调用示例
 
@@ -94,9 +94,9 @@ response = requests.get(url, params=params)
 print(response.json())
 ```
 
-## 3. 贝叶斯同化服务使用示例
+## 3. 贝叶斯同化服务使用示?
 
-### 3.1 执行贝叶斯同化
+### 3.1 执行贝叶斯同?
 
 ```python
 import requests
@@ -133,7 +133,7 @@ response = requests.post(url, json=payload)
 print(response.json())
 ```
 
-### 3.2 获取方差场
+### 3.2 获取方差?
 
 ```python
 import requests
@@ -238,9 +238,9 @@ payload = {
         "windDirection": 135,
         "temperature": 25.5,
         "humidity": 65,
-        "turbulence": "低",
+        "turbulence": "?,
         "visibility": 10,
-        "risk": "低"
+        "risk": "?
     }
 }
 
@@ -252,10 +252,10 @@ print(response.json())
 
 ### 6.1 访问监控页面
 
-1. 登录系统后，点击左侧菜单中的"系统监控"
-2. 查看系统状态、服务状态、算法性能等信息
+1. 登录系统后点击左侧菜单中的"系统监控"
+2. 查看系统状态服务状态算法性能等信?
 3. 查看系统负载趋势图表
-4. 查看最近任务执行情况
+4. 查看新近任务执行情?
 
 ### 6.2 监控API
 
@@ -284,8 +284,8 @@ import json
 # 创建任务
 url = "http://localhost:8080/api/platform/task"
 payload = {
-    "name": "配送任务",
-    "description": "城市末端配送",
+    "name": "配送任?,
+    "description": "城市末端配置,
     "taskPoints": [
         {"id": 1, "lat": 39.9142, "lng": 116.4174, "demand": 2},
         {"id": 2, "lat": 39.9242, "lng": 116.4274, "demand": 1}
@@ -302,7 +302,7 @@ response = requests.get(url)
 print(response.json())
 ```
 
-### 7.2 无人机管理
+### 7.2 无人机管?
 
 ```python
 import requests
@@ -313,11 +313,11 @@ url = "http://localhost:8080/api/platform/drones"
 response = requests.get(url)
 print(response.json())
 
-# 添加无人机
+# 添加无人?
 url = "http://localhost:8080/api/platform/drones"
 payload = {
     "id": 3,
-    "name": "无人机3",
+    "name": "无人?",
     "model": "DJI Mavic 3",
     "maxSpeed": 20,
     "maxLoad": 5,
@@ -335,26 +335,26 @@ print(response.json())
 - 检查Docker服务是否正常运行
 - 检查端口是否被占用
 - 检查数据库连接配置
-- 查看服务日志：`docker-compose logs <服务名>`
+- 查看服务日志`docker-compose logs <服务?`
 
 ### 8.2 路径规划失败
 
 - 检查任务点是否合理
 - 检查无人机数量是否足够
 - 检查时间窗设置是否合理
-- 检查气象数据是否有效
+- 检查气象数据是否有?
 
 ### 8.3 气象数据加载失败
 
 - 检查WRF文件是否存在
 - 检查WRF文件格式是否正确
-- 检查服务配置是否正确
+- 检查服务配置是否正?
 
 ### 8.4 性能优化
 
 - 启用Redis缓存
 - 调整Dask集群配置
-- 优化数据库索引
+- 优化数据库索?
 - 调整算法参数
 
 ## 9. 高级功能
@@ -393,7 +393,7 @@ print(response.json())
 import requests
 import json
 
-# 批量执行贝叶斯同化
+# 批量执行贝叶斯同?
 url = "http://localhost:8084/api/assimilation/batch"
 payload = {
     "jobs": [
@@ -418,12 +418,12 @@ print(response.json())
 ### 10.1 与第三方系统集成
 
 ```python
-# 示例：与物流系统集成
+# 示例与物流系统集成
 import requests
 import json
 
 def integrate_with_logistics():
-    # 从物流系统获取订单
+    # 从物流系统获取订?
     logistics_url = "http://logistics-system/api/orders"
     orders = requests.get(logistics_url).json()
     
@@ -457,14 +457,14 @@ integrate_with_logistics()
 
 ### 10.2 WebSocket实时通信
 
-前端可以通过WebSocket与后端建立实时通信，获取任务执行状态和路径更新：
+前端可以通过WebSocket与后端建立实时通信获取任务执行状态和路径更新?
 
 ```javascript
 // 前端WebSocket连接
 const ws = new WebSocket('ws://localhost:8080/api/ws');
 
 ws.onopen = function() {
-    console.log('WebSocket连接已建立');
+    console.log('WebSocket连接已建?);
     // 订阅任务状态
     ws.send(JSON.stringify({ type: 'subscribe', taskId: 'task-123' }));
 };
@@ -481,24 +481,25 @@ ws.onmessage = function(event) {
 };
 
 ws.onclose = function() {
-    console.log('WebSocket连接已关闭');
+    console.log('WebSocket连接已关?);
 };
 ```
 
 ## 11. 总结
 
-本系统提供了完整的无人机路径规划解决方案，包括：
+本系统提供了完整的无人机路径规划解决方案包括
 
-- **气象数据处理**：基于WRF模型的气象数据解析和处理
-- **贝叶斯同化**：多源数据融合和不确定性评估
-- **气象预测**：基于LSTM+XGBoost的气象预测和订正
-- **路径规划**：三层路径规划架构（VRPTW、A*、DWA）
-- **系统监控**：实时监控系统状态和性能
-- **用户界面**：直观的Web前端界面
+- **气象数据处理**基于WRF模型的气象数据解析和处理
+- **贝叶斯同?*多源数据融合和不确定性评?
+- **气象预测**基于LSTM+XGBoost的气象预测和订正
+- **路径规划**三层路径规划架构VRPTWA*DWA?
+- **系统监控**实时监控系统状态和性能
+- **用户界面**直观的Web前端界面
 
-通过本示例文档，您可以快速了解系统的使用方法和集成方式，为您的无人机应用场景提供有力支持。
+通过本示例文档您可以快速了解系统的使用方法和集成方式为您的无人机应用场景提供有力支持?
 ---
 
-> **最后更新**: 2026-05-08  
+> **新后更?*: 2026-05-09  
 > **版本**: 2.1  
-> **维护者**: DITHIOTHREITOL
+> **维护者*: DITHIOTHREITOL
+

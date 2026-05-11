@@ -4,8 +4,7 @@ import com.uav.common.exception.ServiceUnavailableException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.retry.Retry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +18,10 @@ import java.util.function.Supplier;
  * 熔断器服务调用封装
  * 提供对各微服务的熔断保护调用
  */
+@SuppressWarnings("null")
+@Slf4j
 @Service
 public class CircuitBreakerService {
-    
-    private static final Logger log = LoggerFactory.getLogger(CircuitBreakerService.class);
     
     @Autowired
     @Qualifier("resilientRestTemplate")

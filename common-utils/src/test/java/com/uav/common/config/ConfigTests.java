@@ -6,6 +6,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("CommonSecurityConfig 测试")
@@ -20,7 +22,9 @@ class CommonSecurityConfigTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         CorsConfiguration corsConfig = source.getCorsConfiguration(request);
         assertNotNull(corsConfig);
-        assertTrue(corsConfig.getAllowedOriginPatterns().contains("http://localhost:3000"));
+        List<String> allowedOrigins = corsConfig.getAllowedOriginPatterns();
+        assertNotNull(allowedOrigins);
+        assertTrue(allowedOrigins.contains("http://localhost:3000"));
     }
 
     @Test
@@ -30,7 +34,10 @@ class CommonSecurityConfigTest {
         CorsConfigurationSource source = config.corsConfigurationSource();
         MockHttpServletRequest request = new MockHttpServletRequest();
         CorsConfiguration corsConfig = source.getCorsConfiguration(request);
-        assertTrue(corsConfig.getAllowCredentials());
+        assertNotNull(corsConfig);
+        Boolean allowCredentials = corsConfig.getAllowCredentials();
+        assertNotNull(allowCredentials);
+        assertTrue(allowCredentials);
     }
 }
 

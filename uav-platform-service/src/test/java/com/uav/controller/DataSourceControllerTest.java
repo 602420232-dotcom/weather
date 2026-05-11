@@ -10,16 +10,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,9 +52,12 @@ class DataSourceControllerTest {
             when(dataSourceService.listDataSources()).thenReturn(sources);
 
             ResponseEntity<Map<String, Object>> response = controller.getDataSourceList();
-
-            assertEquals(200, response.getStatusCodeValue());
+            HttpStatusCode statusCode = response.getStatusCode();
             Map<String, Object> body = response.getBody();
+
+            assertNotNull(statusCode);
+            assertEquals(200, statusCode.value());
+            assertNotNull(body);
             assertEquals(200, body.get("code"));
             assertEquals(sources, body.get("data"));
         }
@@ -67,8 +68,10 @@ class DataSourceControllerTest {
             when(dataSourceService.listDataSources()).thenReturn(List.of());
 
             ResponseEntity<Map<String, Object>> response = controller.getDataSourceList();
+            HttpStatusCode statusCode = response.getStatusCode();
 
-            assertEquals(200, response.getStatusCodeValue());
+            assertNotNull(statusCode);
+            assertEquals(200, statusCode.value());
         }
     }
 
@@ -81,9 +84,13 @@ class DataSourceControllerTest {
             when(dataSourceService.getDataSourceById(1L)).thenReturn(sampleSource);
 
             ResponseEntity<Map<String, Object>> response = controller.getDataSourceById(1L);
+            HttpStatusCode statusCode = response.getStatusCode();
+            Map<String, Object> body = response.getBody();
 
-            assertEquals(200, response.getStatusCodeValue());
-            assertEquals(sampleSource, response.getBody().get("data"));
+            assertNotNull(statusCode);
+            assertEquals(200, statusCode.value());
+            assertNotNull(body);
+            assertEquals(sampleSource, body.get("data"));
         }
 
         @Test
@@ -105,9 +112,13 @@ class DataSourceControllerTest {
             when(dataSourceService.createDataSource(request)).thenReturn(sampleSource);
 
             ResponseEntity<Map<String, Object>> response = controller.createDataSource(request);
+            HttpStatusCode statusCode = response.getStatusCode();
+            Map<String, Object> body = response.getBody();
 
-            assertEquals(200, response.getStatusCodeValue());
-            assertEquals(sampleSource, response.getBody().get("data"));
+            assertNotNull(statusCode);
+            assertEquals(200, statusCode.value());
+            assertNotNull(body);
+            assertEquals(sampleSource, body.get("data"));
             verify(dataSourceService).createDataSource(request);
         }
     }
@@ -122,9 +133,13 @@ class DataSourceControllerTest {
             when(dataSourceService.updateDataSource(1L, request)).thenReturn(sampleSource);
 
             ResponseEntity<Map<String, Object>> response = controller.updateDataSource(1L, request);
+            HttpStatusCode statusCode = response.getStatusCode();
+            Map<String, Object> body = response.getBody();
 
-            assertEquals(200, response.getStatusCodeValue());
-            assertEquals(sampleSource, response.getBody().get("data"));
+            assertNotNull(statusCode);
+            assertEquals(200, statusCode.value());
+            assertNotNull(body);
+            assertEquals(sampleSource, body.get("data"));
         }
 
         @Test
@@ -146,9 +161,13 @@ class DataSourceControllerTest {
             when(dataSourceService.deleteDataSource(1L)).thenReturn(true);
 
             ResponseEntity<Map<String, Object>> response = controller.deleteDataSource(1L);
+            HttpStatusCode statusCode = response.getStatusCode();
+            Map<String, Object> body = response.getBody();
 
-            assertEquals(200, response.getStatusCodeValue());
-            assertEquals(200, response.getBody().get("code"));
+            assertNotNull(statusCode);
+            assertEquals(200, statusCode.value());
+            assertNotNull(body);
+            assertEquals(200, body.get("code"));
         }
 
         @Test
@@ -171,9 +190,13 @@ class DataSourceControllerTest {
             when(dataSourceService.testDataSource(request)).thenReturn(testResult);
 
             ResponseEntity<Map<String, Object>> response = controller.testDataSource(request);
+            HttpStatusCode statusCode = response.getStatusCode();
+            Map<String, Object> body = response.getBody();
 
-            assertEquals(200, response.getStatusCodeValue());
-            assertEquals(testResult, response.getBody().get("data"));
+            assertNotNull(statusCode);
+            assertEquals(200, statusCode.value());
+            assertNotNull(body);
+            assertEquals(testResult, body.get("data"));
         }
     }
 
@@ -189,9 +212,13 @@ class DataSourceControllerTest {
             when(dataSourceService.getDataSourceTypes()).thenReturn(types);
 
             ResponseEntity<Map<String, Object>> response = controller.getDataSourceTypes();
+            HttpStatusCode statusCode = response.getStatusCode();
+            Map<String, Object> body = response.getBody();
 
-            assertEquals(200, response.getStatusCodeValue());
-            assertEquals(types, response.getBody().get("data"));
+            assertNotNull(statusCode);
+            assertEquals(200, statusCode.value());
+            assertNotNull(body);
+            assertEquals(types, body.get("data"));
         }
     }
 }

@@ -1,10 +1,30 @@
-# 监控配置
+# 监控配置 - 使用K8s Secrets管理敏感信息
 apiVersion: v1
 kind: Namespace
 metadata:
   name: monitoring
   labels:
     app: monitoring
+---
+# Grafana密码Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-secrets
+  namespace: monitoring
+type: Opaque
+stringData:
+  admin-password: ${GRAFANA_ADMIN_PASSWORD}
+---
+# Elasticsearch密码Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: elasticsearch-secrets
+  namespace: monitoring
+type: Opaque
+stringData:
+  elastic-password: ${ELASTIC_PASSWORD}
 ---
 # Prometheus配置
 apiVersion: apps/v1
@@ -100,7 +120,7 @@ spec:
     targetPort: 9090
   type: LoadBalancer
 ---
-# Grafana配置
+# Grafana配置 - 使用Secret
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -124,14 +144,48 @@ spec:
         volumeMounts:
         - name: grafana-storage
           mountPath: /var/lib/grafana
+        - name: grafana-secrets
+          mountPath: /etc/secrets
+          readOnly: true
         env:
         - name: GF_SECURITY_ADMIN_USER
           value: admin
         - name: GF_SECURITY_ADMIN_PASSWORD
-          value: admin123
+          valueFrom:
+            secretKeyRef:
+              name: grafana-secrets
+              key: admin-password
+        - name: GF_SECURITY_ADMIN_PASSWORD__FILE
+          value: /etc/secrets/admin-password
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
       volumes:
       - name: grafana-storage
         emptyDir: {}
+      - name: grafana-secrets
+        secret:
+          secretName: grafana-secrets
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 472
+        fsGroup: 472
 ---
 apiVersion: v1
 kind: Service

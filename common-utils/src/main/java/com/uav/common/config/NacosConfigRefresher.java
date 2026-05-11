@@ -3,10 +3,8 @@ package com.uav.common.config;
 import com.alibaba.cloud.nacos.NacosConfigManager;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -19,12 +17,11 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+@Slf4j
 @Component
 @ConditionalOnClass(NacosConfigManager.class)
 @RefreshScope
 public class NacosConfigRefresher {
-
-    private static final Logger log = LoggerFactory.getLogger(NacosConfigRefresher.class);
 
     private final Map<String, Consumer<String>> listeners = new ConcurrentHashMap<>();
     private final Executor executor = Executors.newSingleThreadExecutor(r -> {

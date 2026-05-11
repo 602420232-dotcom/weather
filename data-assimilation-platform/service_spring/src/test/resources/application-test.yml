@@ -17,5 +17,5 @@ spring:
 
 logging:
   level:
-    com.bayesian: DEBUG
+    com.uav.bayesian: DEBUG
     org.springframework: WARN

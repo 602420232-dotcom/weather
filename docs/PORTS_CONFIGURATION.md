@@ -1,43 +1,43 @@
-# 🚀 UAV Path Planning System - 端口配置总表
+﻿#  UAV Path Planning System - 端口配置总表
 
-## 📋 概述
+##  概述
 
-本文档汇总 UAV Path Planning System 所有服务的端口配置，包括开发环境、生产环境和前端应用。
+本文档汇?UAV Path Planning System 所有服务的端口配置包括开发环境生产环境和前端应用?
 
 ---
 
-## 🖥️ 后端服务端口
+## 后端服务端口
 
-### 微服务列表
+### 微服务列?
 
-| 服务 | 端口 | 协议 | 说明 | 熔断器 | 状态 |
+| 服务 | 端口 | 协议 | 说明 | 熔断?| 状?|
 |------|:----:|:----:|------|:------:|:----:|
-| **API Gateway** | 8088 | HTTP | 统一入口（限流/熔断/路由） | ✅ | ✅ |
-| **Platform Service** | 8080 | HTTP | 主平台服务（认证/任务/无人机） | ✅ | ✅ |
-| **WRF Processor** | 8081 | HTTP | WRF 气象数据处理 | ✅ | ✅ |
-| **Bayes Assimilator** | 8084 | HTTP | 贝叶斯同化计算 | ✅ | ✅ |
-| **Meteor Forecaster** | 8082 | HTTP | 气象预测与订正（LSTM+XGBoost） | ✅ | ✅ |
-| **Path Planner** | 8083 | HTTP | VRPTW+DE-RRT*+DWA 路径规划 | ✅ | ✅ |
-| **Weather Collector** | 8086 | HTTP | 多源气象数据采集与融合 | - | ✅ |
+| **API Gateway** | 8088 | HTTP | 统一入口限流/熔断/路由?| ✅ | ✅ ||
+| **Platform Service** | 8080 | HTTP | 主平台服务认证/任务/无人机 | ✅ | ✅ ||
+| **WRF Processor** | 8081 | HTTP | WRF 气象数据处理 | ✅ | ✅ ||
+| **Bayes Assimilator** | 8084 | HTTP | 贝叶斯同化计?| ✅ | ✅ ||
+| **Meteor Forecaster** | 8082 | HTTP | 气象预测与订正LSTM+XGBoost?| ✅ | ✅ ||
+| **Path Planner** | 8083 | HTTP | VRPTW+DE-RRT*+DWA 路径规划 | ✅ | ✅ ||
+| **Weather Collector** | 8086 | HTTP | 多源气象数据采集与融?| - | ✅ |
 | **Edge-Cloud Coordinator** | 8000 | HTTP | 边云协同 | - | ✅ |
 | **Edge-Cloud Coordinator** | 8765 | WebSocket | WebSocket 通信 | - | ✅ |
 
 ### 端口分配原则
 
 ```
-端口范围      | 用途
+端口范围      | 用?
 -------------|------------------
-8080-8089    | 主要微服务
+8080-8089    | 主要微服?
 8090-8099    | 次要服务/管理接口
-8000-8099    | 特殊服务（Edge-Cloud）
+8000-8099    | 特殊服务Edge-Cloud?
 9000-9099    | 监控服务
 ```
 
 ---
 
-## 🌐 前端应用端口
+##  前端应用端口
 
-### 开发环境
+### 开发环?
 
 | 应用 | 端口 | 技术栈 | API代理 | 说明 |
 |------|:----:|--------|---------|------|
@@ -66,18 +66,18 @@ export default defineConfig({
 
 | 应用 | 端口 | 说明 |
 |------|:----:|------|
-| **Frontend (Nginx)** | 80 | 静态资源托管 |
+| **Frontend (Nginx)** | 80 | 静态资源托?|
 | **Frontend (HTTPS)** | 443 | HTTPS 端口 |
 
 ---
 
-## 🔗 API 路由映射
+##  API 路由映射
 
 ### API Gateway 路由 (端口 8088)
 
 | 外部路由 | 内部服务 | 目标端口 | 说明 |
 |---------|---------|:--------:|------|
-| `/api/v1/**` | uav-platform-service | 8080 | 主平台 API |
+| `/api/v1/**` | uav-platform-service | 8080 | 主平?API |
 | `/api/wrf/**` | wrf-processor-service | 8081 | WRF 数据 API |
 | `/api/forecast/**` | meteor-forecast-service | 8082 | 气象预报 API |
 | `/api/planning/**` | path-planning-service | 8083 | 路径规划 API |
@@ -85,21 +85,21 @@ export default defineConfig({
 
 ### 前端 API 调用
 
-前端通过 Vite 代理访问后端：
+前端通过 Vite 代理访问后端?
 
 ```
-用户浏览器 (localhost:3000)
-    ↓ /api/xxx
+用户浏览?(localhost:3000)
+    ?/api/xxx
 Vite 开发服务器代理
-    ↓
+    ?
 API Gateway (localhost:8088)
-    ↓ /api/v1/xxx
+    ?/api/v1/xxx
 Platform Service (localhost:8080)
 ```
 
 ---
 
-## 📊 监控和管理端口
+##  监控和管理端?
 
 ### 监控系统
 
@@ -112,11 +112,11 @@ Platform Service (localhost:8080)
 | **Kibana** | 5601 | 日志分析 | http://localhost:5601 |
 | **Elasticsearch** | 9200 | 日志存储 | http://localhost:9200 |
 
-> ⚠️ 注意: Grafana 默认端口 3000 与前端开发服务器冲突，请修改为 3030 或其他端口。
+>  注意: Grafana 默认端口 3000 与前端开发服务器冲突请修改?3030 或其他端口?
 
-### 健康检查端点
+### 健康检查端?
 
-| 服务 | 端口 | 健康检查端点 |
+| 服务 | 端口 | 健康检查端?|
 |------|:----:|-------------|
 | API Gateway | 8088 | `/actuator/health` |
 | Platform Service | 8080 | `/actuator/health` |
@@ -129,11 +129,11 @@ Platform Service (localhost:8080)
 
 ---
 
-## 🗄️ 数据存储端口
+## 数据存储端口
 
-### 数据库服务
+### 数据库服?
 
-| 服务 | 端口 | 默认数据库 | 说明 |
+| 服务 | 端口 | 默认数据?| 说明 |
 |------|:----:|-----------|------|
 | **MySQL** | 3306 | `uav_platform` | 主数据库 |
 | **MySQL** | 3307 | `meteor_data` | 气象数据 |
@@ -149,9 +149,9 @@ Platform Service (localhost:8080)
 
 ---
 
-## 🐳 Docker 端口映射
+##  Docker 端口映射
 
-### 开发环境
+### 开发环?
 
 ```yaml
 services:
@@ -187,9 +187,9 @@ services:
   # 前端
   frontend:
     ports:
-      - "3000:80"  # 开发映射到 3000，生产 80
+      - "3000:80"  # 开发映射到 3000生?80
   
-  # 数据库
+  # 数据?
   mysql:
     ports:
       - "3306:3306"
@@ -205,7 +205,7 @@ services:
   
   grafana:
     ports:
-      - "3030:3000"  # 避免与前端冲突
+      - "3030:3000"  # 避免与前端冲?
   
   jaeger:
     ports:
@@ -214,14 +214,14 @@ services:
 
 ---
 
-## 🔧 端口配置最佳实践
+##  端口配置最佳实?
 
-### 1. 开发环境
+### 1. 开发环?
 
 **建议配置**:
-- 使用标准端口（8080-8089）
-- 前端开发服务器：3000
-- Grafana 改为：3030（避免冲突）
+- 使用标准端口?080-8089?
+- 前端开发服务器?000
+- Grafana 改为?030避免冲突
 
 **优点**:
 - 易于记忆
@@ -231,20 +231,20 @@ services:
 ### 2. 生产环境
 
 **建议配置**:
-- API Gateway：443（HTTPS）
-- 数据库：内网访问，不暴露
-- 监控：VPN 或专用网络访问
+- API Gateway?43HTTPS?
+- 数据库内网访问不暴露
+- 监控VPN 或专用网络访?
 
 **安全建议**:
 - 使用环境变量管理端口
 - 不暴露非必要端口
-- 配置防火墙规则
+- 配置防火墙规?
 
 ---
 
-## 🚨 常见端口冲突
+##  常见端口冲突
 
-### 冲突检测
+### 冲突检?
 
 ```bash
 # Linux/Mac
@@ -278,20 +278,20 @@ server: {
 ```yaml
 grafana:
   ports:
-    - "3030:3000"  # 外部 3030，内部仍是 3000
+    - "3030:3000"  # 外部 3030内部仍?3000
 ```
 
 ---
 
-## 📋 快速参考表
+##  快速参考表
 
 ### 服务启动顺序
 
 ```
-1. MySQL (3306)          - 数据库
+1. MySQL (3306)          - 数据?
 2. Redis (6379)          - 缓存
 3. Nacos (8848)          - 配置中心
-4. Platform Service (8080) - 主平台
+4. Platform Service (8080) - 主平?
 5. WRF Processor (8081)    - WRF服务
 6. Meteor Forecaster (8082) - 气象服务
 7. Path Planner (8083)     - 路径规划
@@ -316,8 +316,8 @@ grafana:
 后端    | Weather Collector   | 8086
 后端    | Edge Coordinator    | 8000/8765
 后端    | API Gateway         | 8088
-数据库  | MySQL               | 3306
-数据库  | Redis               | 6379
+数据? | MySQL               | 3306
+数据? | Redis               | 6379
 监控    | Prometheus          | 9090
 监控    | Grafana             | 3030
 监控    | Jaeger              | 16686
@@ -327,9 +327,9 @@ grafana:
 
 ---
 
-## 📞 技术支持
+##  技术支?
 
-如有问题，请参考：
+如有问题请参考
 1. [前端 README](../uav-path-planning-system/frontend-vue/README.md)
 2. [部署指南](DEPLOYMENT.md)
 3. [快速参考](QUICK_REFERENCE.md)
@@ -337,6 +337,7 @@ grafana:
 
 ---
 
-> **最后更新**: 2026-05-08  
+> **最后更新*: 2026-05-09  
 > **版本**: 2.1  
-> **维护者**: DITHIOTHREITOL
+> **维护者*: DITHIOTHREITOL
+

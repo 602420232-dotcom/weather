@@ -1,0 +1,24 @@
+{
+  "properties": [
+    {
+      "name": "services.wrf-processor.url",
+      "type": "java.lang.String",
+      "description": "WRF处理服务URL"
+    },
+    {
+      "name": "services.data-assimilation.url",
+      "type": "java.lang.String",
+      "description": "数据同化服务URL"
+    },
+    {
+      "name": "services.meteor-forecast.url",
+      "type": "java.lang.String",
+      "description": "气象预报服务URL"
+    },
+    {
+      "name": "services.path-planning.url",
+      "type": "java.lang.String",
+      "description": "路径规划服务URL"
+    }
+  ]
+}

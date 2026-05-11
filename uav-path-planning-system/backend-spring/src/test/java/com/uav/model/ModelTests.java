@@ -43,7 +43,7 @@ class ModelTests {
     @DisplayName("Drone模型测试")
     void testDroneModel() {
         Drone drone = new Drone();
-        drone.setId("UAV-001");
+        drone.setId(1L);
         drone.setStatus("active");
         drone.setLatitude(39.9);
         drone.setLongitude(116.4);
@@ -51,7 +51,7 @@ class ModelTests {
         drone.setSpeed(15.0);
         drone.setBattery(85);
 
-        assertEquals("UAV-001", drone.getId());
+        assertEquals(1L, drone.getId());
         assertEquals("active", drone.getStatus());
         assertEquals(39.9, drone.getLatitude());
         assertEquals(116.4, drone.getLongitude());

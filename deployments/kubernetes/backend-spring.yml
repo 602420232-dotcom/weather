@@ -25,7 +25,7 @@ spec:
             - name: SERVER_PORT
               value: "8089"
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:mysql://mysql:3306/uav_platform?useSSL=false
+              value: jdbc:mysql://mysql:3306/uav_platform?useSSL=true&requireSSL=true
             - name: SPRING_DATASOURCE_USERNAME
               value: uav
             - name: SPRING_DATASOURCE_PASSWORD

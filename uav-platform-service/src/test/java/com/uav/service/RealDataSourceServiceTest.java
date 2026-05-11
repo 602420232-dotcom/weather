@@ -3,7 +3,6 @@ package com.uav.service;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -51,6 +50,7 @@ class RealDataSourceServiceTest {
         assertNotNull(status);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     @DisplayName("状态包含地面站信息")
     void shouldContainGroundStationStatus() {
@@ -60,6 +60,7 @@ class RealDataSourceServiceTest {
         assertNotNull(gs);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     @DisplayName("状态包含浮标信息")
     void shouldContainBuoyStatus() {
@@ -69,6 +70,7 @@ class RealDataSourceServiceTest {
         assertNotNull(buoy);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     @DisplayName("数据源status标记为active")
     void shouldBeActive() {
@@ -78,6 +80,7 @@ class RealDataSourceServiceTest {
         assertEquals("active", gs.get("status"));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     @DisplayName("地面站初始count为0")
     void shouldHaveZeroGroundStationCountInitially() {

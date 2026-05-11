@@ -17,7 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,6 +59,9 @@ class AuthControllerTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
+    private SecurityAuditConfig securityAuditConfig;
+
+    @Mock
     private HttpServletRequest httpServletRequest;
 
     @InjectMocks
@@ -86,7 +89,7 @@ class AuthControllerTest {
             authController.login(request, httpServletRequest);
         });
 
-        assertEquals("VALIDATION_ERROR", exception.getErrorCode());
+        assertEquals("VALIDATION_ERROR", exception.getCode());
         assertTrue(exception.getMessage().contains("用户名不能为空"));
     }
 
@@ -103,7 +106,7 @@ class AuthControllerTest {
             authController.login(request, httpServletRequest);
         });
 
-        assertEquals("VALIDATION_ERROR", exception.getErrorCode());
+        assertEquals("VALIDATION_ERROR", exception.getCode());
         assertTrue(exception.getMessage().contains("用户名不能为空"));
     }
 
@@ -120,7 +123,7 @@ class AuthControllerTest {
             authController.login(request, httpServletRequest);
         });
 
-        assertEquals("VALIDATION_ERROR", exception.getErrorCode());
+        assertEquals("VALIDATION_ERROR", exception.getCode());
         assertTrue(exception.getMessage().contains("密码不能为空"));
     }
 
@@ -137,7 +140,7 @@ class AuthControllerTest {
             authController.login(request, httpServletRequest);
         });
 
-        assertEquals("VALIDATION_ERROR", exception.getErrorCode());
+        assertEquals("VALIDATION_ERROR", exception.getCode());
         assertTrue(exception.getMessage().contains("密码不能为空"));
     }
 
@@ -155,7 +158,7 @@ class AuthControllerTest {
         // Then
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertEquals("用户名或密码错误", response.getBody());
-        verify(SecurityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("密码错误"), any());
+        verify(securityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("密码错误"), any());
     }
 
     @Test
@@ -172,7 +175,7 @@ class AuthControllerTest {
         // Then
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertEquals("账户已被禁用", response.getBody());
-        verify(SecurityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("账户已禁用"), any());
+        verify(securityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("账户已禁用"), any());
     }
 
     @Test
@@ -189,7 +192,7 @@ class AuthControllerTest {
         // Then
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertEquals("账户已被锁定", response.getBody());
-        verify(SecurityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("账户已锁定"), any());
+        verify(securityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("账户已锁定"), any());
     }
 
     @Test
@@ -206,7 +209,7 @@ class AuthControllerTest {
         // Then
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertEquals("用户名或密码错误", response.getBody());
-        verify(SecurityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("用户不存在"), any());
+        verify(securityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("用户不存在"), any());
     }
 
     @Test
@@ -215,8 +218,12 @@ class AuthControllerTest {
         // Given
         doNothing().when(authenticationManager).authenticate(any());
 
-        User userDetails = new User("testuser", "password",
-            java.util.Collections.emptyList());
+        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+            .username("testuser")
+            .password("password")
+            .authorities(java.util.Collections.emptyList())
+            .build();
+
         when(userDetailsService.loadUserByUsername("testuser")).thenReturn(userDetails);
         when(jwtUtil.generateToken(userDetails)).thenReturn("test-token");
 
@@ -226,6 +233,6 @@ class AuthControllerTest {
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        verify(SecurityAuditConfig).logAuthenticationSuccess(eq("testuser"), any());
+        verify(securityAuditConfig).logAuthenticationSuccess(eq("testuser"), any());
     }
 }

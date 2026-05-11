@@ -183,7 +183,7 @@ class CUDAAccelerator(BaseAccelerator):
                 import pycuda.autoinit
                 # PyCUDA会自动清理
                 pass
-            except:
+            except (ImportError, AttributeError, Exception):
                 pass
         logger.info("CUDA加速器已释放")
 

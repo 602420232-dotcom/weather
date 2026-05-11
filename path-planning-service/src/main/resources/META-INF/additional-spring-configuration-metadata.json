@@ -1,0 +1,49 @@
+{
+  "properties": [
+    {
+      "name": "planning.python-script",
+      "type": "java.lang.String",
+      "description": "路径规划Python脚本路径"
+    },
+    {
+      "name": "planning.timeout",
+      "type": "java.lang.Integer",
+      "description": "规划超时时间(毫秒)"
+    },
+    {
+      "name": "planning.algorithm.vrptw.max-iterations",
+      "type": "java.lang.Integer",
+      "description": "VRPTW算法最大迭代次数"
+    },
+    {
+      "name": "planning.algorithm.vrptw.savings-weight",
+      "type": "java.lang.Double",
+      "description": "VRPTW算法节约值权重"
+    },
+    {
+      "name": "planning.algorithm.astar.grid-size",
+      "type": "java.lang.Integer",
+      "description": "A*算法网格大小"
+    },
+    {
+      "name": "planning.algorithm.astar.heuristic-weight",
+      "type": "java.lang.Double",
+      "description": "A*算法启发式权重"
+    },
+    {
+      "name": "planning.algorithm.dwa.max-speed",
+      "type": "java.lang.Double",
+      "description": "DWA算法最大速度"
+    },
+    {
+      "name": "planning.algorithm.dwa.max-acceleration",
+      "type": "java.lang.Double",
+      "description": "DWA算法最大加速度"
+    },
+    {
+      "name": "planning.algorithm.dwa.obstacle-threshold",
+      "type": "java.lang.Double",
+      "description": "DWA算法障碍物阈值"
+    }
+  ]
+}

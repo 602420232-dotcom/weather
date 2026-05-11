@@ -1,8 +1,8 @@
-# UAV Common Utilities Module
+﻿# UAV Common Utilities Module
 
-## 📋 模块概述
+##  模块概述
 
-`common-utils` 是 UAV Path Planning System 的公共工具模块，提供跨服务的通用功能、安全配置、异常处理和弹性机制。
+`common-utils` ?UAV Path Planning System 的公共工具模块提供跨服务的通用功能安全配置异常处理和性性机制?
 
 **Maven坐标**:
 ```xml
@@ -15,68 +15,68 @@
 
 ---
 
-## 📦 模块结构
+##  模块结构
 
 ```
 common-utils/
-├── src/
-│   ├── main/
-│   │   ├── java/com/uav/common/
-│   │   │   ├── audit/           # 安全审计
-│   │   │   ├── config/          # 配置类
-│   │   │   ├── dto/             # 数据传输对象
-│   │   │   ├── exception/       # 异常处理 ⭐ HTTP状态码支持
-│   │   │   ├── resilience/       # 弹性机制 ⭐
-│   │   │   ├── security/         # 安全认证
-│   │   │   └── utils/           # 工具类
-│   │   └── resources/
-│   │       ├── application.yml
-│   │       └── resilience4j-circuitbreaker.yml  # 熔断器配置
-│   └── test/                     # 单元测试
-├── pom.xml
-└── README.md
+ src/
+-   main/
+-    java/com/uav/common/
+-   ?   audit/           # 安全审计
+-   ?   config/          # 配置?
+-   ?   dto/             # 数据传输对象
+-   ?   exception/       # 异常处理 ?HTTP状态码支持
+├── resilience/       # 弹性机制
+-   ?   security/         # 安全认证
+-   ?   utils/           # 工具?
+-    resources/
+-        application.yml
+-        resilience4j-circuitbreaker.yml  # 熔断器配置
+-   test/                     # 单元测试
+ pom.xml
+ README.md
 ```
 
 ---
 
-## ✨ 核心功能
+## ✅ 核心功能
 
-### 🔐 1. 安全认证 (`security/`)
+###  1. 安全认证 (`security/`)
 
-| 类 | 功能 | 说明 |
+| ✅ | 功能 | 说明 |
 :|---|------|------|
-| `JwtAuthenticationFilter` | JWT认证过滤器 | Token验证、用户认证 |
-| `JwtSecurityConfig` | JWT安全配置 | Token生成、验证 |
+| `JwtAuthenticationFilter` | JWT认证过滤?| Token验证用户认?|
+| `JwtSecurityConfig` | JWT安全配置 | Token生成验?|
 | `CookieCsrfTokenRepository` | CSRF Token存储 | Cookie存储CSRF Token |
-| `CsrfOriginFilter` | CSRF来源验证 | HTTP Origin检查 |
+| `CsrfOriginFilter` | CSRF来源验证 | HTTP Origin检查|
 
-**特性**:
-- ✅ JWT Token生成和验证
+**特?*:
+- ?JWT Token生成和验?
 - ✅ 生产环境强制密钥配置
-- ✅ CSRF保护（启用状态）
-- ✅ CORS配置
+- ?CSRF保护启用状态
+- ?CORS配置
 
 **配置示例**:
 ```yaml
 uav:
   jwt:
     enabled: true
-    secret: ${JWT_SECRET}  # 必需：至少32字符
+    secret: ${JWT_SECRET}  # 必需至?2字符
     expiration: 86400000   # 24小时
 ```
 
-### 🛡️ 2. 弹性机制 (`resilience/`) ⭐
+### ?2. 性性机?(`resilience/`) ?
 
-| 类 | 功能 | 说明 |
+| ✅ | 功能 | 说明 |
 :|---|------|------|
-| `ResilienceConfig` | 熔断器配置 | CircuitBreaker/Retry/TimeLimiter |
+| `ResilienceConfig` | 熔断器配置| CircuitBreaker/Retry/TimeLimiter |
 | `CircuitBreakerService` | 服务调用封装 | 带熔断保护的HTTP调用 |
-| `CircuitBreakerController` | 熔断器监控API | 状态查询、手动控制 |
+| `CircuitBreakerController` | 熔断器监控API | 状态查询手动控?|
 
-**熔断器保护**:
-- ✅ `meteor-forecast-service` - 气象预报服务
-- ✅ `path-planning-service` - 路径规划服务
-- ✅ `data-assimilation-service` - 数据同化服务
+**熔断器保?*:
+- `meteor-forecast-service` - 气象预报服务
+- `path-planning-service` - 路径规划服务
+- `data-assimilation-service` - 数据同化服务
 
 **使用示例**:
 ```java
@@ -94,43 +94,43 @@ public void callService() {
 }
 ```
 
-### 🛑 3. 异常处理 (`exception/`) - HTTP状态码支持 ⭐
+###  3. 异常处理 (`exception/`) - HTTP状态码支持 ?
 
-| 类 | 功能 | 默认状态码 | 可自定义 |
+| ✅ | 功能 | 默认状态码 | 可自定义 |
 :|---|------|:--------:|:-------:|
 | `BusinessException` | 业务异常 | 400 | ✅ |
-| `DataNotFoundException` | 数据未找到 | 404 | - |
-| `ServiceUnavailableException` | 服务不可用/熔断器 | 503 | ✅ |
+| `DataNotFoundException` | 数据未找?| 404 | - |
+| `ServiceUnavailableException` | 服务不可选熔断?| 503 | ✅ |
 | `PythonExecutionException` | Python执行异常 | 500 | - |
-| `GlobalExceptionHandler` | 全局异常处理器 | - | ✅ |
+| `GlobalExceptionHandler` | 全局异常处理?| - | ✅ |
 
 **所有异常处理器都返回正确的HTTP状态码**
 
 **BusinessException 工厂方法**:
 ```java
 // 400 - 参数错误
-throw BusinessException.badRequest("ERR_001", "参数不合法");
+throw BusinessException.badRequest("ERR_001", "参数不合?);
 
-// 401 - 未认证
+// 401 - 未认?
 throw BusinessException.unauthorized("ERR_002", "请先登录");
 
 // 403 - 权限不足
-throw BusinessException.forbidden("ERR_003", "无权访问此资源");
+throw BusinessException.forbidden("ERR_003", "无权访问此资?);
 
-// 404 - 资源不存在
-throw BusinessException.notFound("ERR_004", "数据未找到");
+// 404 - 资源不存?
+throw BusinessException.notFound("ERR_004", "数据未找?);
 
 // 409 - 资源冲突
-throw BusinessException.conflict("ERR_005", "数据已存在");
+throw BusinessException.conflict("ERR_005", "数据已存?);
 
-// 422 - 无法处理的实体
+// 422 - 无法处理的实?
 throw BusinessException.unprocessableEntity("ERR_006", "数据格式错误");
 
 // 429 - 请求过多
 throw BusinessException.tooManyRequests("ERR_007", "请求过于频繁");
 
-// 500 - 服务器内部错误
-throw BusinessException.internal("ERR_008", "服务器内部错误");
+// 500 - 服务器内部错?
+throw BusinessException.internal("ERR_008", "服务器内部错?);
 
 // 自定义状态码
 throw new BusinessException("CUSTOM_CODE", "错误信息", HttpStatus.NOT_FOUND);
@@ -146,10 +146,10 @@ throw new BusinessException("CUSTOM_CODE", "错误信息", HttpStatus.NOT_FOUND)
 }
 ```
 
-**ServiceUnavailableException 工厂方法** (用于熔断器):
+**ServiceUnavailableException 工厂方法** (用于熔断?:
 ```java
-// 503 - 服务不可用
-throw ServiceUnavailableException.serviceDown("meteor-service", "服务维护中");
+// 503 - 服务不可选
+throw ServiceUnavailableException.serviceDown("meteor-service", "服务维护者);
 
 // 504 - 网关超时
 throw ServiceUnavailableException.gatewayTimeout("planning-service", "服务响应超时");
@@ -161,15 +161,15 @@ throw ServiceUnavailableException.badGateway("data-service", "服务异常");
 throw ServiceUnavailableException.circuitBreakerOpen("forecast-service");
 ```
 
-### 📊 4. 数据传输对象 (`dto/`)
+###  4. 数据传输对象 (`dto/`)
 
-| 类 | 用途 |
+| ✅ | 用?|
 :|------|
 | `AssimilationRequest` | 数据同化请求 |
 | `ForecastRequest` | 气象预报请求 |
 | `PathPlanningRequest` | 路径规划请求 |
 
-**验证特性**:
+**验证特?*:
 ```java
 public class AssimilationRequest {
     @NotNull(message = "数据不能为空")
@@ -183,38 +183,38 @@ public class AssimilationRequest {
 }
 ```
 
-### ⚙️ 5. 配置类 (`config/`)
+###  5. 配置?(`config/`)
 
-| 类 | 功能 |
+| ✅ | 功能 |
 :|------|
-| `CommonSecurityConfig` | 通用安全配置（CSRF/CORS） |
-| `NacosConfigRefresher` | Nacos配置动态刷新 |
+| `CommonSecurityConfig` | 通用安全配置CSRF/CORS?|
+| `NacosConfigRefresher` | Nacos配置动态刷?|
 
 **CORS配置**:
 ```java
 @Configuration
 @EnableWebSecurity
 public class CommonSecurityConfig {
-    // ✅ CORS已配置，支持指定域名
-    // ✅ CSRF已启用，API端点除外
+    // ?CORS已配置支持指定域名
+    // ?CSRF已启用API端点除外
 }
 ```
 
-### 🔍 6. 安全审计 (`audit/`)
+###  6. 安全审计 (`audit/`)
 
-| 类 | 功能 |
+| ✅ | 功能 |
 :|------|
 | `SecurityAuditor` | 安全事件记录 |
 
 **审计事件**:
 - ✅ 登录成功
-- ✅ 登录失败
-- ✅ 权限验证
-- ✅ 敏感操作
+- ❌ 登录失败
+- ?权限验证
+- ?敏感操作
 
 ---
 
-## 🚀 快速开始
+##  快速开?
 
 ### 1. 引入依赖
 
@@ -248,17 +248,17 @@ public class Application {
 
 ---
 
-## 📖 API参考
+##  API参?
 
 ### 熔断器API
 
 | 接口 | 方法 | 说明 |
 :|------|------|------|
-| `/api/admin/circuit-breaker/status` | GET | 获取所有熔断器状态 |
-| `/api/admin/circuit-breaker/details/{name}` | GET | 获取熔断器详细信息 |
+| `/api/admin/circuit-breaker/status` | GET | 获取所有熔断器状态|
+| `/api/admin/circuit-breaker/details/{name}` | GET | 获取熔断器详细信?|
 | `/api/admin/circuit-breaker/trip/{name}` | POST | 手动触发熔断 |
-| `/api/admin/circuit-breaker/reset/{name}` | POST | 手动重置熔断器 |
-| `/api/admin/circuit-breaker/health` | GET | 健康检查 |
+| `/api/admin/circuit-breaker/reset/{name}` | POST | 手动重置熔断?|
+| `/api/admin/circuit-breaker/health` | GET | 健康检查|
 
 ### 使用示例
 
@@ -283,7 +283,7 @@ curl http://localhost:8080/api/admin/circuit-breaker/status
 
 ---
 
-## 🔧 配置参考
+##  配置参?
 
 ### JWT配置
 
@@ -292,23 +292,23 @@ uav:
   jwt:
     enabled: true
     secret: ${JWT_SECRET}                    # 生产环境必需
-    secret-min-length: 32                   # 最小32字符
+    secret-min-length: 32                   # 最?2字符
     expiration: 86400000                   # 24小时
 ```
 
 ### 熔断器配置
 
-详细配置请参考: [resilience4j-circuitbreaker.yml](src/main/resources/resilience4j-circuitbreaker.yml)
+详细配置请参? [resilience4j-circuitbreaker.yml](src/main/resources/resilience4j-circuitbreaker.yml)
 
 ### CORS配置
 
 ```yaml
 uav:
   cors:
-    allowed-origins:                       # 允许的域名
+    allowed-origins:                       # 允许的域?
       - "http://localhost:3000"
       - "https://*.example.com"
-    allowed-methods:                       # 允许的方法
+    allowed-methods:                       # 允许的方?
       - GET
       - POST
       - PUT
@@ -320,14 +320,14 @@ uav:
 
 ---
 
-## 📝 单元测试
+##  单元测试
 
-模块包含完整的单元测试：
+模块包含完整的单元测试
 
-| 测试类 | 覆盖范围 |
+| 测试?| 覆盖范围 |
 :|--------|---------|
 | `ConfigTests` | 配置测试 |
-| `PythonExecutorTest` | Python执行器测试 |
+| `PythonExecutorTest` | Python执行器测试|
 | `PythonScriptInvokerTest` | 脚本调用测试 |
 | `AssimilationRequestTest` | DTO验证测试 |
 | `DtoValidationTests` | 数据验证测试 |
@@ -340,50 +340,50 @@ mvn test -pl common-utils
 
 ---
 
-## 🔗 依赖关系
+##  依赖关系
 
 ```
 common-utils
-├── Spring Boot Starter Web
-├── Spring Boot Starter Security
-├── Spring Boot Starter Validation
-├── Spring Boot Starter AOP
-├── Resilience4j Circuit Breaker
-├── Resilience4j Retry
-├── Resilience4j Time Limiter
-├── JJWT (JWT处理)
-├── Lombok
-└── JUnit + Mockito (测试)
+ Spring Boot Starter Web
+ Spring Boot Starter Security
+ Spring Boot Starter Validation
+ Spring Boot Starter AOP
+ Resilience4j Circuit Breaker
+ Resilience4j Retry
+ Resilience4j Time Limiter
+ JJWT (JWT处理)
+ Lombok
+ JUnit + Mockito (测试)
 ```
 
 ---
 
-## 📚 相关文档
+##  相关文档
 
 | 文档 | 说明 |
 :|------|------|
-| [Circuit Breaker Guide](../../docs/CIRCUIT_BREAKER_GUIDE.md) | 熔断器完整使用指南 |
+| [Circuit Breaker Guide](../../docs/CIRCUIT_BREAKER_GUIDE.md) | 熔断器完整使用指?|
 | [Circuit Breaker Examples](../../docs/CIRCUIT_BREAKER_USAGE_EXAMPLES.md) | 代码示例 |
-| [Exception HTTP Status Guide](../../docs/EXCEPTION_HTTP_STATUS_GUIDE.md) | 异常处理与HTTP状态码 ⭐ |
+| [Exception HTTP Status Guide](../../docs/EXCEPTION_HTTP_STATUS_GUIDE.md) | 异常处理与HTTP状态码 ?|
 | [Improvements Report](../../docs/IMPROVEMENTS_COMPLETED_REPORT.md) | 改进总结 |
 | [Security Audit Report](../../docs/security_audit_report.md) | 安全审计报告 |
 
 ---
 
-## 🐛 故障排查
+##  故障排查
 
 ### 常见问题
 
-**Q: 熔断器状态为 OPEN？**
+**Q: 熔断器状态为 OPEN?*
 ```bash
-# 查看熔断器详情
+# 查看熔断器详?
 curl http://localhost:8080/api/admin/circuit-breaker/details/meteor-forecast-service
 
 # 手动重置
 curl -X POST http://localhost:8080/api/admin/circuit-breaker/reset/meteor-forecast-service
 ```
 
-**Q: JWT验证失败？**
+**Q: JWT验证失败?*
 ```yaml
 # 检查JWT密钥配置
 uav:
@@ -391,7 +391,7 @@ uav:
     secret: ${JWT_SECRET}  # 确保环境变量已设置
 ```
 
-**Q: CORS跨域问题？**
+**Q: CORS跨域问题?*
 ```yaml
 # 检查CORS配置
 uav:
@@ -403,6 +403,7 @@ uav:
 
 ---
 
-> **最后更新**: 2026-05-08  
+> **最后更新*: 2026-05-09  
 > **版本**: 2.1  
-> **维护者**: DITHIOTHREITOL
+> **维护者*: DITHIOTHREITOL
+

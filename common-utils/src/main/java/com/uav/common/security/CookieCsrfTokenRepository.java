@@ -3,9 +3,9 @@ package com.uav.common.security;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.DefaultCsrfToken;
@@ -13,10 +13,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.util.WebUtils;
 
 import java.util.UUID;
-
+@Slf4j
+@Component
 public class CookieCsrfTokenRepository implements CsrfTokenRepository {
-
-    private static final Logger log = LoggerFactory.getLogger(CookieCsrfTokenRepository.class);
 
     static final String DEFAULT_CSRF_COOKIE_NAME = "XSRF-TOKEN";
     static final String DEFAULT_CSRF_HEADER_NAME = "X-XSRF-TOKEN";
@@ -88,6 +87,7 @@ public class CookieCsrfTokenRepository implements CsrfTokenRepository {
     }
 
     @Override
+    @SuppressWarnings("null")
     public CsrfToken loadToken(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, this.cookieName);
         if (cookie == null) {

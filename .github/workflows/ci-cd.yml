@@ -107,6 +107,17 @@ jobs:
         run: |
           mvn jacoco:check \
             -Djacoco.haltOnFailure=false \
-            -Djacoco.lineCoverageMinimum=0.50 \
-            -Djacoco.branchCoverageMinimum=0.40
+            -Djacoco.lineCoverageMinimum=0.60 \
+            -Djacoco.branchCoverageMinimum=0.50
+        continue-on-error: true
+
+      - name: SonarQube Scan
+        if: vars.SONAR_HOST_URL != ''
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=uav-path-planning \
+            -Dsonar.host.url=${{ vars.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.java.binaries=**/target/classes \
+            -Dsonar.coverage.jacoco.xmlReportsPaths=**/target/site/jacoco/jacoco.xml
         continue-on-error: true

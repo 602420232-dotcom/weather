@@ -1,11 +1,11 @@
-# 教程
+﻿# 教程
 
 ## 入门教程
 
-### 1. 安装与配置
+### 1. 安装与配?
 
 ```bash
-# 安装算法库
+# 安装算法?
 cd algorithm_core
 pip install -e .
 
@@ -23,7 +23,7 @@ import numpy as np
 assim = BayesianAssimilator()
 assim.initialize_grid(domain_size=(50, 50, 20))
 
-# 准备背景场
+# 准备背景?
 background = np.random.rand(50, 50, 20)
 
 # 准备观测数据
@@ -37,11 +37,11 @@ analysis, variance = assim.assimilate_3dvar(
     obs_locations=obs_locations
 )
 
-print(f"分析场形状: {analysis.shape}")
-print(f"方差场形状: {variance.shape}")
+print(f"分析场形? {analysis.shape}")
+print(f"方差场形? {variance.shape}")
 ```
 
-### 3. 可视化结果
+### 3. 可视化结?
 
 ```python
 from bayesian_assimilation.visualization.plots import plot_comparison
@@ -93,7 +93,7 @@ results = parallel_mgr.parallel_assimilate(
 )
 ```
 
-## 完整工作流示例
+## 完整工作流示?
 
 ### 批处理工作流
 
@@ -160,6 +160,7 @@ curl -X POST http://localhost:8000/assimilate \
 ```
 ---
 
-> **最后更新**: 2026-05-08  
+> **最后更新*: 2026-05-09  
 > **版本**: 2.1  
-> **维护者**: DITHIOTHREITOL
+> **维护者*: DITHIOTHREITOL
+

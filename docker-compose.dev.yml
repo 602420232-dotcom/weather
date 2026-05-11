@@ -5,7 +5,7 @@ services:
     image: mysql:8.0
     container_name: uav-mysql-dev
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme123}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-uav_platform}
     ports:
       - "3306:3306"

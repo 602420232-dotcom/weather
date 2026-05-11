@@ -2,8 +2,7 @@ package com.uav.service;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,10 +13,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 public class RealDataSourceService {
-
-    private static final Logger log = LoggerFactory.getLogger(RealDataSourceService.class);
     
     private List<Map<String, Object>> groundStationData = new ArrayList<>();
     private List<Map<String, Object>> buoyData = new ArrayList<>();
