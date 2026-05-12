@@ -12,8 +12,11 @@
 
 import os
 import re
+import logging
 from pathlib import Path
 from typing import List, Tuple
+
+logger = logging.getLogger(__name__)
 
 class ComprehensiveFixer:
     def __init__(self, root_dir: str):
@@ -124,20 +127,20 @@ class ComprehensiveFixer:
     def print_report(self):
         """打印修复报告"""
         print("\n" + "="*60)
-        logger.info("全面自动化修复报告")
+        print("全面自动化修复报告")
         print("="*60)
-        logger.info(f"✅ 文件处理数: {self.stats['files_processed']}")
-        logger.info(f"✅ print修复数: {self.stats['print_fixes']}")
-        logger.info(f"✅ 类型注解修复数: {self.stats['type_hint_fixes']}")
-        logger.info(f"✅ docstring修复数: {self.stats['docstring_fixes']}")
-        logger.info(f"✅ 导入修复数: {self.stats['import_fixes']}")
-        
+        print(f"文件处理数: {self.stats['files_processed']}")
+        print(f"print修复数: {self.stats['print_fixes']}")
+        print(f"类型注解修复数: {self.stats['type_hint_fixes']}")
+        print(f"docstring修复数: {self.stats['docstring_fixes']}")
+        print(f"导入修复数: {self.stats['import_fixes']}")
+
         if self.stats['errors']:
-            logger.info(f"\n⚠️ 错误数: {len(self.stats['errors'])}")
+            print(f"\n错误数: {len(self.stats['errors'])}")
             for err in self.stats['errors'][:10]:
-                logger.info(f"  - {err}")
+                print(f"  - {err}")
         else:
-            logger.info(f"\n✅ 无错误")
+            print(f"\n无错误")
         print("="*60)
 
 if __name__ == '__main__':

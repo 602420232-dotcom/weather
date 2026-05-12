@@ -1,6 +1,7 @@
 package com.uav.wrf.processor.controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -167,6 +168,32 @@ public class WrfController {
         return Map.of(
             "success", true,
             "data", Map.of()
+        );
+    }
+
+    @PostMapping("/upload")
+    public Map<String, Object> uploadWrfData(@RequestBody Map<String, Object> request) {
+        return Map.of(
+            "success", true,
+            "message", "WRF数据上传成功"
+        );
+    }
+
+    @GetMapping("/list")
+    public Map<String, Object> listWrfData(@RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+        return Map.of(
+            "success", true,
+            "data", Map.of(),
+            "page", page,
+            "size", size
+        );
+    }
+
+    @GetMapping("/detail")
+    public Map<String, Object> getWrfDataDetail(@RequestParam("id") Long id) {
+        return Map.of(
+            "success", true,
+            "data", Map.of("id", id)
         );
     }
 }

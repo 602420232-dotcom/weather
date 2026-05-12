@@ -12,12 +12,9 @@ trae/
 -   path-planning-service/   # 路径规划服务 (端口 8083)
 -   data-assimilation-service/  # 数据同化服务 (端口 8084)
 -   uav-weather-collector/  # 气象数据采集 (端口 8086)
--   common-utils/            # 公共工具模块 ?
--        common-dependencies/  # 已合并为 parent pom.xml BOM
+-   common-utils/            # 公共工具模块-        common-dependencies/  # 已合并为 parent pom.xml BOM
 -   算法模块 (Python)
--   data-assimilation-platform/  # 贝叶斯同化平?
--    algorithm_core/      # 核心算法?
--    examples/           # 使用示例
+-   data-assimilation-platform/  # 贝叶斯同化平-    algorithm_core/      # 核心算法-    examples/           # 使用示例
 -    tests/              # 测试
 -    shared/protos/       # Protocol Buffers
 -   edge-cloud-coordinator/ # 边云协同
@@ -57,8 +54,7 @@ common-utils/
  src/main/java/com/uav/common/
 -   audit/                 # 安全审计
 -    SecurityAuditor.java
--   config/                # 配置?
--    CommonSecurityConfig.java   # 安全配置
+-   config/                # 配置-    CommonSecurityConfig.java   # 安全配置
 -    NacosConfigRefresher.java    # 配置刷新
 -   dto/                   # 数据传输对象
 -    AssimilationRequest.java
@@ -76,8 +72,7 @@ common-utils/
 -    JwtAuthenticationFilter.java
 -    JwtSecurityConfig.java
 -    CsrfOriginFilter.java
--   utils/                # 工具?
--       PythonExecutor.java
+-   utils/                # 工具-       PythonExecutor.java
  src/main/resources/
      application.yml
      resilience4j-circuitbreaker.yml  # 熔断器配置
@@ -95,7 +90,7 @@ common-utils/
 
 **路径**: `api-gateway/`
 **端口**: 8088
-**技?*: Spring Cloud Gateway
+**技*: Spring Cloud Gateway
 
 **路由配置**:
 ```yaml
@@ -107,7 +102,7 @@ routes:
   - /api/assimilation/**    ?data-assimilation-service:8084
 ```
 
-**熔断器保?*: ✅ 通过 common-utils Resilience4j
+**熔断器保*: ✅ 通过 common-utils Resilience4j
 
 ### 后端服务端口映射
 
@@ -135,8 +130,7 @@ routes:
 data-assimilation-platform/
  algorithm_core/              # 核心算法
 -   src/
--    bayesian_assimilation/  # 贝叶斯同?
--   ?   models/           # 模型
+-    bayesian_assimilation/  # 贝叶斯同-   ?   models/           # 模型
 -   ?   assimilation/     # 同化算法
 -   ?   utils/            # 工具
 -    tests/                # 测试
@@ -156,9 +150,7 @@ data-assimilation-platform/
 - 3D-VAR 同化
 - 4D-VAR 同化
 - Ensemble Kalman Filter (EnKF)
-- 贝叶斯优?
-
-### edge-cloud-coordinator
+- 贝叶斯优### edge-cloud-coordinator
 
 **路径**: `edge-cloud-coordinator/`
 **说明**: 边云协同框架
@@ -181,8 +173,7 @@ data-assimilation-platform/
 - Vue 3.3+
 - Vite 4.0+
 - TypeScript 5.0+
-- Pinia 状态管?
-- Vue Router 4.0
+- Pinia 状态管- Vue Router 4.0
 
 **目录结构**:
 ```
@@ -194,8 +185,7 @@ frontend-vue/
 -   stores/           # Pinia状态
 -   router/           # 路由
 -   utils/            # 工具
--   assets/           # 静态资?
- public/               # 公共资源
+-   assets/           # 静态资public/               # 公共资源
  package.json
  vite.config.ts
 ```
@@ -210,15 +200,12 @@ frontend-vue/
 
 **语言支持**:
 - C++ (核心算法)
-- Python (快速原?
-- pybind11 (Python绑定)
+- Python (快速原- pybind11 (Python绑定)
 
 **功能**:
 - 离线路径规划
 - 本地气象处理
-- 边缘推理加?
-
----
+- 边缘推理加---
 
 ##  部署配置详解
 
@@ -244,17 +231,14 @@ kubernetes/
 **服务编排**:
 ```yaml
 services:
-  mysql:                    # 数据?
-  redis:                   # 缓存
+  mysql:                    # 数据redis:                   # 缓存
   nacos:                   # 注册中心
   api-gateway:             # 网关
   uav-platform-service:    # 主服务
   # ... 其他服务
 ```
 
-### 监控?
-
-**路径**: `deployments/monitoring/`
+### 监控**路径**: `deployments/monitoring/`
 
 **组件**:
 ```
@@ -263,8 +247,7 @@ monitoring/
  prometheus/             # Prometheus配置
 -   prometheus.yml
 -   alerts.yml
- grafana/               # Grafana仪表?
- alertmanager/          # 告警管理
+ grafana/               # Grafana仪表alertmanager/          # 告警管理
  logstash/              # 日志处理
 -   pipeline/
  alert-webhook/         # 告警Webhook
@@ -316,13 +299,13 @@ docs/
 
 ### 关键文档
 
-| 文档 | 说明 | 优先?|
+| 文档 | 说明 | 优先|
 |------|------|--------|
-| README.md | 项目总览和快速开?| *** |
+| README.md | 项目总览和快速开| *** |
 | docs/PROJECT_STRUCTURE.md | 项目结构指南 | *** |
 | docs/DEPLOYMENT.md | 完整部署指南 | *** |
-| docs/guides/CIRCUIT_BREAKER_GUIDE.md | 熔断器使用指?| *** |
-| docs/deployment/DEPLOYMENT.md | 部署与维护方?| ** |
+| docs/guides/CIRCUIT_BREAKER_GUIDE.md | 熔断器使用指| *** |
+| docs/deployment/DEPLOYMENT.md | 部署与维护方| ** |
 
 ---
 
@@ -387,12 +370,10 @@ docker-compose up -d
 
 ---
 
-##  服务依赖关系?
-
-```
+##  服务依赖关系```
                     -                     -  Client   ?
                     -                            -                            -                     -                     ?API Gateway ?:8088
-                    - (熔断?   ?
+                    - (熔断?
                     -                            -         -         -                 ?                 ?
         -                 ?                 ?
 - ?
@@ -418,28 +399,21 @@ docker-compose up -d
 
 ##  快速导航
 
-### 需要添加新服务?
-
-1. 在根目录创建服务文件?
-2. 添加 `pom.xml`
+### 需要添加新服务1. 在根目录创建服务文件2. 添加 `pom.xml`
 3. 引入 `common-utils` 依赖
 4. 创建 `README.md`
-5. 添加?`docker-compose.yml`
-6. 配置路由?`api-gateway`
+5. 添加`docker-compose.yml`
+6. 配置路由`api-gateway`
 
-### 需要修改熔断器配置?
-
-1. 编辑 `common-utils/src/main/resources/resilience4j-circuitbreaker.yml`
+### 需要修改熔断器配置1. 编辑 `common-utils/src/main/resources/resilience4j-circuitbreaker.yml`
 2. 重启服务
 3. 通过API验证: `GET /api/admin/circuit-breaker/status`
 
 ### 需要添加监控指标
 
-1. ?Prometheus 配置中添?scrape job
+1. ?Prometheus 配置中添scrape job
 2. ?Grafana 中创建仪表板
-3. ?Alertmanager 中添加告警规?
-
----
+3. ?Alertmanager 中添加告警规---
 
 ##  更多资源
 

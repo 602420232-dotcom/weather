@@ -45,6 +45,26 @@ public class WrfProcessorClientFallback implements WrfProcessorClient {
     }
 
     @Override
+    public Map<String, Object> getWeatherData(String fileId) {
+        log.warn("WrfProcessorClientFallback: getWeatherData降级执行, fileId={}", fileId);
+        Map<String, Object> fallbackResponse = new HashMap<>();
+        fallbackResponse.put("status", "degraded");
+        fallbackResponse.put("message", "WRF天气数据服务暂不可用，请稍后重试");
+        fallbackResponse.put("fallback", true);
+        return fallbackResponse;
+    }
+
+    @Override
+    public Map<String, Object> getStatistics(String fileId) {
+        log.warn("WrfProcessorClientFallback: getStatistics降级执行, fileId={}", fileId);
+        Map<String, Object> fallbackResponse = new HashMap<>();
+        fallbackResponse.put("status", "degraded");
+        fallbackResponse.put("message", "WRF统计信息服务暂不可用，请稍后重试");
+        fallbackResponse.put("fallback", true);
+        return fallbackResponse;
+    }
+
+    @Override
     public Map<String, Object> parseWrfData(Map<String, Object> request) {
         log.warn("WrfProcessorClientFallback: parseWrfData降级执行, request={}", request);
         Map<String, Object> fallbackResponse = new HashMap<>();

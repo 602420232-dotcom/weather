@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: data-assimilation
-          image: uav-registry/data-assimilation-service:latest
+          image: uav-registry/data-assimilation-service:v1.0.0
           ports:
             - containerPort: 8084
               name: http

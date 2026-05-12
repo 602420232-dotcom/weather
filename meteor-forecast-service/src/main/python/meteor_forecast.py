@@ -110,7 +110,7 @@ class MeteorForecast:
             self.lstm_model.save(lstm_model_path)
             logger.info(f"LSTM模型保存成功: {lstm_model_path}")
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"训练LSTM模型失败: {e}")
     
     def train_xgb(self, X, y):
@@ -131,7 +131,7 @@ class MeteorForecast:
             self.xgb_model.save_model(xgb_model_path)
             logger.info(f"XGBoost模型保存成功: {xgb_model_path}")
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"训练XGBoost模型失败: {e}")
     
     def load_models(self):
@@ -156,7 +156,7 @@ class MeteorForecast:
             else:
                 logger.warning(f"XGBoost模型文件不存在: {xgb_model_path}")
             
-        except Exception as e:
+        except (IOError, OSError, ValueError, KeyError, TypeError) as e:
             logger.error(f"加载模型失败: {e}")
     
     def predict(self, input_data):
@@ -199,7 +199,7 @@ class MeteorForecast:
             logger.info("气象预测完成")
             return result
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"预测失败: {e}")
             return []
     
@@ -226,7 +226,7 @@ class MeteorForecast:
             logger.info("气象数据订正完成")
             return corrected_data.tolist()
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"订正失败: {e}")
             return forecast_data
     
@@ -259,7 +259,7 @@ class MeteorForecast:
                 'rmse': float(rmse)
             }
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"评估失败: {e}")
             return {}
     
@@ -330,7 +330,7 @@ class MeteorForecast:
                 'best_rmse': self.best_score
             }
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"自迭代改进失败: {e}")
             return {
                 'success': False,
@@ -346,7 +346,7 @@ class MeteorForecast:
             self.wrf_data = wrf_data
             logger.info("WRF数据加载成功")
             return True
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, AttributeError) as e:
             logger.error(f"加载WRF数据失败: {e}")
             return False
     
@@ -359,7 +359,7 @@ class MeteorForecast:
             self.ghr_data = ghr_data
             logger.info("风乌GHR数据加载成功")
             return True
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, AttributeError) as e:
             logger.error(f"加载风乌GHR数据失败: {e}")
             return False
 
@@ -387,7 +387,7 @@ class MeteorForecast:
                 input_shape = (spatial_series.shape[0], spatial_series.shape[1], spatial_series.shape[2], 1)
                 self.convlstm_model = self.build_convlstm_model(input_shape[1:])
             return self.convlstm_model.predict(spatial_series, verbose=0)
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"ConvLSTM预测失败: {e}")
             return None
 
@@ -399,7 +399,7 @@ class MeteorForecast:
             self.gpr_model.fit(X_train, y_train)
             logger.info("GPR模型训练完成")
             return True
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"GPR模型训练失败: {e}")
             return False
 
@@ -412,7 +412,7 @@ class MeteorForecast:
             if return_std:
                 return self.gpr_model.predict(X_test, return_std=True)
             return self.gpr_model.predict(X_test), None
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"GPR预测失败: {e}")
             return None, None
 
@@ -470,7 +470,7 @@ class MeteorForecast:
             logger.info("双预报引擎融合预测完成")
             return result
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"融合预测失败: {e}")
             return []
     
@@ -515,7 +515,7 @@ class MeteorForecast:
             logger.info("风险热力图生成完成")
             return risk_data
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"生成风险热力图失败: {e}")
             return []
 
@@ -561,7 +561,7 @@ def main():
                 'success': True,
                 'data': predictions
             }))
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"预测失败: {e}")
             print(json.dumps({
                 'success': False,
@@ -586,7 +586,7 @@ def main():
                 'success': True,
                 'data': corrected_data
             }))
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)
@@ -613,7 +613,7 @@ def main():
                 'success': True,
                 'message': '模型训练完成'
             }))
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)
@@ -639,7 +639,7 @@ def main():
                 'success': result['success'],
                 'data': result
             }))
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)
@@ -670,7 +670,7 @@ def main():
                 'success': True,
                 'data': predictions
             }))
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)
@@ -695,7 +695,7 @@ def main():
                 'success': True,
                 'data': risk_data
             }))
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)

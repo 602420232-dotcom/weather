@@ -4,7 +4,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Map;
 
 /**
@@ -16,25 +15,40 @@ import java.util.Map;
 public interface MeteorForecastClient {
 
     /**
-     * 获取气象预报
+     * 气象预测
      */
-    @GetMapping("/api/forecast")
-    Map<String, Object> getForecast(
-            @RequestParam("lat") Double lat,
-            @RequestParam("lng") Double lng,
-            @RequestParam("hours") Integer hours);
+    @PostMapping("/api/forecast/predict")
+    Map<String, Object> predict(@RequestBody Map<String, Object> request);
 
     /**
-     * 获取气象预报（详细参数）
+     * 气象数据订正
      */
-    @PostMapping("/api/forecast/detailed")
-    Map<String, Object> getDetailedForecast(@RequestBody Map<String, Object> request);
+    @PostMapping("/api/forecast/correct")
+    Map<String, Object> correct(@RequestBody Map<String, Object> request);
 
     /**
-     * 获取实时气象数据
+     * 获取可用模型
+     */
+    @GetMapping("/api/forecast/models")
+    Map<String, Object> getModels();
+
+    /**
+     * 获取气象预测
+     */
+    @GetMapping("/api/forecast/get")
+    Map<String, Object> getForecast(Double lat, Double lng, Integer hours);
+
+    /**
+     * 获取详细气象预测
+     */
+    @PostMapping("/api/forecast/detail")
+    Map<String, Object> getDetailedForecast(Map<String, Object> request);
+
+    /**
+     * 获取实时天气
      */
     @GetMapping("/api/forecast/realtime")
-    Map<String, Object> getRealtimeWeather(@RequestParam("lat") Double lat, @RequestParam("lng") Double lng);
+    Map<String, Object> getRealtimeWeather(Double lat, Double lng);
 
     /**
      * 健康检查

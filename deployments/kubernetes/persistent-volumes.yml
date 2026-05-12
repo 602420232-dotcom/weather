@@ -1,9 +1,9 @@
-# 持久卷声明配置
+﻿# 持久卷声明配置
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-data-pvc
-  namespace: uav-path-planning
+  namespace: uav-platform
 spec:
   accessModes:
   - ReadWriteOnce
@@ -16,7 +16,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: redis-data-pvc
-  namespace: uav-path-planning
+  namespace: uav-platform
 spec:
   accessModes:
   - ReadWriteOnce
@@ -29,7 +29,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: wrf-data-pvc
-  namespace: uav-path-planning
+  namespace: uav-platform
 spec:
   accessModes:
   - ReadWriteOnce
@@ -42,7 +42,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: output-data-pvc
-  namespace: uav-path-planning
+  namespace: uav-platform
 spec:
   accessModes:
   - ReadWriteOnce
@@ -55,7 +55,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: model-data-pvc
-  namespace: uav-path-planning
+  namespace: uav-platform
 spec:
   accessModes:
   - ReadWriteOnce
@@ -68,7 +68,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: forecast-data-pvc
-  namespace: uav-path-planning
+  namespace: uav-platform
 spec:
   accessModes:
   - ReadWriteOnce
@@ -81,7 +81,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: config-data-pvc
-  namespace: uav-path-planning
+  namespace: uav-platform
 spec:
   accessModes:
   - ReadWriteOnce

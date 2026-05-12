@@ -66,9 +66,9 @@ export class ARDigitalMap {
   }
 
   riskToColor(risk) {
-    if (risk === 'HIGH') return Cesium.Color.RED.withAlpha(0.5);
-    if (risk === 'MEDIUM') return Cesium.Color.YELLOW.withAlpha(0.4);
-    return Cesium.Color.GREEN.withAlpha(0.3);
+    if (risk === 'HIGH') return Cesium.Color.RED.clone().setAlpha(0.5);
+    if (risk === 'MEDIUM') return Cesium.Color.YELLOW.clone().setAlpha(0.4);
+    return Cesium.Color.GREEN.clone().setAlpha(0.3);
   }
 
   trackDrone(droneId, getPositionFn) {
@@ -103,7 +103,7 @@ export class ARDigitalMap {
         ellipse: {
           semiMinorAxis: obs.radius * 1000,
           semiMajorAxis: obs.radius * 1000,
-          material: Cesium.Color.RED.withAlpha(0.3),
+          material: Cesium.Color.RED.clone().setAlpha(0.3),
           outline: true,
           outlineColor: Cesium.Color.RED
         },

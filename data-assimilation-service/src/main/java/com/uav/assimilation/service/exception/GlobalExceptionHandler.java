@@ -9,9 +9,16 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.util.Map;
 
+/**
+ * 数据同化服务异常处理器
+ *
+ * 继承 common-utils 通用异常处理器，获得完整的异常处理能力
+ * （NoHandlerFoundException、AccessDeniedException、PythonExecutionException 等），
+ * 同时保留本服务的响应格式兼容性。
+ */
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends com.uav.common.exception.GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleAllExceptions(Exception ex, WebRequest request) {

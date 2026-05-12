@@ -1,4 +1,4 @@
-﻿apiVersion: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: data-assimilation
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: data-assimilation
-          image: uav-registry/data-assimilation:latest
+          image: uav-registry/data-assimilation:v1.0.0
           ports:
             - containerPort: 8084
               name: http

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -49,5 +50,29 @@ public class ForecastController {
             "success", true,
             "data", Map.of("lstm_model", "LSTM时间序列预测模型", "xgb_model", "XGBoost数据订正模型")
         );
+    }
+
+    @GetMapping("/get")
+    public Map<String, Object> getForecast(@RequestParam Double lat, @RequestParam Double lng, @RequestParam Integer hours) {
+        Map<String, Object> params = Map.of(
+            "lat", lat,
+            "lng", lng,
+            "hours", hours
+        );
+        return pythonScriptInvoker.execute(pythonScriptPath, "get_forecast", params);
+    }
+
+    @PostMapping("/detail")
+    public Map<String, Object> getDetailedForecast(@RequestBody Map<String, Object> request) {
+        return pythonScriptInvoker.execute(pythonScriptPath, "get_detailed_forecast", request);
+    }
+
+    @GetMapping("/realtime")
+    public Map<String, Object> getRealtimeWeather(@RequestParam Double lat, @RequestParam Double lng) {
+        Map<String, Object> params = Map.of(
+            "lat", lat,
+            "lng", lng
+        );
+        return pythonScriptInvoker.execute(pythonScriptPath, "get_realtime_weather", params);
     }
 }

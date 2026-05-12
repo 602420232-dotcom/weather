@@ -20,23 +20,23 @@ class CircuitBreakerConfig:
     
     # HTTP 服务熔断器配置
     HTTP_SERVICE_CB = {
-        'fail_max': 5,              # 失败5次后打开熔断器
-        'reset_timeout': 60,        # 60秒后尝试半开
-        'exclude': [Exception],     # 排除的异常类型
+        'fail_max': 5,
+        'reset_timeout': 60,
+        'exclude': [pybreaker.CircuitBreakerError],
     }
     
     # WebSocket 连接熔断器配置
     WEBSOCKET_CB = {
-        'fail_max': 3,              # WebSocket更敏感，失败3次
-        'reset_timeout': 30,        # 30秒后尝试恢复
-        'exclude': [],              # 不过滤任何异常
+        'fail_max': 3,
+        'reset_timeout': 30,
+        'exclude': [],
     }
     
     # 联邦学习熔断器配置
     FEDERATED_LEARNING_CB = {
         'fail_max': 4,
         'reset_timeout': 45,
-        'exclude': [Exception],
+        'exclude': [pybreaker.CircuitBreakerError],
     }
 
 

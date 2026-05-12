@@ -171,7 +171,9 @@ class BayesianAssimilation:
                 }
             }
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
+
+            
             logger.error(f"同化失败: {e}")
             return {
                 'success': False,
@@ -228,7 +230,7 @@ def main():
             result = assimilator.assimilate(background_np, observations_np, method)
             print(json.dumps(result))
             
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)
@@ -270,7 +272,7 @@ def main():
                 'data': uncertainty_serializable
             }))
             
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)
@@ -314,7 +316,7 @@ def main():
                 'data': results
             }))
             
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)

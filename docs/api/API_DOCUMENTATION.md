@@ -1,13 +1,11 @@
-﻿# UAV Path Planning System ?API 文档
+# UAV Path Planning System ?API 文档
 
-## 一API 网关路由?
-
-| 路由前缀 | 目标服务 | 端口 |
+## 一API 网关路由| 路由前缀 | 目标服务 | 端口 |
 |----------|----------|:----:|
 | `/api/v1/auth/**` | backend-spring (认证) | 8083 |
-| `/api/v1/data-sources/**` | uav-platform-service | 8085 |
-| `/api/v1/real-data/**` | uav-platform-service | 8085 |
-| `/api/platform/**` | uav-platform-service | 8085 |
+| `/api/v1/data-sources/**` | uav-platform-service | 8080 |
+| `/api/v1/real-data/**` | uav-platform-service | 8080 |
+| `/api/platform/**` | uav-platform-service | 8080 |
 | `/api/wrf/**` | wrf-processor-service | 8081 |
 | `/api/assimilation/**` | data-assimilation-service | 8084 |
 | `/api/forecast/**` | meteor-forecast-service | 8082 |
@@ -17,8 +15,7 @@
 ## 二认证服务(backend-spring :8083)
 
 ### POST /api/v1/auth/register
-注册新用?
-```json
+注册新用```json
 {"username":"user","password":"pass","email":"user@test.com","fullName":"Test User"}
 ```
 
@@ -28,7 +25,7 @@
 {"username":"user","password":"pass"}
 ```
 
-## 三数据源管理 (uav-platform-service :8085)
+## 三数据源管理 (uav-platform-service :8080)
 
 ### GET /api/v1/data-sources
 获取数据源列表`200 {"code":200,"data":[...]}`
@@ -51,7 +48,7 @@
 ### GET /api/v1/data-sources/types
 获取数据源类型列表`200 {"code":200,"data":[...]}`
 
-## 四实时数?(uav-platform-service :8085)
+## 四实时数据 (uav-platform-service :8080)
 
 ### GET /api/v1/real-data/ground-station
 获取地面站实时数据`200 {"code":200,"data":[...]}`
@@ -62,11 +59,10 @@
 ### GET /api/v1/real-data/status
 获取数据源状态`200 {"code":200,"data":{...}}`
 
-## 五平台编排(uav-platform-service :8085)
+## 五平台编排(uav-platform-service :8080)
 
 ### POST /api/platform/plan
-提交完整规划流程WOF解析贝叶斯同化气象预测路径规划?
-```json
+提交完整规划流程WOF解析贝叶斯同化气象预测路径规划```json
 {"weatherData":{},"drones":[],"tasks":[]}
 ```
 
@@ -84,8 +80,7 @@
 ### POST /api/wrf/upload
 上传NetCDF气象文件
 - 支持格式: `.nc`, `.netcdf`
-- 验证: 文件名不得包含路径遍历字?
-- 内容类型: multipart/form-data
+- 验证: 文件名不得包含路径遍历字- 内容类型: multipart/form-data
 
 ### GET /api/wrf/weather/{fileId}
 获取气象数据 `200 {"success":true,"data":{...}}`
@@ -93,7 +88,7 @@
 ### GET /api/wrf/statistics/{fileId}
 获取统计信息 `200 {"success":true,"data":{...}}`
 
-## 七数据同?(data-assimilation-service :8084)
+## 七数据同(data-assimilation-service :8084)
 
 ### POST /api/assimilation/execute
 执行3D-Var/4D-Var/EnKF同化
@@ -102,12 +97,10 @@
 ```
 
 ### POST /api/assimilation/variance
-计算方差?
-
-### POST /api/assimilation/batch
+计算方差### POST /api/assimilation/batch
 批量同化处理
 
-## 八气象预?(meteor-forecast-service :8082)
+## 八气象预(meteor-forecast-service :8082)
 
 ### POST /api/forecast/predict
 气象预测 (LSTM/XGBoost/Hybrid)
@@ -121,7 +114,7 @@
 ### GET /api/forecast/models
 获取可用模型列表
 
-## 九路径规?(path-planning-service :8083)
+## 九路径规(path-planning-service :8083)
 
 ### POST /api/planning/vrptw
 VRPTW路径规划
@@ -133,20 +126,16 @@ VRPTW路径规划
 A*全局路径规划
 
 ### POST /api/planning/dwa
-DWA局部路径规?
+DWA局部路径规### POST /api/planning/full
+三层完整路径规划全局+局动态避障
 
-### POST /api/planning/full
-三层完整路径规划全局+局?动态避障
-
-## 十气象采?(uav-weather-collector :8086)
+## 十气象采(uav-weather-collector :8086)
 
 ### POST /api/weather/collect
 采集无人机传感器数据
 
 ### GET /api/weather/drone/{droneId}
-获取无人机气象数?
-
-### GET /api/weather/history/{droneId}/{minutes}
+获取无人机气象数### GET /api/weather/history/{droneId}/{minutes}
 获取气象历史
 
 ### GET /api/weather/fused/{droneId}
@@ -156,18 +145,16 @@ DWA局部路径规?
 获取可用数据源列表
 
 ### GET /api/weather/alerts/{droneId}
-获取无人机告?
-
-## 十一错误码
+获取无人机告## 十一错误码
 
 | 状态码 | 含义 | 处理方式 |
 |:------:|------|----------|
 | 200 | 成功 | 正常处理 |
 | 400 | 参数校验失败 | 检查请求体 |
-| 401 | 未认?| 添加JWT Token |
-| 403 | 权限不足 | 检查角色权?|
-| 404 | 资源不存?| 检查ID/路径 |
-| 500 | 服务器内部错?| 联系运维 |
+| 401 | 未认| 添加JWT Token |
+| 403 | 权限不足 | 检查角色权|
+| 404 | 资源不存| 检查ID/路径 |
+| 500 | 服务器内部错| 联系运维 |
 
 ## 十二通用响应格式
 

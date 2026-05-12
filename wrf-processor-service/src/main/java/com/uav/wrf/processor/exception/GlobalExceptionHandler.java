@@ -9,10 +9,20 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.util.Map;
 
+/**
+ * WRF处理器服务异常处理器
+ *
+ * 继承 common-utils 通用异常处理器，获得完整的异常处理能力
+ * （NoHandlerFoundException、AccessDeniedException、PythonExecutionException 等），
+ * 同时保留本服务的响应格式兼容性。
+ */
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends com.uav.common.exception.GlobalExceptionHandler {
 
+    /**
+     * 通用异常兜底（保留兼容响应格式 {code, message}）
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleAllExceptions(Exception ex, WebRequest request) {
         log.error("Request processing exception: {} - {}", request.getDescription(false), ex.getMessage());
@@ -20,6 +30,9 @@ public class GlobalExceptionHandler {
                 .body(Map.of("code", 500, "message", "Server internal error"));
     }
 
+    /**
+     * 参数校验异常（保留兼容响应格式 {code, message}）
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleBadRequest(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

@@ -194,7 +194,7 @@ class VRPTWPlanner:
             logger.info("VRPTW规划完成")
             return result
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"VRPTW规划失败: {e}")
             return {
                 'success': False,
@@ -314,7 +314,7 @@ class AStarPlanner:
                 'error': '无法找到路径'
             }
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"A*路径规划失败: {e}")
             return {
                 'success': False,
@@ -494,7 +494,7 @@ class DERRTStarPlanner:
                 'error': '无法找到路径'
             }
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"DE-RRT*路径规划失败: {e}")
             return {
                 'success': False,
@@ -597,7 +597,7 @@ class DWAPlanner:
                     'error': '无法找到轨迹'
                 }
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"DWA路径规划失败: {e}")
             return {
                 'success': False,
@@ -674,7 +674,7 @@ class ThreeLayerPlanner:
                 'unassigned_tasks': vrptw_result['unassigned_tasks']
             }
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"三层路径规划失败: {e}")
             return {
                 'success': False,
@@ -783,7 +783,7 @@ class ThreeLayerPlanner:
                 'route': new_route
             }
             
-        except Exception as e:
+        except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"动态重规划失败: {e}")
             return {
                 'success': False,
@@ -830,7 +830,7 @@ def main():
             result = vrptw.plan()
             print(json.dumps(result))
             
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)
@@ -857,7 +857,7 @@ def main():
             result = a_star.plan(start, goal)
             print(json.dumps(result))
             
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)
@@ -883,7 +883,7 @@ def main():
             result = dwa.plan(current_pose, goal)
             print(json.dumps(result))
             
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)
@@ -910,7 +910,7 @@ def main():
             result = planner.plan()
             print(json.dumps(result))
             
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)
@@ -937,7 +937,7 @@ def main():
             result = derrt_star.plan(start, goal)
             print(json.dumps(result))
             
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)
@@ -965,7 +965,7 @@ def main():
             result = planner.dynamic_replan(current_route, new_weather_data, new_obstacles, new_no_fly_zones)
             print(json.dumps(result))
             
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
             print(json.dumps({
                 'success': False,
                 'error': str(e)

@@ -81,6 +81,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/dispatcher/**").hasAnyRole("ADMIN", "DISPATCHER")
                 .requestMatchers("/api/operator/**").hasAnyRole("ADMIN", "OPERATOR")
                 .requestMatchers("/api/user/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers("/api/wrf/**").hasAnyRole("ADMIN", "DISPATCHER", "OPERATOR")
                 .requestMatchers("/path-planning/**").hasAnyRole("ADMIN", "DISPATCHER", "OPERATOR")
                 .anyRequest().authenticated()
             )

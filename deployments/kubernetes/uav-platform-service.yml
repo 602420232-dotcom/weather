@@ -1,8 +1,8 @@
-apiVersion: apps/v1
+﻿﻿﻿﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: uav-platform-service
-  namespace: uav-path-planning
+  namespace: uav-platform
   labels:
     app: uav-platform-service
 spec:
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: uav-platform-service
-        image: uav-platform-service:latest
+        image: uav-platform-service:v1.0.0
         ports:
         - containerPort: 8080
         env:
@@ -26,7 +26,10 @@ spec:
         - name: SPRING_DATASOURCE_URL
           value: "jdbc:mysql://mysql:3306/uav_platform?useSSL=true&requireSSL=true&serverTimezone=UTC"
         - name: SPRING_DATASOURCE_USERNAME
-          value: "root"
+          valueFrom:
+            secretKeyRef:
+              name: uav-platform-secrets
+              key: spring.datasource.username
         - name: SPRING_DATASOURCE_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -86,7 +89,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: uav-platform-service
-  namespace: uav-path-planning
+  namespace: uav-platform
 spec:
   selector:
     app: uav-platform-service

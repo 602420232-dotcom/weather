@@ -1,4 +1,4 @@
-﻿# UAV Path Planning System - Quick Reference Card
+# UAV Path Planning System - Quick Reference Card
 
 ##  快速开?
 
@@ -319,9 +319,9 @@ pytest test_performance.py -v -s
 
 ##  关键链接
 
-- Grafana: http://localhost:3000 (admin/changeme123)
+- Grafana: http://localhost:3000 (credentials configured via env)
 - Prometheus: http://localhost:9090
-- Kibana: http://localhost:5601 (elastic/changeme123)
+- Kibana: http://localhost:5601 (credentials configured via env)
 - Alertmanager: http://localhost:9093
 - Jaeger: http://localhost:16686
 

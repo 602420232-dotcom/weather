@@ -20,7 +20,7 @@ public class UserController {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @Value("${app.default-password:Uav@2024!Secure}")
+    @Value("${app.default-password:#{null}}")
     private String defaultPassword;
 
     @Value("${app.init-default-users:true}")

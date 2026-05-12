@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,7 +71,7 @@ public class JwtKeyRotationService {
         } else {
             KeyPair keyPair = generateKeyPair();
             this.signingKey = keyPair.getPrivate();
-            keyVersionMap.put("v1", this.signingKey);
+            keyVersionMap.put("v1", keyPair.getPublic());
             log.warn("JWT auto-generated secure key (version: v1) - NOT for production without persistent storage");
         }
     }
@@ -89,11 +92,12 @@ public class JwtKeyRotationService {
         String versionedSecret = secret + "_v" + currentKeyVersion.get();
         if (versionedSecret.getBytes().length >= MIN_KEY_LENGTH_BYTES) {
             this.signingKey = Keys.hmacShaKeyFor(versionedSecret.getBytes());
+            keyVersionMap.put("v" + currentKeyVersion.get(), signingKey);
         } else {
             KeyPair keyPair = generateKeyPair();
             this.signingKey = keyPair.getPrivate();
+            keyVersionMap.put("v" + currentKeyVersion.get(), keyPair.getPublic());
         }
-        keyVersionMap.put("v" + currentKeyVersion.get(), signingKey);
         log.info("JWT key initialized with version: v{}", currentKeyVersion.get());
     }
 
@@ -107,7 +111,14 @@ public class JwtKeyRotationService {
                 Key key = keyStore.getKey(keyAlias, password);
                 if (key != null) {
                     this.signingKey = key;
-                    keyVersionMap.put("v" + currentKeyVersion.get(), signingKey);
+                    if (key instanceof PrivateKey) {
+                        java.security.cert.Certificate cert = keyStore.getCertificate(keyAlias);
+                        if (cert != null) {
+                            keyVersionMap.put("v" + currentKeyVersion.get(), cert.getPublicKey());
+                        }
+                    } else {
+                        keyVersionMap.put("v" + currentKeyVersion.get(), key);
+                    }
                     log.info("JWT key loaded from keystore (version: v{})", currentKeyVersion.get());
                 }
             }
@@ -115,7 +126,7 @@ public class JwtKeyRotationService {
             log.warn("Failed to load JWT key from keystore, generating new key: {}", e.getMessage());
             KeyPair keyPair = generateKeyPair();
             this.signingKey = keyPair.getPrivate();
-            keyVersionMap.put("v" + currentKeyVersion.get(), signingKey);
+            keyVersionMap.put("v" + currentKeyVersion.get(), keyPair.getPublic());
         }
     }
 
@@ -129,7 +140,7 @@ public class JwtKeyRotationService {
 
         KeyPair newKeyPair = generateKeyPair();
         this.signingKey = newKeyPair.getPrivate();
-        keyVersionMap.put(versionStr, this.signingKey);
+        keyVersionMap.put(versionStr, newKeyPair.getPublic());
 
         cleanupOldKeys(newVersion);
 
@@ -210,22 +221,14 @@ public class JwtKeyRotationService {
         if (key == null) {
             for (Map.Entry<String, Key> entry : keyVersionMap.entrySet()) {
                 try {
-                    claims = Jwts.parser()
-                        .setSigningKey(entry.getValue())
-                        .build()
-                        .parseSignedClaims(token)
-                        .getPayload();
+                    claims = parseTokenWithKey(token, entry.getValue());
                     break;
                 } catch (Exception e) {
                     continue;
                 }
             }
         } else {
-            claims = Jwts.parser()
-                .setSigningKey(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+            claims = parseTokenWithKey(token, key);
         }
 
         if (claims == null) {
@@ -233,6 +236,24 @@ public class JwtKeyRotationService {
         }
 
         return claims;
+    }
+
+    private Claims parseTokenWithKey(String token, Key key) {
+        if (key instanceof SecretKey) {
+            return Jwts.parser()
+                .verifyWith((SecretKey) key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        } else if (key instanceof PublicKey) {
+            return Jwts.parser()
+                .verifyWith((PublicKey) key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        } else {
+            throw new IllegalArgumentException("Unsupported key type for verification: " + key.getClass().getName());
+        }
     }
 
     private Boolean isTokenExpired(String token) {
