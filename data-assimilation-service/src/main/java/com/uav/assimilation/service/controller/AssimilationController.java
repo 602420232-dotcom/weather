@@ -1,6 +1,6 @@
 package com.uav.assimilation.service.controller;
 import com.uav.common.dto.AssimilationRequest;
-import com.uav.common.utils.PythonScriptInvoker;
+import com.uav.common.feign.PythonScriptInvoker;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class AssimilationController {
             "observations", request.getObservations(),
             "config", request.getConfig()
         );
-        return pythonScriptInvoker.execute(pythonScriptPath, "execute", params);
+        return pythonScriptInvoker.executeAsMap(pythonScriptPath, "execute", params);
     }
 
     @PostMapping("/variance")
@@ -41,7 +41,7 @@ public class AssimilationController {
             "observations", request.getObservations(),
             "config", request.getConfig()
         );
-        return pythonScriptInvoker.execute(pythonScriptPath, "variance", params);
+        return pythonScriptInvoker.executeAsMap(pythonScriptPath, "variance", params);
     }
 
     @PostMapping("/batch")
@@ -52,6 +52,6 @@ public class AssimilationController {
             "observations", request.getObservations(),
             "config", request.getConfig()
         );
-        return pythonScriptInvoker.execute(pythonScriptPath, "batch", params);
+        return pythonScriptInvoker.executeAsMap(pythonScriptPath, "batch", params);
     }
 }

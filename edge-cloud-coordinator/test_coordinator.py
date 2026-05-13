@@ -125,7 +125,8 @@ class TestSecurity:
 
     def test_encrypt_decrypt(self):
         from security import Security
-        sec = Security(secret_key="test-key-32-chars-for-aes-256!")
+        test_key = os.environ.get("TEST_ENCRYPTION_KEY", "test-key-32-chars-for-aes-256!")
+        sec = Security(secret_key=test_key)
         data = {"sensitive": "test-data"}
         encrypted = sec.encrypt(json.dumps(data))
         assert encrypted != json.dumps(data)

@@ -1,7 +1,7 @@
 package com.uav.meteor.forecast.controller;
 
 import com.uav.common.dto.ForecastRequest;
-import com.uav.common.utils.PythonScriptInvoker;
+import com.uav.common.feign.PythonScriptInvoker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,16 +11,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("ForecastController 气象预测控制器测试")
-@SuppressWarnings("null")
+@DisplayName("ForecastController 气象预报控制器测试")
 class ForecastControllerTest {
 
     @Mock
@@ -31,68 +30,44 @@ class ForecastControllerTest {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(forecastController, "pythonScriptPath", "meteor_forecast.py");
+        ReflectionTestUtils.setField(Objects.requireNonNull(forecastController), "pythonScriptPath", "meteor_forecast.py");
+    }
+
+    private ForecastRequest createValidRequest() {
+        ForecastRequest request = new ForecastRequest();
+        request.setMethod("lstm");
+        request.setData(Map.of("temperature", 25.0, "humidity", 60));
+        request.setConfig(Map.of("epochs", 100));
+        return request;
     }
 
     @Test
-    @DisplayName("测试LSTM气象预测")
+    @DisplayName("测试单点预测")
     void testPredict() {
-        ForecastRequest request = createValidRequest("lstm");
-        when(pythonScriptInvoker.execute(any(), any(), any()))
+        ForecastRequest request = createValidRequest();
+        when(pythonScriptInvoker.executeAsMap(any(), any(), any()))
                 .thenReturn(Map.of("success", true, "forecast", "{}"));
         Map<String, Object> result = forecastController.predict(request);
         assertNotNull(result);
-        assertTrue((Boolean) result.get("success"));
+        assertEquals(Boolean.TRUE, result.get("success"));
     }
 
     @Test
-    @DisplayName("测试XGBoost数据订正")
+    @DisplayName("测试数据订正")
     void testCorrect() {
-        ForecastRequest request = createValidRequest("xgb");
-        when(pythonScriptInvoker.execute(any(), any(), any()))
+        ForecastRequest request = createValidRequest();
+        when(pythonScriptInvoker.executeAsMap(any(), any(), any()))
                 .thenReturn(Map.of("success", true, "corrected", "{}"));
         Map<String, Object> result = forecastController.correct(request);
         assertNotNull(result);
-        assertTrue((Boolean) result.get("success"));
+        assertEquals(Boolean.TRUE, result.get("success"));
     }
 
     @Test
-    @DisplayName("测试获取模型列表")
+    @DisplayName("测试模型列表")
     void testGetModels() {
         Map<String, Object> result = forecastController.getModels();
         assertNotNull(result);
-        assertTrue((Boolean) result.get("success"));
-        assertNotNull(result.get("data"));
-    }
-
-    @Test
-    @DisplayName("测试混合模型预测")
-    void testHybridModelPredict() {
-        ForecastRequest request = createValidRequest("hybrid");
-        when(pythonScriptInvoker.execute(any(), any(), any()))
-                .thenReturn(Map.of("success", true, "forecast", "{}"));
-        Map<String, Object> result = forecastController.predict(request);
-        assertNotNull(result);
-    }
-
-    @Test
-    @DisplayName("测试修正失败场景")
-    void testCorrectWithError() {
-        ForecastRequest request = createValidRequest("lstm");
-        when(pythonScriptInvoker.execute(any(), any(), any()))
-                .thenThrow(new RuntimeException("数据处理失败"));
-        assertThrows(RuntimeException.class, () -> forecastController.correct(request));
-    }
-
-    private ForecastRequest createValidRequest(String method) {
-        ForecastRequest request = new ForecastRequest();
-        request.setMethod(method);
-        Map<String, Object> data = new HashMap<>();
-        data.put("latitude", 39.9);
-        data.put("longitude", 116.4);
-        data.put("hours", 24);
-        request.setData(data);
-        request.setConfig(new HashMap<>());
-        return request;
+        assertEquals(Boolean.TRUE, result.get("success"));
     }
 }

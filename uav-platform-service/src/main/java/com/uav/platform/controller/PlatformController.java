@@ -75,13 +75,13 @@ public class PlatformController {
             // 1. 获取气象数据
             Object weatherPayload = request.get("weatherData");
             if (weatherPayload == null) {
-                return Map.of("success", false, "error", "气象数据不能为空");
+                return Map.of("code", 400, "message", "气象数据不能为空");
             }
             @SuppressWarnings("unchecked")
             Map<String, Object> weatherData = (Map<String, Object>) weatherPayload;
             Map<String, Object> weatherResponse = wrfProcessorClient.parseWrfData(weatherData);
             if (!isSuccess(weatherResponse)) {
-                log.warn("Failed to get weather data: {}", weatherResponse.get("error"));
+                log.warn("Failed to get weather data: {}", weatherResponse.get("message"));
                 return weatherResponse;
             }
 
@@ -90,7 +90,7 @@ public class PlatformController {
                     Map.of("background_field", weatherResponse.get("data"),
                            "method", "3dvar"));
             if (!isSuccess(assimilationResponse)) {
-                log.warn("Failed to execute assimilation: {}", assimilationResponse.get("error"));
+                log.warn("Failed to execute assimilation: {}", assimilationResponse.get("message"));
                 return assimilationResponse;
             }
 
@@ -99,7 +99,7 @@ public class PlatformController {
                     Map.of("analysis_field", assimilationResponse.get("data"),
                            "hours", 24));
             if (!isSuccess(forecastResponse)) {
-                log.warn("Failed to get forecast: {}", forecastResponse.get("error"));
+                log.warn("Failed to get forecast: {}", forecastResponse.get("message"));
                 return forecastResponse;
             }
 
@@ -113,12 +113,12 @@ public class PlatformController {
             );
             Map<String, Object> planningResponse = pathPlanningClient.planFull(planningRequest);
             if (!isSuccess(planningResponse)) {
-                log.warn("Failed to plan path: {}", planningResponse.get("error"));
+                log.warn("Failed to plan path: {}", planningResponse.get("message"));
                 return planningResponse;
             }
 
             log.info("Path planning completed successfully");
-            return Map.of("success", true, "data", planningResponse.get("data"));
+            return Map.of("code", 200, "message", "路径规划成功", "data", planningResponse.get("data"));
 
         } catch (Exception e) {
             log.error("Path planning failed", e);
@@ -141,11 +141,11 @@ public class PlatformController {
             Map<String, Object> response = wrfProcessorClient.getWrfDataDetail(
                     Long.parseLong(fileId));
             if (!isSuccess(response)) {
-                return Map.of("success", false, "error", "获取气象数据失败");
+                return Map.of("code", 500, "message", "获取气象数据失败");
             }
             return response;
         } catch (NumberFormatException e) {
-            return Map.of("success", false, "error", "无效的文件ID格式");
+            return Map.of("code", 400, "message", "无效的文件ID格式");
         } catch (Exception e) {
             log.error("Failed to get weather data", e);
             throw ServiceUnavailableException.serviceDown("wrf-processor", 
@@ -162,7 +162,7 @@ public class PlatformController {
     @PostMapping("/task")
     public Map<String, Object> manageTask(@RequestBody Map<String, Object> request) {
         log.info("Managing task: {}", request.get("taskId"));
-        return Map.of("success", true, "message", "任务管理成功");
+        return Map.of("code", 200, "message", "任务管理成功");
     }
 
     /**
@@ -173,7 +173,7 @@ public class PlatformController {
     @GetMapping("/drones")
     public Map<String, Object> getDrones() {
         log.debug("Getting drones list");
-        return Map.of("success", true, "data", Map.of("drones", Map.of()));
+        return Map.of("code", 200, "data", Map.of("drones", Map.of()));
     }
 
     /**
@@ -204,7 +204,9 @@ public class PlatformController {
     // ==================== 私有辅助方法 ====================
 
     private boolean isSuccess(Map<String, Object> response) {
-        return response != null && Boolean.TRUE.equals(response.get("success"));
+        if (response == null) return false;
+        Object code = response.get("code");
+        return code instanceof Number && ((Number) code).intValue() == 200;
     }
 
     private int getCollectionSize(Object collection) {

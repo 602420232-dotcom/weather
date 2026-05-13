@@ -1,7 +1,6 @@
 package com.uav.bayesian.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -9,10 +8,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Service
 public class AssimilationService {
 
-    private static final Logger log = LoggerFactory.getLogger(AssimilationService.class);
     private final Map<String, Object> jobStore = new ConcurrentHashMap<>();
     private final PythonService pythonService;
 

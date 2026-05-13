@@ -27,41 +27,40 @@ import java.util.stream.Collectors;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Value("${uav.jwt.secret}")
+    @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${uav.jwt.enabled:true}")
+    @Value("${jwt.enabled:true}")
     private boolean jwtEnabled;
 
     @PostConstruct
     public void validateConfig() {
+        String profile = getActiveProfile();
+        boolean isProduction = "prod".equals(profile) || "production".equals(profile);
+
+        if (!jwtEnabled && isProduction) {
+            throw new IllegalStateException(
+                "JWT 认证在生产环境不可禁用。请设置 jwt.enabled=true 并配置 jwt.secret");
+        }
+
         if (jwtEnabled) {
             if (jwtSecret == null || jwtSecret.isEmpty()) {
-                // 生产环境必须抛出异常
-                String message = "JWT secret is NOT configured. Set uav.jwt.secret in application.yml";
-                if (isProductionEnvironment()) {
-                    throw new IllegalStateException(message);
-                } else {
-                    log.error(message);
-                }
-            } else if (jwtSecret.length() < 32) {
-                String message = "JWT secret is too short (minimum 32 chars required)";
-                if (isProductionEnvironment()) {
-                    throw new IllegalStateException(message);
-                } else {
-                    log.warn(message);
-                }
+                throw new IllegalStateException(
+                    "JWT secret is NOT configured. Set JWT_SECRET environment variable or jwt.secret in application.yml");
+            }
+            if (jwtSecret.length() < 32) {
+                throw new IllegalStateException(
+                    "JWT secret is too short (minimum 32 chars required, got " + jwtSecret.length() + ")");
             }
         }
     }
-    
-    private boolean isProductionEnvironment() {
-        String profile = System.getenv("SPRING_PROFILES_ACTIVE");
-        return "prod".equals(profile) || "production".equals(profile);
+
+    private String getActiveProfile() {
+        return System.getenv("SPRING_PROFILES_ACTIVE");
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, 
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         if (!jwtEnabled || isPublicPath(request.getRequestURI())) {
@@ -72,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer ")) {
             response.setStatus(401);
-            response.getWriter().write("{\"success\":false,\"error\":\"Missing or invalid Authorization header\"}");
+            response.getWriter().write("{\"code\":401,\"message\":\"Missing or invalid Authorization header\"}");
             return;
         }
 
@@ -96,7 +95,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             log.warn("JWT verification failed: {}", e.getMessage());
             response.setStatus(401);
-            response.getWriter().write("{\"success\":false,\"error\":\"Invalid token\"}");
+            response.getWriter().write("{\"code\":401,\"message\":\"Invalid token\"}");
             return;
         }
         filterChain.doFilter(request, response);

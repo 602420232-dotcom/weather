@@ -15,6 +15,12 @@ spring:
       ddl-auto: update
     show-sql: false
 
+  # 文件上传限制（WRF NetCDF4文件可能很大）
+  servlet:
+    multipart:
+      max-file-size: 2GB
+      max-request-size: 4GB
+
 # 服务器配置
 server:
   port: 8081

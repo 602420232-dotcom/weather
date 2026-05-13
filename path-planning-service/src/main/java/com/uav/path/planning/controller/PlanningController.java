@@ -1,6 +1,6 @@
 package com.uav.path.planning.controller;
 import com.uav.common.dto.PathPlanningRequest;
-import com.uav.common.utils.PythonScriptInvoker;
+import com.uav.common.feign.PythonScriptInvoker;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.Map;
@@ -24,22 +24,22 @@ public class PlanningController {
 
     @PostMapping("/vrptw")
     public Map<String, Object> vrptw(@Valid @RequestBody PathPlanningRequest request) {
-        return pythonScriptInvoker.execute(pythonScriptPath, "vrptw", toParams(request));
+        return pythonScriptInvoker.executeAsMap(pythonScriptPath, "vrptw", toParams(request));
     }
 
     @PostMapping("/astar")
     public Map<String, Object> astar(@Valid @RequestBody PathPlanningRequest request) {
-        return pythonScriptInvoker.execute(pythonScriptPath, "astar", toParams(request));
+        return pythonScriptInvoker.executeAsMap(pythonScriptPath, "astar", toParams(request));
     }
 
     @PostMapping("/dwa")
     public Map<String, Object> dwa(@Valid @RequestBody PathPlanningRequest request) {
-        return pythonScriptInvoker.execute(pythonScriptPath, "dwa", toParams(request));
+        return pythonScriptInvoker.executeAsMap(pythonScriptPath, "dwa", toParams(request));
     }
 
     @PostMapping("/full")
     public Map<String, Object> full(@Valid @RequestBody PathPlanningRequest request) {
-        return pythonScriptInvoker.execute(pythonScriptPath, "full", toParams(request));
+        return pythonScriptInvoker.executeAsMap(pythonScriptPath, "full", toParams(request));
     }
 
     private Map<String, Object> toParams(PathPlanningRequest request) {

@@ -1,7 +1,7 @@
 package com.uav.assimilation.service.controller;
 
 import com.uav.common.dto.AssimilationRequest;
-import com.uav.common.utils.PythonScriptInvoker;
+import com.uav.common.feign.PythonScriptInvoker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,7 +21,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AssimilationController 同化控制器测试")
-@SuppressWarnings("null")
 class AssimilationControllerTest {
 
     @Mock
@@ -31,7 +31,7 @@ class AssimilationControllerTest {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(assimilationController, "pythonScriptPath", "assimilation_handler.py");
+        ReflectionTestUtils.setField(Objects.requireNonNull(assimilationController), "pythonScriptPath", "assimilation_handler.py");
     }
 
     private AssimilationRequest createValidRequest() {
@@ -47,33 +47,33 @@ class AssimilationControllerTest {
     @DisplayName("测试单次同化执行")
     void testExecute() {
         AssimilationRequest request = createValidRequest();
-        when(pythonScriptInvoker.execute(any(), any(), any()))
+        when(pythonScriptInvoker.executeAsMap(any(), any(), any()))
                 .thenReturn(Map.of("success", true, "analysis", "{}"));
         Map<String, Object> result = assimilationController.execute(request);
         assertNotNull(result);
-        assertTrue((Boolean) result.get("success"));
+        assertEquals(Boolean.TRUE, result.get("success"));
     }
 
     @Test
     @DisplayName("测试方差计算")
     void testGetVariance() {
         AssimilationRequest request = createValidRequest();
-        when(pythonScriptInvoker.execute(any(), any(), any()))
+        when(pythonScriptInvoker.executeAsMap(any(), any(), any()))
                 .thenReturn(Map.of("success", true, "variance", "{}"));
         Map<String, Object> result = assimilationController.getVariance(request);
         assertNotNull(result);
-        assertTrue((Boolean) result.get("success"));
+        assertEquals(Boolean.TRUE, result.get("success"));
     }
 
     @Test
     @DisplayName("测试批量同化处理")
     void testBatchProcess() {
         AssimilationRequest request = createValidRequest();
-        when(pythonScriptInvoker.execute(any(), any(), any()))
+        when(pythonScriptInvoker.executeAsMap(any(), any(), any()))
                 .thenReturn(Map.of("success", true, "results", "[]"));
         Map<String, Object> result = assimilationController.batchProcess(request);
         assertNotNull(result);
-        assertTrue((Boolean) result.get("success"));
+        assertEquals(Boolean.TRUE, result.get("success"));
     }
 
     @Test
@@ -81,7 +81,7 @@ class AssimilationControllerTest {
     void testExecuteWith4DVar() {
         AssimilationRequest request = createValidRequest();
         request.setAlgorithm("4dvar");
-        when(pythonScriptInvoker.execute(any(), any(), any()))
+        when(pythonScriptInvoker.executeAsMap(any(), any(), any()))
                 .thenReturn(Map.of("success", true, "analysis", "{}"));
         Map<String, Object> result = assimilationController.execute(request);
         assertNotNull(result);
@@ -92,7 +92,7 @@ class AssimilationControllerTest {
     void testExecuteWithEnKF() {
         AssimilationRequest request = createValidRequest();
         request.setAlgorithm("enkf");
-        when(pythonScriptInvoker.execute(any(), any(), any()))
+        when(pythonScriptInvoker.executeAsMap(any(), any(), any()))
                 .thenReturn(Map.of("success", true, "ensembles", "[]"));
         Map<String, Object> result = assimilationController.execute(request);
         assertNotNull(result);
@@ -102,7 +102,7 @@ class AssimilationControllerTest {
     @DisplayName("测试同化失败")
     void testExecuteWithPythonError() {
         AssimilationRequest request = createValidRequest();
-        when(pythonScriptInvoker.execute(any(), any(), any()))
+        when(pythonScriptInvoker.executeAsMap(any(), any(), any()))
                 .thenThrow(new RuntimeException("Python脚本超时"));
         assertThrows(RuntimeException.class, () -> assimilationController.execute(request));
     }

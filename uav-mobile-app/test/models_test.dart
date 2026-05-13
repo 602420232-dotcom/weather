@@ -108,33 +108,33 @@ void main() {
   });
 
   group('边缘端风险评估测试', () {
-    test('本地风险评估 - 正常天气', () {
+    test('本地风险评估 - 正常天气', () async {
       final service = EdgeCoordinatorService();
-      final risk = service._localRiskAssessment({
-        'wind_speed': 5.0,
-        'visibility': 10.0,
-        'temperature': 25.0,
-        'humidity': 50.0,
-        'precipitation': 0.0,
-        'has_thunderstorm': false,
-      });
+      final risk = await service.assessWeatherRisk(
+        windSpeed: 5.0,
+        visibility: 10.0,
+        temperature: 25.0,
+        humidity: 50.0,
+        precipitation: 0.0,
+        hasThunderstorm: false,
+      );
 
       expect(risk.level, RiskLevel.low);
       expect(risk.warnings.isEmpty, true);
     });
 
-    test('本地风险评估 - 危险天气', () {
+    test('本地风险评估 - 危险天气', () async {
       final service = EdgeCoordinatorService();
-      final risk = service._localRiskAssessment({
-        'wind_speed': 16.0,
-        'visibility': 1.5,
-        'temperature': 28.0,
-        'humidity': 85.0,
-        'precipitation': 5.0,
-        'has_thunderstorm': true,
-      });
+      final risk = await service.assessWeatherRisk(
+        windSpeed: 16.0,
+        visibility: 1.5,
+        temperature: 28.0,
+        humidity: 85.0,
+        precipitation: 5.0,
+        hasThunderstorm: true,
+      );
 
-      expect(risk.level, equals(RiskLevel.high) || equals(RiskLevel.severe));
+      expect(risk.level == RiskLevel.high || risk.level == RiskLevel.severe, true);
       expect(risk.warnings.isNotEmpty, true);
     });
   });

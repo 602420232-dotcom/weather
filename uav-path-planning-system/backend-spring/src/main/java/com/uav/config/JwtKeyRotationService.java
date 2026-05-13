@@ -43,7 +43,9 @@ public class JwtKeyRotationService {
     private String keyStorePath;
 
     @Value("${jwt.key-store.password:}")
-    private String keyStorePassword;
+    private String keyStorePasswordRaw;
+
+    private volatile char[] keyStorePassword;
 
     @Value("${jwt.key.alias:jwt-signing-key}")
     private String keyAlias;
@@ -55,6 +57,10 @@ public class JwtKeyRotationService {
 
     @PostConstruct
     public void init() {
+        if (keyStorePasswordRaw != null && !keyStorePasswordRaw.isEmpty()) {
+            keyStorePassword = keyStorePasswordRaw.toCharArray();
+            keyStorePasswordRaw = null;
+        }
         if (keyRotationEnabled) {
             initializeKeyRotation();
         } else {
@@ -104,7 +110,7 @@ public class JwtKeyRotationService {
     private void loadKeysFromKeyStore() {
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            char[] password = keyStorePassword != null ? keyStorePassword.toCharArray() : null;
+            char[] password = keyStorePassword;
 
             if (password != null && password.length > 0) {
                 keyStore.load(null, password);

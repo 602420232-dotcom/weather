@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import jakarta.annotation.Resource;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
  * 熔断器服务调用封装
  * 提供对各微服务的熔断保护调用
  */
-@SuppressWarnings("null")
 @Slf4j
 @Service
 public class CircuitBreakerService {
@@ -57,7 +57,7 @@ public class CircuitBreakerService {
     public <T> ResponseEntity<T> callMeteorForecast(String url, Class<T> responseType) {
         Supplier<ResponseEntity<T>> supplier = () -> {
             log.debug("Calling Meteor Forecast Service: {}", url);
-            return restTemplate.getForEntity(url, responseType);
+            return restTemplate.getForEntity(Objects.requireNonNull(url), Objects.requireNonNull(responseType));
         };
         
         // 使用熔断器包装
@@ -84,7 +84,7 @@ public class CircuitBreakerService {
     public <T> ResponseEntity<T> callPathPlanning(String url, Class<T> responseType) {
         Supplier<ResponseEntity<T>> supplier = () -> {
             log.debug("Calling Path Planning Service: {}", url);
-            return restTemplate.getForEntity(url, responseType);
+            return restTemplate.getForEntity(Objects.requireNonNull(url), Objects.requireNonNull(responseType));
         };
         
         Supplier<ResponseEntity<T>> decoratedSupplier = CircuitBreaker
@@ -109,7 +109,7 @@ public class CircuitBreakerService {
     public <T> ResponseEntity<T> callDataAssimilation(String url, Class<T> responseType) {
         Supplier<ResponseEntity<T>> supplier = () -> {
             log.debug("Calling Data Assimilation Service: {}", url);
-            return restTemplate.getForEntity(url, responseType);
+            return restTemplate.getForEntity(Objects.requireNonNull(url), Objects.requireNonNull(responseType));
         };
         
         Supplier<ResponseEntity<T>> decoratedSupplier = CircuitBreaker

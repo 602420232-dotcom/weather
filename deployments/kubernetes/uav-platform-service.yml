@@ -1,4 +1,4 @@
-﻿﻿﻿﻿apiVersion: apps/v1
+﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: uav-platform-service
@@ -49,11 +49,16 @@ spec:
             secretKeyRef:
               name: uav-platform-secrets
               key: jwt.secret
-        - name: WEATHER_API_KEY
+        - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: uav-platform-secrets
-              key: weather.api.key
+              key: spring.datasource.password
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: uav-platform-secrets
+              key: redis.password
         - name: WRF_PROCESSOR_URL
           value: "http://wrf-processor-service:8081"
         - name: METEOR_FORECAST_URL

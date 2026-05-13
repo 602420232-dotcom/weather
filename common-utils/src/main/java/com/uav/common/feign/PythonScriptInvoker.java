@@ -19,6 +19,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * Python脚本统一调用器
  * 
@@ -76,6 +79,8 @@ public class PythonScriptInvoker {
     private boolean enabled;
 
     private final ExecutorService executorService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public PythonScriptInvoker() {
         this.executorService = new ThreadPoolExecutor(
@@ -135,8 +140,7 @@ public class PythonScriptInvoker {
             
             try {
                 // 写入参数
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.writeValue(tempFile, params);
+                objectMapper.writeValue(tempFile.toFile(), params);
 
                 // 构建命令
                 ProcessBuilder pb = new ProcessBuilder(
@@ -341,13 +345,16 @@ public class PythonScriptInvoker {
         }
     }
 
-    // 内部类用于JSON序列化
-    private static class ObjectMapper {
-        private final com.fasterxml.jackson.databind.ObjectMapper mapper = 
-                new com.fasterxml.jackson.databind.ObjectMapper();
-
-        public void writeValue(Path file, Object value) throws Exception {
-            mapper.writeValue(file.toFile(), value);
+    /**
+     * 执行Python脚本并返回解析后的Map结果
+     */
+    public Map<String, Object> executeAsMap(String scriptName, String action, Map<String, Object> params) {
+        String result = execute(scriptName, action, params);
+        try {
+            return objectMapper.readValue(result, new TypeReference<Map<String, Object>>() {});
+        } catch (Exception e) {
+            log.warn("Failed to parse Python result as Map, returning raw: {}", e.getMessage());
+            return Map.of("success", false, "error", "Failed to parse result", "raw", result);
         }
     }
 }

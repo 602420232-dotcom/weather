@@ -22,8 +22,7 @@ public class SecurityAuditConfig {
     public LogoutHandler securityAuditLogoutHandler() {
         return (request, response, authentication) -> {
             if (authentication != null) {
-                String username = authentication.getName();
-                log.info("用户登出: " + username + "，IP: " + request.getRemoteAddr());
+                log.debug("用户登出: {}", authentication.getName());
             }
         };
     }
@@ -32,8 +31,7 @@ public class SecurityAuditConfig {
     public LogoutSuccessHandler securityAuditLogoutSuccessHandler() {
         return (request, response, authentication) -> {
             if (authentication != null) {
-                String username = authentication.getName();
-                log.info("用户登出成功: " + username);
+                log.debug("用户登出成功: {}", authentication.getName());
             }
             response.sendRedirect("/login");
         };
@@ -47,19 +45,19 @@ public class SecurityAuditConfig {
     }
 
     public void logAuthenticationSuccess(String username, HttpServletRequest request) {
-        log.info("用户登录成功: " + username + "，IP: " + request.getRemoteAddr());
+        log.debug("用户认证成功: username={}", username);
     }
 
     public void logAuthenticationFailure(String username, String error, HttpServletRequest request) {
-        log.warn("用户登录失败: " + username + "，错误: " + error + "，IP: " + request.getRemoteAddr());
+        log.warn("用户认证失败: username={}", username);
     }
 
     public void logAuthorizationDenied(String username, String resource, HttpServletRequest request) {
-        log.warn("用户访问被拒绝: " + username + "，资源: " + resource + "，IP: " + request.getRemoteAddr());
+        log.warn("访问被拒绝: username={}, resource={}", username, resource);
     }
 
     public void logUserActivity(String username, String activity, String details) {
-        log.info("用户活动: " + username + "，操作: " + activity + "，详情: " + details);
+        log.debug("用户活动: username={}, operation={}", username, activity);
     }
 
     public String getCurrentUsername() {

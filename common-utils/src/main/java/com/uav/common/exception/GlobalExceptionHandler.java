@@ -14,6 +14,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.ResourceAccessException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -25,8 +26,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException e) {
         log.warn("参数错误: {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("success", false, "error", "参数错误", "message", e.getMessage()));
+        return buildError(HttpStatus.BAD_REQUEST, "参数错误", e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -35,50 +35,40 @@ public class GlobalExceptionHandler {
                 .map(f -> f.getField() + ": " + f.getDefaultMessage())
                 .collect(Collectors.joining("; "));
         log.warn("参数校验失败: {}", errors);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("success", false, "error", "参数校验失败", "details", errors));
+        return buildError(HttpStatus.BAD_REQUEST, "参数校验失败", errors);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException e) {
         log.warn("权限不足: {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(Map.of("success", false, "error", "权限不足"));
+        return buildError(HttpStatus.FORBIDDEN, "权限不足", null);
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFound(NoHandlerFoundException e) {
         log.warn("资源不存在: {}", e.getRequestURL());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("success", false, "error", "资源不存在"));
+        return buildError(HttpStatus.NOT_FOUND, "资源不存在", null);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<Map<String, Object>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException e) {
         log.warn("请求方法不允许: {}", e.getMethod());
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-                .body(Map.of("success", false, "error", "请求方法不允许"));
+        return buildError(HttpStatus.METHOD_NOT_ALLOWED, "请求方法不允许", null);
     }
 
     @ExceptionHandler(PythonExecutionException.class)
     public ResponseEntity<Map<String, Object>> handlePythonError(PythonExecutionException e) {
         log.error("Python脚本执行失败: {} - {}", e.getScriptName(), e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("success", false, "error", "算法处理失败", "script", e.getScriptName()));
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "算法处理失败", Map.of("script", e.getScriptName()));
     }
 
     @ExceptionHandler(ServiceUnavailableException.class)
     public ResponseEntity<Map<String, Object>> handleServiceUnavailable(ServiceUnavailableException e) {
-        log.error("服务不可用: {} - {} (HTTP {})", e.getServiceName(), e.getMessage(), e.getHttpStatus());
-        
-        Map<String, Object> body = new java.util.HashMap<>();
-        body.put("success", false);
-        body.put("error", "服务暂时不可用");
-        body.put("service", e.getServiceName());
-        body.put("httpStatus", e.getHttpStatus().value());
-        
+        log.error("服务不可用: {} ({})", e.getServiceName(), e.getMessage());
         HttpStatusCode statusCode = e.getHttpStatus();
-        return ResponseEntity.status(statusCode != null ? statusCode : HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+        return ResponseEntity.status(statusCode != null ? statusCode : HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("code", statusCode != null ? statusCode.value() : 500,
+                        "message", "服务暂时不可用: " + e.getServiceName()));
     }
 
     @ExceptionHandler(ResourceAccessException.class)
@@ -86,64 +76,61 @@ public class GlobalExceptionHandler {
         log.error("资源访问失败: {}", e.getMessage());
         Throwable cause = e.getCause();
         if (cause instanceof ConnectException) {
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                    .body(Map.of("success", false, "error", "无法连接到远程服务"));
+            return buildError(HttpStatus.SERVICE_UNAVAILABLE, "无法连接到远程服务", null);
         }
         if (cause instanceof SocketTimeoutException) {
-            return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT)
-                    .body(Map.of("success", false, "error", "服务响应超时"));
+            return buildError(HttpStatus.GATEWAY_TIMEOUT, "服务响应超时", null);
         }
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(Map.of("success", false, "error", "资源访问失败"));
+        return buildError(HttpStatus.SERVICE_UNAVAILABLE, "资源访问失败", null);
     }
 
     @ExceptionHandler(RestClientException.class)
     public ResponseEntity<Map<String, Object>> handleRestClientError(RestClientException e) {
         log.error("REST客户端错误: {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
-                .body(Map.of("success", false, "error", "服务调用失败"));
+        return buildError(HttpStatus.BAD_GATEWAY, "服务调用失败", null);
     }
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Map<String, Object>> handleBusinessError(BusinessException e) {
-        log.warn("业务异常: {} - {} (HTTP {})", e.getCode(), e.getMessage(), e.getHttpStatus());
-        
-        Map<String, Object> body = new java.util.HashMap<>();
-        body.put("success", false);
-        body.put("error", e.getMessage());
-        body.put("code", e.getCode());
-        body.put("httpStatus", e.getHttpStatus().value());
-        
+        log.warn("业务异常: {} ({})", e.getCode(), e.getMessage());
         HttpStatusCode statusCode = e.getHttpStatus();
-        return ResponseEntity.status(statusCode != null ? statusCode : HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+        return ResponseEntity.status(statusCode != null ? statusCode : HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("code", statusCode != null ? statusCode.value() : 500,
+                        "message", e.getMessage()));
     }
 
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleDataNotFound(DataNotFoundException e) {
-        log.warn("数据不存在: {} - {}", e.getEntity(), e.getId());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("success", false, "error", "数据不存在", "entity", e.getEntity()));
+        log.warn("数据不存在: {} (id={})", e.getEntity(), e.getId());
+        return buildError(HttpStatus.NOT_FOUND, e.getEntity() + " 不存在", null);
     }
 
     @ExceptionHandler(TimeoutException.class)
     public ResponseEntity<Map<String, Object>> handleTimeout(TimeoutException e) {
         log.error("操作超时: {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT)
-                .body(Map.of("success", false, "error", "操作超时，请稍后重试"));
+        return buildError(HttpStatus.GATEWAY_TIMEOUT, "操作超时，请稍后重试", null);
     }
 
     @ExceptionHandler(InterruptedException.class)
     public ResponseEntity<Map<String, Object>> handleInterrupted(InterruptedException e) {
         Thread.currentThread().interrupt();
         log.error("操作被中断", e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("success", false, "error", "操作被中断"));
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "操作被中断", null);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleException(Exception e) {
-        log.error("系统异常: {} - {}", e.getClass().getSimpleName(), e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("success", false, "error", "服务器内部错误"));
+        log.error("系统异常: {}", e.getClass().getSimpleName(), e);
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "服务器内部错误", null);
+    }
+
+    private ResponseEntity<Map<String, Object>> buildError(HttpStatus status, String message, Object detail) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("code", status.value());
+        body.put("message", message);
+        if (detail != null) {
+            body.put("data", detail instanceof String ? Map.of("detail", detail) : detail);
+        }
+        return ResponseEntity.status(status).body(body);
     }
 }

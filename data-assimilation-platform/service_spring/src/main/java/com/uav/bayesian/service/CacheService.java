@@ -1,7 +1,6 @@
 package com.uav.bayesian.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.lang.NonNull;
@@ -10,10 +9,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 public class CacheService {
 
-    private static final Logger log = LoggerFactory.getLogger(CacheService.class);
     private final RedisTemplate<String, Object> redisTemplate;
 
     public CacheService(RedisTemplate<String, Object> redisTemplate) {

@@ -95,10 +95,10 @@ class WrfProcessor:
                 data['wind_speed'] = np.sqrt(U**2 + V**2).tolist()
                 data['wind_direction'] = np.degrees(np.arctan2(V, U)).tolist()
             
-            # 提取温度
+            # 提取温度（WRF扰动位温θ，T + 300K ≈ 实际开尔文温度）
             if 'T' in self.dataset.variables:
                 T = self.dataset.variables['T'][:]
-                data['temperature'] = (T + 300).tolist()  # 转换为摄氏度
+                data['temperature'] = (T + 300).tolist()  # 扰动位温(K) + 300K ≈ 实际温度(K)
             
             # 提取湿度
             if 'Q2' in self.dataset.variables:
@@ -143,7 +143,7 @@ class WrfProcessor:
         # 计算温度统计
         if 'T' in self.dataset.variables:
             T = self.dataset.variables['T'][:]
-            temperature = T + 300  # 转换为摄氏度
+            temperature = T + 300  # 扰动位温(K) + 300K ≈ 实际温度(K)
             stats['temperature'] = {
                 'mean': float(np.mean(temperature)),
                 'min': float(np.min(temperature)),

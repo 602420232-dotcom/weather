@@ -1,7 +1,7 @@
 package com.uav.path.planning.controller;
 
 import com.uav.common.dto.PathPlanningRequest;
-import com.uav.common.utils.PythonScriptInvoker;
+import com.uav.common.feign.PythonScriptInvoker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,7 +21,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("PlanningController 路径规划控制器测试")
-@SuppressWarnings("null")
 class PlanningControllerTest {
 
     @Mock
@@ -31,51 +31,51 @@ class PlanningControllerTest {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(planningController, "pythonScriptPath", "path_planner.py");
+        ReflectionTestUtils.setField(Objects.requireNonNull(planningController), "pythonScriptPath", "path_planner.py");
     }
 
     @Test
     @DisplayName("测试VRPTW路径规划")
     void testVrptw() {
         PathPlanningRequest request = createValidRequest();
-        when(pythonScriptInvoker.execute(any(), any(), any()))
+        when(pythonScriptInvoker.executeAsMap(any(), any(), any()))
                 .thenReturn(Map.of("success", true, "paths", "[]"));
         Map<String, Object> result = planningController.vrptw(request);
         assertNotNull(result);
-        assertTrue((Boolean) result.get("success"));
+        assertEquals(Boolean.TRUE, result.get("success"));
     }
 
     @Test
     @DisplayName("测试A*路径规划")
     void testAstar() {
         PathPlanningRequest request = createValidRequest();
-        when(pythonScriptInvoker.execute(any(), any(), any()))
+        when(pythonScriptInvoker.executeAsMap(any(), any(), any()))
                 .thenReturn(Map.of("success", true, "path", "[]"));
         Map<String, Object> result = planningController.astar(request);
         assertNotNull(result);
-        assertTrue((Boolean) result.get("success"));
+        assertEquals(Boolean.TRUE, result.get("success"));
     }
 
     @Test
     @DisplayName("测试DWA局部规划")
     void testDwa() {
         PathPlanningRequest request = createValidRequest();
-        when(pythonScriptInvoker.execute(any(), any(), any()))
+        when(pythonScriptInvoker.executeAsMap(any(), any(), any()))
                 .thenReturn(Map.of("success", true, "trajectory", "[]"));
         Map<String, Object> result = planningController.dwa(request);
         assertNotNull(result);
-        assertTrue((Boolean) result.get("success"));
+        assertEquals(Boolean.TRUE, result.get("success"));
     }
 
     @Test
     @DisplayName("测试三层完整规划")
     void testFullPlanning() {
         PathPlanningRequest request = createValidRequest();
-        when(pythonScriptInvoker.execute(any(), any(), any()))
+        when(pythonScriptInvoker.executeAsMap(any(), any(), any()))
                 .thenReturn(Map.of("success", true, "global_path", "[]", "local_path", "[]"));
         Map<String, Object> result = planningController.full(request);
         assertNotNull(result);
-        assertTrue((Boolean) result.get("success"));
+        assertEquals(Boolean.TRUE, result.get("success"));
     }
 
     @Test
@@ -83,7 +83,7 @@ class PlanningControllerTest {
     void testToParamsPreservesAlgorithm() {
         PathPlanningRequest request = createValidRequest();
         request.setAlgorithm("hybrid-ga");
-        when(pythonScriptInvoker.execute(any(), any(), any()))
+        when(pythonScriptInvoker.executeAsMap(any(), any(), any()))
                 .thenReturn(Map.of("success", true));
         planningController.vrptw(request);
     }

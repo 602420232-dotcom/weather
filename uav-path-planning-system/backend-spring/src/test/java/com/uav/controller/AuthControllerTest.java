@@ -1,8 +1,9 @@
 package com.uav.controller;
 
-import com.uav.common.exception.BusinessException;
 import com.uav.config.JwtUtil;
 import com.uav.config.SecurityAuditConfig;
+import com.uav.repository.RoleRepository;
+import com.uav.repository.UserRepository;
 import com.uav.service.CustomUserDetailsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,26 +23,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * AuthController单元测试
- *
- * <p>测试认证控制器的异常处理和输入验证：
- * <ul>
- *   <li>空用户名/密码验证</li>
- *   <li>错误凭证处理</li>
- *   <li>账户状态处理</li>
- * </ul>
- *
- * @author UAV Team
- * @version 1.0.0
- */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuthController认证测试")
 class AuthControllerTest {
@@ -62,160 +49,93 @@ class AuthControllerTest {
     private SecurityAuditConfig securityAuditConfig;
 
     @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private RoleRepository roleRepository;
+
+    @Mock
     private HttpServletRequest httpServletRequest;
 
     @InjectMocks
     private AuthController authController;
 
-    private Map<String, String> validRequest;
+    private AuthController.LoginRequest validRequest;
 
     @BeforeEach
     void setUp() {
-        validRequest = new HashMap<>();
-        validRequest.put("username", "testuser");
-        validRequest.put("password", "testpass");
-    }
-
-    @Test
-    @DisplayName("测试空用户名验证")
-    void testLoginWithEmptyUsername() {
-        // Given
-        Map<String, String> request = new HashMap<>();
-        request.put("username", "");
-        request.put("password", "testpass");
-
-        // When & Then
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
-            authController.login(request, httpServletRequest);
-        });
-
-        assertEquals("VALIDATION_ERROR", exception.getCode());
-        assertTrue(exception.getMessage().contains("用户名不能为空"));
-    }
-
-    @Test
-    @DisplayName("测试null用户名验证")
-    void testLoginWithNullUsername() {
-        // Given
-        Map<String, String> request = new HashMap<>();
-        request.put("username", null);
-        request.put("password", "testpass");
-
-        // When & Then
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
-            authController.login(request, httpServletRequest);
-        });
-
-        assertEquals("VALIDATION_ERROR", exception.getCode());
-        assertTrue(exception.getMessage().contains("用户名不能为空"));
-    }
-
-    @Test
-    @DisplayName("测试空密码验证")
-    void testLoginWithEmptyPassword() {
-        // Given
-        Map<String, String> request = new HashMap<>();
-        request.put("username", "testuser");
-        request.put("password", "");
-
-        // When & Then
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
-            authController.login(request, httpServletRequest);
-        });
-
-        assertEquals("VALIDATION_ERROR", exception.getCode());
-        assertTrue(exception.getMessage().contains("密码不能为空"));
-    }
-
-    @Test
-    @DisplayName("测试空白密码验证")
-    void testLoginWithBlankPassword() {
-        // Given
-        Map<String, String> request = new HashMap<>();
-        request.put("username", "testuser");
-        request.put("password", "   ");
-
-        // When & Then
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
-            authController.login(request, httpServletRequest);
-        });
-
-        assertEquals("VALIDATION_ERROR", exception.getCode());
-        assertTrue(exception.getMessage().contains("密码不能为空"));
+        validRequest = new AuthController.LoginRequest();
+        validRequest.username = "testuser";
+        validRequest.password = "testpass";
     }
 
     @Test
     @DisplayName("测试错误凭证处理")
     void testLoginWithBadCredentials() throws Exception {
-        // Given
         doThrow(new BadCredentialsException("Bad credentials"))
             .when(authenticationManager)
             .authenticate(any());
 
-        // When
         ResponseEntity<?> response = authController.login(validRequest, httpServletRequest);
 
-        // Then
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("用户名或密码错误", response.getBody());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        assertEquals(401, body.get("code"));
+        assertEquals("用户名或密码错误", body.get("message"));
         verify(securityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("凭证错误"), any());
     }
 
     @Test
     @DisplayName("测试禁用账户处理")
     void testLoginWithDisabledAccount() throws Exception {
-        // Given
         doThrow(new DisabledException("Account disabled"))
             .when(authenticationManager)
             .authenticate(any());
 
-        // When
         ResponseEntity<?> response = authController.login(validRequest, httpServletRequest);
 
-        // Then
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("账户已被禁用", response.getBody());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        assertEquals(403, body.get("code"));
+        assertEquals("账户已被禁用", body.get("message"));
         verify(securityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("账户已禁用"), any());
     }
 
     @Test
     @DisplayName("测试锁定账户处理")
     void testLoginWithLockedAccount() throws Exception {
-        // Given
         doThrow(new LockedException("Account locked"))
             .when(authenticationManager)
             .authenticate(any());
 
-        // When
         ResponseEntity<?> response = authController.login(validRequest, httpServletRequest);
 
-        // Then
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("账户已被锁定", response.getBody());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        assertEquals(403, body.get("code"));
+        assertEquals("账户已被锁定", body.get("message"));
         verify(securityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("账户已锁定"), any());
     }
 
     @Test
     @DisplayName("测试用户不存在处理")
     void testLoginWithNonExistentUser() throws Exception {
-        // Given
         doThrow(new UsernameNotFoundException("User not found"))
             .when(authenticationManager)
             .authenticate(any());
 
-        // When
         ResponseEntity<?> response = authController.login(validRequest, httpServletRequest);
 
-        // Then
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("用户名或密码错误", response.getBody());
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        assertEquals(401, body.get("code"));
+        assertEquals("用户名或密码错误", body.get("message"));
         verify(securityAuditConfig).logAuthenticationFailure(eq("testuser"), eq("凭证错误"), any());
     }
 
     @Test
     @DisplayName("测试成功登录")
     void testSuccessfulLogin() throws Exception {
-        // Given
         when(authenticationManager.authenticate(any())).thenReturn(mock(org.springframework.security.core.Authentication.class));
 
         UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
@@ -227,10 +147,8 @@ class AuthControllerTest {
         when(userDetailsService.loadUserByUsername("testuser")).thenReturn(userDetails);
         when(jwtUtil.generateToken(userDetails)).thenReturn("test-token");
 
-        // When
         ResponseEntity<?> response = authController.login(validRequest, httpServletRequest);
 
-        // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         verify(securityAuditConfig).logAuthenticationSuccess(eq("testuser"), any());

@@ -1,31 +1,40 @@
-﻿# 无人机气象驱动智能路径规划系统- 移动客户?
+# 无人机气象驱动智能路径规划系统- 移动客户?
+
 基于 Flutter 开发的跨平台移动应用支持 iOS ?Android?
+
 ## 功能特性
--  **系统驾驶?* - 实时概览系统状态任务统计气象预报- ?**路径规划** - 交互式地图展示VRPTW/A*/DWA 三层路径规划
-- ?**气象数据** - WRF气象数据可视化风速风向热力图
--  **任务管理** - 无人机任务创建分配执行跟踪-  **无人机管理* - 无人机注册状态监控电量管理-  **系统监控** - CPU/内存/磁盘资源监控服务状态巡检
--  **边云协同** - 离线评估边缘任务队列联邦学习- ?**智能驾驶?* - 态势感知综合面板
+
+- *系统驾驶?* - 实时概览系统状态任务统计气象预报-
+- ???路径规划?? - 交互式地图展示VRPTW/A/DWA 三层路径规划
+- ???气象数据?? - WRF气象数据可视化风速风向热力图
+-   任务管理   - 无人机任务创建分配执行跟踪-&#x20;
+- &#x20;\**无人机管理* - 无人机注册状态监控电量管理-&#x20;
+- &#x20;  系统监控   - CPU/内存/磁盘资源监控服务状态巡检
+-   边云协同   - 离线评估边缘任务队列联邦学习-&#x20;
+- ?\**智能驾驶?* - 态势感知综合面板
 
 ## 技术栈
 
-| 技?| 用途|
-|------|------|
-| Flutter/Dart | 跨平?UI 框架 |
-| Riverpod | 状态管理|
-| GoRouter | 路由导航 |
-| Dio | 网络请求 |
-| flutter_map + OpenStreetMap | 地图服务 |
-| fl_chart | 数据可可视化|
-| Hive + SharedPreferences | 本地存储 |
-| flutter_secure_storage | 安全存储 |
+| 技?                           | 用途       |
+| ---------------------------- | -------- |
+| Flutter/Dart                 | 跨平?UI 框架 |
+| Riverpod                     | 状态管理     |
+| GoRouter                     | 路由导航     |
+| Dio                          | 网络请求     |
+| flutter\_map + OpenStreetMap | 地图服务     |
+| fl\_chart                    | 数据可可视化   |
+| Hive + SharedPreferences     | 本地存储     |
+| flutter\_secure\_storage     | 安全存储     |
 
 ## 快速开始
+
 ### 环境要求
 
 - Flutter SDK >= 3.2.0
 - Dart SDK >= 3.2.0
 - Android Studio / Xcode
 - 设备/模拟器iOS 14+ / Android 5.0+?
+
 ### 安装
 
 ```bash
@@ -110,15 +119,16 @@ uav-mobile-app/
 ## 后端API对接
 
 应用默认连接?`http://localhost:8088` ?API 网关集成以下微服务接口?
-| 服务 | 端点 | 用途|
-|------|------|------|
-| Platform | `/api/v1/*` | 用户认证无人机/任务管理 |
-| WRF Processor | `/api/wrf/*` | WRF 气象数据解析 |
-| Meteor Forecast | `/api/forecast/*` | 气象预测与订?|
-| Path Planning | `/api/planning/*` | VRPTW/A*/DWA 路径规划 |
-| Data Assimilation | `/api/assimilation/*` | 贝叶斯数据同?|
-| Weather Collector | `/api/weather/*` | 气象数据采集融合 |
-| Edge Coordinator | `:8000/*` | 边云协同任务 |
+
+| 服务                | 端点                    | 用途                 |
+| ----------------- | --------------------- | ------------------ |
+| Platform          | `/api/v1/*`           | 用户认证无人机/任务管理       |
+| WRF Processor     | `/api/wrf/*`          | WRF 气象数据解析         |
+| Meteor Forecast   | `/api/forecast/*`     | 气象预测与订?            |
+| Path Planning     | `/api/planning/*`     | VRPTW/A\*/DWA 路径规划 |
+| Data Assimilation | `/api/assimilation/*` | 贝叶斯数据同?            |
+| Weather Collector | `/api/weather/*`      | 气象数据采集融合           |
+| Edge Coordinator  | `:8000/*`             | 边云协同任务             |
 
 ## 发布
 

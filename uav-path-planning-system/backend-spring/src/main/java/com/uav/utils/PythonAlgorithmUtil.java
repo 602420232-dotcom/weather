@@ -83,9 +83,10 @@ public class PythonAlgorithmUtil {
             );
             processBuilder.redirectErrorStream(true);
 
+            Process process = processBuilder.start();
             Future<String> future = executorService.submit(() -> {
                 StringBuilder output = new StringBuilder();
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(processBuilder.start().getInputStream()))) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         output.append(line).append("\n");
@@ -95,6 +96,10 @@ public class PythonAlgorithmUtil {
             });
 
             String result = future.get(timeout, TimeUnit.MILLISECONDS);
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                log.warn("Python脚本异常退出: {} exitCode={}", scriptName, exitCode);
+            }
             log.info("Python脚本执行完成: {}", scriptName);
             return result;
 

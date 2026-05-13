@@ -1,6 +1,6 @@
 package com.uav.meteor.forecast.controller;
 import com.uav.common.dto.ForecastRequest;
-import com.uav.common.utils.PythonScriptInvoker;
+import com.uav.common.feign.PythonScriptInvoker;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class ForecastController {
             "data", request.getData(),
             "config", request.getConfig()
         );
-        return pythonScriptInvoker.execute(pythonScriptPath, "predict", params);
+        return pythonScriptInvoker.executeAsMap(pythonScriptPath, "predict", params);
     }
 
     @PostMapping("/correct")
@@ -41,7 +41,7 @@ public class ForecastController {
             "data", request.getData(),
             "config", request.getConfig()
         );
-        return pythonScriptInvoker.execute(pythonScriptPath, "correct", params);
+        return pythonScriptInvoker.executeAsMap(pythonScriptPath, "correct", params);
     }
 
     @GetMapping("/models")
@@ -59,12 +59,12 @@ public class ForecastController {
             "lng", lng,
             "hours", hours
         );
-        return pythonScriptInvoker.execute(pythonScriptPath, "get_forecast", params);
+        return pythonScriptInvoker.executeAsMap(pythonScriptPath, "get_forecast", params);
     }
 
     @PostMapping("/detail")
     public Map<String, Object> getDetailedForecast(@RequestBody Map<String, Object> request) {
-        return pythonScriptInvoker.execute(pythonScriptPath, "get_detailed_forecast", request);
+        return pythonScriptInvoker.executeAsMap(pythonScriptPath, "get_detailed_forecast", request);
     }
 
     @GetMapping("/realtime")
@@ -73,6 +73,6 @@ public class ForecastController {
             "lat", lat,
             "lng", lng
         );
-        return pythonScriptInvoker.execute(pythonScriptPath, "get_realtime_weather", params);
+        return pythonScriptInvoker.executeAsMap(pythonScriptPath, "get_realtime_weather", params);
     }
 }

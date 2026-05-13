@@ -1,26 +1,32 @@
 spring:
   application:
     name: uav-path-planning
-  
+
   # 数据库配置
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:uav_path_planning}?useSSL=true&requireSSL=true&serverTimezone=UTC
     username: ${DB_USER:root}
-    password: ${DB_PASSWORD:}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-  
+
   # JPA配置
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
-  
+
+  # 文件上传限制
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 1GB
+
   # Redis配置
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
+      password: ${REDIS_PASSWORD}
       database: 0
 
   # 缓存配置
@@ -33,51 +39,45 @@ server:
   ssl:
     enabled: ${SSL_ENABLED:false}
     key-store: ${SSL_KEY_STORE:}
-    key-store-password: ${SSL_KEY_STORE_PASSWORD:}
+    key-store-password: ${SSL_KEY_STORE_PASSWORD}
     key-alias: ${SSL_KEY_ALIAS:}
 
 # JWT配置
 jwt:
-  secret: ${JWT_SECRET:}
-  expiration: ${JWT_EXPIRATION:86400000} # 24小时
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
+  enabled: ${JWT_ENABLED:true}
 
 # 自定义配置
 uav:
-  # Python算法配置
   python:
     script-path: ${user.dir}/algorithm-core
     timeout: 30000
-  
-  # WRF配置
+
   wrf:
     data-path: ${user.dir}/data/wrf
-    update-interval: 300 # 5分钟
-  
-  # 路径规划配置
+    update-interval: 300
+
   path-planning:
     max-tasks: 200
     max-drones: 10
     replanning-threshold: 3.0
-  
-  # gRPC配置
+
   grpc:
     host: ${GRPC_HOST:localhost}
     port: ${GRPC_PORT:50051}
 
-# 日志配置
 logging:
   level:
     root: info
-    com.uav: info
+    '[com.uav]': info
 
-# MyBatis-Plus配置
 mybatis-plus:
   mapper-locations: classpath:mapper/**/*.xml
-  type-aliases-package: com.uav.model
+  'type-aliases-package': com.uav.model
   configuration:
     map-underscore-to-camel-case: true
 
-# Actuator 健康检查
 management:
   endpoints:
     web:

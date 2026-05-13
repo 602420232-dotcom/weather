@@ -1,13 +1,11 @@
 package com.uav.bayesian.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class AlertService {
-
-    private static final Logger log = LoggerFactory.getLogger(AlertService.class);
 
     public void sendAlert(String severity, String message) {
         log.warn("警报 [{}]: {}", severity, message);
