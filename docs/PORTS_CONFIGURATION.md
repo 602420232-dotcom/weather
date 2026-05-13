@@ -22,6 +22,7 @@
 | **Edge-Cloud Coordinator** | 8000 | HTTP | 边云协同 REST API | ✅ | ✅ |
 | **Edge-Cloud Coordinator** | 8765 | WebSocket | WebSocket 通信 | - | ✅ |
 | **Data Assimilation Service** | 8084 | HTTP | 数据同化服务 | ✅ | ✅ |
+| **Bayesian Assimilation Service** | 8094 | HTTP | 贝叶斯同化服务 | ✅ | ✅ |
 | **Backend Spring** | 8089 | HTTP | 路径规划系统后端 - 认证授权 | ✅ | ✅ |
 | **Frontend (Vue3 Dev)** | 3000 | HTTP | Vue3 + Vite 开发服务器 | - | ✅ |
 | **Frontend (Nginx)** | 80 | HTTP | 生产环境静态托管 | - | ✅ |
@@ -137,12 +138,27 @@ Platform Service (localhost:8080)
 
 ### 数据库服务
 
-| 服务 | 端口 | 默认数据库 | 说明 |
-|------|:----:|-----------|------|
-| **MySQL** | 3306 | `uav_platform` | 主数据库 |
-| **MySQL** | 3307 | `meteor_data` | 气象数据 |
-| **Redis** | 6379 | - | 缓存/会话 |
-| **MongoDB** | 27017 | `uav_logs` | 日志存储 |
+| 服务 | 端口 | 默认数据库 | 用户 | 说明 |
+|------|:----:|-----------|:----:|------|
+| **MySQL** | 3306 | `uav_platform` | `uav` | 主数据库 |
+| **MySQL** | 3306 | `meteor_forecast` | `uav` | 气象数据 |
+| **MySQL** | 3306 | `data_assimilation` | `uav` | 数据同化 |
+| **MySQL** | 3306 | `path_planning` | `uav` | 路径规划 |
+| **MySQL** | 3306 | `wrf_processor` | `uav` | WRF处理 |
+| **MySQL** | 3306 | `uav_weather` | `uav` | 气象采集 |
+| **Redis** | 6379 | DB 0-15 | - | 缓存/会话/限流 |
+| **MongoDB** | 27017 | `uav_logs` | - | 日志存储 |
+
+#### MySQL 连接配置
+
+| 数据库 | 连接URL | 环境变量 |
+|--------|---------|----------|
+| uav_platform | `jdbc:mysql://mysql:3306/uav_platform` | `SPRING_DATASOURCE_URL` |
+| meteor_forecast | `jdbc:mysql://mysql:3306/meteor_forecast` | `SPRING_DATASOURCE_URL` |
+| data_assimilation | `jdbc:mysql://mysql:3306/data_assimilation` | `SPRING_DATASOURCE_URL` |
+| path_planning | `jdbc:mysql://mysql:3306/path_planning` | `SPRING_DATASOURCE_URL` |
+| wrf_processor | `jdbc:mysql://mysql:3306/wrf_processor` | `SPRING_DATASOURCE_URL` |
+| uav_weather | `jdbc:mysql://mysql:3306/uav_weather` | `SPRING_DATASOURCE_URL` |
 
 ### 消息队列
 

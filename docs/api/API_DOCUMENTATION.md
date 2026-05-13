@@ -4,7 +4,7 @@
 
 | 路由前缀 | 目标服务 | 端口 |
 |----------|----------|:----:|
-| `/api/v1/auth/**` | backend-spring (认证) | 8083 |
+| `/api/v1/auth/**` | backend-spring (认证) | 8089 |
 | `/api/v1/data-sources/**` | uav-platform-service | 8080 |
 | `/api/v1/real-data/**` | uav-platform-service | 8080 |
 | `/api/platform/**` | uav-platform-service | 8080 |
@@ -14,7 +14,9 @@
 | `/api/planning/**` | path-planning-service | 8083 |
 | `/api/weather/**` | uav-weather-collector | 8086 |
 
-## 二、认证服务 (backend-spring :8083)
+> **注意**: backend-spring (8089) 是独立认证服务，**不经过 API Gateway 路由**，前端应直接调用 `http://localhost:8089/api/v1/auth/**`。
+
+## 二、认证服务 (backend-spring :8089)
 
 ### POST /api/v1/auth/register
 注册新用户
@@ -81,16 +83,16 @@
 
 ## 六、WRF气象处理 (wrf-processor-service :8081)
 
-### POST /api/wrf/upload
+### POST /api/wrf/parse
 上传NetCDF气象文件
 - 支持格式: `.nc`, `.netcdf`
 - 验证: 文件名不得包含路径遍历字符
 - 内容类型: multipart/form-data
 
-### GET /api/wrf/weather/{fileId}
+### GET /api/wrf/data?fileId=
 获取气象数据 `200 {"success":true,"data":{...}}`
 
-### GET /api/wrf/statistics/{fileId}
+### GET /api/wrf/stats?fileId=
 获取统计信息 `200 {"success":true,"data":{...}}`
 
 ## 七、数据同化 (data-assimilation-service :8084)
@@ -140,16 +142,22 @@ DWA局部路径规划
 
 ## 十、气象采集 (uav-weather-collector :8086)
 
-### POST /api/weather/collect
+### POST /api/weather/collect/uav
 采集无人机传感器数据
+
+### POST /api/weather/collect/wrf
+采集WRF气象数据
+
+### POST /api/weather/collect/ground
+采集地面站气象数据
 
 ### GET /api/weather/drone/{droneId}
 获取无人机气象数据
 
-### GET /api/weather/history/{droneId}/{minutes}
+### GET /api/weather/drone/{droneId}/history?minutes=
 获取气象历史
 
-### GET /api/weather/fused/{droneId}
+### GET /api/weather/fusion/{droneId}
 获取融合气象数据
 
 ### GET /api/weather/sources

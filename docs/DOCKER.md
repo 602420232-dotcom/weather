@@ -33,7 +33,7 @@ cd trae
 ```bash
 cp .env.example .env
 # 编辑 .env 文件，至少修改：
-# DB_PASSWORD、JWT_SECRET_KEY、ENCRYPTION_KEY
+# DB_PASSWORD、JWT_SECRET、ENCRYPTION_KEY
 ```
 
 ---

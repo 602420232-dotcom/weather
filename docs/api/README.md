@@ -7,6 +7,7 @@
 | 服务 | 端口 | 说明 |
 |------|------|------|
 | **api-gateway** | 8088 | API 网关，统一入口 |
+| **backend-spring** | 8089 | 路径规划系统后端 - 认证授权 |
 | **uav-platform-service** | 8080 | 主服务，提供系统的核心功能 |
 | **wrf-processor-service** | 8081 | WRF 气象数据处理服务 |
 | **meteor-forecast-service** | 8082 | 气象预测服务 |
@@ -24,6 +25,10 @@ Authorization: Bearer <JWT令牌>
 ```
 
 ## 接口文档
+
+### backend-spring (uav-path-planning-system)
+
+- [认证授权接口](uav-path-planning-system/backend-spring.md)
 
 ### uav-platform-service
 

@@ -307,7 +307,7 @@ cp .env.example .env
 # 编辑 .env 文件填入必要的配置
 # 至少需要修改：
 # - DB_PASSWORD: 数据库密码
-# - JWT_SECRET_KEY: JWT密钥（至少32字符）
+# - JWT_SECRET: JWT密钥（至少32字符）
 # - ENCRYPTION_KEY: 加密密钥（至少32字符）
 ```
 
@@ -482,7 +482,7 @@ python examples/basic_usage.py
 
 ```env
 # JWT密钥（必须修改，至少32字符）
-JWT_SECRET_KEY=your-jwt-secret-key-here-min-32-chars
+JWT_SECRET=your-jwt-secret-key-here-min-32-chars
 
 # 加密密钥（必须修改，至少32字符）
 ENCRYPTION_KEY=your-encryption-key-here-min-32-chars
@@ -675,10 +675,7 @@ curl "http://localhost:8082/api/forecast?lat=39.9042&lng=116.4074&hours=24" \
 | 服务                        | Swagger URL                             |
 | ------------------------- | --------------------------------------- |
 | UAV Platform Service      | <http://localhost:8080/swagger-ui.html> |
-| WRF Processor Service     | <http://localhost:8081/swagger-ui.html> |
-| Meteor Forecast Service   | <http://localhost:8082/swagger-ui.html> |
-| Path Planning Service     | <http://localhost:8083/swagger-ui.html> |
-| Data Assimilation Service | <http://localhost:8084/swagger-ui.html> |
+| Backend Spring            | <http://localhost:8089/swagger-ui.html> |
 
 ### 详细API文档
 

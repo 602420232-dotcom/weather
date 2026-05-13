@@ -38,7 +38,7 @@
 | **滑动窗口** | 8次调用 | 计算失败率的窗口大小 |
 | **熔断器类型** | critical | 关键服务配置 |
 
-详见: [Circuit Breaker Guide](../../docs/guides/CIRCUIT_BREAKER_GUIDE.md)
+详见: [Circuit Breaker Guide](../docs/guides/CIRCUIT_BREAKER_GUIDE.md)
 
 ## Python 依赖
 

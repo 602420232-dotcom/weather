@@ -17,7 +17,7 @@ docker-compose ps
 |------|-----|
 | 前端 | http://localhost:3000 |
 | API Gateway | http://localhost:8088 |
-| Grafana | http://localhost:3000 |
+| Grafana | http://localhost:3030 |
 | Prometheus | http://localhost:9090 |
 | Kibana | http://localhost:5601 |
 
@@ -319,7 +319,7 @@ pytest test_performance.py -v -s
 
 ##  关键链接
 
-- Grafana: http://localhost:3000 (credentials configured via env)
+- Grafana: http://localhost:3030 (credentials configured via env)
 - Prometheus: http://localhost:9090
 - Kibana: http://localhost:5601 (credentials configured via env)
 - Alertmanager: http://localhost:9093

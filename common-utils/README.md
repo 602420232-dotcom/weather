@@ -362,9 +362,9 @@ common-utils
 
 | 文档 | 说明 |
 |------|------|
-| [Circuit Breaker Guide](../../docs/guides/CIRCUIT_BREAKER_GUIDE.md) | 熔断器完整使用指南 |
-| [Circuit Breaker Examples](../../docs/guides/CIRCUIT_BREAKER_USAGE_EXAMPLES.md) | 代码示例 |
-| [Exception HTTP Status Guide](../../docs/guides/EXCEPTION_HTTP_STATUS_GUIDE.md) | 异常处理与HTTP状态码指南 |
+| [Circuit Breaker Guide](../docs/guides/CIRCUIT_BREAKER_GUIDE.md) | 熔断器完整使用指南 |
+| [Circuit Breaker Examples](../docs/guides/CIRCUIT_BREAKER_USAGE_EXAMPLES.md) | 代码示例 |
+| [Exception HTTP Status Guide](../docs/guides/EXCEPTION_HTTP_STATUS_GUIDE.md) | 异常处理与HTTP状态码指南 |
 
 ---
 

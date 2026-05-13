@@ -417,7 +417,7 @@ spring:
 | [Algorithm Core README](algorithm_core/README.md) | 核心算法库文档|
 | [Shared Resources README](shared/README.md) | 共享资源说明 |
 | [Benchmarks README](benchmarks/README.md) | 性能测试说明 |
-| [Deployment Guide](../docs/DEPLOYMENT.md) | 部署指南 |
+| [Deployment Guide](../docs/deployment/DEPLOYMENT.md) | 部署指南 |
 | [API Documentation](../docs/api/) | API 接口文档 |
 
 ---
