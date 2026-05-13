@@ -1,3 +1,4 @@
+import logging
 #!/usr/bin/env python3
 """Full project audit scanner - produces issues report."""
 import os, re, json
@@ -76,12 +77,12 @@ for dp, dn, fn in os.walk(ROOT):
             issues['suppress_warnings'].append(rel)
 
 for cat, lst in issues.items():
-    print(f'\n### {cat.upper()}: {len(lst)} items')
+    logger.info(f"\n### {cat.upper()}: {len(lst)} items")
     for item in lst[:20]:
-        print(f'  - {item}')
+        logger.info(f"  - {item}")
     if len(lst) > 20:
-        print(f'  ... and {len(lst)-20} more')
+        logger.info(f"  ... and {len(lst)-20} more")
 
 with open(os.path.join(ROOT, 'tests', 'audit_scan_results.json'), 'w') as out:
     json.dump(issues, out, indent=2, ensure_ascii=False)
-print('\n\nFull results saved to tests/audit_scan_results.json')
+logger.info("\n\nFull results saved to tests/audit_scan_results.json")

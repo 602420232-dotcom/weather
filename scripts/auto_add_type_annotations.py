@@ -14,6 +14,7 @@ Date: 2026-05-08
 import ast
 import os
 import sys
+import logging
 import argparse
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -131,7 +132,7 @@ def analyze_file(file_path: Path, dry_run: bool = False) -> List[Dict[str, Any]]
         return changes
 
     except Exception as e:
-        print(f"Error analyzing {file_path}: {e}")
+        logger.info(f"Error analyzing {file_path}: {e}")
         return []
 
 
@@ -167,7 +168,7 @@ def generate_annotated_code(file_path: Path) -> Optional[str]:
         return '\n'.join(lines)
 
     except Exception as e:
-        print(f"Error generating annotated code for {file_path}: {e}")
+        logger.info(f"Error generating annotated code for {file_path}: {e}")
         return None
 
 
@@ -183,7 +184,7 @@ def main():
 
     path = Path(args.path)
     if not path.exists():
-        print(f"Path does not exist: {path}")
+        logger.info(f"Path does not exist: {path}")
         sys.exit(1)
 
     # 收集所有Python文件
@@ -193,7 +194,7 @@ def main():
         pattern = '**/*' + args.extensions if args.recursive else '*' + args.extensions
         files = list(path.glob(pattern))
 
-    print(f"Found {len(files)} Python files")
+    logger.info(f"Found {len(files)} Python files")
 
     all_changes = []
     for file_path in files:
@@ -206,12 +207,12 @@ def main():
     arg_changes = [c for c in all_changes if c['type'] == 'arg']
     return_changes = [c for c in all_changes if c['type'] == 'return']
 
-    print(f"\n=== 分析结果 ===")
-    print(f"缺少类型注解的参数: {len(arg_changes)}")
-    print(f"缺少返回类型注解: {len(return_changes)}")
+    logger.info(f"\n=== 分析结果 ===")
+    logger.info(f"缺少类型注解的参数: {len(arg_changes)}")
+    logger.info(f"缺少返回类型注解: {len(return_changes)}")
 
     if arg_changes:
-        print(f"\n需要添加参数类型注解的函数:")
+        logger.info(f"\n需要添加参数类型注解的函数:")
         seen = set()
         for change in arg_changes:
             if change['name'] not in seen:
@@ -219,7 +220,7 @@ def main():
                 seen.add(change['name'])
 
     if return_changes:
-        print(f"\n需要添加返回类型注解的函数:")
+        logger.info(f"\n需要添加返回类型注解的函数:")
         seen = set()
         for change in return_changes:
             if change['name'] not in seen:
@@ -227,9 +228,9 @@ def main():
                 seen.add(change['name'])
 
     if args.dry_run:
-        print("\n[Dry Run] 未进行任何修改")
+        logger.info("\n[Dry Run] 未进行任何修改")
     else:
-        print("\n使用 --dry-run 参数预览修改")
+        logger.info("\n使用 --dry-run 参数预览修改")
 
     # 生成报告文件
     report_path = Path('type_annotation_report.md')
@@ -259,7 +260,7 @@ def main():
                     f.write(f"- `{change['file']}` 行{change['lineno']}: `{change['name']}`\n")
                     seen.add(key)
 
-    print(f"\n详细报告已保存到: {report_path}")
+    logger.info(f"\n详细报告已保存到: {report_path}")
 
 
 if __name__ == '__main__':

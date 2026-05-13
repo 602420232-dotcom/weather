@@ -4,7 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -23,9 +24,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
-@Slf4j
 @Component
 public class JwtKeyRotationService {
+    private static final Logger log = LoggerFactory.getLogger(JwtKeyRotationService.class);
     private static final int MIN_KEY_LENGTH_BYTES = 32;
     private static final long ROTATION_INTERVAL_MS = 86400000L;
     private static final int MAX_HISTORY_SIZE = 3;

@@ -1,3 +1,4 @@
+import logging
 #!/usr/bin/env python3
 """Restore annotation wildcard imports that were incorrectly removed."""
 import re, os
@@ -58,4 +59,4 @@ for dp, dn, fn in os.walk(ROOT):
             rel = os.path.relpath(fp, ROOT)
             print(f'  OK {rel}: {", ".join(changes)}')
 
-print(f'\nFixed {fixed} files')
+logger.info(f"\nFixed {fixed} files")

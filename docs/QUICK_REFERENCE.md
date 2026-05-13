@@ -1,13 +1,13 @@
 # UAV Path Planning System - Quick Reference Card
 
-##  快速开?
+##  快速开始
 
-### 启动所有服?
+### 启动所有服务
 ```bash
 docker-compose up -d
 ```
 
-### 查看服务状?
+### 查看服务状态
 ```bash
 docker-compose ps
 ```
@@ -33,7 +33,7 @@ mvn clean package -DskipTests
 # 运行
 mvn spring-boot:run
 
-# 仅构建单个服?
+# 仅构建单个服务
 mvn package -pl api-gateway -am
 ```
 
@@ -45,7 +45,7 @@ pip install -r requirements.txt
 # 运行测试
 pytest tests/ -v
 
-# 类型检?
+# 类型检查
 mypy src/
 ```
 
@@ -108,7 +108,7 @@ POST /api/planning/mission
   }
 }
 
-# 查询状?
+# 查询状态
 GET /api/planning/mission/{missionId}
 ```
 
@@ -136,7 +136,7 @@ export JWT_SECRET=your_32_character_minimum_secret_key
 curl http://localhost:8080/api/admin/circuit-breaker/health
 ```
 
-### 数据库密?
+### 数据库密码
 ```bash
 # 必须设置环境变量
 export DB_PASSWORD=your_secure_password
@@ -144,9 +144,9 @@ export DB_PASSWORD=your_secure_password
 
 ---
 
-##  熔断器管?
+##  熔断器管理
 
-### 查看熔断器状?
+### 查看熔断器状态
 ```bash
 curl http://localhost:8080/api/admin/circuit-breaker/status
 ```
@@ -161,7 +161,7 @@ curl http://localhost:8080/api/admin/circuit-breaker/details/meteor-forecast-ser
 curl -X POST http://localhost:8080/api/admin/circuit-breaker/trip/meteor-forecast-service
 ```
 
-### 重置熔断?
+### 重置熔断器
 ```bash
 curl -X POST http://localhost:8080/api/admin/circuit-breaker/reset/meteor-forecast-service
 ```
@@ -172,31 +172,31 @@ curl -X POST http://localhost:8080/api/admin/circuit-breaker/reset/meteor-foreca
 
 ### 服务无法启动
 ```bash
-# 检查端口占?
+# 检查端口占用
 netstat -ano | findstr 8080
 
-# 检查依赖服?
+# 检查依赖服务
 docker-compose ps
 
 # 查看日志
 docker-compose logs -f
 ```
 
-### 数据库连接失?
+### 数据库连接失败
 ```bash
 # 检查MySQL
 docker-compose exec mysql mysql -u root -p
 
-# 检查连接配?
+# 检查连接配置
 cat src/main/resources/application.yml | grep -A 10 datasource
 ```
 
 ### 熔断器打开
 ```bash
-# 查看状?
+# 查看状态
 curl http://localhost:8080/api/admin/circuit-breaker/details/service-name
 
-# 检查日?
+# 检查日志
 docker-compose logs | grep "CircuitBreaker"
 
 # 手动重置
@@ -209,33 +209,33 @@ curl -X POST http://localhost:8080/api/admin/circuit-breaker/reset/service-name
 
 ### Prometheus查询
 ```promql
-# CPU使用?
+# CPU使用率
 cpu_usage_percent
 
-# 请求?
+# 请求率
 rate(http_requests_total[5m])
 
-# 错误?
+# 错误率
 rate(http_requests_total{status=~"5.."}[5m])
 
 # P95延迟
 http_request_duration_seconds{quantile="0.95"}
 
-# 熔断器状?
+# 熔断器状态
 resilience4j_circuitbreaker_state
 ```
 
-### Grafana仪表?
-- System Overview - 系统整体状?
+### Grafana仪表板
+- System Overview - 系统整体状态
 - Application Performance - 应用性能
-- Circuit Breaker Status - 熔断器状?
+- Circuit Breaker Status - 熔断器状态
 - Business Metrics - 业务指标
 
 ---
 
 ##  部署
 
-### 开发环?
+### 开发环境
 ```bash
 docker-compose -f docker-compose.dev.yml up -d
 ```
@@ -245,7 +245,7 @@ docker-compose -f docker-compose.dev.yml up -d
 # Kubernetes
 kubectl apply -f deployments/kubernetes/
 
-# 检查部署状?
+# 检查部署状态
 kubectl get pods -n uav-platform
 ```
 
@@ -255,13 +255,13 @@ kubectl get pods -n uav-platform
 
 ### 应用日志
 ```bash
-# 查看所有日?
+# 查看所有日志
 docker-compose logs -f
 
 # 查看特定服务
 docker-compose logs -f api-gateway
 
-# 查看最近日?
+# 查看最近日志
 docker-compose logs --tail=100 service-name
 ```
 
@@ -284,7 +284,7 @@ GET uav-logs-*/_search
 
 ##  测试
 
-### 运行所有测?
+### 运行所有测试
 ```bash
 # Java测试
 mvn test
@@ -305,12 +305,12 @@ pytest test_performance.py -v -s
 
 ##  文档索引
 
-| 需要什?| 查看这个 |
+| 需要什么 | 查看这个 |
 |---------|---------|
 | 项目概览 | [README.md](../README.md) |
-| 部署指南 | [DEPLOYMENT.md](DEPLOYMENT.md) |
+| 部署指南 | [deployment/DEPLOYMENT.md](deployment/DEPLOYMENT.md) |
 | 架构设计 | [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) |
-| 熔断器使?| [CIRCUIT_BREAKER_GUIDE.md](guides/CIRCUIT_BREAKER_GUIDE.md) |
+| 熔断器使用 | [CIRCUIT_BREAKER_GUIDE.md](guides/CIRCUIT_BREAKER_GUIDE.md) |
 | 监控配置 | [deployments/monitoring/README.md](../deployments/monitoring/README.md) |
 | 更新日志 | [CHANGELOG.md](CHANGELOG.md) |
 | 故障排除 | [TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md) |
@@ -329,7 +329,7 @@ pytest test_performance.py -v -s
 
 
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
+> **维护者**: DITHIOTHREITOL
 

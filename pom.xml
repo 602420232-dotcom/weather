@@ -266,6 +266,8 @@
                         <excludes>
                             <exclude>**/*Application.class</exclude>
                             <exclude>**/config/*.class</exclude>
+                            <exclude>**/dto/**/*.class</exclude>
+                            <exclude>**/model/**/*.class</exclude>
                         </excludes>
                     </configuration>
                     <executions>
@@ -274,6 +276,9 @@
                             <goals>
                                 <goal>prepare-agent</goal>
                             </goals>
+                            <configuration>
+                                <destFile>${project.build.directory}/jacoco/jacoco.exec</destFile>
+                            </configuration>
                         </execution>
                         <execution>
                             <id>report</id>
@@ -281,6 +286,10 @@
                             <goals>
                                 <goal>report</goal>
                             </goals>
+                            <configuration>
+                                <dataFile>${project.build.directory}/jacoco/jacoco.exec</dataFile>
+                                <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                            </configuration>
                         </execution>
                         <execution>
                             <id>check</id>
@@ -289,20 +298,40 @@
                                 <goal>check</goal>
                             </goals>
                             <configuration>
-                                <haltOnFailure>false</haltOnFailure>
+                                <haltOnFailure>true</haltOnFailure>
                                 <rules>
+                                    <rule>
+                                        <element>CLASS</element>
+                                        <limits>
+                                            <limit>
+                                                <counter>CLASS</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>0.80</minimum>
+                                            </limit>
+                                        </limits>
+                                    </rule>
+                                    <rule>
+                                        <element>METHOD</element>
+                                        <limits>
+                                            <limit>
+                                                <counter>METHOD</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>0.70</minimum>
+                                            </limit>
+                                        </limits>
+                                    </rule>
                                     <rule>
                                         <element>BUNDLE</element>
                                         <limits>
                                             <limit>
                                                 <counter>LINE</counter>
                                                 <value>COVEREDRATIO</value>
-                                                <minimum>0.60</minimum>
+                                                <minimum>0.75</minimum>
                                             </limit>
                                             <limit>
                                                 <counter>BRANCH</counter>
                                                 <value>COVEREDRATIO</value>
-                                                <minimum>0.50</minimum>
+                                                <minimum>0.60</minimum>
                                             </limit>
                                         </limits>
                                     </rule>

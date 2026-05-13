@@ -1,11 +1,10 @@
-﻿# Database - 数据库脚?
+# Database - 数据库脚本
 
 ##  概述
 
-无人机路径规划系统的数据库脚本包括初始化脚本迁移脚本和备份?
+无人机路径规划系统的数据库脚本，包括初始化脚本、迁移脚本和备份。
 
-**数据?*: MySQL 8.0+  
-**最后更新*: 2026-05-09
+**数据库**: MySQL 8.0+
 
 ---
 
@@ -14,23 +13,23 @@
 ```
 database/
  init.sql              # 数据库初始化脚本
- migrations/           # 数据库迁移脚?
-?   V001__initial_schema.sql
-?   V002__add_user_roles.sql
-?   V003__add_performance_indexes.sql
- backups/            # 备份文件
-?   2026-01-01/
-?   2026-05-09/
- schema/            # 数据库Schema
-?   users.sql
-?   tasks.sql
-?   drones.sql
- README.md         # 本文?
+ migrations/           # 数据库迁移脚本
+    V001__initial_schema.sql
+    V002__add_user_roles.sql
+    V003__add_performance_indexes.sql
+ backups/              # 备份文件
+    2026-01-01/
+    2026-05-09/
+ schema/               # 数据库Schema
+    users.sql
+    tasks.sql
+    drones.sql
+ README.md             # 本文档
 ```
 
 ---
 
-##  快速开?
+##  快速开始
 
 ### 初始化数据库
 
@@ -38,11 +37,11 @@ database/
 # 连接到MySQL
 mysql -h localhost -u root -p
 
-# 创建数据?
+# 创建数据库
 CREATE DATABASE uav_platform;
 USE uav_platform;
 
-# 执行初始化脚?
+# 执行初始化脚本
 SOURCE database/init.sql;
 ```
 
@@ -52,7 +51,7 @@ SOURCE database/init.sql;
 # 使用Flyway
 mvn flyway:migrate
 
-# 或手动执?
+# 或手动执行
 mysql -h localhost -u root -p uav_platform < database/migrations/V001__initial_schema.sql
 ```
 
@@ -60,19 +59,19 @@ mysql -h localhost -u root -p uav_platform < database/migrations/V001__initial_s
 
 ##  数据库Schema
 
-### 主要?
+### 主要表
 
 | 表名 | 说明 | 主要字段 |
 |------|------|---------|
-| **users** | 用户?| id, username, email, password_hash, role |
-| **tasks** | 任务?| id, name, status, created_at, user_id |
+| **users** | 用户表 | id, username, email, password_hash, role |
+| **tasks** | 任务表 | id, name, status, created_at, user_id |
 | **drones** | 无人机表 | id, name, status, position, capacity |
-| **routes** | 路径?| id, task_id, waypoints, distance |
+| **routes** | 路径表 | id, task_id, waypoints, distance |
 | **weather_cache** | 气象缓存 | id, location, data, timestamp |
 
 ---
 
-##  数据库迁?
+##  数据库迁移
 
 ### Flyway 配置
 
@@ -85,7 +84,7 @@ spring:
     baseline-on-migrate: true
 ```
 
-### 创建新迁?
+### 创建新迁移
 
 ```sql
 -- V004__add_new_feature.sql
@@ -98,7 +97,7 @@ CREATE TABLE new_feature (
 
 ---
 
-##  备份与恢?
+##  备份与恢复
 
 ### 备份
 
@@ -106,23 +105,23 @@ CREATE TABLE new_feature (
 # 全量备份
 mysqldump -h localhost -u root -p uav_platform > backup.sql
 
-# 仅结?
+# 仅结构
 mysqldump -h localhost -u root -p --no-data uav_platform > schema.sql
 
-# 仅数?
+# 仅数据
 mysqldump -h localhost -u root -p --no-create-info uav_platform > data.sql
 ```
 
 ### 恢复
 
 ```bash
-# 从备份恢?
+# 从备份恢复
 mysql -h localhost -u root -p uav_platform < backup.sql
 ```
 
 ---
 
-## ?安全配置
+## 🔒 安全配置
 
 ### 用户权限
 
@@ -130,7 +129,7 @@ mysql -h localhost -u root -p uav_platform < backup.sql
 -- 创建应用用户
 CREATE USER 'uav_app'@'localhost' IDENTIFIED BY 'strong_password';
 
--- 授予最小权?
+-- 授予最小权限
 GRANT SELECT, INSERT, UPDATE, DELETE ON uav_platform.* TO 'uav_app'@'localhost';
 
 -- 刷新权限
@@ -169,9 +168,9 @@ OPTIMIZE TABLE tasks;
 
 ---
 
-##  测试数据?
+##  测试数据库
 
-### H2 内存数据?
+### H2 内存数据库
 
 ```yaml
 # test配置
@@ -191,12 +190,9 @@ spring:
 - [MySQL 官方文档](https://dev.mysql.com/doc/)
 - [Flyway 文档](https://flywaydb.org/documentation/)
 
+
 ---
 
-**最后更新*: 2026-05-09
----
-
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
-
+> **维护者**: DITHIOTHREITOL

@@ -1,3 +1,4 @@
+import logging
 #!/usr/bin/env python3
 """Automated fixer: wildcard imports, catch(Exception), docstrings"""
 import re, os, json
@@ -184,7 +185,7 @@ results = {
 }
 
 for cat, lst in results.items():
-    print(f'{cat}: {len(lst)} items')
+    logger.info(f"{cat}: {len(lst)} items")
 
 with open(os.path.join(ROOT, 'tests', 'fix_results.json'), 'w') as f:
     json.dump(results, f, indent=2)

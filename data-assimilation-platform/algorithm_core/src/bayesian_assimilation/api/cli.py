@@ -419,10 +419,10 @@ class AssimilationCLI:
             
             if result['valid']:
                 logger.info("数据验证通过！")
-                print(json.dumps(result, indent=2, ensure_ascii=False))
+                logger.debug(json.dumps(result, indent=2, ensure_ascii=False))
             else:
                 logger.error("数据验证失败！")
-                print(json.dumps(result, indent=2, ensure_ascii=False))
+                logger.debug(json.dumps(result, indent=2, ensure_ascii=False))
                 sys.exit(1)
                 
         except Exception as e:

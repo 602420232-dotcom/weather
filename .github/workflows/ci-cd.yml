@@ -4,120 +4,147 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
+
+env:
+  MAVEN_OPTS: "-Xmx512m"
+  JAVA_VERSION: "17"
 
 jobs:
-  quality-gate:
-    name: Quality Gate
+  build:
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
           cache: maven
 
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'
-          cache: 'pip'
+      - name: Build with Maven
+        run: mvn clean compile -q
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+      - name: Run Unit Tests
+        run: mvn test -q
 
-      - name: Run OWASP Dependency Check
-        run: mvn dependency-check:check -DskipTests=true -DfailBuildOnCVSS=10
-        continue-on-error: true
-
-      - name: Run Unit Tests (Java)
-        run: mvn test -Dspring.profiles.active=test || true
-
-      - name: Run Python Syntax Checks
-        run: |
-          python -m pip install --upgrade pip
-          python tests/check_syntax.py
-
-      - name: Run Security Scan (exclude tests)
-        run: |
-          # 排除测试文件的安全扫描
-          python -c "
-          import ast
-          import glob
-          import os
-          import re
-
-          findings = []
-          python_files = glob.glob('**/*.py', recursive=True)
-          skip_dirs = ['__pycache__', '.venv', 'venv', 'node_modules', '.git', 'build', 'dist', 'tests']
-
-          for filepath in python_files:
-              if any(s in filepath for s in skip_dirs):
-                  continue
-              try:
-                  with open(filepath, 'r', encoding='utf-8') as f:
-                      source = f.read()
-                  # Check for hardcoded secrets
-                  secret_patterns = [
-                      (r'password\s*[:=]\s*[\"\\']([^\"\\']{8,})[\"\\']', 'Hardcoded password'),
-                      (r'secret\s*[:=]\s*[\"\\']([^\"\\']{8,})[\"\\']', 'Hardcoded secret'),
-                      (r'api[_-]?key\s*[:=]\s*[\"\\']([^\"\\']{16,})[\"\\']', 'Hardcoded API key'),
-                      (r'token\s*[:=]\s*[\"\\']([^\"\\']{16,})[\"\\']', 'Hardcoded token'),
-                  ]
-                  for lineno, line in enumerate(source.split('\n'), 1):
-                      for pattern, msg in secret_patterns:
-                          if re.search(pattern, line, re.IGNORECASE):
-                              findings.append(f'{filepath}:{lineno}: [{msg}]')
-              except: pass
-
-          if findings:
-              print('Security findings:')
-              for f in findings:
-                  print(f)
-              exit(1)
-          print('No security issues found')
-          "
-
-      - name: Generate JaCoCo Coverage Report
-        run: mvn jacoco:report -Dspring.profiles.active=test
+      - name: Generate JaCoCo Report
+        run: mvn jacoco:report -q
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-reports
-          path: |
-            **/target/site/jacoco/
-            **/target/dependency-check-reports/
+          name: jacoco-report
+          path: '**/target/site/jacoco/'
 
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
+  quality:
+    name: SonarQube Quality Scan
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          name: test-results
-          path: '**/target/surefire-reports/'
+          fetch-depth: 0
 
-      - name: Enforce Coverage Threshold
-        run: |
-          mvn jacoco:check \
-            -Djacoco.haltOnFailure=false \
-            -Djacoco.lineCoverageMinimum=0.60 \
-            -Djacoco.branchCoverageMinimum=0.50
-        continue-on-error: true
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build and Test with JaCoCo
+        run: mvn clean verify jacoco:report -q
 
       - name: SonarQube Scan
-        if: vars.SONAR_HOST_URL != ''
+        uses: SonarSource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Quality Gate Check
+        uses: SonarSource/sonarqube-quality-gate-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  dependency-check:
+    name: OWASP Dependency Check
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run OWASP Dependency Check
+        run: mvn dependency-check:check -q
+
+      - name: Upload Dependency Check Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: '**/target/dependency-check-reports/'
+
+  deploy-dev:
+    name: Deploy to Development
+    needs: [quality, dependency-check]
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build Docker Images
         run: |
-          mvn sonar:sonar \
-            -Dsonar.projectKey=uav-path-planning \
-            -Dsonar.host.url=${{ vars.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.java.binaries=**/target/classes \
-            -Dsonar.coverage.jacoco.xmlReportsPaths=**/target/site/jacoco/jacoco.xml
-        continue-on-error: true
+          mvn clean package -DskipTests -q
+          docker build -t uav-path-planning:dev .
+
+      - name: Deploy to Dev Environment
+        run: |
+          echo "Deploying to development environment..."
+          # Add your deployment commands here
+
+  deploy-prod:
+    name: Deploy to Production
+    needs: [quality, dependency-check]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build Docker Images
+        run: |
+          mvn clean package -DskipTests -q
+          docker build -t uav-path-planning:prod .
+
+      - name: Deploy to Production
+        run: |
+          echo "Deploying to production environment..."
+          # Add your deployment commands here

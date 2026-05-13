@@ -1,9 +1,9 @@
-﻿# 无人机管理接?
+# 无人机管理接口
 
->  **注意**: 以下接口为计划中?API 定义当前版本尚未实现完?CRUD?
-> 当前可用的无人机接口`GET /api/platform/drones`PlatformController?
+>  **注意**: 以下接口为计划中的 API 定义，当前版本尚未实现完整的 CRUD。
+> 当前可用的无人机接口 `GET /api/platform/drones`（PlatformController）。
 
-## 获取无人机列?
+## 获取无人机列表
 
 ### 请求
 
@@ -14,12 +14,12 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
   "code": 200,
-  "message": "获取无人机列表成?,
+  "message": "获取无人机列表成功",
   "data": [
     {
       "id": 1,
@@ -51,7 +51,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
@@ -61,7 +61,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-## 获取无人机详?
+## 获取无人机详情
 
 ### 请求
 
@@ -72,12 +72,12 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
   "code": 200,
-  "message": "获取无人机详情成?,
+  "message": "获取无人机详情成功",
   "data": {
     "id": 1,
     "name": "Drone-001",
@@ -98,7 +98,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
@@ -108,7 +108,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-## 创建无人?
+## 创建无人机
 
 ### 请求
 
@@ -132,12 +132,12 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
   "code": 200,
-  "message": "创建无人机成?,
+  "message": "创建无人机成功",
   "data": {
     "id": 3,
     "name": "Drone-003",
@@ -152,7 +152,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
@@ -162,7 +162,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-## 更新无人?
+## 更新无人机
 
 ### 请求
 
@@ -184,12 +184,12 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
   "code": 200,
-  "message": "更新无人机成?,
+  "message": "更新无人机成功",
   "data": {
     "id": 1,
     "name": "Updated Drone",
@@ -206,7 +206,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
@@ -216,7 +216,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-## 删除无人?
+## 删除无人机
 
 ### 请求
 
@@ -227,17 +227,17 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
   "code": 200,
-  "message": "删除无人机成?,
+  "message": "删除无人机成功",
   "data": null
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
@@ -248,7 +248,6 @@ Authorization: Bearer <JWT令牌>
 ```
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
-
+> **维护者**: DITHIOTHREITOL

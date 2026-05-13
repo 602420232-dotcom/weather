@@ -35,7 +35,7 @@ API 网关 api-gateway 是无人机路径规划系统的统一入口，基于 Sp
 - **恢复等待时间**: 10秒
 - **滑动窗口**: 10次调用
 
-详见: [Circuit Breaker Guide](../../docs/CIRCUIT_BREAKER_GUIDE.md)
+详见: [Circuit Breaker Guide](../../docs/guides/CIRCUIT_BREAKER_GUIDE.md)
 
 ## 默认过滤
 

@@ -1,4 +1,4 @@
-﻿# Contributor Covenant Code of Conduct
+# Contributor Covenant Code of Conduct
 
 ## Our Pledge
 
@@ -102,7 +102,7 @@ https://www.contributor-covenant.org/faq. Translations are available at
 https://www.contributor-covenant.org/translations.
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
+> **维护者**: DITHIOTHREITOL
 

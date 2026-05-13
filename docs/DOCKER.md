@@ -11,7 +11,7 @@
 
 ### 1. 安装 Docker + Docker Compose
 
-- Docker Desktop推荐用于Windows/Mac https://www.docker.com/get-started
+- Docker Desktop（推荐用于Windows/Mac）：<https://www.docker.com/get-started>
 - Docker Compose 通常随Docker Desktop一起安装
 
 ### 2. 验证安装

@@ -1,14 +1,14 @@
-﻿# Feign Client迁移指南
+# Feign Client迁移指南
 
 ## 概述
 
-本文档说明如何将现有?`RestTemplate` 调用迁移?`Feign Client`以实现声明式服务调用?
+本文档说明如何将现有的 `RestTemplate` 调用迁移到 `Feign Client`，以实现声明式服务调用。
 
 ## 迁移步骤
 
 ### 1. 添加依赖
 
-在服务的 `pom.xml` 中添?Feign 依赖?
+在服务的 `pom.xml` 中添加 Feign 依赖：
 
 ```xml
 <!-- 如果common-utils已包含Feign则只需在需要的模块添加 -->
@@ -20,7 +20,7 @@
 
 ### 2. 启用Feign
 
-在主应用类或配置类添?`@EnableFeignClients` 注解?
+在主应用类或配置类添加 `@EnableFeignClients` 注解：
 
 ```java
 @SpringBootApplication
@@ -34,7 +34,7 @@ public class Application {
 
 ### 3. 配置服务URL
 
-?`application.yml` 中配置各服务的URL?
+在 `application.yml` 中配置各服务的URL：
 
 ```yaml
 services:
@@ -48,7 +48,7 @@ services:
     url: http://path-planning:8083
 ```
 
-### 4. 注入并使?
+### 4. 注入并使用
 
 ```java
 @RestController
@@ -59,7 +59,7 @@ public class MyController {
     
     @PostMapping("/plan")
     public Map<String, Object> plan(@RequestBody Map<String, Object> request) {
-        // 直接调用就像调用本地方法一?
+        // 直接调用就像调用本地方法一样
         return pathPlanningClient.planVRPTW(request);
     }
 }
@@ -69,16 +69,16 @@ public class MyController {
 
 ### 已创建的Client
 
-| Client | 服务 | 用?|
+| Client | 服务 | 用途 |
 |--------|------|------|
 | `WrfProcessorClient` | wrf-processor-service | WRF气象数据处理 |
-| `DataAssimilationClient` | data-assimilation-service | 贝叶斯同?|
+| `DataAssimilationClient` | data-assimilation-service | 贝叶斯同化 |
 | `MeteorForecastClient` | meteor-forecast-service | 气象预测 |
 | `PathPlanningClient` | path-planning-service | 路径规划 |
 
 ### 添加新的Client
 
-?`common-utils/src/main/java/com/uav/common/feign/` 目录下创建新的Client接口?
+在 `common-utils/src/main/java/com/uav/common/feign/` 目录下创建新的Client接口：
 
 ```java
 @FeignClient(name = "my-service", url = "${services.my-service.url}")
@@ -94,9 +94,9 @@ public interface MyServiceClient {
 
 ## 与熔断器集成
 
-### 使用Fegin + Resilience4j
+### 使用Feign + Resilience4j
 
-#### 方式1FallbackFactory推荐
+#### 方式1：FallbackFactory（推荐）
 
 ```java
 @Component
@@ -108,7 +108,7 @@ public class PathPlanningClientFallbackFactory implements FallbackFactory<PathPl
             @Override
             public Map<String, Object> planVRPTW(Map<String, Object> request) {
                 log.warn("Fallback triggered for planVRPTW", cause);
-                return Map.of("success", false, "error", "服务暂时不可选);
+                return Map.of("success", false, "error", "服务暂时不可用");
             }
             
             // 实现其他方法...
@@ -117,7 +117,7 @@ public class PathPlanningClientFallbackFactory implements FallbackFactory<PathPl
 }
 ```
 
-在Client中添加fallbackFactory?
+在Client中添加fallbackFactory：
 
 ```java
 @FeignClient(
@@ -142,7 +142,7 @@ public interface PathPlanningClient {
 }
 ```
 
-## 配置文件参?
+## 配置文件参考
 
 ### application.yml
 
@@ -185,7 +185,7 @@ logging:
 
 ### Q: 如何传递Header?
 
-A: 使用 `@RequestHeader` 注解?
+A: 使用 `@RequestHeader` 注解：
 
 ```java
 @FeignClient(name = "service")
@@ -199,16 +199,16 @@ public interface ServiceClient {
 }
 ```
 
-### Q: 如何处理404等HTTP错误?
+### Q: 如何处理404等HTTP错误？
 
-A: 使用 `ResponseEntity` 作为返回类型?
+A: 使用 `ResponseEntity` 作为返回类型：
 
 ```java
 @GetMapping("/api/resource/{id}")
 ResponseEntity<Resource> getResource(@PathVariable Long id);
 ```
 
-## 迁移对照?
+## 迁移对照表
 
 ### Before (RestTemplate)
 
@@ -253,13 +253,13 @@ public class MyService {
 }
 ```
 
-## 最佳实?
+## 最佳实践
 
 1. **使用Fallback**始终为Feign Client配置降级逻辑
 2. **超时配置**根据业务设置合理的超时时间
 3. **日志记录**在Fallback中记录详细的错误信息
-4. **健康检查*实现health()方法用于服务健康检查
-5. **统一封装**在common-utils中维护统一的Client接口
+4. **健康检查**：实现health()方法用于服务健康检查
+5. **统一封装**：在common-utils中维护统一的Client接口
 
 ---
 

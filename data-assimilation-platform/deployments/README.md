@@ -1,10 +1,10 @@
-﻿# Data Assimilation Deployments
+# Data Assimilation Deployments
 
 ##  概述
 
-数据同化平台的部署配置文件包含 DockerKubernetes 等多种部署方式?
+数据同化平台的部署配置文件包含 DockerKubernetes 等多种部署方式
 
-**最后更新*: 2026-05-09
+**最后更新**: 2026-05-09
 
 ---
 
@@ -13,25 +13,25 @@
 ```
 deployments/
  docker/               # Docker 配置
-?   Dockerfile
-?   Dockerfile.dev
-?   nginx.conf
+    Dockerfile
+    Dockerfile.dev
+    nginx.conf
  kubernetes/           # Kubernetes 配置
-?   deployment.yaml
-?   service.yaml
-?   configmap.yaml
-?   secrets.yaml
+    deployment.yaml
+    service.yaml
+    configmap.yaml
+    secrets.yaml
  helm/                 # Helm Charts
  terraform/            # Terraform 配置
  init.sql             # 数据库初始化
- README.md           # 本文?
+ README.md           # 本文档
 ```
 
 ---
 
 ##  Docker 部署
 
-### 开发环?
+### 开发环境
 
 ```bash
 # 构建镜像
@@ -70,11 +70,11 @@ kubectl logs -l app=assimilation
 
 ### 配置说明
 
-| 文件 | 用?|
+| 文件 | 用途|
 |------|------|
 | deployment.yaml | 部署配置 |
 | service.yaml | 服务暴露 |
-| configmap.yaml | 配置?|
+| configmap.yaml | 配置数据|
 | secrets.yaml | 密钥 |
 
 ---
@@ -100,20 +100,20 @@ helm uninstall assimilation
 
 | 变量 | 说明 |
 |------|------|
-| `DB_PASSWORD` | 数据库密?|
+| `DB_PASSWORD` | 数据库密码|
 | `JWT_SECRET` | JWT 密钥 |
 | `REDIS_PASSWORD` | Redis 密码 |
 
-### 可选变?
+### 可选变量
 
-| 变量 | 默认?| 说明 |
+| 变量 | 默认值| 说明 |
 |------|--------|------|
 | `DB_HOST` | localhost | 数据库地址 |
 | `REDIS_HOST` | localhost | Redis 地址 |
 
 ---
 
-## ?安全配置
+## 安全配置
 
 ### 生产环境建议
 
@@ -126,16 +126,16 @@ helm uninstall assimilation
 
 ##  相关文档
 
-- [Docker 部署指南](../../docs/DOCKER.md)
-- [Kubernetes 部署指南](../../docs/KUBERNETES.md)
-- [运维手册](../../docs/OPS_MANUAL.md)
+- [Docker 部署指南](docker/README.md)
+- [算法核心 README](../algorithm_core/README.md)
+- [项目主 README](../README.md)
 
 ---
 
-**最后更新*: 2026-05-09
+**最后更新**: 2026-05-09
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
+> **维护者**: DITHIOTHREITOL
 

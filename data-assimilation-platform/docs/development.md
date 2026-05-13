@@ -1,4 +1,4 @@
-﻿# 开发指?
+# 开发指南
 
 ## 环境搭建
 
@@ -27,7 +27,7 @@ venv\Scripts\activate     # Windows
 ### 安装依赖
 
 ```bash
-# 基础安装可编辑模式?
+# 基础安装可编辑模式
 cd algorithm_core
 pip install -e .
 
@@ -48,19 +48,19 @@ cp .env.example .env
 algorithm_core/
  src/bayesian_assimilation/
 -   accelerators/      # 硬件加速模块
--   adapters/          # 数据适配置
+-   adapters/          # 数据适配器
 -   api/               # API 接口
 -   components/        # 通用组件
 -   core/              # 核心算法基类
--   data_sources/      # 数据?
+-   data_sources/      # 数据源
 -   models/            # 同化模型
 -   parallel/          # 并行计算
 -   quality_control/   # 质量控制
 -   risk_assessment/   # 风险评估
 -   time_series/       # 时间序列
 -   utils/             # 工具函数
--   visualization/     # 可视?
--   workflows/         # 工作?
+-   visualization/     # 可视化
+-   workflows/         # 工作流
  configs/               # 配置文件
  benchmarks/            # 性能测试
  tests/                 # 单元测试
@@ -71,16 +71,16 @@ algorithm_core/
 
 ### Python 代码规范
 
-- **格式?*使?Black行长度 100
-- **导入排序**使?isortprofile=black
-- **类型检查*使?mypy
-- **Lint**使?flake8
+- **格式化**：使用 Black行长度 100
+- **导入排序**：使用 isort，profile=black
+- **类型检查**：使用 mypy
+- **Lint**：使用 flake8
 
 ```bash
-# 格式化代?
+# 格式化代码
 black src/
 
-# 检查代?
+# 检查代码
 flake8 src/
 
 # 类型检查
@@ -96,21 +96,21 @@ pytest
 # 运行特定测试
 pytest tests/test_assimilator.py -v
 
-# 生成覆盖率报?
+# 生成覆盖率报告
 pytest --cov=bayesian_assimilation --cov-report=html
 ```
 
-## Git 工作?
+## Git 工作流
 
 1. `dev` 分支创建功能分支`git checkout -b feature/xxx`
-2. 提交代码遵?Conventional Commits 规范
+2. 提交代码遵循 Conventional Commits 规范
 3. 推送分支`git push origin feature/xxx`
 4. 创建 Pull Request `dev` 分支
 
 ### Commit 规范
 
 ```
-feat: 新功?
+feat: 新功能
 fix: 修复bug
 docs: 文档更新
 refactor: 重构
@@ -118,16 +118,16 @@ test: 测试相关
 chore: 构建/工具
 ```
 
-## 构建与发?
+## 构建与发布
 
-### 构建?
+### 构建包
 
 ```bash
 cd algorithm_core
 python -m build
 ```
 
-### 发布?PyPI
+### 发布到 PyPI
 
 ```bash
 twine upload dist/*
@@ -140,7 +140,7 @@ cd algorithm_core/docker
 docker build -t bayesian-assimilation:latest ..
 ```
 
-## 调试技?
+## 调试技巧
 
 ### 日志级别
 
@@ -164,12 +164,12 @@ print(profiler.report())
 
 | 问题 | 解决方案 |
 |------|----------|
-| 导入失败 | 确保?`algorithm_core` 目录下执?`pip install -e .` |
-| GPU 不可选| 检查CUDA 版本回退?CPU 模式 |
+| 导入失败 | 确保在 `algorithm_core` 目录下执行 `pip install -e .` |
+| GPU 不可选| 检查CUDA 版本回退到 CPU 模式 |
 | 内存不足 | 启用并行计算或降低数据分辨率 |
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
+> **维护者**: DITHIOTHREITOL
 

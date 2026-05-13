@@ -1,8 +1,8 @@
-﻿#  ScriptIgnore 配置报告
+# ScriptIgnore 配置报告
 
-##  概述
+## 概述
 
-已为 scripts 目录创建 `.scriptignore` 文件用于排除不需要脚本处理的文件和目录?
+已为 scripts 目录创建 `.scriptignore` 文件，用于排除不需要脚本处理的文件和目录。
 
 **创建日期**: 2026-05-09  
 **文件位置**: `scripts/.scriptignore`  
@@ -20,26 +20,26 @@
 
 | 类别 | 排除内容 | 数量 |
 |------|----------|------|
-| Python | venv, __pycache__, *.pyc | 3?|
-| Node.js | node_modules, package-lock.json | 2?|
-| Java/Maven | target, .gradle | 2?|
-| 文档 | *.md, *.txt | 2?|
-| 日志 | *.log, logs/ | 2?|
-| 数据?| *.db, *.sqlite | 2?|
-| 密钥 | *.pem, *.key, *.crt | 3?|
-| 第三方库 | vendor/, *.a, *.so | 3?|
-| 特殊目录 | .git/, .docker/ | 2?|
-| 大文?| *.zip, *.tar.gz, *.png | 3?|
-| 数据文件 | *.csv, *.json, data/ | 3?|
-| 编译文件 | *.class, *.jar, *.war | 3?|
+| Python | venv, __pycache__, *.pyc | 3 条 |
+| Node.js | node_modules, package-lock.json | 2 条 |
+| Java/Maven | target, .gradle | 2 条 |
+| 文档 | *.md, *.txt | 2 条 |
+| 日志 | *.log, logs/ | 2 条 |
+| 数据文件 | *.db, *.sqlite | 2 条 |
+| 密钥 | *.pem, *.key, *.crt | 3 条 |
+| 第三方库 | vendor/, *.a, *.so | 3 条 |
+| 特殊目录 | .git/, .docker/ | 2 条 |
+| 大文件 | *.zip, *.tar.gz, *.png | 3 条 |
+| 数据文件 | *.csv, *.json, data/ | 3 条 |
+| 编译文件 | *.class, *.jar, *.war | 3 条 |
 
-**总计**: 13个主要类别100+ 个排除规?
+**总计**: 13个主要类别，100+ 个排除规则
 
 ---
 
-##  排除规则详解
+## 排除规则详解
 
-###  Python 相关
+### Python 相关
 
 ```bash
 # Python 虚拟环境
@@ -64,7 +64,7 @@ __pycache__/
 .dmypy.json
 ```
 
-###  Node.js 相关
+### Node.js 相关
 
 ```bash
 node_modules/
@@ -75,7 +75,7 @@ package-lock.json
 yarn.lock
 ```
 
-###  Java / Maven 相关
+### Java / Maven 相关
 
 ```bash
 target/
@@ -89,7 +89,7 @@ dependency-reduced-pom.xml
 build/
 ```
 
-###  文档和测试
+### 文档和测试
 
 ```bash
 *.md
@@ -101,7 +101,7 @@ tests/
 __tests__/
 ```
 
-###  日志和临时文?
+### 日志和临时文件
 
 ```bash
 *.log
@@ -130,7 +130,7 @@ Thumbs.db
 *.jks
 ```
 
-###  特殊目录
+### 特殊目录
 
 ```bash
 .git/
@@ -141,7 +141,7 @@ kubectl/
 *.tfstate
 ```
 
-###  大文件和二进?
+### 大文件和二进制文件
 
 ```bash
 *.zip
@@ -163,11 +163,11 @@ kubectl/
 
 ---
 
-##  使用方式
+## 使用方式
 
 ### 自动读取
 
-脚本会自动读?`.scriptignore` 文件?
+脚本会自动读取 `.scriptignore` 文件。
 
 ```python
 # 脚本会自动执行以下逻辑
@@ -185,7 +185,7 @@ def should_ignore(file_path):
         patterns = [line.strip() for line in f 
                    if line.strip() and not line.startswith('#')]
     
-    # 检查是否匹?
+    # 检查是否匹配
     file_name = os.path.basename(file_path)
     for pattern in patterns:
         if match_pattern(file_name, pattern):
@@ -209,52 +209,52 @@ cat scripts/.scriptignore
 
 ---
 
-##  规则语法
+## 规则语法
 
 ### 基本语法
 
 | 语法 | 说明 | 示例 |
 |------|------|------|
 | `name/` | 排除目录 | `venv/` |
-| `*.ext` | 排除文件 | `*.py` |
+| `*.ext` | 排除文件扩展名 | `*.py` |
 | `**/name` | 递归匹配 | `**/__pycache__` |
 | `# text` | 注释 | `# 注释` |
-| `!name` | 取反包含 | `!important.py` |
+| `!name` | 取反（包含） | `!important.py` |
 
 ### 示例
 
 ```bash
-# 排除所?.pyc 文件
+# 排除所有 .pyc 文件
 *.pyc
 
 # 排除 test 目录
 test/
 
-# 排除所?__pycache__ 目录递归?
+# 排除所有 __pycache__ 目录（递归）
 **/__pycache__
 
-# 排除所有日志文?
+# 排除所有日志文件
 *.log
 
-# 但包?important.log
+# 但包含 important.log
 !important.log
 ```
 
 ---
 
-##  ?.gitignore 的区?
+## 与 .gitignore 的区别
 
-| 特?| .gitignore | .scriptignore |
+| 特性 | .gitignore | .scriptignore |
 |------|------------|---------------|
-| **用?* | Git 版本控制 | 脚本处理 |
+| **用途** | Git 版本控制 | 脚本处理 |
 | **处理工具** | Git | Python 脚本 |
-| **排除对象** | 版本控制 | 代码分析修改|
+| **排除对象** | 版本控制 | 代码分析/修改 |
 | **规则数量** | ~50 | ~100 |
-| **包含内容** | 编译产物 | 缓存临时文?|
+| **包含内容** | 编译产物 | 缓存/临时文件 |
 
 ---
 
-##  完整配置示例
+## 完整配置示例
 
 ```bash
 # ============================================
@@ -283,14 +283,14 @@ target/
 # 测试
 test_*.py
 
-# 二进?
+# 二进制文件
 *.zip
 *.tar.gz
 ```
 
 ---
 
-##  在脚本中使用
+## 在脚本中使用
 
 ### Python 示例
 
@@ -338,33 +338,33 @@ for file in files:
 
 ---
 
-##  相关文档
+## 相关文档
 
 | 文档 | 说明 |
 |------|------|
 | [Scripts README](README.md) | 脚本目录说明 |
-| [改进报告](../docs/IMPROVEMENTS_COMPLETED_REPORT.md) | 所有改进总结 |
-| [脚本最佳实践](SCRIPTS_BEST_PRACTICES.md) | 脚本使用指南 |
+| [改进报告](../docs/reports/FIX_IMPLEMENTATION_REPORT.md) | 所有改进总结 |
+| [脚本 README](README.md) | 脚本使用指南 |
 
 ---
 
-##  最佳实?
+## 最佳实践
 
 ### 推荐做法
 
-1. **添加规则前检查*
+1. **添加规则前检查**
    ```bash
-   # 先检查文件是否存?
+   # 先检查文件是否存在
    ls -la .scriptignore
    ```
 
-2. **使用通配置*
+2. **使用通配符配置**
    ```bash
    # 推荐
    *.pyc
    __pycache__/
    
-   # 不推?
+   # 不推荐
    file1.pyc
    file2.pyc
    ```
@@ -380,14 +380,14 @@ for file in files:
 
 4. **定期更新**
    ```bash
-   # 每年检查一?
-   # 删除不再使用的规?
-   # 添加新的排除需?
+   # 每年检查一次
+   # 删除不再使用的规则
+   # 添加新的排除需求
    ```
 
 ### 不推荐做法
 
-1. **排除所有文?*
+1. **排除所有文件**
    ```bash
    # 错误
    *
@@ -398,7 +398,7 @@ for file in files:
 
 2. **规则过于宽松**
    ```bash
-   # 错误 - 会排除所有文?
+   # 错误 - 会排除所有文件
    *
    
    # 正确
@@ -416,13 +416,13 @@ for file in files:
    *.log
    !important.log
    
-   # 或者单独一?
+   # 或者单独一行
    important.log
    ```
 
 ---
 
-##  测试
+## 测试
 
 ### 验证规则
 
@@ -455,14 +455,13 @@ def should_ignore(file_path):
 
 ---
 
-##  许可选
+## 许可证
 
-本配置文件遵循项目整体许可证?
+本配置文件遵循项目整体许可证。
 
 
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
-
+> **维护者**: DITHIOTHREITOL

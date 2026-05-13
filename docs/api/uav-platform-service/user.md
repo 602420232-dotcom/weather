@@ -1,4 +1,4 @@
-﻿# 用户管理接口
+# 用户管理接口
 
 ## 获取用户列表
 
@@ -11,7 +11,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -38,7 +38,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
@@ -59,7 +59,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -77,12 +77,12 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
   "code": 404,
-  "message": "用户不存?,
+  "message": "用户不存在",
   "details": null
 }
 ```
@@ -111,7 +111,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -127,7 +127,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
@@ -160,7 +160,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -177,12 +177,12 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
   "code": 404,
-  "message": "用户不存?,
+  "message": "用户不存在",
   "details": null
 }
 ```
@@ -198,7 +198,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -208,18 +208,17 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
   "code": 404,
-  "message": "用户不存?,
+  "message": "用户不存在",
   "details": null
 }
 ```
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
-
+> **维护者**: DITHIOTHREITOL

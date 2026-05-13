@@ -1,7 +1,7 @@
-﻿# 路径规划接口
+# 路径规划接口
 
->  **注意**: 以下接口为计划中?API 定义当前版本尚未实现完?CRUD?
-> 当前可用的路径规划接口`POST /api/platform/plan`PlatformController?
+>  **注意**: 以下接口为计划中的 API 定义，当前版本尚未实现完整的 CRUD。
+> 当前可用的路径规划接口 `POST /api/platform/plan`（PlatformController）。
 
 ## 生成路径规划
 
@@ -54,7 +54,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -90,13 +90,13 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
   "code": 400,
   "message": "路径规划失败",
-  "details": "无法生成有效的路?
+  "details": "无法生成有效的路径"
 }
 ```
 
@@ -111,7 +111,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -149,12 +149,12 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
   "code": 404,
-  "message": "路径规划不存?,
+  "message": "路径规划不存在",
   "details": null
 }
 ```
@@ -180,7 +180,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -197,17 +197,17 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
   "code": 404,
-  "message": "路径规划不存?,
+  "message": "路径规划不存在",
   "details": null
 }
 ```
 
-## 获取任务的路径规划列?
+## 获取任务的路径规划列表
 
 ### 请求
 
@@ -218,7 +218,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -243,18 +243,17 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
   "code": 404,
-  "message": "任务不存?,
+  "message": "任务不存在",
   "details": null
 }
 ```
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
-
+> **维护者**: DITHIOTHREITOL

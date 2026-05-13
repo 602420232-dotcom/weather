@@ -516,7 +516,7 @@ def main():
     主函数
     """
     if len(sys.argv) < 2:
-        print(json.dumps({
+        logger.debug(json.dumps({
             'success': False,
             'error': '缺少命令参数'
         }))
@@ -527,7 +527,7 @@ def main():
     if command == 'train':
         # 训练命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少训练配置'
             }))
@@ -551,13 +551,13 @@ def main():
             planner = ReinforcementLearningPlanner(algorithm)
             planner.train(env, episodes)
             
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': True,
                 'message': f'{algorithm}模型训练完成'
             }))
             
         except Exception as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -565,7 +565,7 @@ def main():
     elif command == 'plan':
         # 规划命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少规划配置'
             }))
@@ -580,13 +580,13 @@ def main():
             planner = ReinforcementLearningPlanner(algorithm)
             action = planner.plan(state)
             
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': True,
                 'action': action
             }))
             
         except Exception as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -594,7 +594,7 @@ def main():
     elif command == 'improve':
         # 自迭代改进命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少改进配置'
             }))
@@ -618,19 +618,19 @@ def main():
             planner = ReinforcementLearningPlanner(algorithm)
             planner.self_improve(env, episodes)
             
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': True,
                 'message': f'{algorithm}模型自迭代改进完成'
             }))
             
         except Exception as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
             
     else:
-        print(json.dumps({
+        logger.debug(json.dumps({
             'success': False,
             'error': '未知命令'
         }))

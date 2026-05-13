@@ -1,4 +1,4 @@
-﻿# Changelog
+# Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -20,9 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation
 
 ### Features
--  High-performance C++ core modules
-- ?Real-time weather risk assessment
-- ?Offline path planning with obstacle avoidance
+- High-performance C++ core modules
+- Real-time weather risk assessment
+- Offline path planning with obstacle avoidance
 -  MAVLink protocol support
 -  Automatic Python fallback if C++ unavailable
 
@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Machine learning-based risk assessment
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
+> **维护者**: DITHIOTHREITOL
 

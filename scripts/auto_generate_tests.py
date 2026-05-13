@@ -202,7 +202,7 @@ def scan_and_generate_tests(root_dir: str) -> Dict[str, any]:
     """Scan and generate tests"""
     
     print("=" * 60)
-    print("Unit Test Auto-Generation Tool")
+    logger.info("Unit Test Auto-Generation Tool")
     print("=" * 60)
     
     # Scan Python files
@@ -217,8 +217,8 @@ def scan_and_generate_tests(root_dir: str) -> Dict[str, any]:
             if file.endswith('.py') and not file.startswith('test_'):
                 python_files.append(os.path.join(root, file))
     
-    print(f"\nScanning: {root_dir}")
-    print(f"Found {len(python_files)} Python files\n")
+    logger.info(f"\nScanning: {root_dir}")
+    logger.info(f"Found {len(python_files)} Python files\n")
     
     # Generate tests
     generated = []
@@ -226,7 +226,7 @@ def scan_and_generate_tests(root_dir: str) -> Dict[str, any]:
     
     for i, py_file in enumerate(python_files, 1):
         if i % 20 == 0:
-            print(f"Progress: {i}/{len(python_files)}...")
+            logger.info(f"Progress: {i}/{len(python_files)}...")
             
         functions = extract_functions_from_file(py_file)
         
@@ -246,9 +246,9 @@ def scan_and_generate_tests(root_dir: str) -> Dict[str, any]:
                 })
     
     # Generate report
-    print(f"\nGeneration complete!")
-    print(f"Generated test files: {len(generated)}")
-    print(f"Skipped files: {len(skipped)}")
+    logger.info(f"\nGeneration complete!")
+    logger.info(f"Generated test files: {len(generated)}")
+    logger.info(f"Skipped files: {len(skipped)}")
     
     # Save report
     report_file = os.path.join(root_dir, 'test_generation_report.txt')
@@ -281,17 +281,17 @@ def scan_and_generate_tests(root_dir: str) -> Dict[str, any]:
         f.write("3. Run: pytest -v\n")
         f.write("4. Coverage: pytest --cov=. --cov-report=html\n")
     
-    print(f"\nReport: {report_file}")
+    logger.info(f"\nReport: {report_file}")
     
     # Show examples
     if generated:
-        print("\nExamples (first 5):")
+        logger.info("\nExamples (first 5):")
         for item in generated[:5]:
             print(f"\nGenerated: {item['test_file']}")
             print(f"  Contains: {item['functions']} test functions")
     
     print("\n" + "=" * 60)
-    print("Note: Please complete TODO sections manually")
+    logger.info("Note: Please complete TODO sections manually")
     print("=" * 60)
     
     return {
@@ -302,6 +302,7 @@ def scan_and_generate_tests(root_dir: str) -> Dict[str, any]:
 
 if __name__ == '__main__':
     import sys
+import logging
     
     if len(sys.argv) > 1:
         root_dir = sys.argv[1]

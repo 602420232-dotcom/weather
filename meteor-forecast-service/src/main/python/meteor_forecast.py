@@ -534,7 +534,7 @@ def main():
     """
     if len(sys.argv) < 2:
         logger.error("缺少命令参数")
-        print(json.dumps({
+        logger.debug(json.dumps({
             'success': False,
             'error': '缺少命令参数'
         }))
@@ -547,7 +547,7 @@ def main():
         # 预测命令
         if len(sys.argv) < 3:
             logger.error("缺少输入数据")
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -557,13 +557,13 @@ def main():
             input_data = load_input(2)
             predictions = model.predict(input_data)
             logger.info("预测完成")
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': True,
                 'data': predictions
             }))
         except (ValueError, IndexError, KeyError, TypeError, AttributeError, RuntimeError) as e:
             logger.error(f"预测失败: {e}")
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -572,7 +572,7 @@ def main():
         # 订正命令
         if len(sys.argv) < 4:
             logger.error("缺少预测数据和观测数据")
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少预测数据和观测数据'
             }))
@@ -582,12 +582,12 @@ def main():
             forecast_data = load_input(2)
             observed_data = load_input(3)
             corrected_data = model.correct(forecast_data, observed_data)
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': True,
                 'data': corrected_data
             }))
         except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -595,7 +595,7 @@ def main():
     elif command == 'train':
         # 训练命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少训练数据'
             }))
@@ -609,12 +609,12 @@ def main():
             # 训练模型
             model.train_lstm(X, y)
             model.train_xgb(X.reshape(X.shape[0], -1), y)
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': True,
                 'message': '模型训练完成'
             }))
         except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -622,7 +622,7 @@ def main():
     elif command == 'improve':
         # 自迭代改进命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少改进数据'
             }))
@@ -635,12 +635,12 @@ def main():
             batch_size = improve_data.get('batch_size', 32)
             # 执行自迭代改进
             result = model.self_improve(new_data, epochs, batch_size)
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': result['success'],
                 'data': result
             }))
         except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -648,7 +648,7 @@ def main():
     elif command == 'fusion':
         # 双预报引擎融合预测命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -666,12 +666,12 @@ def main():
             
             # 执行融合预测
             predictions = model.fusion_forecast(forecast_data)
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': True,
                 'data': predictions
             }))
         except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -679,7 +679,7 @@ def main():
     elif command == 'risk':
         # 生成风险热力图命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少预测数据'
             }))
@@ -691,18 +691,18 @@ def main():
             
             # 生成风险热力图
             risk_data = model.generate_risk_heatmap(forecast_data)
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': True,
                 'data': risk_data
             }))
         except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
     
     else:
-        print(json.dumps({
+        logger.debug(json.dumps({
             'success': False,
             'error': '未知命令'
         }))

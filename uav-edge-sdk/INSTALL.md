@@ -1,4 +1,4 @@
-﻿# Installation Guide
+# Installation Guide
 
 This guide will help you install UAV Edge SDK on your system.
 
@@ -165,7 +165,7 @@ chmod +x build.sh
 ./build.sh
 ```
 
-## ?Verification
+## Verification
 
 After installation, verify everything works:
 
@@ -175,7 +175,7 @@ python
 >>> sdk = EdgeSDK()
 >>> path = sdk.plan_path((0, 0), (10, 10), [])
 >>> print(f"Path length: {len(path)}")
->>> print("?Installation successful!")
+>>> print("✅ Installation successful!")
 ```
 
 ##  Optional Dependencies
@@ -221,7 +221,7 @@ git pull origin main
 **Happy coding! **
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
+> **维护者**: DITHIOTHREITOL
 

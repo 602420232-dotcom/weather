@@ -2,7 +2,7 @@
 
 ##  概述
 
-性能基准测试套件用于评估数据同化算法的性能?
+性能基准测试套件用于评估数据同化算法的性能
 
 ---
 
@@ -14,7 +14,7 @@ benchmarks/
  results/              # 测试结果
  run_benchmarks.py     # 运行脚本
  test_*.py            # 测试文件
- README.md            # 本文?
+ README.md            # 本文档
 ```
 
 ---
@@ -24,7 +24,7 @@ benchmarks/
 ### 基本用法
 
 ```bash
-# 运行所有基准测?
+# 运行所有基准测试
 python run_benchmarks.py
 
 # 测试特定算法
@@ -50,7 +50,7 @@ python run_benchmarks.py --report --output results/report.html
 | 指标 | 3D-VAR | 4D-VAR | EnKF |
 |------|--------|--------|------|
 | 平均耗时 | 2.3s | 5.1s | 3.8s |
-| 吞吐?| 150/s | 80/s | 120/s |
+| 吞吐量| 150/s | 80/s | 120/s |
 | 内存使用 | 1.2GB | 2.1GB | 1.8GB |
 
 ---
@@ -68,7 +68,7 @@ python compare_results.py --baseline results/baseline.json --current results/cur
 
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
+> **维护者**: DITHIOTHREITOL
 

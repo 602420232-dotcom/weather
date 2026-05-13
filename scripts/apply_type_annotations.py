@@ -1,3 +1,4 @@
+import logging
 """
 Type Annotations Generator for Python Files
 Automatically add type annotations to key functions
@@ -188,20 +189,20 @@ def find_python_files(root_dir: str) -> List[str]:
 def main():
     """Main function"""
     print("=" * 60)
-    print("Type Annotations Generator")
+    logger.info("Type Annotations Generator")
     print("=" * 60)
     
     # Find Python files
     root_dir = r"d:\Developer\workplace\py\iteam\trae\data-assimilation-platform"
     python_files = find_python_files(root_dir)
     
-    print(f"\nFound {len(python_files)} Python files\n")
+    logger.info(f"\nFound {len(python_files)} Python files\n")
     
     # Add type annotations
     results = []
     for i, py_file in enumerate(python_files, 1):
         if i % 20 == 0:
-            print(f"Progress: {i}/{len(python_files)}...")
+            logger.info(f"Progress: {i}/{len(python_files)}...")
         
         result = add_annotations_to_file(py_file)
         results.append(result)
@@ -212,11 +213,11 @@ def main():
     errors = sum(1 for r in results if r['status'] == 'ERROR')
     total_changes = sum(r['changes'] for r in results if r['status'] == 'SUCCESS')
     
-    print(f"\nGeneration complete!")
-    print(f"Files modified: {success}")
-    print(f"Files no changes: {no_changes}")
-    print(f"Files with errors: {errors}")
-    print(f"Total annotations added: {total_changes}")
+    logger.info(f"\nGeneration complete!")
+    logger.info(f"Files modified: {success}")
+    logger.info(f"Files no changes: {no_changes}")
+    logger.info(f"Files with errors: {errors}")
+    logger.info(f"Total annotations added: {total_changes}")
     
     # Save report
     report_file = os.path.join(root_dir, 'type_annotations_added.txt')
@@ -239,9 +240,9 @@ def main():
                 for detail in result['details'][:3]:  # Show first 3
                     f.write(f"  - {detail['function']}({', '.join(detail['args'])})\n")
     
-    print(f"\nReport: {report_file}")
+    logger.info(f"\nReport: {report_file}")
     print("\n" + "=" * 60)
-    print("Note: Review changes and run tests to verify")
+    logger.info("Note: Review changes and run tests to verify")
     print("=" * 60)
 
 if __name__ == '__main__':

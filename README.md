@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Java 17+](https://img.shields.io/badge/Java-17%2B-blue)](https://openjdk.java.net/)
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
-[![Spring Boot 3.2](https://img.shields.io/badge/Spring%20Boot-3.2-brightgreen)](https://spring.io/projects/spring-boot)[![Docker](https://img.shields.io/badge/Docker-Compose-blue)](https://www.docker.com/)
+[![Spring Boot 3.5.14](https://img.shields.io/badge/Spring%20Boot-3.5.14-brightgreen)](https://spring.io/projects/spring-boot) [![Docker](https://img.shields.io/badge/Docker-Compose-blue)](https://www.docker.com/)
 
 ## 目录
 
@@ -218,7 +218,7 @@ graph LR
 | ---------------- | -------- | --------- |
 | **Java**         | 17+      | 主要开发语言    |
 | **Spring Boot**  | 3.5.14    | 应用框架      |
-| **Spring Cloud** | 2024.0.1 | 微服务框架     |
+| **Spring Cloud** | 2025.0.2 | 微服务框架     |
 | **MyBatis-Plus** | 3.5.9    | ORM框架     |
 | **Resilience4j** | 2.2.0    | 熔断与弹性机制   |
 | **Nacos**        | 2.3.0    | 服务注册与配置中心 |
@@ -1048,7 +1048,7 @@ docker stats
 如果遇到问题：
 
 1. 查看 [故障排除指南](docs/guides/TROUBLESHOOTING.md)
-2. 查看 [改进报告](docs/improvement_suggestions.md)
+2. 查看 [项目质量审计报告](docs/reports/COMPREHENSIVE_QUALITY_ASSESSMENT.md)
 3. 提交 Issue 到 GitHub
 
 ***
@@ -1075,7 +1075,7 @@ docker stats
 
 ### 开发路线图
 
-查看 [更新日志](docs/CHANGELOG.md) 了解项目进展。
+查看 [更新日志](docs/UPGRADE_REPORT.md) 了解项目进展。
 
 ***
 

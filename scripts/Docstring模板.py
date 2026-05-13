@@ -1,3 +1,4 @@
+import logging
 """
 Docstring模板和生成工具
 
@@ -279,7 +280,7 @@ def plan_vrptw(
 
 if __name__ == '__main__':
     # 示例用法
-    print("=== 类Docstring示例 ===")
+    logger.info("=== 类Docstring示例 ===")
     print(generate_class_docstring(
         name="BayesianAssimilator",
         short_description="贝叶斯同化核心算法实现",
@@ -291,7 +292,7 @@ if __name__ == '__main__':
         example=">>> assim = BayesianAssimilator(bg, obs)\n>>> result = assim.assimilate()"
     ))
 
-    print("\n=== 函数Docstring示例 ===")
+    logger.info("\n=== 函数Docstring示例 ===")
     print(generate_function_docstring(
         name="plan_vrptw",
         short_description="求解带时间窗的车辆路径问题",

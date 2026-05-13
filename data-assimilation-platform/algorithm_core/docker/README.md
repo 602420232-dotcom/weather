@@ -1,4 +1,4 @@
-﻿# 贝叶斯同化系?Docker 部署指南
+﻿# 贝叶斯同化系统 Docker 部署指南
 
 ## 目录结构
 
@@ -7,10 +7,10 @@ docker/
  Dockerfile          # Docker 镜像构建文件
  docker-compose.yml  # Docker Compose 编排文件
  entrypoint.sh      # 容器启动脚本
- README.md          # 本文?
+ README.md          # 本文档
 ```
 
-## 快速开?
+## 快速开始
 
 ### 1. 构建 Docker 镜像
 
@@ -22,12 +22,12 @@ docker build -t bayesian_assimilation:latest ..
 ### 2. 使用 Docker Compose 启动服务
 
 ```bash
-# 启动所有服?
+# 启动所有服务
 docker-compose up -d
 
 # 启动特定服务
-docker-compose up -d api      # ?REST API
-docker-compose up -d web     # ?Web 界面
+docker-compose up -d api      # 仅 REST API
+docker-compose up -d web     # 仅 Web 界面
 ```
 
 ### 3. 直接使用 Docker 运行
@@ -67,7 +67,7 @@ docker run -p 8000:8000 \
 
 ## 环境变量
 
-| 变量?| 默认?| 说明 |
+| 变量名| 默认值| 说明 |
 |--------|--------|------|
 | PYTHONUNBUFFERED | 1 | 实时输出日志 |
 | LOG_LEVEL | INFO | 日志级别 |
@@ -88,7 +88,7 @@ docker-compose down
 # 重新构建
 docker-compose up -d --build
 
-# 查看服务状?
+# 查看服务状态
 docker-compose ps
 ```
 
@@ -118,12 +118,12 @@ curl -X POST http://localhost:8000/risk-assessment \
 ## 注意事项
 
 1. 确保 Docker 已安装并运行
-2. 容器默认?root 用户运行
-3. 数据卷权限需要根据实际情况调?
-4. 生产环境建议使用反向代理如 Nginx?
+2. 容器默认以 root 用户运行
+3. 数据卷权限需要根据实际情况调整
+4. 生产环境建议使用反向代理如 Nginx
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
+> **维护者**: DITHIOTHREITOL
 

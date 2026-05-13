@@ -1,4 +1,4 @@
-﻿# API 参?
+# API 参考
 
 ## REST API
 
@@ -11,11 +11,11 @@
 
 ### 1. 执行同化
 
-**接口**`POST /assimilate`
+**接口**：`POST /assimilate`
 
-执行贝叶斯数据同化计算?
+执行贝叶斯数据同化计算
 
-**请求?*?
+**请求体**
 
 ```json
 {
@@ -37,7 +37,7 @@
 }
 ```
 
-**响应**?
+**响应体**
 
 ```json
 {
@@ -54,9 +54,9 @@
 
 ### 2. 质量控制
 
-**接口**`POST /quality-control`
+**接口**：`POST /quality-control`
 
-**请求?*?
+**请求体**
 
 ```json
 {
@@ -69,9 +69,9 @@
 
 ### 3. 风险评估
 
-**接口**`POST /risk-assessment`
+**接口**：`POST /risk-assessment`
 
-**请求?*?
+**请求体**
 
 ```json
 {
@@ -86,9 +86,9 @@
 
 ### 4. 时间序列分析
 
-**接口**`POST /timeseries/analyze`
+**接口**：`POST /timeseries/analyze`
 
-**请求?*?
+**请求体**
 
 ```json
 {
@@ -98,11 +98,11 @@
 }
 ```
 
-### 5. 健康检?
+### 5. 健康检查
 
-**接口**`GET /health`
+**接口**：`GET /health`
 
-**响应**?
+**响应体**
 
 ```json
 {
@@ -127,7 +127,7 @@ assimilate qc --input data.nc --output qc_result.nc
 # 风险评估
 assimilate risk --input analysis.nc --output risk_map.nc
 
-# 可视?
+# 可视化
 assimilate visualize --input analysis.nc --output figure.png
 
 # 启动 API 服务
@@ -136,7 +136,7 @@ assimilate serve --host 0.0.0.0 --port 8000
 
 ## Python API
 
-### 核心?
+### 核心类
 
 ```python
 from bayesian_assimilation.core.assimilator import BayesianAssimilator
@@ -147,7 +147,7 @@ assim.set_algorithm("3dvar", max_iterations=10)
 result = assim.run(background, observations, obs_locations)
 ```
 
-### 模型?
+### 模型类
 
 ```python
 from bayesian_assimilation.models.enkf import EnKF
@@ -164,18 +164,18 @@ model_4dvar = FourDimensionalVar(time_window=6, assimilation_window=3600)
 enkf = EnKF(ensemble_size=50, inflation=1.05)
 ```
 
-## 错误?
+## 错误码
 
 | 状态码 | 说明 |
 |--------|------|
 | 200 | 成功 |
 | 400 | 请求参数错误 |
 | 422 | 数据验证失败 |
-| 500 | 服务器内部错?|
+| 500 | 服务器内部错误|
 | 503 | 服务暂不可用资源不足 |
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
+> **维护者**: DITHIOTHREITOL
 

@@ -305,9 +305,9 @@ def demo_service_usage():
             fallback=lambda url: {'error': 'service unavailable'},
             url='http://example.com/api'
         )
-        print(f"Result: {result}")
+        logger.info(f"Result: {result}")
     except CircuitBreakerOpenError as e:
-        print(f"Circuit breaker is open: {e}")
+        logger.info(f"Circuit breaker is open: {e}")
     
     # 调用WebSocket
     try:
@@ -317,13 +317,13 @@ def demo_service_usage():
             endpoint='/ws/data',
             message={'type': 'update'}
         )
-        print(f"WebSocket result: {result}")
+        logger.info(f"WebSocket result: {result}")
     except CircuitBreakerOpenError as e:
-        print(f"WebSocket circuit breaker is open: {e}")
+        logger.info(f"WebSocket circuit breaker is open: {e}")
     
     # 获取状态
     status = service.get_status()
-    print(f"Circuit breaker status: {status}")
+    logger.info(f"Circuit breaker status: {status}")
 
 
 if __name__ == '__main__':

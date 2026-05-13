@@ -1,10 +1,10 @@
-﻿# Data Assimilation Scripts
+# Data Assimilation Scripts
 
 ##  概述
 
-数据同化平台专用脚本包含部署测试数据处理等工具脚本?
+数据同化平台专用脚本包含部署测试数据处理等工具脚本
 
-**最后更新*: 2026-05-09
+**最后更新**: 2026-05-09
 
 ---
 
@@ -14,7 +14,7 @@
 
 | 脚本 | 功能 |
 |------|------|
-| `deploy_dev.sh` | 开发环境部?|
+| `deploy_dev.sh` | 开发环境部署|
 | `deploy_prod.sh` | 生产环境部署 |
 | `rollback.sh` | 回滚脚本 |
 
@@ -22,7 +22,7 @@
 
 | 脚本 | 功能 |
 |------|------|
-| `run_tests.sh` | 运行所有测?|
+| `run_tests.sh` | 运行所有测试|
 | `run_benchmark.sh` | 运行性能测试 |
 | `check_coverage.sh` | 检查测试覆盖率 |
 
@@ -31,7 +31,7 @@
 | 脚本 | 功能 |
 |------|------|
 | `init_db.sh` | 初始化数据库 |
-| `backup_db.sh` | 数据库备?|
+| `backup_db.sh` | 数据库备份|
 | `generate_data.py` | 生成测试数据 |
 
 ---
@@ -43,7 +43,7 @@
 ```bash
 cd scripts
 
-# 开发环境部?
+# 开发环境部署
 ./deploy_dev.sh
 
 # 生产环境部署
@@ -53,7 +53,7 @@ cd scripts
 ### 测试
 
 ```bash
-# 运行所有测?
+# 运行所有测试
 ./run_tests.sh
 
 # 运行性能测试
@@ -63,13 +63,13 @@ cd scripts
 ./check_coverage.sh --min=80
 ```
 
-### 数据?
+### 数据处理
 
 ```bash
 # 初始化数据库
-./init_db.sh --host=localhost --db=uav_assimilation
+./init_db.sh --host=localhost --db=uav_data_assimilation
 
-# 备份数据?
+# 备份数据库
 ./backup_db.sh --output=./backups/
 ```
 
@@ -84,10 +84,10 @@ cd scripts
 
 ---
 
-**最后更新*: 2026-05-09
+**最后更新**: 2026-05-09
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
+> **维护者**: DITHIOTHREITOL
 

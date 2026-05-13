@@ -1,3 +1,4 @@
+import logging
 """
 Code Quality Checker
 Check for common code quality issues
@@ -21,12 +22,12 @@ class CodeQualityChecker:
     def check_all(self):
         """Check all code files"""
         print("=" * 60)
-        print("Code Quality Checker")
+        logger.info("Code Quality Checker")
         print("=" * 60)
         
         # Find all code files
         code_files = self._find_code_files()
-        print(f"\nFound {len(code_files)} code files\n")
+        logger.info(f"\nFound {len(code_files)} code files\n")
         
         # Check each file
         for code_file in code_files:
@@ -150,17 +151,17 @@ class CodeQualityChecker:
             else:
                 f.write("\n✅ Code quality looks good!\n")
         
-        print(f"\nReport: {report_file}")
+        logger.info(f"\nReport: {report_file}")
         
         # Print summary
         print("\n" + "=" * 60)
-        print("SUMMARY")
+        logger.info("SUMMARY")
         print("=" * 60)
-        print(f"Warnings: {len(self.warnings)}")
-        print(f"Info items: {len(self.info)}")
+        logger.info(f"Warnings: {len(self.warnings)}")
+        logger.info(f"Info items: {len(self.info)}")
         
         if self.warnings:
-            print("\nTop warnings:")
+            logger.info("\nTop warnings:")
             for warning in self.warnings[:10]:
                 print(f"  - {warning['type']} ({warning['count']})")
                 print(f"    {warning['file']}")

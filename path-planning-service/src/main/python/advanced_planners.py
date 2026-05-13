@@ -736,7 +736,7 @@ def main():
     主函数
     """
     if len(sys.argv) < 2:
-        print(json.dumps({
+        logger.debug(json.dumps({
             'success': False,
             'error': '缺少命令参数'
         }))
@@ -747,7 +747,7 @@ def main():
     if command == 'rrt_star':
         # RRT*规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -761,10 +761,10 @@ def main():
             
             rrt = RRTP(start, goal, obstacles)
             result = rrt.plan()
-            print(json.dumps(result))
+            logger.debug(json.dumps(result))
             
         except Exception as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -772,7 +772,7 @@ def main():
     elif command == 'dijkstra':
         # Dijkstra规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -786,10 +786,10 @@ def main():
             
             dijkstra = DijkstraPlanner(obstacles=obstacles)
             result = dijkstra.plan(start, goal)
-            print(json.dumps(result))
+            logger.debug(json.dumps(result))
             
         except Exception as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -797,7 +797,7 @@ def main():
     elif command == 'genetic':
         # 遗传算法规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -811,10 +811,10 @@ def main():
             
             ga = GeneticAlgorithmPlanner(start, goal, obstacles)
             result = ga.plan()
-            print(json.dumps(result))
+            logger.debug(json.dumps(result))
             
         except Exception as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -822,7 +822,7 @@ def main():
     elif command == 'pso':
         # 粒子群优化规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -836,16 +836,16 @@ def main():
             
             pso = ParticleSwarmOptimizationPlanner(start, goal, obstacles)
             result = pso.plan()
-            print(json.dumps(result))
+            logger.debug(json.dumps(result))
             
         except Exception as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
             
     else:
-        print(json.dumps({
+        logger.debug(json.dumps({
             'success': False,
             'error': '未知命令'
         }))

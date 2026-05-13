@@ -8,7 +8,7 @@
 
 ### 1. 添加依赖
 
-?`api-gateway/pom.xml` 中添加以下依赖
+在 `api-gateway/pom.xml` 中添加以下依赖：
 
 ```xml
 <!-- Swagger OpenAPI 聚合 -->
@@ -169,7 +169,7 @@ public class SwaggerAggregatorController {
 
 ### 4. SpringDoc配置
 
-在各服务?`application.yml` 中添加SpringDoc配置
+在各服务的 `application.yml` 中添加SpringDoc配置：
 
 ```yaml
 springdoc:
@@ -186,7 +186,7 @@ springdoc:
 
 ### 5. 访问方式
 
-部署后可通过以下URL访问聚合的API文档
+部署后可通过以下URL访问聚合的API文档：
 
 | 访问方式             | URL                                        |
 | ---------------- | ------------------------------------------ |
@@ -207,7 +207,7 @@ springdoc:
 
 ## 认证配置
 
-如果服务需要认证在Swagger UI中添加Bearer Token
+如果服务需要认证，在Swagger UI中添加Bearer Token：
 
 ```yaml
 springdoc:
@@ -244,25 +244,24 @@ spring.cloud:
 
 ### 常见问题
 
-1. *服务不可选*
+1. **服务不可达**
    - 检查服务是否启动
-   - 检查网络连通?
+   - 检查网络连通性
    - 查看网关日志
-2. *文档加载*
+2. **文档加载慢**
    - 启用缓存
-   - 减少聚合的服务数
+   - 减少聚合的服务数量
    - 增加超时时间
-3.   认证失败  
+3. **认证失败**
    - 配置CORS
-   - 检查Token有效?
+   - 检查Token有效性
 
 ## 维护说明
 
 - 添加新服务时在 `SERVICE_SWAGGER_URLS` Map中添加条目
 - 定期检查各服务的OpenAPI文档是否正常
-- 监控 `/api-docs` 端点的响应时
+- 监控 `/api-docs` 端点的响应时间
 
-***
+---
 
-
-最后更新 2026-05-09
+**最后更新**: 2026-05-09

@@ -37,6 +37,7 @@ public class PathPlanningController {
             log.info("路径规划完成，结果: {}", result);
             
             return Map.of(
+                "success", true,
                 "code", 200,
                 "data", result
             );
@@ -44,6 +45,7 @@ public class PathPlanningController {
         } catch (Exception e) {
             log.error("路径规划失败", e);
             return Map.of(
+                "success", false,
                 "code", 500,
                 "message", "路径规划处理失败"
             );
@@ -53,6 +55,7 @@ public class PathPlanningController {
     @GetMapping("/history")
     public Map<String, Object> getPlanningHistory() {
         return Map.of(
+            "success", true,
             "code", 200,
             "data", List.of()
         );
@@ -61,6 +64,7 @@ public class PathPlanningController {
     @PostMapping("/save")
     public Map<String, Object> savePathPlan(@RequestBody PathPlan plan) {
         return Map.of(
+            "success", true,
             "code", 200,
             "message", "规划方案保存成功"
         );
@@ -69,8 +73,9 @@ public class PathPlanningController {
     @GetMapping("/detail/{id}")
     public Map<String, Object> getPathPlanDetail(@PathVariable Long id) {
         return Map.of(
+            "success", true,
             "code", 200,
-            "data", Map.of()
+            "data", Map.<String, Object>of()
         );
     }
 }

@@ -84,7 +84,7 @@ class ComprehensiveFixer:
             content
         )
         
-        # 模式3: print(json.dumps(...))
+        # 模式3: logger.debug(json.dumps(...))
         content = re.sub(
             r'print\s*\(\s*json\.dumps\s*\(',
             'logger.debug(json.dumps(',
@@ -100,8 +100,8 @@ class ComprehensiveFixer:
         
     def fix_wildcard_imports(self, content: str) -> str:
         """修复通配符导入"""
-        # 移除 from xxx import *
-        content = re.sub(r'from\s+\w+\s+import\s+\*', '# from xxx import * (removed)', content)
+        # 移除 # from xxx import * (removed)
+        content = re.sub(r'from\s+\w+\s+import\s+\*', '# # from xxx import * (removed) (removed)', content)
         return content
         
     def ensure_logging_import(self, content: str) -> str:
@@ -126,22 +126,22 @@ class ComprehensiveFixer:
         
     def print_report(self):
         """打印修复报告"""
-        print("\n" + "="*60)
-        print("全面自动化修复报告")
-        print("="*60)
-        print(f"文件处理数: {self.stats['files_processed']}")
-        print(f"print修复数: {self.stats['print_fixes']}")
-        print(f"类型注解修复数: {self.stats['type_hint_fixes']}")
-        print(f"docstring修复数: {self.stats['docstring_fixes']}")
-        print(f"导入修复数: {self.stats['import_fixes']}")
+        logger.info("\n" + "="*60)
+        logger.info("全面自动化修复报告")
+        logger.info("="*60)
+        logger.info(f"文件处理数: {self.stats['files_processed']}")
+        logger.info(f"print修复数: {self.stats['print_fixes']}")
+        logger.info(f"类型注解修复数: {self.stats['type_hint_fixes']}")
+        logger.info(f"docstring修复数: {self.stats['docstring_fixes']}")
+        logger.info(f"导入修复数: {self.stats['import_fixes']}")
 
         if self.stats['errors']:
-            print(f"\n错误数: {len(self.stats['errors'])}")
+            logger.info(f"\n错误数: {len(self.stats['errors'])}")
             for err in self.stats['errors'][:10]:
-                print(f"  - {err}")
+                logger.info(f"  - {err}")
         else:
-            print(f"\n无错误")
-        print("="*60)
+            logger.info(f"\n无错误")
+        logger.info("="*60)
 
 if __name__ == '__main__':
     import sys

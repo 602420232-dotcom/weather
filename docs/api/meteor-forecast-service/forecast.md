@@ -1,16 +1,16 @@
-﻿# 气象预测服务API
+# 气象预测服务API
 
-气象预测服务提供气象数据的预测和订正功能使用LSTM和XGBoost模型进行气象预测?
+气象预测服务提供气象数据的预测和订正功能，使用LSTM和XGBoost模型进行气象预测。
 
 ## 接口列表
 
 ### 1. 执行气象预测
 
-**接口地址**`POST /api/forecast/predict`
+**接口地址**: `POST /api/forecast/predict`
 
-**功能**执行气象预?
+**功能**: 执行气象预测
 
-**请求参数**JSON
+**请求参数**: JSON
 ```json
 {
   "data": [...],
@@ -18,7 +18,8 @@
 }
 ```
 
-**响应**?
+**响应**
+
 ```json
 {
   "success": true,
@@ -28,11 +29,11 @@
 
 ### 2. 气象数据订正
 
-**接口地址**`POST /api/forecast/correct`
+**接口地址**: `POST /api/forecast/correct`
 
-**功能**执行气象数据订?
+**功能**: 执行气象数据订正
 
-**请求参数**JSON
+**请求参数**: JSON
 ```json
 {
   "forecast_data": [...],
@@ -40,7 +41,8 @@
 }
 ```
 
-**响应**?
+**响应**
+
 ```json
 {
   "success": true,
@@ -50,11 +52,12 @@
 
 ### 3. 获取可用模型列表
 
-**接口地址**`GET /api/forecast/models`
+**接口地址**: `GET /api/forecast/models`
 
-**功能**获取可用模型列?
+**功能**: 获取可用模型列表
 
-**响应**?
+**响应**
+
 ```json
 {
   "success": true,
@@ -63,7 +66,6 @@
 ```
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
-
+> **维护者**: DITHIOTHREITOL

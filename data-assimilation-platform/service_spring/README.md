@@ -1,8 +1,8 @@
-﻿# Data Assimilation Service - Spring Boot
+# Data Assimilation Service - Spring Boot
 
 ##  服务概述
 
-Spring Boot 微服务提供数据同化功能?REST API 接口?
+Spring Boot 微服务提供数据同化功能的 REST API 接口
 
 **技术栈**:
 - Spring Boot 3.2.0
@@ -20,29 +20,29 @@ Spring Boot 微服务提供数据同化功能?REST API 接口?
 ```
 service_spring/
  src/
-?   main/
-?  ?   java/com/uav/assimilation/
-?  ?  ?   controller/      # REST 控制?
-?  ?  ?   service/         # 业务逻辑
-?  ?  ?   repository/      # 数据访问
-?  ?  ?   model/           # 数据模型
-?  ?  ?   config/          # 配置?
-?  ?  ?   dto/             # 数据传输对象
-?  ?   resources/
-?  ?       application.yml  # 应用配置
-?  ?       application-dev.yml
-?  ?       application-prod.yml
-?  ?       application-test.yml
-?   test/
-?       java/               # 单元测试
-?       resources/          # 测试配置
+    main/
+        java/com/uav/assimilation/
+            controller/      # REST 控制器
+            service/         # 业务逻辑
+            repository/      # 数据访问
+            model/           # 数据模型
+            config/          # 配置类
+            dto/             # 数据传输对象
+        resources/
+            application.yml  # 应用配置
+            application-dev.yml
+            application-prod.yml
+            application-test.yml
+    test/
+        java/               # 单元测试
+        resources/          # 测试配置
  pom.xml                     # Maven 配置
- README.md                   # 本文?
+ README.md                   # 本文档
 ```
 
 ---
 
-##  快速开?
+##  快速开始
 
 ### 构建
 
@@ -63,7 +63,7 @@ mvn clean package
 ### 运行
 
 ```bash
-# 开发模?
+# 开发模式
 mvn spring-boot:run
 
 # 生产模式
@@ -118,28 +118,28 @@ uav:
 
 ##  API 接口
 
-### REST 控制?
+### REST 控制器
 
 | 端点 | 方法 | 说明 |
 |------|------|------|
 | `/api/assimilation/execute` | POST | 执行同化 |
 | `/api/assimilation/variance` | POST | 计算方差 |
 | `/api/assimilation/batch` | POST | 批量同化 |
-| `/api/assimilation/status/{id}` | GET | 查询状?|
-| `/actuator/health` | GET | 健康检?|
+| `/api/assimilation/status/{id}` | GET | 查询状态|
+| `/actuator/health` | GET | 健康检查|
 
 ---
 
 ##  测试
 
 ```bash
-# 运行所有测?
+# 运行所有测试
 mvn test
 
-# 运行特定测试?
+# 运行特定测试类
 mvn test -Dtest=AssimilationControllerTest
 
-# 生成覆盖率报?
+# 生成覆盖率报告
 mvn test jacoco:report
 ```
 
@@ -167,10 +167,7 @@ docker run -d -p 8084:8084 \
 
 ---
 
-**最后更新*: 2026-05-09
----
-
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
+> **维护者**: DITHIOTHREITOL
 

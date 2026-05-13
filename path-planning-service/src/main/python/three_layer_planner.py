@@ -803,7 +803,7 @@ def main():
     主函数
     """
     if len(sys.argv) < 2:
-        print(json.dumps({
+        logger.debug(json.dumps({
             'success': False,
             'error': '缺少命令参数'
         }))
@@ -814,7 +814,7 @@ def main():
     if command == 'vrptw':
         # VRPTW规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -828,10 +828,10 @@ def main():
             
             vrptw = VRPTWPlanner(drones, tasks, weather_data)
             result = vrptw.plan()
-            print(json.dumps(result))
+            logger.debug(json.dumps(result))
             
         except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -839,7 +839,7 @@ def main():
     elif command == 'astar':
         # A*规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -855,10 +855,10 @@ def main():
             
             a_star = AStarPlanner(weather_data, obstacles, no_fly_zones)
             result = a_star.plan(start, goal)
-            print(json.dumps(result))
+            logger.debug(json.dumps(result))
             
         except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -866,7 +866,7 @@ def main():
     elif command == 'dwa':
         # DWA规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -881,10 +881,10 @@ def main():
             
             dwa = DWAPlanner(weather_data, obstacles)
             result = dwa.plan(current_pose, goal)
-            print(json.dumps(result))
+            logger.debug(json.dumps(result))
             
         except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -892,7 +892,7 @@ def main():
     elif command == 'full':
         # 完整路径规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -908,10 +908,10 @@ def main():
             
             planner = ThreeLayerPlanner(drones, tasks, weather_data, obstacles, no_fly_zones)
             result = planner.plan()
-            print(json.dumps(result))
+            logger.debug(json.dumps(result))
             
         except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -919,7 +919,7 @@ def main():
     elif command == 'derrt':
         # DE-RRT*路径规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -935,10 +935,10 @@ def main():
             
             derrt_star = DERRTStarPlanner(weather_data, obstacles, no_fly_zones)
             result = derrt_star.plan(start, goal)
-            print(json.dumps(result))
+            logger.debug(json.dumps(result))
             
         except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -946,7 +946,7 @@ def main():
     elif command == 'replan':
         # 动态重规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -963,16 +963,16 @@ def main():
             
             planner = ThreeLayerPlanner(drones, tasks, new_weather_data, new_obstacles, new_no_fly_zones)
             result = planner.dynamic_replan(current_route, new_weather_data, new_obstacles, new_no_fly_zones)
-            print(json.dumps(result))
+            logger.debug(json.dumps(result))
             
         except (ValueError, KeyError, TypeError, IndexError, json.JSONDecodeError, AttributeError) as e:
-            print(json.dumps({
+            logger.debug(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
             
     else:
-        print(json.dumps({
+        logger.debug(json.dumps({
             'success': False,
             'error': '未知命令'
         }))

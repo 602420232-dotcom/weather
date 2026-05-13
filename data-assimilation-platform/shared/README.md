@@ -1,8 +1,8 @@
-﻿# Shared Resources - 共享资源
+# Shared Resources - 共享资源
 
 ##  概述
 
-共享资源模块包?Protocol Buffers 定义JSON Schema共享配置等跨服务共用资源?
+共享资源模块包含 Protocol Buffers 定义JSON Schema共享配置等跨服务共用资源
 
 ---
 
@@ -11,31 +11,31 @@
 ```
 shared/
  protos/                    # Protocol Buffers 定义
-?   common/               # 公共消息类型
-?  ?   common.proto
-?  ?   types.proto
-?  ?   README.md
-?   assimilation/         # 数据同化消息
-?  ?   request.proto
-?  ?   response.proto
-?   README.md
-?
+    common/               # 公共消息类型
+        common.proto
+        types.proto
+        README.md
+    assimilation/         # 数据同化消息
+        request.proto
+        response.proto
+    README.md
+
  schemas/                 # JSON Schema 定义
-?   assimilation/
-?   validation/
-?
- README.md                # 本文?
+    assimilation/
+   validation/
+
+ README.md                # 本文档
 ```
 
 ---
 
-##  Protos 子模?
+##  Protos 子模块
 
 ### Protocol Buffers 定义
 
 **位置**: `protos/`
 
-**包含文件**:
+**包含文件**：
 
 - `common/common.proto` - 公共消息类型
 - `common/types.proto` - 通用类型定义
@@ -90,7 +90,7 @@ stub = request_pb2_grpc.AssimilationServiceStub(channel)
 response = stub.Assimilate(request)
 ```
 
-**Java**:
+**Java**：
 ```java
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -222,12 +222,12 @@ production:
 |------|------|
 | [Protos README](protos/README.md) | Protocol Buffers 详细说明 |
 | [Common Types README](protos/common/README.md) | 公共类型说明 |
-| [Algorithm Core](../algorithm_core/README.md) | 核心算法?|
+| [Algorithm Core](../algorithm_core/README.md) | 核心算法|
 | [Service Spring](../service_spring/README.md) | Spring Boot 服务 |
 
 ---
 
-##  快速开?
+##  快速开始
 
 ### 1. 克隆项目
 
@@ -261,15 +261,15 @@ mvn protobuf:compile
 
 ### Proto 版本控制
 
-**版本号规?*:
+**版本号规则**:
 ```
 major.minor.patch
 ```
 
 **示例**:
 - `v1.0.0` - 初始版本
-- `v1.1.0` - 添加新字?
-- `v2.0.0` - 不兼容更?
+- `v1.1.0` - 添加新字段
+- `v2.0.0` - 不兼容更改
 
 ### 向后兼容
 
@@ -283,8 +283,8 @@ message DataRequest {
 }
 ```
 
-**不兼容更?* (需要新版本):
-- 重命名字?
+**不兼容更改** (需要新版本):
+- 重命名字段
 - 更改字段类型
 - 修改字段编号
 
@@ -318,7 +318,7 @@ mvn test -Dtest=*SchemaTest
 
 ### 发布流程
 
-1. **更新版本：*
+1. **更新版本**：
    ```bash
    # 修改 proto 文件中的 version 注释
    ```
@@ -367,7 +367,7 @@ mvn test -Dtest=*SchemaTest
 
 3. **添加文档注释**:
    ```protobuf
-   // 这是一个示例消?
+   // 这是一个示例消息
    message ExampleMessage {
        // 字段说明
        string id = 1;
@@ -385,14 +385,14 @@ mvn test -Dtest=*SchemaTest
 
 ---
 
-##  许可?
+##  许可证
 
-本目录遵循项目整体许可证?
+本目录遵循项目整体许可证
 
 
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
+> **维护者**: DITHIOTHREITOL
 

@@ -1,3 +1,4 @@
+import logging
 """
 Simple Configuration Files Consistency Checker
 Check YAML/properties files without external dependencies
@@ -21,12 +22,12 @@ class SimpleConfigChecker:
     def check_all(self):
         """Check all config files"""
         print("=" * 60)
-        print("Simple Configuration Checker (No Dependencies)")
+        logger.info("Simple Configuration Checker (No Dependencies)")
         print("=" * 60)
         
         # Find all config files
         config_files = self._find_config_files()
-        print(f"\nFound {len(config_files)} config files\n")
+        logger.info(f"\nFound {len(config_files)} config files\n")
         
         # Check each file
         for config_file in config_files:
@@ -164,24 +165,24 @@ class SimpleConfigChecker:
             else:
                 f.write("\n✅ All checks passed!\n")
         
-        print(f"\nReport: {report_file}")
+        logger.info(f"\nReport: {report_file}")
         
         # Print summary
         print("\n" + "=" * 60)
-        print("SUMMARY")
+        logger.info("SUMMARY")
         print("=" * 60)
-        print(f"Files checked: {self.files_checked}")
-        print(f"Issues: {len(self.issues)}")
-        print(f"Warnings: {len(self.warnings)}")
+        logger.info(f"Files checked: {self.files_checked}")
+        logger.info(f"Issues: {len(self.issues)}")
+        logger.info(f"Warnings: {len(self.warnings)}")
         
         if self.issues:
-            print("\nIssues found:")
+            logger.info("\nIssues found:")
             for issue in self.issues[:10]:
                 print(f"  - [{issue['severity']}] {issue['type']}")
                 print(f"    {issue['file']}")
         
         if self.warnings:
-            print(f"\nWarnings found: {len(self.warnings)}")
+            logger.info(f"\nWarnings found: {len(self.warnings)}")
             
         print("\n" + "=" * 60)
 

@@ -1,4 +1,4 @@
-﻿# 认证接口
+# 认证接口
 
 ## 登录
 
@@ -20,7 +20,7 @@ Content-Type: application/json
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -39,7 +39,7 @@ Content-Type: application/json
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
@@ -71,7 +71,7 @@ Content-Type: application/json
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -86,7 +86,7 @@ Content-Type: application/json
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
@@ -116,7 +116,7 @@ Authorization: Bearer <当前令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -128,7 +128,7 @@ Authorization: Bearer <当前令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
@@ -139,7 +139,6 @@ Authorization: Bearer <当前令牌>
 ```
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
-
+> **维护者**: DITHIOTHREITOL

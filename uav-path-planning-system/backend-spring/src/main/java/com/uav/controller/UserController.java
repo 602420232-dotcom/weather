@@ -4,7 +4,8 @@ import com.uav.model.Role;
 import com.uav.model.User;
 import com.uav.repository.RoleRepository;
 import com.uav.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import jakarta.annotation.PostConstruct;
@@ -21,10 +22,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Slf4j
 @RestController
 @RequestMapping("/api")
 public class UserController {
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final UserRepository userRepository;

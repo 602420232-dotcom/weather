@@ -1,8 +1,11 @@
 package com.uav.utils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,9 +47,9 @@ import java.util.concurrent.ExecutionException;
  * @author UAV Team
  * @version 1.0.0
  */
-@Slf4j
 @Component
 public class PythonAlgorithmUtil {
+    private static final Logger log = LoggerFactory.getLogger(PythonAlgorithmUtil.class);
 
     private static final Set<String> ALLOWED_SCRIPTS = Set.of(
         "wrf/wrf_parser.py",
@@ -108,7 +111,7 @@ public class PythonAlgorithmUtil {
             return "{\"error\": \"执行超时\"}";
         } catch (SecurityException e) {
             log.error("安全验证失败: {}", scriptName, e);
-            return "{\"error\": \"安全验证失败: \" + e.getMessage() + \"\"}";
+            return "{\"error\": \"安全验证失败: " + e.getMessage() + "\"}";
         } catch (IOException e) {
             log.error("IO错误: {}", scriptName, e);
             return "{\"error\": \"文件IO错误\"}";
@@ -121,7 +124,7 @@ public class PythonAlgorithmUtil {
             return "{\"error\": \"执行错误\"}";
         } catch (Exception e) {
             log.error("执行Python脚本时发生错误: {}", scriptName, e);
-            return "{\"error\": \"执行错误: \" + e.getClass().getSimpleName() + \"\"}";
+            return "{\"error\": \"执行错误: " + e.getClass().getSimpleName() + "\"}";
         } finally {
             if (tempFile != null) {
                 try {

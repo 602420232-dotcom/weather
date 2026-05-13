@@ -1,7 +1,7 @@
-﻿# 任务管理接口
+# 任务管理接口
 
->  **注意**: 以下接口为计划中?API 定义当前版本尚未实现完?CRUD?
-> 当前可用的任务接口`POST /api/platform/task`PlatformController?
+>  **注意**: 以下接口为计划中的 API 定义，当前版本尚未实现完整的 CRUD。
+> 当前可用的任务接口 `POST /api/platform/task`（PlatformController）。
 
 ## 获取任务列表
 
@@ -14,7 +14,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -23,8 +23,8 @@ Authorization: Bearer <JWT令牌>
   "data": [
     {
       "id": 1,
-      "name": "巡逻任?",
-      "description": "区域巡逻任?,
+      "name": "巡逻任务",
+      "description": "区域巡逻任务",
       "status": "PENDING",
       "startTime": "2024-01-01T00:00:00Z",
       "endTime": "2024-01-01T02:00:00Z",
@@ -43,7 +43,7 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
@@ -64,7 +64,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -72,8 +72,8 @@ Authorization: Bearer <JWT令牌>
   "message": "获取任务详情成功",
   "data": {
     "id": 1,
-    "name": "巡逻任?",
-    "description": "区域巡逻任?,
+    "name": "巡逻任务",
+    "description": "区域巡逻任务",
     "status": "PENDING",
     "startTime": "2024-01-01T00:00:00Z",
     "endTime": "2024-01-01T02:00:00Z",
@@ -99,12 +99,12 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
   "code": 404,
-  "message": "任务不存?,
+  "message": "任务不存在",
   "details": null
 }
 ```
@@ -123,7 +123,7 @@ Authorization: Bearer <JWT令牌>
 
 ```json
 {
-  "name": "新任?,
+  "name": "新任务",
   "description": "任务描述",
   "startTime": "2024-01-01T00:00:00Z",
   "endTime": "2024-01-01T02:00:00Z",
@@ -146,7 +146,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -154,7 +154,7 @@ Authorization: Bearer <JWT令牌>
   "message": "创建任务成功",
   "data": {
     "id": 3,
-    "name": "新任?,
+    "name": "新任务",
     "description": "任务描述",
     "status": "PENDING",
     "startTime": "2024-01-01T00:00:00Z",
@@ -164,13 +164,13 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
   "code": 400,
   "message": "请求参数错误",
-  "details": "结束时间必须晚于开始时?
+  "details": "结束时间必须晚于开始时间"
 }
 ```
 
@@ -197,7 +197,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -215,12 +215,12 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
   "code": 404,
-  "message": "任务不存?,
+  "message": "任务不存在",
   "details": null
 }
 ```
@@ -236,7 +236,7 @@ Authorization: Bearer <JWT令牌>
 
 ### 响应
 
-**成功?*
+**成功**
 
 ```json
 {
@@ -246,18 +246,17 @@ Authorization: Bearer <JWT令牌>
 }
 ```
 
-**失败?*
+**失败**
 
 ```json
 {
   "code": 404,
-  "message": "任务不存?,
+  "message": "任务不存在",
   "details": null
 }
 ```
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
-
+> **维护者**: DITHIOTHREITOL

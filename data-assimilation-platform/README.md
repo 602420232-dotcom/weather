@@ -1,10 +1,10 @@
-﻿# Data Assimilation Platform - 数据同化平台
+# Data Assimilation Platform - 数据同化平台
 
 ##  项目概述
 
-数据同化平台?UAV Path Planning System 的核心组件负责整合贝叶斯数据同化核心算法库通过 REST API 提供数据同化计算服务?
+数据同化平台是 UAV Path Planning System 的核心组件负责整合贝叶斯数据同化核心算法库通过 REST API 提供数据同化计算服务
 
-**核心功能**: 融合多源气象观测数据支?3D-VAR?D-VAREnKF 等先进算?
+**核心功能**: 融合多源气象观测数据支持 3D-VAR、4D-VAR、EnKF 等先进算
 
 **技术栈**:
 - Spring Boot 3.2.0 (Java 17)
@@ -20,55 +20,55 @@
 ```
 data-assimilation-platform/
  algorithm_core/          # 贝叶斯同化核心算法库 (Python)
-?   src/
-?  ?   bayesian_assimilation/  # 核心算法
-?  ?   data/                 # 数据处理
-?  ?   models/               # 模型定义
-?  ?   utils/                # 工具函数
-?   tests/                   # 单元测试
-?   benchmarks/             # 性能基准测试
-?   requirements.txt        # Python 依赖
-?   setup.py                # 安装配置
-?
+    src/
+        bayesian_assimilation/  # 核心算法
+        data/                 # 数据处理
+        models/               # 模型定义
+        utils/                # 工具函数
+    tests/                   # 单元测试
+    benchmarks/             # 性能基准测试
+    requirements.txt        # Python 依赖
+    setup.py                # 安装配置
+
  service_spring/            # Spring Boot 服务 (Java)
-?   src/
-?  ?   main/
-?  ?  ?   java/          # Java 源代?
-?  ?  ?   resources/     # 配置文件
-?  ?   test/              # 测试代码
-?   pom.xml                # Maven 配置
-?   application.yml        # 应用配置
-?
- service_python/           # Python 微服?
-?   api/                  # API 接口
-?   models/               # 数据模型
-?   utils/                # 工具函数
-?
+    src/
+     main/
+       java/          # Java 源代码
+       resources/     # 配置文件
+     test/              # 测试代码
+   pom.xml                # Maven 配置
+   application.yml        # 应用配置
+
+ service_python/           # Python 微服务
+   api/                  # API 接口
+   models/               # 数据模型
+   utils/                # 工具函数
+
  shared/                   # 共享资源
-?   proto/                # Protocol Buffers 定义
-?   config/               # 共享配置
-?   README.md             # 共享资源说明
-?
+   proto/                # Protocol Buffers 定义
+   config/               # 共享配置
+   README.md             # 共享资源说明
+
  deployments/              # 部署配置
-?   kubernetes/           # K8s 部署
-?   docker/               # Docker 配置
-?   docker-compose.yml    # Docker Compose
-?
+   kubernetes/           # K8s 部署
+   docker/               # Docker 配置
+   docker-compose.yml    # Docker Compose
+
  docs/                     # 文档
-?
+
  benchmarks/              # 性能测试
-?
- scripts/                  # 自动化脚?
-?
+
+ scripts/                  # 自动化脚本
+
  Makefile                 # Make 构建
  pyproject.toml           # Python 项目配置
  requirements.txt         # Python 依赖
- README.md                # 本文?
+ README.md                # 本文档
 ```
 
 ---
 
-##  快速开?
+##  快速开始
 
 ### 环境要求
 
@@ -96,13 +96,13 @@ cd algorithm_core
 pip install -e .[dev]
 ```
 
-### 2. 配置数据?
+### 2. 配置数据库
 
 ```bash
-# 启动 MySQL ?Redis
+# 启动 MySQL 和 Redis
 docker-compose up -d mysql redis
 
-# 创建数据?
+# 创建数据库
 mysql -h localhost -u root -p < deployments/init.sql
 ```
 
@@ -119,7 +119,7 @@ mvn clean package -DskipTests
 # 运行
 mvn spring-boot:run
 
-# 或运?JAR
+# 或运行 JAR
 java -jar target/service_spring-1.0.0.jar
 ```
 
@@ -185,13 +185,13 @@ LOG_LEVEL=INFO
 
 ##  核心算法
 
-### 支持的算?
+### 支持的算法
 
 | 算法 | 说明 | 应用场景 |
 |------|------|---------|
 | **3D-VAR** | 三维变分同化 | 常规气象分析 |
 | **4D-VAR** | 四维变分同化 | 时空连续分析 |
-| **EnKF** | 集合卡尔曼滤?| 不确定性量?|
+| **EnKF** | 集合卡尔曼滤波| 不确定性量化|
 
 ### 算法配置
 
@@ -220,9 +220,9 @@ assimilation:
 
 ### 主要接口
 
-#### 1. 执行贝叶斯同?
+#### 1. 执行贝叶斯同化
 
-**端点**: `POST /api/assimilation/execute`
+**端点**： `POST /api/assimilation/execute`
 
 **请求示例**:
 ```bash
@@ -255,9 +255,9 @@ curl -X POST http://localhost:8084/api/assimilation/execute \
 }
 ```
 
-#### 2. 计算方差?
+#### 2. 计算方差
 
-**端点**: `POST /api/assimilation/variance`
+**端点**： `POST /api/assimilation/variance`
 
 **请求示例**:
 ```bash
@@ -271,7 +271,7 @@ curl -X POST http://localhost:8084/api/assimilation/variance \
 
 #### 3. 批量执行同化
 
-**端点**: `POST /api/assimilation/batch`
+**端点**： `POST /api/assimilation/batch`
 
 **请求示例**:
 ```bash
@@ -286,9 +286,9 @@ curl -X POST http://localhost:8084/api/assimilation/batch \
   }'
 ```
 
-#### 4. 健康检?
+#### 4. 健康检查
 
-**端点**: `GET /actuator/health`
+**端点**： `GET /actuator/health`
 
 ---
 
@@ -297,7 +297,7 @@ curl -X POST http://localhost:8084/api/assimilation/batch \
 ### 运行测试
 
 ```bash
-# 所有测?
+# 所有测试
 mvn test
 
 # 单元测试
@@ -317,7 +317,7 @@ python run_benchmarks.py
 
 ### 测试覆盖
 
-| 模块 | 覆盖?| 测试?|
+| 模块 | 覆盖率| 测试数|
 |------|--------|--------|
 | Spring Service | 75% | 120 |
 | Python API | 80% | 85 |
@@ -327,10 +327,10 @@ python run_benchmarks.py
 
 ##  Docker 部署
 
-### 开发环?
+### 开发环境
 
 ```bash
-# 启动所有服?
+# 启动所有服务
 docker-compose -f deployments/docker-compose.dev.yml up -d
 
 # 查看日志
@@ -360,12 +360,12 @@ docker run -d \
 
 ### 基准测试
 
-运行性能基准测试?
+运行性能基准测试
 
 ```bash
 cd benchmarks
 
-# 运行所有基准测?
+# 运行所有基准测试
 python run_benchmarks.py
 
 # 测试特定算法
@@ -380,8 +380,8 @@ python run_benchmarks.py --report --output benchmarks_report.html
 | 指标 | 目标 | 当前 |
 |------|------|------|
 | 响应时间 (P95) | < 500ms | 320ms |
-| 吞吐?| > 100 req/s | 150 req/s |
-| CPU 使用?| < 70% | 55% |
+| 吞吐量| > 100 req/s | 150 req/s |
+| CPU 使用率| < 70% | 55% |
 | 内存使用 | < 2GB | 1.2GB |
 
 ---
@@ -398,12 +398,12 @@ uav:
     expiration: 86400000
 ```
 
-### 数据库安?
+### 数据库安全
 
 ```yaml
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/uav_data_assimilation?useSSL=true
+    url: jdbc:mysql://localhost:3306/uav_data_assimilationuseSSL=true
     username: ${DB_USER}
     password: ${DB_PASSWORD}
 ```
@@ -414,7 +414,7 @@ spring:
 
 | 文档 | 说明 |
 |------|------|
-| [Algorithm Core README](algorithm_core/README.md) | 核心算法库文?|
+| [Algorithm Core README](algorithm_core/README.md) | 核心算法库文档|
 | [Shared Resources README](shared/README.md) | 共享资源说明 |
 | [Benchmarks README](benchmarks/README.md) | 性能测试说明 |
 | [Deployment Guide](../docs/DEPLOYMENT.md) | 部署指南 |
@@ -422,29 +422,29 @@ spring:
 
 ---
 
-##  开发指?
+##  开发指南
 
 ### 代码规范
 
 **Python 代码**:
 ```bash
-# 格式?
+# 格式化
 black src/
 
-# 检?
+# 检查
 flake8 src/
 pylint src/
 
-# 类型检?
+# 类型检查
 mypy src/
 ```
 
 **Java 代码**:
 ```bash
-# 格式?
+# 格式化
 mvn spotless:apply
 
-# 检?
+# 检查
 mvn checkstyle:check
 ```
 
@@ -454,7 +454,7 @@ mvn checkstyle:check
 <type>(<scope>): <subject>
 
 Types:
-  - feat: 新功?
+  - feat: 新功能
   - fix: 修复bug
   - docs: 文档更新
   - style: 代码格式
@@ -467,38 +467,38 @@ Types:
 
 ##  贡献指南
 
-### 开发流?
+### 开发流程
 
 1. **Fork** 项目
 2. **创建分支**: `git checkout -b feature/your-feature`
 3. **提交更改**: `git commit -am 'Add some feature'`
-4. **推送分?*: `git push origin feature/your-feature`
+4. **推送分支**: `git push origin feature/your-feature`
 5. **创建 Pull Request**
 
 ### 代码审查
 
-- 所?PR 需要通过 CI 测试
-- 至少 1 人代码审?
+- 所有 PR 需要通过 CI 测试
+- 至少 1 人代码审查
 - 遵循代码规范
 - 添加测试用例
 
 ---
 
-##  许可?
+##  许可证
 
-本项目遵循项目整体许可证?
+本项目遵循项目整体许可证
 
 ---
 
 ##  致谢
 
-- **算法参?*: ECMWF, NCAR
+- **算法参考**: ECMWF, NCAR
 - **开源库**: NumPy, SciPy, TensorFlow
 
 
 ---
 
-> **最后更新*: 2026-05-09  
+> **最后更新**: 2026-05-09  
 > **版本**: 2.1  
-> **维护者*: DITHIOTHREITOL
+> **维护者**: DITHIOTHREITOL
 
