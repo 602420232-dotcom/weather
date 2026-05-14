@@ -1,9 +1,9 @@
 # UAV 气象驱动无人机 VRP 智能路径规划系统 —— 全局文档索引
 
-> **索引版本**：v1.0  
+> **索引版本**：v1.1  
 > **索引日期**：2026-05-14  
-> **收录文档总数**：168 份  
-> **覆盖范围**：项目根目录下全部 `.md` 后缀 Markdown 文档，递归含所有子目录  
+> **收录文档总数**：206 份  
+> **覆盖范围**：项目根目录下全部 `.md` 后缀 Markdown 文档，递归含所有子目录（已排除 `.pytest_cache` 等自动生成目录）  
 
 ---
 
@@ -203,6 +203,9 @@
 | [data-assimilation-platform/shared/protos/README.md](./data-assimilation-platform/shared/protos/README.md) | Protocol Buffers接口定义汇总，包含请求（request）、响应（response）、服务（service）、通用（common）四类Proto文件的版本化管理及编译说明。 | **H1**-protos / (目录说明) | 全栈开发者 | Proto定义说明 |
 | [data-assimilation-platform/shared/schemas/README.md](./data-assimilation-platform/shared/schemas/README.md) | JSON Schema数据验证规则目录说明，定义数据同化请求、响应及配置数据的结构化校验规则。 | **H1**-schemas / (目录说明) | 开发者 | 数据校验规则说明 |
 | [data-assimilation-platform/service_python/requirements/README.md](./data-assimilation-platform/service_python/requirements/README.md) | Python服务依赖管理目录说明，按基础依赖、算法依赖、测试依赖、GPU加速依赖分类管理requirements文件。 | **H1**-requirements / (目录说明) | Python开发者 | 依赖管理说明 |
+| [data-assimilation-platform/algorithm_core/benchmarks/results/report.md](./data-assimilation-platform/algorithm_core/benchmarks/results/report.md) | 贝叶斯同化系统性能测试报告（Intel Xeon Gold 6342 24核+128GB+A100 GPU环境），覆盖3D-VAR/4D-VAR/EnKF/混合同化四种核心算法执行时间与内存使用，评估Block Parallel/Dask/MPI/Ray多类并行框架加速比与效率及GPU加速性能，所有指标均满足或超越基线标准。 | **H1**-性能测试报告 / **H2**-概述·测试环境·测试结果·性能基线·结论 / **H3**-硬件配置·软件配置·核心算法性能·并行计算性能·GPU加速性能 | 算法研发工程师、性能测试工程师 | 算法核心性能基准测试报告 |
+| [data-assimilation-platform/benchmarks/results/report.md](./data-assimilation-platform/benchmarks/results/report.md) | 数据同化平台性能测试报告（Intel Xeon Gold 6248R+64GB+Tesla V100环境），聚焦3D-VAR与EnKF算法在不同网格规模（50³→200³）和集合数量（20/50/100）下的耗时与内存对比，提供1至8工作节点并行加速比测量结果，体现平台良好可扩展性。 | **H1**-性能测试报告 / **H2**-测试环境·测试结果 / **H3**-3D-VAR性能·EnKF性能·并行加速比 | 平台性能测试人员、算法优化工程师 | 平台级端到端性能测试报告 |
+| [data-assimilation-platform/algorithm_core/examples/output/结果分析.md](./data-assimilation-platform/algorithm_core/examples/output/%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90.md) | 以通俗语言解读三张气象风险分析图：图一展示最大风险/平均风险/预测风险随时间演变（少数高风险点存在但整体安全）；图二以九宫格热力图分层呈现基础气象条件（深绿色低风险）、综合风险及湍流/切变/降水等具体风险类型；图三分析不确定性分布与信噪比，确认数据质量优良。总体结论为风险极低、系统可靠。 | **H1**-三张气象风险分析图通俗解读 / **H2**-风险随时间变化趋势·风险热力图（九宫格）·不确定性分析·总结 | 气象决策者、飞行安全管理人员 | 示例输出分析图通俗解读 |
 
 ---
 
@@ -266,6 +269,28 @@
 | [uav-edge-sdk/CHANGELOG.md](./uav-edge-sdk/CHANGELOG.md) | SDK版本变更日志，v1.0.0（2026-05-07）记录C++/Python混合实现、A*路径规划、气象风险评估、MAVLink飞控接口等核心功能；规划ROS2集成、多机协同、ML风险评估。 | **H1**-Changelog / **H2**-[1.0.0]·[Unreleased] | 开发者、用户 | SDK版本变更记录 |
 | [uav-mobile-app/README.md](./uav-mobile-app/README.md) | Flutter跨平台移动应用（iOS/Android），Riverpod状态管理+GoRouter路由+Dio网络请求，提供系统驾驶舱、路径规划可视化、WRF气象热力图、任务/无人机管理、边云协同等八大功能模块。 | **H1**-移动客户端 / **H2**-功能特性·技术栈·快速开始·项目结构 | 移动端开发者、终端用户 | 移动端应用总览 |
 | [uav-path-planning-system/frontend-vue/README.md](./uav-path-planning-system/frontend-vue/README.md) | Vue3+Vite前端应用（开发端口3000），Ant Design Vue UI组件库，ECharts数据可视化，Leaflet+Cesium地图组件，Axios代理API网关（8088），提供仪表盘、无人机监控、路径规划、气象数据等Web页面。 | **H1**-Vue3前端应用 / **H2**-应用概述·端口配置·快速开始 | 前端开发者 | Web前端应用说明 |
+| [uav-mobile-app/lib/config/README.md](./uav-mobile-app/lib/config/README.md) | Flutter应用全局配置模块，定义AppConfig类（应用名称"无人机路径规划系统"v1.0.0）、7个API端点常量（platform/wrf/forecast等）、主题色彩常量表，提供Material 3亮色与暗色双主题样式（含AppBar/Card/Input/Button/NavigationBar组件样式）。 | **H1**-config / **H2**-关键文件·配置项 | Flutter开发者 | 应用全局常量与主题配置 |
+| [uav-mobile-app/lib/core/README.md](./uav-mobile-app/lib/core/README.md) | Flutter核心基础设施层总入口，聚合network/（网络通信）、storage/（本地持久化）、utils/（通用工具）三大子模块，为上层Service层和UI层提供统一的底层能力支撑，是应用架构的基石层。 | **H1**-core / **H2**-子模块 | Flutter开发者 | 核心基础设施层总入口 |
+| [uav-mobile-app/lib/core/network/README.md](./uav-mobile-app/lib/core/network/README.md) | 基于Dio封装的HTTP网络通信模块，单例ApiClient封装GET/POST/PUT/DELETE及文件上传，15s连接超时30s接收超时；ApiInterceptor自动附加Bearer Token、X-Request-ID标记，401自动清除Token；统一ApiException异常体系。 | **H1**-core/network / **H2**-关键文件·错误处理 | Flutter开发者、后端对接人员 | HTTP网络层封装说明 |
+| [uav-mobile-app/lib/core/storage/README.md](./uav-mobile-app/lib/core/storage/README.md) | 本地持久化存储模块，敏感非敏感数据分离架构：SecureStorage基于flutter_secure_storage利用系统Keychain/Keystore加密存储Token/RefreshToken/用户名等认证凭证；LocalStorage基于shared_preferences存储主题/语言/离线模式等偏好。 | **H1**-core/storage / **H2**-关键文件·存储策略 | Flutter开发者、安全审查人员 | 本地安全存储方案说明 |
+| [uav-mobile-app/lib/core/utils/README.md](./uav-mobile-app/lib/core/utils/README.md) | 通用工具类集合，LogUtil基于logger包提供debug/info/warning/error四级静态日志方法统一日志输出；Debouncer防抖器默认300ms延迟，适用于防重复点击、搜索输入实时过滤等高频场景。 | **H1**-core/utils / **H2**-关键文件 | Flutter开发者 | 通用工具集合说明 |
+| [uav-mobile-app/lib/models/README.md](./uav-mobile-app/lib/models/README.md) | 数据模型层（共8个模型文件），定义全部业务实体Dart数据类含JSON序列化/反序列化：drone（无人机状态）、task（任务+约束+航点）、waypoint（航点LatLng转换）、weather_data（含风险等级计算）、user（含isAdmin角色判断）、path_plan（算法耗时估算）、data_source（类型标签）、system_status（服务/算法状态）。 | **H1**-models / **H2**-关键文件 | Flutter开发者 | 业务数据模型层说明 |
+| [uav-mobile-app/lib/providers/README.md](./uav-mobile-app/lib/providers/README.md) | 基于Riverpod的全局状态管理层，将Service层封装为Provider，AsyncNotifier管理异步数据加载/刷新/增删改，UI层通过ref.watch/ref.read消费；覆盖认证/无人机/任务/气象/规划/数据源/监控七大模块，建立Provider→Notifier→State三层体系。 | **H1**-providers / **H2**-关键文件·模块Provider清单 | Flutter开发者、架构设计人员 | Riverpod全局状态管理说明 |
+| [uav-mobile-app/lib/services/README.md](./uav-mobile-app/lib/services/README.md) | 服务层封装全部后端API交互逻辑（9个核心服务），每个服务通过ApiClient发HTTP请求并将响应转为领域模型：AuthService（登录/登出/Token）、DroneService（CRUD）、TaskService、WeatherService、PathPlanningService（VRPTW/A*/DWA）、DataSourceService、MonitorService、EdgeCoordinatorService（边云协同）、OfflineService。 | **H1**-services / **H2**-关键文件 | Flutter开发者、后端对接人员 | 后端API交互服务层说明 |
+| [uav-mobile-app/lib/widgets/README.md](./uav-mobile-app/lib/widgets/README.md) | 可复用Flutter Widget组件主目录，采用组件化架构将跨页面复用的基础Widget集中管理，当前包含common/子模块提供通用UI组件，提升代码复用性和维护一致性。 | **H1**-widgets / **H2**-子目录 | Flutter前端开发者 | 自定义Widget组件总目录 |
+| [uav-mobile-app/lib/widgets/common/README.md](./uav-mobile-app/lib/widgets/common/README.md) | 通用UI组件集合（5个核心组件），在各业务页面共享复用：StatusCard（状态卡片含标题/数值/颜色/跳转）、LoadingPage（居中加载动画+提示）、ErrorPage（错误图标+消息+重试按钮）、EmptyPage（空状态图标+提示）、SectionTitle（分区标题含右侧附加Widget）。 | **H1**-widgets/common / **H2**-关键文件·组件清单 | Flutter前端开发者、UI设计实现人员 | 通用UI组件集合说明 |
+| [uav-mobile-app/lib/pages/home/README.md](./uav-mobile-app/lib/pages/home/README.md) | 首页仪表盘模块（应用主入口），聚合展示系统概览（在线无人机数/待执行任务数/系统状态/今日完成数）、快速操作入口（路径规划/气象数据/任务/无人机管理）、气象预警、任务统计及六大核心能力展示，帮助用户快速掌握全局运行状况。 | **H1**-pages/home / **H2**-关键文件·页面结构 | 无人机运营人员、任务调度员 | 首页仪表盘页面说明 |
+| [uav-mobile-app/lib/pages/login/README.md](./uav-mobile-app/lib/pages/login/README.md) | 登录认证页面，提供基于用户名/密码的表单认证，支持密码明文/密文切换（眼睛图标）、表单非空校验、Riverpod状态管理AuthService.login()调用、Token存储后跳转首页、预填默认凭据admin/admin123便于调试。 | **H1**-pages/login / **H2**-关键文件·功能 | 系统最终用户（操作员/调度员/管理员） | 登录认证页面说明 |
+| [uav-mobile-app/lib/pages/monitoring/README.md](./uav-mobile-app/lib/pages/monitoring/README.md) | 系统监控页面，使用fl_chart实时呈现CPU/内存/磁盘使用率（5秒刷新）、在线/离线服务数量与健康评分、当前活跃任务数、各算法（3D-VAR/EnKF/VRPTW/A*/DWA等）执行时间和成功率柱状图，为运维提供可视化性能监控。 | **H1**-pages/monitoring / **H2**-关键文件·功能 | 系统运维人员、技术管理人员 | 性能监控可视化页面说明 |
+| [uav-mobile-app/lib/pages/cockpit/README.md](./uav-mobile-app/lib/pages/cockpit/README.md) | 系统驾驶舱页面（核心可视化模块），fl_chart雷达图实现风速风向动态仪表（3秒实时更新）、flutter_map气象图层叠加二维风羽图、自定义绘制无人机飞线轨迹、fl_chart折线图展示风速/温度/湿度随高度深度剖面对比，是技术亮点最集中的界面。 | **H1**-pages/cockpit / **H2**-关键文件·可视化组件 | Flutter开发者、数据可视化工程师 | 实时气象可视化驾驶舱说明 |
+| [uav-mobile-app/lib/pages/planning/README.md](./uav-mobile-app/lib/pages/planning/README.md) | 路径规划核心页面，基于flutter_map+OpenStreetMap瓦片，支持地图上添加/移动航点、调用多种算法（VRPTW全局分配/A*全局/DWA局部/全链路综合规划）进行路径计算，展示实时气象面板（风速/温度/湿度/风险等级）及路径距离+预计时间结果。 | **H1**-pages/planning / **H2**-关键文件·功能 | 任务规划员、无人机操作员 | 路径规划核心交互页面说明 |
+| [uav-mobile-app/lib/pages/tasks/README.md](./uav-mobile-app/lib/pages/tasks/README.md) | 任务管理页面（无人机日常任务集中管控），支持按全部/待分配/已分配/执行中/已完成五种状态筛选任务列表，任务卡片展示类型标签（物流/巡检/救援/监测）+优先级+航点数，弹窗表单供新建任务，实现全生命周期便捷管理。 | **H1**-pages/tasks / **H2**-关键文件·功能 | 任务调度员、项目管理人员 | 任务全生命周期管理页面说明 |
+| [uav-mobile-app/lib/pages/weather/README.md](./uav-mobile-app/lib/pages/weather/README.md) | 气象数据页面（无人机飞行气象决策支持），flutter_map叠加风速风向可视化图层，支持切换预报时间点和100m/500m/1000m/1500m高度层数据，实时显示风速/风向/温度/湿度/湍流度/能见度指标，fl_chart折线图展示趋势+气象预警列表。 | **H1**-pages/weather / **H2**-关键文件·功能 | 气象分析师、飞行安全管理人员 | 多高度层气象数据可视化说明 |
+| [uav-mobile-app/lib/pages/drones/README.md](./uav-mobile-app/lib/pages/drones/README.md) | 无人机管理页面，卡片列表展示无人机关键信息（电池电量/型号/最大载荷/续航/速度），支持按在线/待命/维护三种状态筛选过滤，内置猎鹰/天鹰/闪电/海燕4系列共6架模拟数据，为路径规划提供设备资源池可视化管理。 | **H1**-pages/drones / **H2**-关键文件·功能 | 无人机操作员、设备管理员 | 无人机资产可视化管理说明 |
+| [uav-mobile-app/lib/pages/data_sources/README.md](./uav-mobile-app/lib/pages/data_sources/README.md) | 数据源管理页面，TabBar组件实现分类切换查看5类气象数据来源：全部/地面气象观测站/海上浮标/卫星遥感/气象雷达，每种类型与DataSource模型的type字段标签对应，提供数据来源全景视图。 | **H1**-pages/data_sources / **H2**-关键文件·数据源类型 | 前端开发者、气象数据管理员 | 多源气象数据分类展示说明 |
+| [uav-mobile-app/lib/pages/edge/README.md](./uav-mobile-app/lib/pages/edge/README.md) | 边云协同管理页面，调用EdgeCoordinatorService管理边缘计算节点，实时显示云端/边缘端连接状态（在线/离线），统计面板展示任务队列/已完成数/缓冲区使用率，核心功能将气象数据提交边缘节点做风险评估（low→severe四等级+颜色+警告信息）。 | **H1**-pages/edge / **H2**-关键文件·功能·风险评估等级 | 系统集成人员、前端开发者 | 边云协同交互与风险评估页面说明 |
+| [uav-mobile-app/lib/pages/history/README.md](./uav-mobile-app/lib/pages/history/README.md) | 历史记录页面，展示已执行任务历史清单，三重过滤机制：按名称/编号模糊搜索、按成功/失败/进行中状态筛选、按起止日期范围选择，每条记录展示任务编号/名称/时间/状态/飞行距离/执行耗时等完整信息，供审计与回顾。 | **H1**-pages/history / **H2**-关键文件·功能 | 前端开发者、任务审计人员 | 历史任务查询与审计页面说明 |
+| [uav-mobile-app/lib/pages/settings/README.md](./uav-mobile-app/lib/pages/settings/README.md) | 应用设置页面，三大配置组：服务器配置（API地址/边缘计算节点地址）、系统设置（离线地图缓存/地图类型/暗黑模式切换）、数据同步（自动同步开关），用户可根据部署环境和偏好灵活调整移动端行为。 | **H1**-pages/settings / **H2**-关键文件·配置分组 | 系统管理员、高级操作员 | 应用级全局配置页面说明 |
 
 ---
 
@@ -323,12 +348,12 @@
 | 四、部署与运维 | 25 | Docker/K8s/监控/边缘/流处理/备份/数据库/ArgoCD/Istio/容灾/可观测性 |
 | 五、API 接口 | 24 | 8个服务群的完整接口文档（REST+WebSocket+gRPC） |
 | 六、开发指南与规范 | 10 | 熔断器、异常处理、安全密钥、故障排查、编码规范、PR模板 |
-| 七、数据同化平台 | 13 | 算法核心库、示例代码、测试指南、配置、基准测试 |
+| 七、数据同化平台 | 16 | 算法核心库、示例代码、测试指南、配置、基准测试、性能报告 |
 | 八、测试与质量保障 | 8 | 6类测试体系、性能测试、E2E测试、移动端测试 |
 | 九、报告与归档 | 28 | 12份质量报告+12份历史归档+4份专项报告 |
-| 十、SDK与移动端前端 | 7 | C++边缘SDK、Flutter移动端、Vue3前端 |
+| 十、SDK与移动端前端 | 28 | C++边缘SDK（5）、Flutter移动端（23含全lib/页面结构）、Vue3前端（1） |
 | 十一、辅助目录 | 24 | 各功能子目录的README索引说明 |
-| **合计** | **168** | **全项目覆盖，无一遗漏** |
+| **合计** | **206** | **全项目覆盖，无遗漏** |
 
 ---
 
@@ -336,4 +361,4 @@
 >
 > **快速定位技巧**：在 IDE 中 `Ctrl+F` 搜索模块名、技术关键词（如"熔断""K8s""WRF""同化"）或文件名即可秒级定位。
 >
-> **索引版本**：v1.0 | **最后更新**：2026-05-14 | **维护者**：DITHIOTHREITOL
+> **索引版本**：v1.1 | **最后更新**：2026-05-14 | **维护者**：DITHIOTHREITOL
