@@ -51,7 +51,7 @@ graph TB
 ### 第一步：克隆项目
 
 ```bash
-git clone https://github.com/602420232-dotcom/weather uav-platform
+git clone https://github.com/602420232-dotcom/weather/uav-platform
 cd uav-platform
 ```
 
