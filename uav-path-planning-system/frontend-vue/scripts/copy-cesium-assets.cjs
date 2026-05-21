@@ -1,8 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 
-const sourceDir = path.resolve(__dirname, 'node_modules', 'cesium', 'Build', 'Cesium')
-const targetDir = path.resolve(__dirname, 'public', 'cesium')
+const sourceDir = path.resolve(__dirname, '..', 'node_modules', 'cesium', 'Build', 'Cesium')
+const targetDir = path.resolve(__dirname, '..', 'public', 'cesium')
 
 const dirsToCopy = ['Workers', 'Assets', 'Widgets', 'ThirdParty']
 

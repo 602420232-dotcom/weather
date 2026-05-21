@@ -33,7 +33,7 @@
           <div class="drone-list">
             <div v-for="(d, i) in drones" :key="i" class="drone-item">
               <span class="drone-id">{{ d.id }}</span>
-              <span class="drone-status" :class="d.status">{{ d.status }}</span>
+              <span class="drone-status" :class="statusClass(d.status)">{{ d.status }}</span>
               <span class="drone-battery">{{ d.battery }}%</span>
             </div>
           </div>
@@ -116,7 +116,7 @@
 <script>
 import * as echarts from 'echarts';
 import { ARDigitalMap } from '@/utils/ar_digital_map';
-import { ref, onMounted, onUnmounted, reactive, computed } from 'vue';
+import { ref, onMounted, onUnmounted, reactive } from 'vue';
 
 export default {
   name: 'SmartCockpit',
@@ -171,41 +171,56 @@ export default {
     const currentTime = ref('00:00:00');
     const isPlaying = ref(false);
 
+    function statusClass(status) {
+      const map = { '飞行中': 'flight', '悬停': 'hover', '返航': 'return', '待命': 'standby' };
+      return map[status] || '';
+    }
+
     function initWeatherChart() {
-      const chart = echarts.init(weatherChart.value);
+      const el = weatherChart.value;
+      if (!el) return;
+      const chart = echarts.init(el);
       chart.setOption({
         series: [{
           type: 'gauge',
           startAngle: 90, endAngle: -270,
-          axisLine: { lineStyle: { width: 20 } },
-          detail: { formatter: '{value}°' },
+          radius: '88%',
+          axisLine: { lineStyle: { width: 10 } },
+          detail: { fontSize: 16, formatter: '{value}°' },
           data: [{ value: 25, name: '温度' }]
         }]
       });
+      requestAnimationFrame(() => chart.resize());
     }
 
     function initFlightChart() {
-      const chart = echarts.init(flightChart.value);
+      const el = flightChart.value;
+      if (!el) return;
+      const chart = echarts.init(el);
       chart.setOption({
         xAxis: { type: 'category', data: ['UAV-1', 'UAV-2', 'UAV-3', 'UAV-4'] },
         yAxis: { type: 'value', max: 100 },
         series: [
           { type: 'bar', data: [85, 72, 35, 100], name: '电量', color: '#00d4ff' },
-          { type: 'line', data: [60, 45, 80, 0], name: '高度(m)', color: '#ff6b6b', yAxisIndex: 0 }
+          { type: 'line', data: [60, 45, 80, 0], name: '高度(m)', color: '#ff6b6b' }
         ]
       });
+      requestAnimationFrame(() => chart.resize());
     }
 
     function initHistoryChart() {
-      const chart = echarts.init(historyChart.value);
+      const el = historyChart.value;
+      if (!el) return;
+      const chart = echarts.init(el);
       chart.setOption({
         xAxis: { type: 'time' },
         yAxis: { type: 'value' },
         series: [{ type: 'line', data: [], smooth: true, areaStyle: {} }]
       });
+      requestAnimationFrame(() => chart.resize());
     }
 
-    let updateInterval = null
+    let updateInterval = null;
     onMounted(() => {
       initWeatherChart();
       initFlightChart();
@@ -222,11 +237,12 @@ export default {
     });
 
     onUnmounted(() => {
-      if (updateInterval) clearInterval(updateInterval)
-      if (weatherChart.value) weatherChart.value.dispose()
-      if (flightChart.value) flightChart.value.dispose()
-      if (historyChart.value) historyChart.value.dispose()
-    })
+      if (updateInterval) clearInterval(updateInterval);
+      [weatherChart, flightChart, historyChart].forEach(ref => {
+        const instance = echarts.getInstanceByDom(ref.value);
+        if (instance) instance.dispose();
+      });
+    });
 
     function togglePlay() {
       isPlaying.value = !isPlaying.value;
@@ -236,21 +252,24 @@ export default {
       weatherChart, flightChart, historyChart, mapContainer,
       statusItems, weatherMetrics, drones, missionProgress,
       completedTasks, activeTasks, pendingTasks,
-      alerts, resources, timelinePosition, currentTime, togglePlay
+      alerts, resources, timelinePosition, currentTime,
+      togglePlay, statusClass
     };
   }
 };
 </script>
 
 <style scoped>
-.smart-cockpit { height: 100vh; background: #0a0e1a; color: #e0e0e0; padding: 16px; }
-.status-bar { display: flex; gap: 20px; padding: 12px 20px; background: rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 16px; }
+.smart-cockpit { height: 100vh; background: #0a0e1a !important; color: #e0e0e0; padding: 12px; display: flex; flex-direction: column; overflow: hidden; }
+.status-bar { display: flex; gap: 16px; padding: 10px 16px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 12px; flex-shrink: 0; flex-wrap: wrap; }
 .status-item { display: flex; align-items: center; gap: 8px; }
 .status-icon.ok { color: #00ff88; }
-.cockpit-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 16px; height: calc(100vh - 100px); }
-.panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px; overflow: hidden; }
-.panel-header { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #00d4ff; }
-.chart, .map-container { height: 120px; }
+.cockpit-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 10px; height: calc(100vh - 86px); }
+.panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; overflow: hidden; display: flex; flex-direction: column; }
+.panel-header { font-size: 12px; font-weight: 600; margin-bottom: 6px; color: #00d4ff; flex-shrink: 0; line-height: 1.2; }
+.panel-body { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+.chart, .map-container { flex: 1; min-height: 0; min-width: 0; align-self: stretch; }
+.weather-metrics, .drone-list, .mission-stats, .resource-list, .timeline-controls { flex-shrink: 0; flex-grow: 0; margin-top: 6px; }
 .weather-panel { grid-column: 1; grid-row: 1; }
 .flight-panel { grid-column: 2; grid-row: 1; }
 .mission-panel { grid-column: 3; grid-row: 1; }
@@ -266,9 +285,9 @@ export default {
 .resource-item { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .drone-item { display: flex; justify-content: space-between; padding: 4px 0; }
 .drone-status.flight { color: #00ff88; }
-.drone-status.悬停 { color: #ffd700; }
-.drone-status.返航 { color: #ff9800; }
-.drone-status.待命 { color: #90a4ae; }
+.drone-status.hover { color: #ffd700; }
+.drone-status.return { color: #ff9800; }
+.drone-status.standby { color: #90a4ae; }
 .mission-progress { display: flex; gap: 16px; }
 .progress-ring { position: relative; width: 100px; height: 100px; }
 .progress-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 8; }

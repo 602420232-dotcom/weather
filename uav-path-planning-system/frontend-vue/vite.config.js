@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), vueJsx()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -41,11 +42,11 @@ export default defineConfig({
     sourcemap: false
   },
   optimizeDeps: {
+    noDiscovery: true,
     include: [
       'vue', 'vue-router', 'pinia', 'axios',
       'leaflet', 'echarts', 'ant-design-vue',
       'cesium'
-    ],
-    exclude: []
+    ]
   }
 })

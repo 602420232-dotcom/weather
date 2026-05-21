@@ -2,9 +2,9 @@ spring:
   application:
     name: uav-path-planning
 
-  # 数据库配置
+  # 閺佺増宓佹惔鎾诲帳缂?
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:uav_path_planning}?useSSL=true&requireSSL=true&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:uav_path_planning}?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ${DB_USER:root}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,19 +16,19 @@ spring:
       max-lifetime: ${DB_MAX_LIFETIME:1800000}
       leak-detection-threshold: ${DB_LEAK_DETECTION_THRESHOLD:60000}
 
-  # JPA配置
+  # JPA闁板秶鐤?
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
 
-  # 文件上传限制
+  # 閺傚洣娆㈡稉濠佺炊闂勬劕鍩?
   servlet:
     multipart:
       max-file-size: 500MB
       max-request-size: 1GB
 
-  # Redis配置
+  # Redis闁板秶鐤?
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -36,11 +36,11 @@ spring:
       password: ${REDIS_PASSWORD}
       database: 0
 
-  # 缓存配置
+  # 缂傛挸鐡ㄩ柊宥囩枂
   cache:
     type: redis
 
-# 服务器配置
+# 閺堝秴濮熼崳銊╁帳缂?
 server:
   port: ${SERVER_PORT:8089}
   ssl:
@@ -49,13 +49,13 @@ server:
     key-store-password: ${SSL_KEY_STORE_PASSWORD}
     key-alias: ${SSL_KEY_ALIAS:}
 
-# JWT配置
+# JWT闁板秶鐤?
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:86400000}
   enabled: ${JWT_ENABLED:true}
 
-# 自定义配置
+# 閼奉亜鐣炬稊澶愬帳缂?
 uav:
   python:
     script-path: ${user.dir}/algorithm-core

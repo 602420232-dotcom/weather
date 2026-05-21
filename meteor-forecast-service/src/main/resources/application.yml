@@ -2,20 +2,20 @@ spring:
   application:
     name: meteor-forecast-service
   
-  # 数据库配置
+  # 閺佺増宓佹惔鎾诲帳缂?
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:3306/meteor_forecast?useSSL=true&requireSSL=true&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/meteor_forecast?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ${DB_USER:root}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   
-  # JPA配置
+  # JPA闁板秶鐤?
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
 
-# 服务器配置
+# 閺堝秴濮熼崳銊╁帳缂?
 server:
   port: 8082
   ssl:
@@ -24,7 +24,7 @@ server:
     key-store-password: ${SSL_KEY_STORE_PASSWORD:}
     key-alias: ${SSL_KEY_ALIAS:}
 
-# Actuator 健康检查
+# Actuator 閸嬨儱鎮嶅Λ鈧弻?
 management:
   endpoints:
     web:
@@ -34,11 +34,11 @@ management:
     health:
       show-details: when-authorized
 
-# 预测服务配置
+# 妫板嫭绁撮張宥呭闁板秶鐤?
 forecast:
-  # 模型路径
+  # 濡€崇€风捄顖氱窞
   model-path: ${user.dir}/models
-  # Python脚本路径
+  # Python閼存碍婀扮捄顖氱窞
   python-script: ${user.dir}/src/main/python/meteor_forecast.py
-  # 处理超时时间
+  # 婢跺嫮鎮婄搾鍛閺冨爼妫?
   timeout: 60000

@@ -101,11 +101,7 @@ import {
   margin-bottom: 24px;
 }
 
-.status-card,
-.weather-card,
-.task-card {
-  height: 200px;
-}
+/* 三卡片在同一 flex 行内，内容量一致，天然等高，无需硬编码高度 */
 
 .quick-actions {
   margin-top: 24px;

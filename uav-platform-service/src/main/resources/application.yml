@@ -1,28 +1,30 @@
 spring:
   application:
     name: uav-platform-service
+  main:
+    allow-bean-definition-overriding: true
   
-  # 数据库配置
+  # 閺佺増宓佹惔鎾诲帳缂?
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:3306/uav_platform?useSSL=true&requireSSL=true&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/uav_platform?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ${DB_USER:root}
-    password: ${DB_PASSWORD}  # 移除默认值，强制要求配置
+    password: ${DB_PASSWORD}  # 缁夊娅庢妯款吇閸婄》绱濆鍝勫煑鐟曚焦鐪伴柊宥囩枂
     driver-class-name: com.mysql.cj.jdbc.Driver
   
-  # JPA配置
+  # JPA闁板秶鐤?
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
   
-  # Spring Security配置
+  # Spring Security闁板秶鐤?
   security:
     user:
       name: ${SECURITY_USER_NAME:admin}
-      password: ${SECURITY_USER_PASSWORD}  # 移除默认值，强制要求配置
+      password: ${SECURITY_USER_PASSWORD}  # 缁夊娅庢妯款吇閸婄》绱濆鍝勫煑鐟曚焦鐪伴柊宥囩枂
       roles: ADMIN
 
-# 服务器配置
+# 閺堝秴濮熼崳銊╁帳缂?
 server:
   port: 8080
   ssl:
@@ -31,7 +33,7 @@ server:
     key-store-password: ${SSL_KEY_STORE_PASSWORD:}
     key-alias: ${SSL_KEY_ALIAS:}
 
-# Actuator 健康检查
+# Actuator 閸嬨儱鎮嶅Λ鈧弻?
 management:
   endpoints:
     web:
@@ -41,20 +43,20 @@ management:
     health:
       show-details: when-authorized
 
-# 服务配置
+# 閺堝秴濮熼柊宥囩枂
 services:
-  # WRF处理服务
+  # WRF婢跺嫮鎮婇張宥呭
   wrf-processor:
     url: http://wrf-processor:8081/api/wrf
   
-  # 贝叶斯同化服务
+  # 鐠愭繂褰鹃弬顖氭倱閸栨牗婀囬崝?
   data-assimilation:
     url: http://data-assimilation:8084/api/assimilation
   
-  # 气象预测服务
+  # 濮樻棁钖勬０鍕ゴ閺堝秴濮?
   meteor-forecast:
     url: http://meteor-forecast:8082/api/forecast
   
-  # 路径规划服务
+  # 鐠侯垰绶炵憴鍕灊閺堝秴濮?
   path-planning:
     url: http://path-planning:8083/api/planning
