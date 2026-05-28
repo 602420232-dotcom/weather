@@ -8,10 +8,6 @@ class AppConfig {
   static const String appName = '无人机路径规划系统';
   static const String appVersion = '1.0.0';
 
-  // API 基础地址（自动适配运行环境）
-  // - Android 模拟器: 10.0.2.2 (宿主机的别名)
-  // - iOS 模拟器: localhost
-  // - 真机/桌面: 替换为 WSL2 IP (172.27.212.53)
   static String get apiBaseUrl {
     if (Platform.isAndroid) {
       return 'http://10.0.2.2:8088';
@@ -26,16 +22,13 @@ class AppConfig {
     'planning': '/api/planning',
     'assimilation': '/api/assimilation',
     'weather': '/api/weather',
-    // edge 服务地址，用于真机部署时替换
-    // 'edge': 'http://172.27.212.53:8000',
     'edge': 'http://localhost:8000',
   };
 
-  /// 获取完整 API 路径
   static String api(String key, [String path = '']) {
     final base = apiEndpoints[key] ?? '';
     if (base.startsWith('http')) return '$base$path';
-    return '${apiBaseUrl}$base$path';
+    return '$apiBaseUrl$base$path';
   }
 
   static const Color primaryColor = Color(0xFF1677FF);
@@ -53,14 +46,14 @@ class AppConfig {
         centerTitle: true,
         elevation: 0,
       ),
-      cardTheme: const CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      inputDecorationTheme: const InputDecorationTheme(
-        border: const OutlineInputBorder(
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
         ),
         contentPadding: const EdgeInsets.symmetric(
@@ -80,14 +73,14 @@ class AppConfig {
         centerTitle: true,
         elevation: 0,
       ),
-      cardTheme: const CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      inputDecorationTheme: const InputDecorationTheme(
-        border: const OutlineInputBorder(
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
         ),
         contentPadding: const EdgeInsets.symmetric(
