@@ -53,14 +53,14 @@ class AppConfig {
         centerTitle: true,
         elevation: 0,
       ),
-      cardTheme: CardTheme(
+      cardTheme: const CardTheme(
         elevation: 2,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
+      inputDecorationTheme: const InputDecorationTheme(
+        border: const OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
         ),
         contentPadding: const EdgeInsets.symmetric(
@@ -80,14 +80,14 @@ class AppConfig {
         centerTitle: true,
         elevation: 0,
       ),
-      cardTheme: CardTheme(
+      cardTheme: const CardTheme(
         elevation: 2,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
+      inputDecorationTheme: const InputDecorationTheme(
+        border: const OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
         ),
         contentPadding: const EdgeInsets.symmetric(
