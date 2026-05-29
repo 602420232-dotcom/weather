@@ -332,20 +332,20 @@ class _PlanningPageState extends ConsumerState<PlanningPage> {
             PolylineLayer(polylines: polylines),
           ],
         ),
-        Positioned(
+        const Positioned(
           top: 8,
           right: 8,
           child: Card(
             child: Padding(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('💡 提示', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                  const SizedBox(height: 4),
-                  const Text('点击地图添加任务点', style: TextStyle(fontSize: 11, color: Colors.grey)),
-                  const Text('✏️ 按钮手动输入坐标', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                  Text('💡 提示', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                  SizedBox(height: 4),
+                  Text('点击地图添加任务点', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                  Text('✏️ 按钮手动输入坐标', style: TextStyle(fontSize: 11, color: Colors.grey)),
                 ],
               ),
             ),
