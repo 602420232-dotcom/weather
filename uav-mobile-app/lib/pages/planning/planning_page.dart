@@ -347,7 +347,7 @@ class _PlanningPageState extends ConsumerState<PlanningPage> {
           ),
           children: [
             TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              urlTemplate: AppConfig.mapTileUrl(Theme.of(context).brightness),
               userAgentPackageName: 'com.uav.planning',
             ),
             MarkerLayer(markers: markers),

@@ -14,6 +14,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "uav.security.common-enabled", havingValue = "true", matchIfMissing = false)
 public class CommonSecurityConfig {
 
     @Bean

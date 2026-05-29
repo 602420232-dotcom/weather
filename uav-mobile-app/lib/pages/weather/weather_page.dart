@@ -237,7 +237,7 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
               options: const MapOptions(initialCenter: LatLng(39.9042, 116.4074), initialZoom: 10),
               children: [
                 TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  urlTemplate: AppConfig.mapTileUrl(Theme.of(context).brightness),
                   userAgentPackageName: 'com.uav.planning',
                 ),
                 MarkerLayer(

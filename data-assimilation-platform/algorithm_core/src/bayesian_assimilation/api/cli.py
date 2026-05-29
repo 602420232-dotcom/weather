@@ -21,7 +21,7 @@ from bayesian_assimilation.adapters.io import write_netcdf, write_hdf5
 from bayesian_assimilation.quality_control import MeteorologicalQualityControl
 from bayesian_assimilation.risk_assessment import MeteorologicalRiskAssessment
 from bayesian_assimilation.time_series import TimeSeriesAnalyzer
-from bayesian_assimilation.utils.logging import setup_logging
+from bayesian_assimilation.utils import setup_logging
 
 logger = logging.getLogger(__name__)
 

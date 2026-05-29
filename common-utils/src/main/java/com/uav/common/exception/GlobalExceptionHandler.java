@@ -20,7 +20,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -116,12 +115,6 @@ public class GlobalExceptionHandler {
         Thread.currentThread().interrupt();
         log.error("操作被中断", e);
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "操作被中断", null);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleException(Exception e) {
-        log.error("系统异常: {}", e.getClass().getSimpleName(), e);
-        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "服务器内部错误", null);
     }
 
     private ResponseEntity<Map<String, Object>> buildError(HttpStatus status, String message, Object detail) {

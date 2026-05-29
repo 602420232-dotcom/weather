@@ -50,7 +50,7 @@ dependencies:
   freezed_annotation: ^2.4.1
   permission_handler: ^11.2.0
   path_provider: ^2.1.2
-  package_info_plus: ^5.0.1
+  package_info_plus: ^8.0.0
 
   # 安全与加密
   crypto: ^3.0.3

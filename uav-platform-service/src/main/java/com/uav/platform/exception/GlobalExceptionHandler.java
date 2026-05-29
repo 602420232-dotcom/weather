@@ -20,16 +20,16 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends com.uav.common.exception.GlobalExceptionHandler {
 
+    @Override
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("code", 400, "message", e.getMessage()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleAllExceptions(Exception ex, WebRequest request) {
         log.error("请求处理异常: {} - {}", request.getDescription(false), ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("code", 500, "message", "服务器内部错误"));
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleBadRequest(IllegalArgumentException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("code", 400, "message", ex.getMessage()));
     }
 }

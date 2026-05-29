@@ -1,0 +1,39 @@
+site_name: UAV 智能路径规划系统
+site_description: 气象驱动无人机 VRP 智能路径规划系统
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: zh
+  palette:
+    primary: indigo
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - admonition
+  - toc:
+      permalink: true
+
+nav:
+  - 首页: README.md
+  - 项目总览:
+    - 文档中心: README.md
+    - 快速参考: QUICK_REFERENCE.md
+    - 完整构建指南: COMPLETE_BUILD_GUIDE.md
+  - 架构与设计:
+    - 架构设计: architecture.md
+    - 项目结构: PROJECT_STRUCTURE.md
+    - 端口配置: PORTS_CONFIGURATION.md
+    - API聚合: API_AGGREGATION_CONFIG.md
+  - 部署:
+    - Docker: DOCKER.md
+    - 构建示例: EXAMPLE.md
+  - 开发:
+    - Maven修复: MAVEN_FIX.md
+    - Feign迁移: FEIGN_MIGRATION_GUIDE.md
+  - 报告:
+    - 优化报告: OPTIMIZATION_COMPLETE_REPORT.md
+    - 升级报告: UPGRADE_REPORT.md
+    - 待办: TODO_CHECKLIST.md

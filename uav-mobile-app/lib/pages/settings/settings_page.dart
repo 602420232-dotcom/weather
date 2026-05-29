@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../config/app_config.dart';
+import '../../core/storage/local_storage.dart';
 import '../../providers/app_providers.dart';
 import '../../services/offline_manager.dart';
 
@@ -14,12 +15,13 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
-  bool _darkMode = false;
   bool _offlineCache = true;
   bool _pushNotifications = true;
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark;
     return Scaffold(
       appBar: AppBar(title: const Text('设置')),
       body: ListView(
@@ -56,16 +58,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               onChanged: (val) => setState(() => _pushNotifications = val),
             ),
             SwitchListTile(
-              secondary: Icon(_darkMode ? Icons.dark_mode : Icons.light_mode),
+              secondary: Icon(isDark ? Icons.dark_mode : Icons.light_mode),
               title: const Text('深色模式'),
               subtitle: const Text('适合夜间飞行作业'),
-              value: _darkMode,
+              value: isDark,
               onChanged: (val) {
-                setState(() => _darkMode = val);
-                // Apply theme change globally
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('深色模式已${val ? '开启' : '关闭'}（重启生效）')),
-                );
+                ref.read(themeModeProvider.notifier).state =
+                    val ? ThemeMode.dark : ThemeMode.light;
+                LocalStorage().setThemeMode(val ? 'dark' : 'light');
               },
             ),
           ]),

@@ -1,6 +1,6 @@
 """
 Auto-generated unit test
-Source: d:\Developer\workplace\py\iteam\trae\data-assimilation-platform\algorithm_core\src\data_sources\satellite.py
+Source: d:/Developer/workplace/py/iteam/trae/data-assimilation-platform/algorithm_core/src/data_sources/satellite.py
 Generated: 2026-05-09
 """
 

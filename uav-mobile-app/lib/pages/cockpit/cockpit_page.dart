@@ -291,7 +291,7 @@ class _CockpitPageState extends ConsumerState<CockpitPage> {
           options: const MapOptions(initialCenter: LatLng(39.9042, 116.4074), initialZoom: 12),
           children: [
             TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              urlTemplate: AppConfig.mapTileUrl(Theme.of(context).brightness),
               userAgentPackageName: 'com.uav.planning',
             ),
             const MarkerLayer(

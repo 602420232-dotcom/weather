@@ -46,18 +46,16 @@ ENV/
 # Java / Spring Boot
 # -----------------
 target/
-!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
 # Compiled class file
 *.class
 
-# Log file
-*.log
-
 # Maven
-.mvn/
+.mvn/*
+!.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
 mvnw
 mvnw.cmd
 
@@ -65,6 +63,51 @@ mvnw.cmd
 .gradle/
 **/build/
 !gradle/wrapper/gradle-wrapper.jar
+
+# -----------------
+# CMake
+# -----------------
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+build.ninja
+.ninja_deps
+.ninja_log
+rules.ninja
+CMakeDoxyfile.in
+CMakeDoxygenDefaults.cmake
+compile_commands.json
+CTestTestfile.cmake
+_cpack_configure.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
+*.cmake
+!CMakeLists.txt
+uav-edge-sdk/build/
+
+# -----------------
+# Flutter / Dart
+# -----------------
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+*.iml
+*.apk
+*.ap_
+*.aab
+*.jar
+uav-mobile-app/.dart_tool/
+uav-mobile-app/.flutter-plugins
+uav-mobile-app/.flutter-plugins-dependencies
+uav-mobile-app/.packages
+uav-mobile-app/.pub-cache/
+uav-mobile-app/.pub/
+uav-mobile-app/build/
 
 # -----------------
 # Node.js / Vue
@@ -84,10 +127,15 @@ yarn-error.log*
 # IDE - General
 # -----------------
 .idea/
+.vs/
 *.swp
 *.swo
 *~
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
 .settings/
 *.sublime-*
 .DS_Store
@@ -149,16 +197,34 @@ test_output/
 .dockerignore
 docker-compose.override.yml
 
-# OS Specific
-.DS_Store
-Thumbs.db
-
-# Documentation
+# Documentation (MkDocs build output)
 site/
-*.tmp
-*.bak
 
 # Output directories
 data-assimilation-platform/algorithm_core/examples/output/
 data-assimilation-platform/algorithm_core/examples/test_output/
 tools/mypanel/node_modules
+
+# -----------------
+# Pixi
+# -----------------
+.pixi/
+.pixi.lock
+
+# -----------------
+# Additional
+# -----------------
+*.pid
+*.seed
+*.pid.lock
+coverage/
+.nyc_output/
+*.orig
+*.rej
+*.bak
+*.tmp
+*.temp
+sl.exe
+logs/
+*.log
+!**/src/main/resources/logback-spring.xml

@@ -207,6 +207,9 @@ class RRTP:
                 'error': str(e)
             }
 
+# 别名，兼容旧引用
+RRTStarPlanner = RRTP
+
 class DijkstraPlanner:
     """
     Dijkstra路径规划器

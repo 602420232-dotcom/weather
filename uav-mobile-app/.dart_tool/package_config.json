@@ -363,9 +363,9 @@
     },
     {
       "name": "http",
-      "rootUri": "file:///C:/Users/Dithiothreitol/AppData/Local/Pub/Cache/hosted/pub.flutter-io.cn/http-1.2.0",
+      "rootUri": "file:///C:/Users/Dithiothreitol/AppData/Local/Pub/Cache/hosted/pub.flutter-io.cn/http-1.6.0",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.4"
     },
     {
       "name": "http_multi_server",
@@ -537,15 +537,15 @@
     },
     {
       "name": "package_info_plus",
-      "rootUri": "file:///C:/Users/Dithiothreitol/AppData/Local/Pub/Cache/hosted/pub.flutter-io.cn/package_info_plus-5.0.1",
+      "rootUri": "file:///C:/Users/Dithiothreitol/AppData/Local/Pub/Cache/hosted/pub.flutter-io.cn/package_info_plus-8.3.1",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.3"
     },
     {
       "name": "package_info_plus_platform_interface",
-      "rootUri": "file:///C:/Users/Dithiothreitol/AppData/Local/Pub/Cache/hosted/pub.flutter-io.cn/package_info_plus_platform_interface-2.0.1",
+      "rootUri": "file:///C:/Users/Dithiothreitol/AppData/Local/Pub/Cache/hosted/pub.flutter-io.cn/package_info_plus_platform_interface-3.2.1",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.18"
     },
     {
       "name": "path",
@@ -765,9 +765,9 @@
     },
     {
       "name": "shared_preferences_web",
-      "rootUri": "file:///C:/Users/Dithiothreitol/AppData/Local/Pub/Cache/hosted/pub.flutter-io.cn/shared_preferences_web-2.2.2",
+      "rootUri": "file:///C:/Users/Dithiothreitol/AppData/Local/Pub/Cache/hosted/pub.flutter-io.cn/shared_preferences_web-2.4.3",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.4"
     },
     {
       "name": "shared_preferences_windows",
@@ -921,15 +921,21 @@
     },
     {
       "name": "web",
-      "rootUri": "file:///C:/Users/Dithiothreitol/AppData/Local/Pub/Cache/hosted/pub.flutter-io.cn/web-0.4.2",
+      "rootUri": "file:///C:/Users/Dithiothreitol/AppData/Local/Pub/Cache/hosted/pub.flutter-io.cn/web-1.1.1",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.4"
+    },
+    {
+      "name": "web_socket",
+      "rootUri": "file:///C:/Users/Dithiothreitol/AppData/Local/Pub/Cache/hosted/pub.flutter-io.cn/web_socket-1.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
     },
     {
       "name": "web_socket_channel",
-      "rootUri": "file:///C:/Users/Dithiothreitol/AppData/Local/Pub/Cache/hosted/pub.flutter-io.cn/web_socket_channel-2.4.3",
+      "rootUri": "file:///C:/Users/Dithiothreitol/AppData/Local/Pub/Cache/hosted/pub.flutter-io.cn/web_socket_channel-3.0.3",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.3"
     },
     {
       "name": "win32",

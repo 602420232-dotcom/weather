@@ -4,6 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Map;
 
 /**
@@ -36,19 +37,19 @@ public interface MeteorForecastClient {
      * 获取气象预测
      */
     @GetMapping("/api/forecast/get")
-    Map<String, Object> getForecast(Double lat, Double lng, Integer hours);
+    Map<String, Object> getForecast(@RequestParam("lat") Double lat, @RequestParam("lng") Double lng, @RequestParam("hours") Integer hours);
 
     /**
      * 获取详细气象预测
      */
     @PostMapping("/api/forecast/detail")
-    Map<String, Object> getDetailedForecast(Map<String, Object> request);
+    Map<String, Object> getDetailedForecast(@RequestBody Map<String, Object> request);
 
     /**
      * 获取实时天气
      */
     @GetMapping("/api/forecast/realtime")
-    Map<String, Object> getRealtimeWeather(Double lat, Double lng);
+    Map<String, Object> getRealtimeWeather(@RequestParam("lat") Double lat, @RequestParam("lng") Double lng);
 
     /**
      * 健康检查

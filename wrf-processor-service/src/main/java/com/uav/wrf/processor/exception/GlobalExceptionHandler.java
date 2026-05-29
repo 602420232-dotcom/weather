@@ -33,9 +33,10 @@ public class GlobalExceptionHandler extends com.uav.common.exception.GlobalExcep
     /**
      * 参数校验异常（保留兼容响应格式 {code, message}）
      */
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleBadRequest(IllegalArgumentException ex) {
+    @Override
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException e) {
+        log.warn("参数错误: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("code", 400, "message", ex.getMessage()));
+                .body(Map.of("code", 400, "message", e.getMessage()));
     }
 }

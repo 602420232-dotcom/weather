@@ -1,5 +1,4 @@
-import 'dart:io' show Platform;
-
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 
 class AppConfig {
@@ -9,7 +8,7 @@ class AppConfig {
   static const String appVersion = '1.0.0';
 
   static String get apiBaseUrl {
-    if (Platform.isAndroid) {
+    if (defaultTargetPlatform == TargetPlatform.android) {
       return 'http://10.0.2.2:8088';
     }
     return 'http://localhost:8088';
@@ -89,5 +88,12 @@ class AppConfig {
         ),
       ),
     );
+  }
+
+  /// 地图瓦片 URL — 根据主题切换明暗
+  static String mapTileUrl(Brightness brightness) {
+    return brightness == Brightness.dark
+        ? 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
+        : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
   }
 }
