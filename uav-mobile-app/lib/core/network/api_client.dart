@@ -174,6 +174,14 @@ class ApiClient {
       case DioExceptionType.receiveTimeout:
         return const ApiException(code: -1, message: '网络连接超时');
       case DioExceptionType.connectionError:
+        if (kIsWeb) {
+          return const ApiException(
+            code: -1,
+            message: '无法连接到API服务器 — 请确认后端已启动，'
+                '且API Gateway已配置CORS（跨域）白名单。'
+                '如刚修改CORS配置，需重启Gateway后生效。',
+          );
+        }
         return const ApiException(code: -1, message: '无法连接到服务器');
       case DioExceptionType.badResponse:
         final statusCode = e.response?.statusCode ?? -1;
@@ -196,6 +204,15 @@ class ApiClient {
       case DioExceptionType.cancel:
         return const ApiException(code: -1, message: '请求已取消');
       default:
+        if (kIsWeb) {
+          return const ApiException(
+            code: -1,
+            message: '网络异常 — Web运行时请检查：\n'
+                '1. 后端API服务是否已启动\n'
+                '2. API Gateway CORS配置是否正确\n'
+                '3. 浏览器控制台(F12)是否有CORS相关错误',
+          );
+        }
         return const ApiException(code: -1, message: '网络异常，请检查网络连接');
     }
   }
