@@ -150,7 +150,7 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
                   );
                   if (picked != null) {
                     setState(() => _selectedTime = picked);
-                    _loadWeatherData();
+                    await _loadWeatherData();
                   }
                 },
                 child: Row(
