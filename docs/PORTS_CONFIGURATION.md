@@ -21,9 +21,7 @@
 | **Weather Collector** | 8086 | HTTP | 多源气象数据采集与融合 | ✅ | ✅ |
 | **Edge-Cloud Coordinator** | 8000 | HTTP | 边云协同 REST API | ✅ | ✅ |
 | **Edge-Cloud Coordinator** | 8765 | WebSocket | WebSocket 通信 | - | ✅ |
-| **Data Assimilation Service** | 8084 | HTTP | 数据同化服务 | ✅ | ✅ |
-| **Bayesian Assimilation Service** | 8094 | HTTP | 贝叶斯同化服务 | ✅ | ✅ |
-| **Backend Spring** | 8089 | HTTP | 路径规划系统后端 - 认证授权 | ✅ | ✅ |
+| **FengWu Service** | 8085 | HTTP | 风乌 AI 全球天气预报 (ONNX) | - | ✅ |
 | **Frontend (Vue3 Dev)** | 3000 | HTTP | Vue3 + Vite 开发服务器 | - | ✅ |
 | **Frontend (Nginx)** | 80 | HTTP | 生产环境静态托管 | - | ✅ |
 
@@ -33,8 +31,7 @@
 端口范围      | 用途
 -------------|------------------
 8080-8089    | 主要微服务
-8090-8099    | 次要服务/管理接口
-8000-8099    | 特殊服务 Edge-Cloud
+8000-8099    | 特殊服务 Edge-Cloud / FengWu
 9000-9099    | 监控服务
 ```
 
@@ -128,7 +125,7 @@ Platform Service (localhost:8080)
 | Path Planner | 8083 | `/actuator/health` |
 | Data Assimilator | 8084 | `/actuator/health` |
 | Weather Collector | 8086 | `/actuator/health` |
-| Backend Spring | 8089 | `/actuator/health` |
+| FengWu Service | 8085 | `/health` |
 | Edge Coordinator | 8000 | `/health` |
 | Frontend | 3000 | `/` |
 
@@ -203,9 +200,9 @@ services:
     ports:
       - "8086:8086"
   
-  backend-spring:
+  fengwu-service:
     ports:
-      - "8089:8089"
+      - "8085:8085"
   
   edge-cloud-coordinator:
     ports:
@@ -301,8 +298,8 @@ netstat -ano | findstr :3000
 7. Path Planner (8083)
 8. Data Assimilation (8084)
 9. Weather Collector (8086)
-10. API Gateway (8088)
-11. Backend Spring (8089)
+10. FengWu Service (8085)
+11. API Gateway (8088)
 12. Edge Cloud Coordinator (8000)
 13. Frontend (3000)
 ```
@@ -320,7 +317,7 @@ netstat -ano | findstr :3000
 后端    | Path Planner        | 8083
 后端    | Data Assimilation   | 8084
 后端    | Weather Collector   | 8086
-后端    | Backend Spring      | 8089
+后端    | FengWu Service      | 8085
 后端    | Edge Coordinator    | 8000/8765
 后端    | API Gateway         | 8088
 数据库  | MySQL               | 3306
@@ -337,12 +334,12 @@ netstat -ano | findstr :3000
 ## 技术支持
 
 如有问题请参考：
-1. [前端 README](../uav-path-planning-system/frontend-vue/README.md)
+1. [前端 README](external/frontend-vue.md)
 2. [部署指南](deployment/DEPLOYMENT.md)
 3. [快速参考](QUICK_REFERENCE.md)
 
 ---
 
-> **最后更新**: 2026-05-13  
-> **版本**: 2.2  
+> **最后更新**: 2026-05-30  
+> **版本**: 2.3  
 > **维护者**: UAV Platform Team

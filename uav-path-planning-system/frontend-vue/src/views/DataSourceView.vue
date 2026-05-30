@@ -106,7 +106,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, h } from 'vue'
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 
@@ -213,8 +213,8 @@ const columns = [
     key: 'status',
     customRender: (text) => {
       return text === 'active' ? 
-        <a-tag color="green">活跃</a-tag> : 
-        <a-tag color="red">禁用</a-tag>
+        h('a-tag', { color: 'green' }, () => '活跃') : 
+        h('a-tag', { color: 'red' }, () => '禁用')
     }
   },
   {

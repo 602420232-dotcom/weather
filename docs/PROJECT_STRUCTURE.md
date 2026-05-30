@@ -11,9 +11,9 @@ trae/
 -   meteor-forecast-service/  # 气象预测服务 (端口 8082)
 -   path-planning-service/   # 路径规划服务 (端口 8083)
 -   data-assimilation-service/  # 数据同化服务 (端口 8084)
+-   fengwu-service/           # 风乌 AI 天气预报 (端口 8085)
 -   uav-weather-collector/  # 气象数据采集 (端口 8086)
 -   common-utils/            # 公共工具模块
--        common-dependencies/  # 已合并为 parent pom.xml BOM
 -   算法模块 (Python)
 -   data-assimilation-platform/  # 贝叶斯同化平台
 -    algorithm_core/      # 核心算法
@@ -260,7 +260,7 @@ monitoring/
 **访问地址**:
 | 服务 | URL | 端口 |
 |------|-----|------|
-| Grafana | http://localhost:3000 | 3000 |
+| Grafana | http://localhost:3030 | 3030 |
 | Prometheus | http://localhost:9090 | 9090 |
 | Kibana | http://localhost:5601 | 5601 |
 | Alertmanager | http://localhost:9093 | 9093 |
@@ -439,12 +439,12 @@ docker-compose up -d
 - [项目Wiki](https://github.com/602420232-dotcom/weather/wiki)
 - [API文档](api/README.md)
 - [部署指南](deployment/DEPLOYMENT.md)
-- [监控配置](../deployments/monitoring/README.md)
+- [监控配置](deployment/monitoring.md)
 
 
 ---
 
-> **最后更新**: 2026-05-09  
-> **版本**: 2.1  
+> **最后更新**: 2026-05-30  
+> **版本**: 2.3  
 > **维护者**: DITHIOTHREITOL
 

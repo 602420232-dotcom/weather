@@ -1,14 +1,15 @@
 const fs = require('fs')
 const path = require('path')
 
-const sourceDir = path.resolve(__dirname, 'node_modules', 'cesium', 'Build', 'Cesium')
-const targetDir = path.resolve(__dirname, 'public', 'cesium')
+const sourceDir = path.resolve(__dirname, '..', 'node_modules', 'cesium', 'Build', 'Cesium')
+const targetDir = path.resolve(__dirname, '..', 'public', 'cesium')
 
 const dirsToCopy = ['Workers', 'Assets', 'Widgets', 'ThirdParty']
 
 if (!fs.existsSync(sourceDir)) {
-  console.error('Cesium source directory not found. Run "npm install" first.')
-  process.exit(1)
+  console.warn('Cesium source directory not found — skipping Cesium assets copy.')
+  console.warn('  Expected: ' + sourceDir)
+  process.exit(0)
 }
 
 function copyDir(src, dest) {

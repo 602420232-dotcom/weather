@@ -1,6 +1,6 @@
 # 基于WRF气象驱动的无人机VRP智能路径规划系统
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Java 17+](https://img.shields.io/badge/Java-17%2B-blue)](https://openjdk.java.net/)
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
 [![Spring Boot 3.5.14](https://img.shields.io/badge/Spring%20Boot-3.5.14-brightgreen)](https://spring.io/projects/spring-boot) [![Docker](https://img.shields.io/badge/Docker-Compose-blue)](https://www.docker.com/)
@@ -49,6 +49,7 @@
 - **多源数据融合**：整合卫星、雷达、地面站、浮标等多源气象数据
 - **5分钟级更新**：高频气象数据更新，实时响应气象变化
 - **AI气象订正**：基于ConvLSTM+XGBoost的气象预测订正
+- **风乌(FengWu)AI预测**：基于ONNX深度学习引擎的全球天气预报，14天预报时效
 
 ### 🔬 数据同化
 
@@ -122,6 +123,7 @@ graph LR
         I["🛣️ Path Planning<br/>(8083)<br/>• VRPTW求解<br/>• NSGA-II优化<br/>• DE-RRT*规划<br/>• DWA避障"]:::bigNode
         J["🔬 Data Assimilation<br/>(8084)<br/>• 3D-VAR/4D-VAR<br/>• EnKF同化<br/>• 不确定性量化"]:::bigNode
         K["📡 Weather Collector<br/>(8086)<br/>• 多源采集<br/>• 数据融合<br/>• 质量控制"]:::bigNode
+        L_W["🌀 FengWu Service<br/>(8085)<br/>• AI全球预报<br/>• ONNX推理<br/>• 14天预报"]:::bigNode
         L["☁️ Edge-Cloud Coord<br/>(8000/8765)<br/>• WebSocket推送<br/>• Kafka消息<br/>• 边缘调度<br/>• 联邦学习"]:::bigNode
     end
 
@@ -159,6 +161,7 @@ graph LR
     E --> I
     E --> J
     E --> K
+    E --> L_W
     E --> L
     
     F --> M
@@ -169,12 +172,14 @@ graph LR
     I --> N
     J --> P
     K --> P
+    L_W --> P
     L --> P
     
     G --> S
     H --> S
     I --> S
     J --> S
+    L_W --> S
     
     F --> T
     G --> T
@@ -182,6 +187,7 @@ graph LR
     I --> T
     J --> T
     K --> T
+    L_W --> T
     L --> T
     
     T --> U
@@ -196,7 +202,7 @@ graph LR
 
 1. **📱 客户端层**：提供多种访问方式，包括Web管理端、移动端APP、边缘端SDK和运维控制台
 2. **🚪 API网关层**：统一入口，提供路由、限流、熔断、认证等功能
-3. **🔧 微服务层**：7个核心微服务，职责明确，通过Nacos注册发现
+3. **🔧 微服务层**：9个微服务，含 1 个网关 + 6 个领域服务 + 边云协同 + AI 预报，通过 Gateway 统一路由
 4. **💾 数据与基础设施层**：提供数据库、缓存、消息队列、对象存储等基础服务
 5. **🧠 算法核心层**：Python实现的贝叶斯同化平台，提供气象数据处理和路径规划算法
 6. **📈 可观测性层**：完整的监控、日志、追踪体系
@@ -1078,7 +1084,7 @@ docker stats
 
 ## 许可证
 
-本项目采用 MIT 许可证。详见 [LICENSE](LICENSE) 文件。
+本项目采用 Apache License 2.0 许可证。详见 [LICENSE](LICENSE) 文件。
 
 ***
 

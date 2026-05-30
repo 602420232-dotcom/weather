@@ -33,7 +33,16 @@
                     </a-upload>
                   </a-col>
                 </a-row>
-                <a-list :data-source="taskPoints" :render-item="renderTaskItem" />
+                <a-list :data-source="taskPoints">
+                  <template #renderItem="{ item }">
+                    <a-list-item>
+                      <a-list-item-meta :title="item.name" :description="`${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}`" />
+                      <a-button size="small" danger @click="() => removeTaskPoint(item.id)">
+                        删除
+                      </a-button>
+                    </a-list-item>
+                  </template>
+                </a-list>
               </a-form-item>
               
               <!-- 无人机配置 -->
@@ -261,16 +270,7 @@ const addTaskPoint = () => {
   updateMap()
 }
 
-const renderTaskItem = (task) => {
-  return (
-    <a-list-item>
-      <a-list-item-meta title={task.name} description={`${task.lat.toFixed(4)}, ${task.lng.toFixed(4)}`} />
-      <a-button size="small" danger @click={() => removeTaskPoint(task.id)}>
-        删除
-      </a-button>
-    </a-list-item>
-  )
-}
+
 
 const removeTaskPoint = (id) => {
   taskPoints.value = taskPoints.value.filter(task => task.id !== id)

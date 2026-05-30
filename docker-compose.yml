@@ -412,6 +412,66 @@ services:
     networks:
       - uav-network
 
+  # FengWu - 天 气大模型推理服务 (CPU/GPU)
+  fengwu:
+    build:
+      context: ./fengwu-service
+      dockerfile: Dockerfile
+    container_name: uav-fengwu
+    ports:
+      - "8085:8085"
+    volumes:
+      - /mnt/d/Developer/FengWu_All/FengWu:/app/model:ro
+    environment:
+      FENGWU_MODEL_PATH: /app/model/fengwu_v2.onnx
+      FENGWU_MEAN_PATH: /app/model/data_mean.npy
+      FENGWU_STD_PATH: /app/model/data_std.npy
+      FENGWU_USE_GPU: "false"
+      FENGWU_THREADS: "4"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8085/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - uav-network
+
+  # Vue3 Frontend - 前端 Web 应用
+  frontend:
+    build:
+      context: ./uav-path-planning-system/frontend-vue
+      dockerfile: Dockerfile
+    container_name: uav-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+    networks:
+      - uav-network
+
   kafka:
     image: confluentinc/cp-kafka:7.4.0
     container_name: uav-kafka

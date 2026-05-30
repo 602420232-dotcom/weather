@@ -307,11 +307,11 @@ pytest test_performance.py -v -s
 
 | 需要什么 | 查看这个 |
 |---------|---------|
-| 项目概览 | [README.md](../README.md) |
+| 项目概览 | [README.md](README.md) |
 | 部署指南 | [deployment/DEPLOYMENT.md](deployment/DEPLOYMENT.md) |
 | 架构设计 | [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) |
 | 熔断器使用 | [CIRCUIT_BREAKER_GUIDE.md](guides/CIRCUIT_BREAKER_GUIDE.md) |
-| 监控配置 | [deployments/monitoring/README.md](../deployments/monitoring/README.md) |
+| 监控配置 | [deployments/monitoring/README.md](deployment/README.md) |
 | 更新日志 | [CHANGELOG.md](CHANGELOG.md) |
 | 故障排除 | [TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md) |
 
@@ -329,7 +329,7 @@ pytest test_performance.py -v -s
 
 
 
-> **最后更新**: 2026-05-09  
-> **版本**: 2.1  
+> **最后更新**: 2026-05-30  
+> **版本**: 2.2  
 > **维护者**: DITHIOTHREITOL
 
