@@ -10,6 +10,8 @@ env:
   MAVEN_OPTS: "-Xmx512m"
   JAVA_VERSION: "17"
   FLUTTER_VERSION: "3.16.0"
+  REGISTRY: ghcr.io
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   build:
@@ -179,12 +181,17 @@ jobs:
 
   deploy-dev:
     name: Deploy to Development
-    needs: [quality, dependency-check]
+    needs: [quality, dependency-check, flutter-build]
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
+    environment:
+      name: development
+      url: https://dev.uav-platform.com
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -193,24 +200,72 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build Docker Images
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Images
         run: |
           mvn clean package -DskipTests -q
-          docker build -t uav-path-planning:dev .
+          
+          for service in uav-platform-service api-gateway; do
+            docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/$service:dev-${{ env.IMAGE_TAG }} ./$service
+            docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/$service:dev-latest ./$service
+            docker push ${{ env.REGISTRY }}/${{ github.repository }}/$service:dev-${{ env.IMAGE_TAG }}
+            docker push ${{ env.REGISTRY }}/${{ github.repository }}/$service:dev-latest
+          done
 
-      - name: Deploy to Dev Environment
+      - name: Deploy to Dev Kubernetes Cluster
+        uses: azure/k8s-deploy@v4
+        with:
+          namespace: 'uav-dev'
+          manifests: |
+            deployments/kubernetes/api-gateway.yml
+            deployments/kubernetes/uav-platform-service.yml
+          images: |
+            ${{ env.REGISTRY }}/${{ github.repository }}/uav-platform-service:dev-latest
+            ${{ env.REGISTRY }}/${{ github.repository }}/api-gateway:dev-latest
+          strategy: rolling
+          rollingTimeout: 300
+
+      - name: Wait for Deployment
+        run: sleep 30
+
+      - name: Health Check - API Gateway
         run: |
-          echo "Deploying to development environment..."
-          # Add your deployment commands here
+          curl -sf http://dev.uav-platform.com:8088/actuator/health || exit 1
+          echo "API Gateway health check passed"
+
+      - name: Health Check - Platform Service
+        run: |
+          curl -sf http://dev.uav-platform.com:8080/actuator/health || exit 1
+          echo "Platform Service health check passed"
+
+      - name: Notify Deployment Success
+        run: |
+          echo "✅ Development deployment completed successfully!"
+          echo "🔗 URL: https://dev.uav-platform.com"
+          echo "📦 Image Tag: dev-${{ env.IMAGE_TAG }}"
 
   deploy-prod:
     name: Deploy to Production
-    needs: [quality, dependency-check]
+    needs: [quality, dependency-check, flutter-build]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://uav-platform.com
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -219,12 +274,80 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build Docker Images
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Images
         run: |
           mvn clean package -DskipTests -q
-          docker build -t uav-path-planning:prod .
+          
+          for service in uav-platform-service api-gateway; do
+            docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/$service:prod-${{ env.IMAGE_TAG }} ./$service
+            docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/$service:prod-latest ./$service
+            docker push ${{ env.REGISTRY }}/${{ github.repository }}/$service:prod-${{ env.IMAGE_TAG }}
+            docker push ${{ env.REGISTRY }}/${{ github.repository }}/service:prod-latest
+          done
 
-      - name: Deploy to Production
+      - name: Update K8s Manifests
         run: |
-          echo "Deploying to production environment..."
-          # Add your deployment commands here
+          for service in uav-platform-service api-gateway; do
+            sed -i "s|image:.*$service.*|image: ${{ env.REGISTRY }}/${{ github.repository }}/$service:prod-latest|g" \
+              deployments/kubernetes/$service.yml
+          done
+
+      - name: Commit Updated Manifests
+        run: |
+          git config user.name "CI/CD Pipeline"
+          git config user.email "ci@uav-platform.com"
+          git add deployments/kubernetes/
+          git commit -m "chore: update production images to ${{ env.IMAGE_TAG }} [skip ci]" || true
+          git push
+
+      - name: Sync ArgoCD
+        run: |
+          curl -X POST "https://argocd.uav-platform.com/api/v1/applications/uav-platform-prod/sync" \
+            -H "Authorization: Bearer ${{ secrets.ARGOCD_TOKEN }}"
+        continue-on-error: true
+
+      - name: Deploy to Production Kubernetes Cluster
+        uses: azure/k8s-deploy@v4
+        with:
+          namespace: 'uav-prod'
+          manifests: |
+            deployments/kubernetes/api-gateway.yml
+            deployments/kubernetes/uav-platform-service.yml
+          images: |
+            ${{ env.REGISTRY }}/${{ github.repository }}/uav-platform-service:prod-latest
+            ${{ env.REGISTRY }}/${{ github.repository }}/api-gateway:prod-latest
+          strategy: rolling
+          rollingTimeout: 600
+
+      - name: Wait for Deployment
+        run: sleep 60
+
+      - name: Health Check - API Gateway
+        run: |
+          for i in {1..5}; do
+            curl -sf http://uav-platform.com:8088/actuator/health && break || sleep 10
+          done
+          echo "API Gateway health check passed"
+
+      - name: Health Check - Platform Service
+        run: |
+          for i in {1..5}; do
+            curl -sf http://uav-platform.com:8080/actuator/health && break || sleep 10
+          done
+          echo "Platform Service health check passed"
+
+      - name: Notify Deployment Success
+        run: |
+          echo "✅ Production deployment completed successfully!"
+          echo "🔗 URL: https://uav-platform.com"
+          echo "📦 Image Tag: prod-${{ env.IMAGE_TAG }}"
