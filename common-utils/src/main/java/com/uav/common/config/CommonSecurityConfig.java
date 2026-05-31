@@ -1,5 +1,6 @@
 package com.uav.common.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,9 +13,32 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+/**
+ * Common Security Configuration
+ * 
+ * This configuration provides default security settings for services that don't have
+ * their own SecurityConfig.
+ * 
+ * IMPORTANT: This configuration only activates when:
+ * 1. uav.security.common-enabled=true (not matchIfMissing)
+ * 2. No other @EnableWebSecurity configuration exists
+ * 
+ * Usage:
+ * - For backend-spring and other main services: Use their own SecurityConfig
+ * - For microservices without custom security: Set uav.security.common-enabled=true
+ * 
+ * Example application.yml:
+ * uav:
+ *   security:
+ *     common-enabled: true
+ */
 @Configuration
 @EnableWebSecurity
-@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "uav.security.common-enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(
+    name = "uav.security.common-enabled", 
+    havingValue = "true", 
+    matchIfMissing = false
+)
 public class CommonSecurityConfig {
 
     @Bean
@@ -28,6 +52,8 @@ public class CommonSecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .httpBasic(httpBasic -> {});
@@ -39,6 +65,7 @@ public class CommonSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList(
             "http://localhost:3000",
+            "http://localhost:5173",
             "http://localhost:8080",
             "https://*.example.com"
         ));
