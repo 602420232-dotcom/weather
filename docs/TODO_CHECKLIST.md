@@ -31,7 +31,16 @@
 - **责任人**: DevOps
 - **截止日期**: 2026-05-15
 
----
+### DONE-011: DOC-C03 Grafana/ELK密码Secrets配置
+- **完成日期**: 2026-05-31
+- **文件**: deployments/kubernetes/monitoring.yml
+- **修改**: 
+  - Grafana用户名和密码都使用K8s Secret管理
+  - Elasticsearch用户名和密码都使用K8s Secret管理
+  - Grafana Secret添加 `admin-user` 字段
+  - Elasticsearch Secret添加 `elastic-username` 字段
+  - Grafana Deployment使用 `secretKeyRef` 引用用户名和密码
+- **说明**: 所有敏感信息都通过K8s Secrets管理，无硬编码密码
 
 ## P1 - 本周修复 (High)
 

@@ -36,6 +36,36 @@ cp .env.example .env
 # DB_PASSWORD、JWT_SECRET、ENCRYPTION_KEY
 ```
 
+### 5. 准备 FengWu 模型文件
+
+FengWu 气象大模型需要本地模型文件支持，请按以下步骤准备：
+
+1. **模型文件结构**
+   ```
+   /path/to/fengwu/
+   ├── fengwu_v2.onnx       # ONNX 模型文件 (~200MB)
+   ├── data_mean.npy        # 均值标准化文件
+   └── data_std.npy         # 标准差标准化文件
+   ```
+
+2. **下载模型**
+   ```bash
+   # 使用项目提供的脚本
+   cd scripts
+   ./download_fengwu_model.sh
+   
+   # 或参考 docs/FENGWU_DEPLOY.md 进行手动下载
+   ```
+
+3. **修改挂载路径**
+   
+   编辑 `docker-compose.yml` 中 fengwu 服务的 volumes 配置，将左侧路径修改为你的模型文件实际存放路径：
+   ```yaml
+   fengwu:
+     volumes:
+       - /your/actual/model/path:/app/model:ro
+   ```
+
 ---
 
 ## 快速启动
@@ -53,9 +83,9 @@ docker-compose ps
 ### 服务启动顺序
 
 1. 基础设施：MySQL、Redis、Nacos、Kafka
-2. 微服务：WRF Processor、Data Assimilation、Meteor Forecast、Path Planning、UAV Platform、Weather Collector、Edge-Cloud Coordinator
+2. 微服务：WRF Processor、Data Assimilation、Meteor Forecast、Path Planning、UAV Platform、FengWu、Weather Collector、Edge-Cloud Coordinator
 3. 网关：API Gateway (8088)
-4. 前端（可选）：Vue3应用 (3000)
+4. 前端（可选）：Vue3 应用 (3000)
 
 ### 验证部署
 
@@ -81,6 +111,7 @@ curl http://localhost:8080/actuator/health
 | meteor-forecast | 8082 | meteor-forecast-service/ | 气象预测 |
 | path-planning | 8083 | path-planning-service/ | 路径规划 |
 | data-assimilation | 8084 | data-assimilation-service/ | 数据同化 |
+| fengwu | 8085 | fengwu-service/ | FengWu 气象大模型推理 |
 | weather-collector | 8086 | uav-weather-collector/ | 气象采集 |
 | edge-coordinator | 8765 | edge-cloud-coordinator/ | 边云协同 |
 

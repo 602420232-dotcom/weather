@@ -14,6 +14,7 @@ metadata:
   namespace: monitoring
 type: Opaque
 stringData:
+  admin-user: ${GRAFANA_ADMIN_USER}
   admin-password: ${GRAFANA_ADMIN_PASSWORD}
 ---
 # Elasticsearch密码Secret
@@ -24,6 +25,7 @@ metadata:
   namespace: monitoring
 type: Opaque
 stringData:
+  elastic-username: elastic
   elastic-password: ${ELASTIC_PASSWORD}
 ---
 # Prometheus配置
@@ -149,7 +151,10 @@ spec:
           readOnly: true
         env:
         - name: GF_SECURITY_ADMIN_USER
-          value: admin
+          valueFrom:
+            secretKeyRef:
+              name: grafana-secrets
+              key: admin-user
         - name: GF_SECURITY_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:

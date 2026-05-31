@@ -46,6 +46,11 @@ services:
           memory: 512M
     security_opt:
       - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -72,6 +77,11 @@ services:
           memory: 256M
     security_opt:
       - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -100,6 +110,11 @@ services:
           memory: 512M
     security_opt:
       - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -137,6 +152,11 @@ services:
           memory: 384M
     security_opt:
       - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -179,6 +199,11 @@ services:
           memory: 768M
     security_opt:
       - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -193,13 +218,14 @@ services:
     depends_on:
       mysql: { condition: service_healthy }
       nacos: { condition: service_healthy }
+    <<: *jvm-env
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/data_assimilation?useSSL=true&requireSSL=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: uav
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       NACOS_SERVER: nacos:8848
       PYTHON_TIMEOUT: 300000
-      JAVA_OPTS: -Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+ParallelRefProcEnabled -Djava.security.egd=file:/dev/./urandom
+      JAVA_OPTS: ${JAVA_OPTS_DATA_ASSIMILATION}
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       JWT_SECRET: ${JWT_SECRET_KEY}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
@@ -220,6 +246,11 @@ services:
           memory: 1G
     security_opt:
       - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -234,13 +265,14 @@ services:
     depends_on:
       mysql: { condition: service_healthy }
       nacos: { condition: service_healthy }
+    <<: *jvm-env
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/meteor_forecast?useSSL=true&requireSSL=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: uav
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       NACOS_SERVER: nacos:8848
       PYTHON_TIMEOUT: 120000
-      JAVA_OPTS: -Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication
+      JAVA_OPTS: ${JAVA_OPTS_MEDIUM}
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       JWT_SECRET: ${JWT_SECRET_KEY}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
@@ -261,6 +293,11 @@ services:
           memory: 768M
     security_opt:
       - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -275,13 +312,14 @@ services:
     depends_on:
       mysql: { condition: service_healthy }
       nacos: { condition: service_healthy }
+    <<: *jvm-env
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/path_planning?useSSL=true&requireSSL=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: uav
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       NACOS_SERVER: nacos:8848
       PYTHON_TIMEOUT: 60000
-      JAVA_OPTS: -Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled
+      JAVA_OPTS: ${JAVA_OPTS_PATH_PLANNING}
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       JWT_SECRET: ${JWT_SECRET_KEY}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
@@ -302,6 +340,11 @@ services:
           memory: 768M
     security_opt:
       - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -321,6 +364,7 @@ services:
       data-assimilation: { condition: service_started }
       meteor-forecast: { condition: service_started }
       path-planning: { condition: service_started }
+    <<: *jvm-env
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/uav_platform?useSSL=true&requireSSL=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: uav
@@ -332,7 +376,7 @@ services:
       SERVICES_DATA_ASSIMILATION_URL: http://data-assimilation:8084/api/assimilation
       SERVICES_METEOR_FORECAST_URL: http://meteor-forecast:8082/api/forecast
       SERVICES_PATH_PLANNING_URL: http://path-planning:8083/api/planning
-      JAVA_OPTS: -Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication
+      JAVA_OPTS: ${JAVA_OPTS_MEDIUM}
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       JWT_SECRET: ${JWT_SECRET_KEY}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
@@ -353,6 +397,11 @@ services:
           memory: 768M
     security_opt:
       - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -368,13 +417,14 @@ services:
       mysql: { condition: service_healthy }
       nacos: { condition: service_healthy }
       redis: { condition: service_healthy }
+    <<: *jvm-env
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/uav_weather?useSSL=true&requireSSL=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: uav
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_REDIS_HOST: redis
       NACOS_SERVER: nacos:8848
-      JAVA_OPTS: -Xms256m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=200
+      JAVA_OPTS: ${JAVA_OPTS_SMALL}
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       JWT_SECRET: ${JWT_SECRET_KEY}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
@@ -395,6 +445,11 @@ services:
           memory: 384M
     security_opt:
       - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -426,6 +481,11 @@ services:
           memory: 256M
     security_opt:
       - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -460,6 +520,11 @@ services:
           memory: 2G
     security_opt:
       - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -486,6 +551,11 @@ services:
           memory: 256M
         reservations:
           memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -520,6 +590,11 @@ services:
           memory: 1.5G
         reservations:
           memory: 768M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 
@@ -543,6 +618,11 @@ services:
           memory: 256M
         reservations:
           memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - uav-network
 

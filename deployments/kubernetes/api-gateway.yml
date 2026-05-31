@@ -15,21 +15,40 @@ spec:
       labels:
         app: api-gateway
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
       containers:
         - name: api-gateway
           image: trae-api-gateway:latest
           ports:
             - containerPort: 8088
               name: http
+          envFrom:
+            - configMapRef:
+                name: uav-platform-config
           env:
             - name: NACOS_SERVER
-              value: nacos:8848
+              valueFrom:
+                configMapKeyRef:
+                  name: uav-platform-config
+                  key: NACOS_SERVER
             - name: REDIS_HOST
-              value: redis
+              valueFrom:
+                configMapKeyRef:
+                  name: uav-platform-config
+                  key: REDIS_HOST
             - name: REDIS_PORT
-              value: "6379"
+              valueFrom:
+                configMapKeyRef:
+                  name: uav-platform-config
+                  key: REDIS_PORT
             - name: JAVA_OPTS
-              value: "-Xms256m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication"
+              valueFrom:
+                configMapKeyRef:
+                  name: uav-platform-config
+                  key: JAVA_OPTS_API_GATEWAY
           livenessProbe:
             httpGet: { path: /actuator/health, port: 8088 }
             initialDelaySeconds: 30
