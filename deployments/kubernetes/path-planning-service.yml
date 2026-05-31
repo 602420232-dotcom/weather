@@ -29,6 +29,8 @@ spec:
                 secretKeyRef:
                   key: spring.datasource.password
                   name: uav-platform-secrets
+            - name: JAVA_OPTS
+              value: "-Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled"
           resources:
             requests:
               memory: "256Mi"

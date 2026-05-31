@@ -31,6 +31,8 @@ spec:
                 secretKeyRef:
                   name: uav-secrets
                   key: db-password
+            - name: JAVA_OPTS
+              value: "-Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+ParallelRefProcEnabled -Djava.security.egd=file:/dev/./urandom"
           livenessProbe:
             httpGet: { path: /actuator/health, port: 8084 }
             initialDelaySeconds: 30

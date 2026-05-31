@@ -3,6 +3,11 @@ version: '3.8'
 # Docker Compose - 优化版
 # 包含差异化资源限制和JVM参数优化
 
+# 引入统一的 JVM 参数配置
+x-jvm-env: &jvm-env
+  env_file:
+    - docker-compose.jvm.env
+
 services:
   # ===== 基础设施层 =====
   mysql:
@@ -111,11 +116,12 @@ services:
     depends_on:
       nacos:
         condition: service_healthy
+    <<: *jvm-env
     environment:
       - NACOS_SERVER=nacos:8848
       - REDIS_HOST=redis
-      # JVM优化参数
-      - JAVA_OPTS=-Xms256m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication
+      # 使用统一的小配置方案
+      - JAVA_OPTS=${JAVA_OPTS_SMALL}
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8088/actuator/health"]
@@ -145,13 +151,14 @@ services:
     depends_on:
       mysql: { condition: service_healthy }
       nacos: { condition: service_healthy }
+    <<: *jvm-env
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/wrf_processor?useSSL=true&requireSSL=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: uav
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       NACOS_SERVER: nacos:8848
       PYTHON_TIMEOUT: 60000
-      JAVA_OPTS: -Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled
+      JAVA_OPTS: ${JAVA_OPTS_MEDIUM}
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       JWT_SECRET: ${JWT_SECRET_KEY}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}

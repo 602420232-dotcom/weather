@@ -1,4 +1,4 @@
-﻿﻿﻿apiVersion: apps/v1
+﻿﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: uav-platform-service
@@ -65,13 +65,17 @@ spec:
           value: "http://meteor-forecast-service:8082"
         - name: PATH_PLANNING_URL
           value: "http://path-planning-service:8083"
+        - name: JAVA_OPTS
+          value: "-Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication"
         resources:
           requests:
             cpu: "100m"
             memory: "256Mi"
           limits:
-            cpu: "500m"
-            memory: "512Mi"
+            cpu: "1000m"
+            memory: "1536Mi"
+        - name: JAVA_OPTS
+          value: "-Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication"
         readinessProbe:
           httpGet:
             path: /actuator/health

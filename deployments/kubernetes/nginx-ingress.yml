@@ -5,7 +5,6 @@ metadata:
   namespace: uav-platform
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/use-regex: "true"
@@ -18,28 +17,28 @@ spec:
   - host: uav-platform.local
     http:
       paths:
-      - path: /api/platform
+      - path: /api/platform(/|$)(.*)
         pathType: Prefix
         backend:
           service:
             name: uav-platform
             port:
               number: 8080
-      - path: /api/forecast
+      - path: /api/forecast(/|$)(.*)
         pathType: Prefix
         backend:
           service:
             name: meteor-forecast
             port:
               number: 8082
-      - path: /api/planning
+      - path: /api/planning(/|$)(.*)
         pathType: Prefix
         backend:
           service:
             name: path-planning
             port:
               number: 8083
-      - path: /api/wrf
+      - path: /api/wrf(/|$)(.*)
         pathType: Prefix
         backend:
           service:

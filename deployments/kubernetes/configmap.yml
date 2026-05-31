@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: uav-platform-config
+  namespace: uav-platform
+data:
+  # 通用服务配置
+  SPRING_PROFILES_ACTIVE: "prod"
+  SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
+  
+  # Nacos 服务发现配置
+  NACOS_SERVER: "nacos:8848"
+  
+  # Redis 配置
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+  
+  # 数据库用户名
+  SPRING_DATASOURCE_USERNAME: "uav"
+  
+  # 服务间通信 URL（K8s 服务名）
+  SERVICES_WRF_PROCESSOR_URL: "http://wrf-processor-service:8081/api/wrf"
+  SERVICES_DATA_ASSIMILATION_URL: "http://data-assimilation-service:8084/api/assimilation"
+  SERVICES_METEOR_FORECAST_URL: "http://meteor-forecast-service:8082/api/forecast"
+  SERVICES_PATH_PLANNING_URL: "http://path-planning-service:8083/api/planning"
+  
+  # Kafka 配置
+  KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+  
+  # 各服务数据库 URL
+  SPRING_DATASOURCE_URL_UAV_PLATFORM: "jdbc:mysql://mysql:3306/uav_platform?useSSL=true&requireSSL=true&serverTimezone=UTC"
+  SPRING_DATASOURCE_URL_WRF_PROCESSOR: "jdbc:mysql://mysql:3306/wrf_processor?useSSL=true&requireSSL=true&serverTimezone=UTC"
+  SPRING_DATASOURCE_URL_DATA_ASSIMILATION: "jdbc:mysql://mysql:3306/data_assimilation?useSSL=true&requireSSL=true&serverTimezone=UTC"
+  SPRING_DATASOURCE_URL_METEOR_FORECAST: "jdbc:mysql://mysql:3306/meteor_forecast?useSSL=true&requireSSL=true&serverTimezone=UTC"
+  SPRING_DATASOURCE_URL_PATH_PLANNING: "jdbc:mysql://mysql:3306/path_planning?useSSL=true&requireSSL=true&serverTimezone=UTC"
+  SPRING_DATASOURCE_URL_UAV_WEATHER: "jdbc:mysql://mysql:3306/uav_weather?useSSL=true&requireSSL=true&serverTimezone=UTC"
+  
+  # Python 超时配置
+  PYTHON_TIMEOUT_WRF: "60000"
+  PYTHON_TIMEOUT_ASSIMILATION: "300000"
+  PYTHON_TIMEOUT_FORECAST: "120000"
+  PYTHON_TIMEOUT_PLANNING: "60000"
+  
+  # JVM 参数配置（各服务特定）
+  JAVA_OPTS_API_GATEWAY: "-Xms256m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication"
+  JAVA_OPTS_UAV_PLATFORM: "-Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication"
+  JAVA_OPTS_WRF_PROCESSOR: "-Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled"
+  JAVA_OPTS_DATA_ASSIMILATION: "-Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+ParallelRefProcEnabled -Djava.security.egd=file:/dev/./urandom"
+  JAVA_OPTS_METEOR_FORECAST: "-Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication"
+  JAVA_OPTS_PATH_PLANNING: "-Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled"
+  JAVA_OPTS_UAV_WEATHER: "-Xms256m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=200"
+  
+  # 安全用户密码默认值
+  SECURITY_USER_PASSWORD: "changeme"
+  
+  # FengWu 配置
+  FENGWU_USE_GPU: "false"
+  FENGWU_THREADS: "4"

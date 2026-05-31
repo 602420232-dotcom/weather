@@ -31,7 +31,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn clean compile -q
+        run: mvn compile -q
 
       - name: Run Unit Tests
         run: mvn test -q
@@ -105,7 +105,7 @@ jobs:
           cache: maven
 
       - name: Build and Test with JaCoCo
-        run: mvn clean verify jacoco:report -q
+        run: mvn verify jacoco:report -q
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@master
@@ -179,79 +179,39 @@ jobs:
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
 
-  deploy-dev:
-    name: Deploy to Development
+  notify-dev:
+    name: Notify Development Build Ready
     needs: [quality, dependency-check, flutter-build]
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
-    environment:
-      name: development
-      url: https://dev.uav-platform.com
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'temurin'
-          cache: maven
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and Push Docker Images
+      - name: Notify Build Success
         run: |
-          mvn clean package -DskipTests -q
-          
-          for service in uav-platform-service api-gateway; do
-            docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/$service:dev-${{ env.IMAGE_TAG }} ./$service
-            docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/$service:dev-latest ./$service
-            docker push ${{ env.REGISTRY }}/${{ github.repository }}/$service:dev-${{ env.IMAGE_TAG }}
-            docker push ${{ env.REGISTRY }}/${{ github.repository }}/$service:dev-latest
-          done
+          echo "✅ Development build completed successfully!"
+          echo "📋 Build: ${{ github.sha }}"
+          echo "👤 Triggered by: ${{ github.actor }}"
+          echo "🔗 Repository: ${{ github.repository }}"
+          echo ""
+          echo "📦 Docker images ready:"
+          echo "   - ghcr.io/${{ github.repository }}/uav-platform-service:dev-${{ env.IMAGE_TAG }}"
+          echo "   - ghcr.io/${{ github.repository }}/api-gateway:dev-${{ env.IMAGE_TAG }}"
+          echo ""
+          echo "⏭️  GitOps pipeline will deploy to development cluster via ArgoCD"
 
-      - name: Deploy to Dev Kubernetes Cluster
-        uses: azure/k8s-deploy@v4
-        with:
-          namespace: 'uav-dev'
-          manifests: |
-            deployments/kubernetes/api-gateway.yml
-            deployments/kubernetes/uav-platform-service.yml
-          images: |
-            ${{ env.REGISTRY }}/${{ github.repository }}/uav-platform-service:dev-latest
-            ${{ env.REGISTRY }}/${{ github.repository }}/api-gateway:dev-latest
-          strategy: rolling
-          rollingTimeout: 300
-
-      - name: Wait for Deployment
-        run: sleep 30
-
-      - name: Health Check - API Gateway
+  stub-deploy-prod:
+    name: Production Deployment (Stub)
+    needs: [quality, dependency-check, flutter-build]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Production Build Ready
         run: |
-          curl -sf http://dev.uav-platform.com:8088/actuator/health || exit 1
-          echo "API Gateway health check passed"
-
-      - name: Health Check - Platform Service
-        run: |
-          curl -sf http://dev.uav-platform.com:8080/actuator/health || exit 1
-          echo "Platform Service health check passed"
-
-      - name: Notify Deployment Success
-        run: |
-          echo "✅ Development deployment completed successfully!"
-          echo "🔗 URL: https://dev.uav-platform.com"
-          echo "📦 Image Tag: dev-${{ env.IMAGE_TAG }}"
+          echo "⚠️  Production deployment is handled by GitOps pipeline"
+          echo "📋 Build: ${{ github.sha }}"
+          echo "👤 Triggered by: ${{ github.actor }}"
+          echo ""
+          echo "⏭️  ArgoCD will sync production deployment automatically"
+          echo "📖 See gitops.yml for production deployment workflow"
 
   deploy-prod:
     name: Deploy to Production
@@ -286,7 +246,7 @@ jobs:
 
       - name: Build and Push Docker Images
         run: |
-          mvn clean package -DskipTests -q
+          mvn package -DskipTests -q -am -pl uav-platform-service,api-gateway
           
           for service in uav-platform-service api-gateway; do
             docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/$service:prod-${{ env.IMAGE_TAG }} ./$service

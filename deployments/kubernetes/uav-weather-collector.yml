@@ -33,6 +33,8 @@ spec:
                   key: db-password
             - name: REDIS_HOST
               value: redis
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=200"
           livenessProbe:
             httpGet: { path: /actuator/health, port: 8086 }
             initialDelaySeconds: 30

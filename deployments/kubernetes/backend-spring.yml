@@ -35,6 +35,8 @@ spec:
                   key: db-password
             - name: SPRING_REDIS_HOST
               value: redis
+            - name: JAVA_OPTS
+              value: "-Xms512m -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication"
           livenessProbe:
             httpGet: { path: /actuator/health, port: 8089 }
             initialDelaySeconds: 30
