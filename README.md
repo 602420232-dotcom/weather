@@ -204,11 +204,25 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 成都大学无人机路径规划系统团队
 
+## 📚 文档索引
+
+所有模块的详细文档都已在对应目录中维护：
+
+| 模块 | 文档路径 | 状态 |
+|------|---------|------|
+| **data-assimilation-platform** | [README](data-assimilation-platform/README.md) | ✅ 最新 |
+| **algorithm_core** | [README](data-assimilation-platform/algorithm_core/README.md) | ✅ 最新 |
+| **service_python** | [README](data-assimilation-platform/service_python/README.md) | ✅ 最新 |
+| **edge-cloud-coordinator** | [README](edge-cloud-coordinator/README.md) | ✅ 最新 |
+| **fengwu-service** | [README](fengwu-service/README.md) | ✅ 最新 |
+| **uav-mobile-app** | [README](uav-mobile-app/README.md) | ✅ 最新 |
+| **uav-edge-sdk** | [README](uav-edge-sdk/README.md) | ✅ 最新 |
+
 ---
 
 > 💡 **提示**: 如需了解特定模块的详细信息，请查看对应目录下的 README.md 文件。
 ---
 
-> **最后更新**: 2026-05-08  
-> **版本**: 2.1  
+> **最后更新**: 2026-06-02  
+> **版本**: 2.2  
 > **维护者**: DITHIOTHREITOL

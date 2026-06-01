@@ -134,8 +134,42 @@ uvicorn app:app --host 0.0.0.0 --port 8085 --reload
 - [端口配置总表](../docs/PORTS_CONFIGURATION.md)
 - [项目架构文档](../docs/architecture.md)
 
+## 项目结构补充说明
+
+主应用文件 [app.py](app.py) 包含:
+- FastAPI 应用定义
+- 安全认证中间件（支持 API Key 和 JWT）
+- 健康检查端点
+- 全球天气预报接口
+- 风场快速查询接口
+- 模型信息接口
+
+推理引擎封装 [inference_engine.py](inference_engine.py) 提供:
+- ONNX 模型加载与推理
+- 模型状态管理
+- 支持全量变量和地表变量输出
+
+## 安全配置
+
+### API Key 认证
+
+- 使用环境变量 `FENGWU_API_KEY` 设置 API Key
+- 生产环境必须设置 API Key
+- 开发环境可省略（会显示警告）
+
+### JWT 认证
+
+- 使用环境变量 `JWT_SECRET` 配置 JWT 密钥
+- 与 Java 后端共享同一密钥
+- 可通过中间件保护特定端点
+
+### CORS 配置
+
+- 开发环境默认允许 localhost 来源
+- 生产环境可通过 `CORS_ORIGINS` 环境变量配置
+
 ---
 
-> **最后更新**: 2026-05-30
-> **版本**: 1.0
+> **最后更新**: 2026-06-02
+> **版本**: 1.1
 > **维护者**: UAV Platform Team

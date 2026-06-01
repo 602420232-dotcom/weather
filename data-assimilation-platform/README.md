@@ -499,6 +499,21 @@ Types:
 
 ---
 
-> **最后更新**: 2026-05-08  
-> **版本**: 2.1  
+## 模块更新说明
+
+### service_python 模块更新
+
+- 路径配置优化：`assimilation_service.py` 已更新为在文件开头配置 Python 路径
+- 改进的错误处理：增强了对 `grid_shape` 为 `None` 时的处理
+- 更新的文档：[service_python/README.md](service_python/README.md) 已完全重写
+
+### algorithm_core 模块
+
+- 核心同化算法实现保持不变
+- 所有模块保持向后兼容
+
+---
+
+> **最后更新**: 2026-06-02  
+> **版本**: 2.2  
 > **维护者**: DITHIOTHREITOL
