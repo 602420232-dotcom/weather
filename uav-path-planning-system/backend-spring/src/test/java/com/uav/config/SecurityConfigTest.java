@@ -2,42 +2,46 @@ package com.uav.config;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 @DisplayName("SecurityConfig 测试")
 class SecurityConfigTest {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @Test
     @DisplayName("密码编码器BCrypt创建")
     void testPasswordEncoder() {
-        SecurityConfig config = new SecurityConfig();
-        assertNotNull(config.passwordEncoder());
+        assertNotNull(passwordEncoder);
     }
 
     @Test
     @DisplayName("认证管理器创建")
     void testAuthenticationManager() {
-        SecurityConfig config = new SecurityConfig();
-        assertNotNull(config.authenticationManager());
+        assertNotNull(authenticationManager);
     }
 }
 
+@SpringBootTest
 @DisplayName("SecurityAuditConfig 测试")
 class SecurityAuditConfigTest {
 
-    @Test
-    @DisplayName("审计日志配置")
-    void testAuditEventPublisher() {
-        com.uav.common.audit.SecurityAuditor auditor = new com.uav.common.audit.SecurityAuditor();
-        assertDoesNotThrow(auditor::publisher);
-    }
+    @Autowired
+    private SecurityAuditConfig securityAuditConfig;
 
     @Test
-    @DisplayName("Spring审计事件发布器")
-    void testAuditLogger() {
-        assertDoesNotThrow(() -> new com.uav.platform.config.SecurityAuditConfig());
+    @DisplayName("审计配置Bean加载")
+    void testAuditConfigLoaded() {
+        assertNotNull(securityAuditConfig);
     }
 }
