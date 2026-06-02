@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(uav_edge_sdk)
 
-# Set C++ standard
-set(CMAKE_CXX_STANDARD 14)
+# Set C++ standard to C++17 (required for modern C++ features)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Build type
@@ -11,6 +11,16 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
+# Compiler warnings and options
+if(MSVC)
+    # MSVC: Enable high warning level, treat warnings as errors, and UTF-8 encoding
+    add_compile_options(/W4 /WX /utf-8)
+    add_compile_definitions(_UNICODE UNICODE)
+else()
+    # GCC/Clang: Enable all warnings and treat warnings as errors
+    add_compile_options(-Wall -Wextra -Werror)
+endif()
 
 # Find Python
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
@@ -66,6 +76,7 @@ message(STATUS "  Python Include: ${Python_INCLUDE_DIRS}")
 message(STATUS "  Python Version: ${Python_VERSION}")
 message(STATUS "  CMake: ${CMAKE_VERSION}")
 message(STATUS "  C++ Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+message(STATUS "  C++ Standard: ${CMAKE_CXX_STANDARD}")
 message(STATUS "  Build Type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "  Install Path: ${CMAKE_CURRENT_SOURCE_DIR}/python")
 message(STATUS "==================================")
