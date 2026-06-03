@@ -12,7 +12,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy service code
-COPY app.py inference_engine.py ./
+COPY *.py ./
+COPY *.npy ./
 
 # Model files will be mounted as volume at runtime
 EXPOSE 8085

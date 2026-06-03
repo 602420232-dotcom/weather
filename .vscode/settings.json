@@ -1,5 +1,6 @@
 {
     "cmake.cmakePath": "D:\\Developer\\MSYS\\mingw64\\bin\\cmake.exe",
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "cmake.sourceDirectory": "D:/Developer/workplace/py/iteam/trae/uav-edge-sdk"
 }

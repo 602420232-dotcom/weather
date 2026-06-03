@@ -87,6 +87,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                        <mainClass>com.uav.path.planning.PathPlanningApplication</mainClass>
+                    </configuration>
             </plugin>
         </plugins>
     </build>

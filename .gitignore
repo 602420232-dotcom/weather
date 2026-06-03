@@ -327,3 +327,12 @@ pom.xml.backup.*
 pom.xml.bak
 **/pom.xml.backup.*
 **/pom.xml.bak
+
+# Model Engine
+model-engine/
+
+# Quick Dockerfiles
+Dockerfile.*.quick
+
+# Pyright cache
+.pyright/

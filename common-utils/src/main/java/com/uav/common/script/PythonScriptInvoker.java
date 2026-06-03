@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Slf4j
-@Component
+@Component("scriptPythonInvoker")
 public class PythonScriptInvoker {
 
     private static final Set<String> ALLOWED_SCRIPTS = Set.of(

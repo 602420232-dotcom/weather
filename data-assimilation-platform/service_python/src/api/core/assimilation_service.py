@@ -1,11 +1,23 @@
 import logging
-from typing import Dict, Any
+import os
+import sys
+from typing import Dict, Optional, Tuple
+
+# 配置系统路径以支持导入algorithm_core
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+_project_root = os.path.join(_current_dir, "..", "..", "..")
+_algorithm_core_src = os.path.join(_project_root, "algorithm_core", "src")
+
+# 确保路径不存在重复添加
+if os.path.exists(_algorithm_core_src) and _algorithm_core_src not in sys.path:
+    sys.path.insert(0, _algorithm_core_src)
 
 logger = logging.getLogger(__name__)
 
 
 class AssimilationService:
-    def __init__(self):
+    def __init__(self, cluster_manager=None):
+        self._cluster_manager = cluster_manager
         self._algorithm_map = {
             "3dvar": "three_dimensional_var",
             "4dvar": "four_dimensional_var",
@@ -13,8 +25,11 @@ class AssimilationService:
             "hybrid": "hybrid",
         }
 
+    def queue_size(self) -> int:
+        return 0
+
     def execute(self, algorithm: str, background: Dict, observations: list,
-                config: dict = None) -> dict:
+                config: Optional[dict] = None) -> dict:
         algorithm_key = self._algorithm_map.get(algorithm.lower(), "3dvar")
         logger.info(f"执行同化算法: {algorithm_key}")
 
@@ -22,6 +37,7 @@ class AssimilationService:
             config = {}
 
         try:
+            # 尝试导入bayesian_assimilation模块
             from bayesian_assimilation.core.assimilator import BayesianAssimilator
             import numpy as np
 
@@ -35,7 +51,10 @@ class AssimilationService:
                 [o.get("lat", 0), o.get("lon", 0), o.get("lev", 0)]
                 for o in observations
             ])
-            bg_data = np.array(background.get("data", np.random.rand(*grid_shape)))
+            if grid_shape:
+                bg_data = np.array(background.get("data", np.random.rand(*grid_shape)))
+            else:
+                bg_data = np.array(background.get("data", np.random.rand(10, 10)))
 
             analysis, variance = assim.assimilate_3dvar(
                 background=bg_data,
@@ -61,11 +80,11 @@ class AssimilationService:
                 "metrics": {"algorithm": algorithm_key, "simulated": True},
             }
         except Exception as e:
-            logger.error(f"同化失败: {e}", exc_info=True)
+            logger.error("同化失败: %s", e, exc_info=True)
             return {"status": "error", "message": "同化处理失败"}
 
 
-def _extract_grid_shape(background: dict) -> tuple:
+def _extract_grid_shape(background: dict) -> Optional[Tuple]:
     grid = background.get("grid", {})
     lat = grid.get("lat", [])
     lon = grid.get("lon", [])

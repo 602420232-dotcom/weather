@@ -1,4 +1,6 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: meteor-forecast-service
   
@@ -17,28 +19,7 @@ spring:
 
 # 服务器配置
 server:
-  port: 8082
-  ssl:
-    enabled: ${SSL_ENABLED:false}
-    key-store: ${SSL_KEY_STORE:}
-    key-store-password: ${SSL_KEY_STORE_PASSWORD:}
-    key-alias: ${SSL_KEY_ALIAS:}
 
-# Actuator 健康检查
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,prometheus
-  endpoint:
-    health:
-      show-details: when-authorized
-
-# 预测服务配置
-forecast:
-  # 模型路径
-  model-path: ${user.dir}/models
-  # Python脚本路径
-  python-script: ${user.dir}/src/main/python/meteor_forecast.py
-  # 处理超时时间
-  timeout: 60000
+uav:
+  jwt:
+    secret: dThpc3RhbmRvbmx5Zm9ydGVzdGluZzM2MmJ5dGVzbG9uZ3NlY3JldGtleQ==

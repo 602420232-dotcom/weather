@@ -58,7 +58,7 @@ public class WeatherCollectorCircuitBreakerService {
         CircuitBreakerConfig config = CircuitBreakerConfig.custom()
                 .failureRateThreshold((float) failureRateThreshold)
                 .slowCallRateThreshold(80)
-                .waitDurationInOpenState(Duration.parse("PT" + waitDurationInOpenState.replace("s", "")))
+                .waitDurationInOpenState(Duration.parse("PT" + waitDurationInOpenState.replaceAll("(?i)s$", "S").replaceAll("^PT", "")))
                 .slidingWindowSize(slidingWindowSize)
                 .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.COUNT_BASED)
                 .minimumNumberOfCalls(5)

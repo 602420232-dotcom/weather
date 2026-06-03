@@ -259,7 +259,7 @@ async def forecast(request: ForecastRequest):
                 input_0h, input_6h, steps=request.steps
             )
     except Exception as e:
-        logger.error(f"Inference failed: {e}")
+        logger.error("Inference failed: %s", e)
         raise HTTPException(status_code=500, detail=f"Inference error: {e}")
 
     elapsed = time.time() - t0
@@ -356,6 +356,3 @@ async def model_info():
         "step_interval": "6 hours",
         "provider": engine._session.get_providers()[0] if engine._session else "unknown",
     }
-
-
-

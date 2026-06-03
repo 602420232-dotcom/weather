@@ -1,5 +1,6 @@
 package com.uav.common.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,12 +14,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 @Configuration
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @EnableWebSecurity
 public class CommonSecurityConfig {
 
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+            .securityMatcher("/api/**", "/auth/**", "/actuator/health", "/actuator/info")
             // CORS配置
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             // CSRF保护 - 启用并使用Cookie方式（适合前后端分离架构）

@@ -1,8 +1,20 @@
 {
   "exclude": [
     "**/__pycache__",
+    "**/.git",
+    "**/.venv",
+    "**/venv",
+    "**/env",
+    "**/.mvn",
+    "**/target",
     "**/node_modules",
-    "**.pyc",
+    "**/.pytest_cache",
+    "**/.tox",
+    "**/.eggs",
+    "**/*.pyc",
+    "**/*.egg-info",
+    "**/dist",
+    "**/build",
     "api-gateway",
     "deployments",
     "docker",
@@ -15,7 +27,15 @@
     "uav-path-planning-system",
     "uav-platform-service",
     "uav-weather-collector",
-    "wrf-processor-service"
+    "wrf-processor-service",
+    "edge-cloud-coordinator",
+    "meteor-forecast-service",
+    "path-planning-service",
+    "data-assimilation-service",
+    "fengwu-service"
+  ],
+  "extraPaths": [
+    "data-assimilation-platform/algorithm_core/src"
   ],
   "reportMissingImports": true,
   "typeCheckingMode": "basic"

@@ -1,12 +1,18 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: uav-platform-service
+  autoconfigure:
+    exclude:
+      - io.github.resilience4j.bulkhead.autoconfigure.BulkheadAutoConfiguration
+      - io.github.resilience4j.timelimiter.autoconfigure.TimeLimiterAutoConfiguration
   
   # 数据库配置
   datasource:
-    url: jdbc:mysql://localhost:3306/uav_platform?useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://mysql:3306/uav_platform?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ${DB_USER:root}
-    password: ${DB_PASSWORD}  # 移除默认值，强制要求配置
+    password: ${DB_PASSWORD:uav123}
     driver-class-name: com.mysql.cj.jdbc.Driver
   
   # JPA配置
@@ -24,37 +30,7 @@ spring:
 
 # 服务器配置
 server:
-  port: 8080
-  ssl:
-    enabled: ${SSL_ENABLED:false}
-    key-store: ${SSL_KEY_STORE:}
-    key-store-password: ${SSL_KEY_STORE_PASSWORD:}
-    key-alias: ${SSL_KEY_ALIAS:}
 
-# Actuator 健康检查
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,prometheus
-  endpoint:
-    health:
-      show-details: when-authorized
-
-# 服务配置
-services:
-  # WRF处理服务
-  wrf-processor:
-    url: http://wrf-processor:8081/api/wrf
-  
-  # 贝叶斯同化服务
-  data-assimilation:
-    url: http://data-assimilation:8084/api/assimilation
-  
-  # 气象预测服务
-  meteor-forecast:
-    url: http://meteor-forecast:8082/api/forecast
-  
-  # 路径规划服务
-  path-planning:
-    url: http://path-planning:8083/api/planning
+uav:
+  jwt:
+    secret: dThpc3RhbmRvbmx5Zm9ydGVzdGluZzM2MmJ5dGVzbG9uZ3NlY3JldGtleQ==

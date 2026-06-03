@@ -1,14 +1,13 @@
 """
 Alert Webhook Receiver
-
-Receives alerts from Alertmanager and forwards to various channels.
+Receives alerts from Alertmanager and forwards to various channels
 """
 
 import logging
 from datetime import datetime
 
 import requests
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
@@ -208,6 +207,3 @@ def clear_alerts():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
-
-
-

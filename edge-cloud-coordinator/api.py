@@ -5,6 +5,7 @@
 import logging
 import os
 from typing import Dict, List, Optional
+from fastapi import Query
 
 # 第三方库
 try:
@@ -240,7 +241,7 @@ if HAS_FASTAPI:
     @app.get("/tasks", response_model=List[TaskStatusResponse], tags=["Tasks"])
     async def list_tasks(
         status: Optional[str] = None,
-        limit: int = Field(default=10, le=100)
+        limit: int = Query(default=10, le=100)
     ):
         """获取任务列表"""
         tasks = coordinator.task_queue[:limit]
@@ -376,14 +377,12 @@ if HAS_FASTAPI:
         import numpy as np
         global_model = federated_learning.get_global_model()
         if global_model is None:
-            from federated_learning import DroneClient
             client = DroneClient(request.drone_id)
             dummy_weights = {"w": np.array([1.0, 2.0, 3.0]), "b": np.array([0.0])}
             updated, n_samples, metrics = client.local_train(
                 dummy_weights, request.epochs
             )
         else:
-            from federated_learning import DroneClient
             client = DroneClient(request.drone_id)
             updated, n_samples, metrics = client.local_train(
                 global_model.weights, request.epochs
@@ -416,4 +415,3 @@ def run_server(host: str = "0.0.0.0", port: int = 8000):
 
 if __name__ == "__main__":
     run_server()
-

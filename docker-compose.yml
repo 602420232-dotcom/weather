@@ -4,10 +4,10 @@ services:
     image: mysql:8.0
     container_name: uav-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: '***'
       MYSQL_DATABASE: uav_platform
       MYSQL_USER: uav
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: '***'
     ports:
       - "3306:3306"
     volumes:
@@ -329,6 +329,60 @@ services:
       resources:
         limits: { memory: 256M }
 
+  frontend:
+    build:
+      context: ./uav-path-planning-system/frontend-vue
+      dockerfile: Dockerfile
+    image: trae-frontend-vue:latest
+    container_name: uav-frontend
+    ports:
+      - "3000:80"
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+
+  model-engine:
+    build:
+      context: ./model-engine
+      dockerfile: Dockerfile
+    image: trae-model-engine:latest
+    container_name: uav-model-engine
+    ports:
+      - "8087:8087"
+    volumes:
+      - /mnt/d/Developer/FengWu_All/FengWu:/app/model:ro
+      - model-engine-data:/data
+      # 原项目桥接: 引用 meteor-forecast 的 Python 代码 (不改原文件)
+      - ./meteor-forecast-service/src/main/python:/legacy/meteor-forecast:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      DEVICE: cuda
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8087/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
 volumes:
   mysql-data:
   redis-data:
+  model-engine-data:
+
+networks:
+  trae_default:
+    external: true
