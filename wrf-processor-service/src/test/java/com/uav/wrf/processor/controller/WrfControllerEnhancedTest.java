@@ -38,6 +38,21 @@ class WrfControllerEnhancedTest {
 
         when(wrfDataService.getWeatherData(anyString())).thenReturn(Map.of("success", true, "data", Map.of()));
         when(wrfDataService.getStatistics(anyString())).thenReturn(Map.of("success", true, "data", Map.of()));
+        when(wrfDataService.getTurbulence(anyString())).thenReturn(Map.of(
+            "success", true, "data",
+            Map.of("tke_mean", 1.2, "turbulence_intensity", "MODERATE")
+        ));
+        when(wrfDataService.getVisibility(anyString())).thenReturn(Map.of(
+            "success", true, "data",
+            Map.of("visibility_m", 8500.0, "visibility_category", "GOOD")
+        ));
+        when(wrfDataService.getLightningRisk(anyString())).thenReturn(Map.of(
+            "success", true, "data",
+            Map.of("risk_level", "LOW", "risk_score", 28.5)
+        ));
+        when(wrfDataService.getHeightLayers(anyString(), anyList())).thenReturn(Map.of(
+            "success", true, "data", Map.of("layers", java.util.List.of(), "layer_count", 0)
+        ));
     }
 
     @Test
@@ -90,5 +105,68 @@ class WrfControllerEnhancedTest {
         Map<String, Object> result = wrfController.getStatistics("test-file-id");
         assertTrue((Boolean) result.get("success"));
         assertNotNull(result.get("data"));
+    }
+
+    @Test
+    @DisplayName("获取湍流数据")
+    void testGetTurbulence() {
+        Map<String, Object> result = wrfController.getTurbulence("test-file-id");
+        assertTrue((Boolean) result.get("success"));
+        assertNotNull(result.get("data"));
+        assertEquals("MODERATE", ((Map<String, Object>) result.get("data")).get("turbulence_intensity"));
+    }
+
+    @Test
+    @DisplayName("获取能见度数据")
+    void testGetVisibility() {
+        Map<String, Object> result = wrfController.getVisibility("test-file-id");
+        assertTrue((Boolean) result.get("success"));
+        assertNotNull(result.get("data"));
+        assertEquals("GOOD", ((Map<String, Object>) result.get("data")).get("visibility_category"));
+    }
+
+    @Test
+    @DisplayName("获取闪电风险评估")
+    void testGetLightningRisk() {
+        Map<String, Object> result = wrfController.getLightningRisk("test-file-id");
+        assertTrue((Boolean) result.get("success"));
+        assertNotNull(result.get("data"));
+        assertEquals("LOW", ((Map<String, Object>) result.get("data")).get("risk_level"));
+    }
+
+    @Test
+    @DisplayName("获取高度分层数据")
+    void testGetHeightLayers() {
+        Map<String, Object> result = wrfController.getHeightLayers("test-file-id", null);
+        assertTrue((Boolean) result.get("success"));
+        assertNotNull(result.get("data"));
+    }
+
+    @Test
+    @DisplayName("获取高度分层数据-自定义分层")
+    void testGetHeightLayersWithCustomLayers() {
+        Map<String, Object> result = wrfController.getHeightLayers("test-file-id", "0,100,500");
+        assertTrue((Boolean) result.get("success"));
+    }
+
+    @Test
+    @DisplayName("高级解析-缺少文件路径")
+    void testAdvancedParseMissingFilePath() {
+        Map<String, Object> result = wrfController.parseWrfAdvanced(Map.of("paramType", "turbulence"));
+        assertFalse((Boolean) result.get("success"));
+        assertTrue(result.get("error").toString().contains("不能为空"));
+    }
+
+    @Test
+    @DisplayName("上传WRF数据")
+    void testUploadWrfData() {
+        when(wrfDataService.createWrfDataFile(anyString(), anyString(), anyLong()))
+            .thenReturn(com.uav.wrf.processor.entity.WrfDataFile.builder()
+                .fileId("wrf_test").id(1L).build());
+
+        Map<String, Object> result = wrfController.uploadWrfData(Map.of(
+            "fileName", "test.nc", "filePath", "./data/test.nc", "fileSize", 1024L
+        ));
+        assertTrue((Boolean) result.get("success"));
     }
 }

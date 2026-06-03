@@ -6,11 +6,12 @@ WRF 气象数据处理服务用于解析和处理 WRF（Weather Research and For
 
 ## 技术栈
 
-- **框架**: Spring Boot 3.2.0
+- **框架**: Spring Boot 3.5.14
 - **语言**: Java 17 + Python 3.8+
 - **构建工具**: Maven
 - **数据格式**: NetCDF4
 - **算法引擎**: Python (wrf_processor.py)
+- **熔断器**: Resilience4j
 
 ## 服务信息
 
