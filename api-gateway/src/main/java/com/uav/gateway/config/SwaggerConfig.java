@@ -4,16 +4,9 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
-import org.springframework.cloud.gateway.route.RouteDefinitionLocator;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import springfox.documentation.swagger.web.SwaggerResourcesProvider;
-import springfox.documentation.swagger.web.SwaggerResource;
-import springfox.documentation.swagger2.annotations.EnableSwagger2WebFlux;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * API Gateway Swagger聚合配置
@@ -45,32 +38,14 @@ public class SwaggerConfig {
     }
 
     /**
-     * 聚合各个微服务的Swagger资源
+     * 聚合各微服务的API文档
      */
     @Bean
-    @Primary
-    public SwaggerResourcesProvider swaggerResourcesProvider(
-            RouteDefinitionLocator routeLocator) {
-        return () -> {
-            List<SwaggerResource> resources = new ArrayList<>();
-            
-            // 手动注册各服务路由
-            resources.add(createSwaggerResource("uav-platform", "/api/platform/v3/api-docs", "2.0"));
-            resources.add(createSwaggerResource("wrf-processor", "/api/wrf/v3/api-docs", "2.0"));
-            resources.add(createSwaggerResource("meteor-forecast", "/api/forecast/v3/api-docs", "2.0"));
-            resources.add(createSwaggerResource("path-planning", "/api/planning/v3/api-docs", "2.0"));
-            resources.add(createSwaggerResource("data-assimilation", "/api/assimilation/v3/api-docs", "2.0"));
-            resources.add(createSwaggerResource("weather-collector", "/api/weather/v3/api-docs", "2.0"));
-            
-            return resources;
-        };
-    }
-
-    private SwaggerResource createSwaggerResource(String name, String location, String version) {
-        SwaggerResource resource = new SwaggerResource();
-        resource.setName(name);
-        resource.setLocation(location);
-        resource.setSwaggerVersion(version);
-        return resource;
+    public GroupedOpenApi allApis() {
+        return GroupedOpenApi.builder()
+                .group("all")
+                .displayName("All APIs")
+                .pathsToMatch("/**")
+                .build();
     }
 }
