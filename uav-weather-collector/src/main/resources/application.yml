@@ -58,3 +58,12 @@ weather:
     ground-interval: 300000    # 地面站数据采集间隔 (5分钟)
     fusion-interval: 900000    # 多源融合间隔 (15分钟)
     risk-interval: 600000      # 风险评估间隔 (10分钟)
+  cma:
+    api-key: ${CMA_API_KEY:}
+    base-url: https://api.weather.cma.cn/api
+  owm:
+    api-key: ${OWM_API_KEY:}
+    base-url: https://api.openweathermap.org/data/2.5
+  ecmwf:
+    api-key: ${ECMWF_API_KEY:}
+    base-url: https://api.ecmwf.int/v1

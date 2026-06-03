@@ -175,6 +175,95 @@ class GroundStationDataSource(DataSourceBase):
         
         return processed_data
     
+    def is_real_data(self) -> bool:
+        """
+        判断数据是否为真实观测数据（非模拟/测试数据）
+        
+        Returns:
+            bool: True 为真实数据，False 为模拟数据
+        """
+        if self.data is None:
+            return False
+        # 通过元数据判断：有站点标识且非 'unknown' 则为真实数据
+        station_id = self.metadata.get('station_id', 'unknown')
+        if station_id != 'unknown':
+            return True
+        # 检查配置中是否显式标记为模拟数据
+        if self.config.get('mock_data', False):
+            return False
+        # 默认：成功从文件加载且包含有效数据，视为真实数据
+        return self.data is not None and len(self.data) > 0
+
+    def fetch(self, file_path: str, **kwargs) -> Optional[Dict[str, Any]]:
+        """
+        高级数据获取方法：加载 → 处理 → 返回完整结果
+        
+        整合 load_data、process_data 和 get_observations 流程，
+        提供统一的数据获取入口和标准化的返回结构。
+        
+        Args:
+            file_path: 数据文件路径
+            **kwargs: 额外参数，支持:
+                - apply_qc (bool): 是否应用质量控制，默认 True
+                - max_stations (int): 最大站点数限制
+                - data_types (list): 需要提取的数据类型列表
+        
+        Returns:
+            Optional[Dict[str, Any]]: 包含处理后数据的字典，失败返回 None
+        """
+        try:
+            # 1. 加载数据
+            if not self.load_data(file_path):
+                logger.error(f"地面站数据加载失败: {file_path}")
+                return None
+            
+            # 2. 处理数据
+            processed = self.process_data()
+            if processed is None:
+                logger.error("地面站数据处理失败")
+                return None
+            
+            # 3. 提取观测值
+            obs_values, obs_locations, obs_errors = self.get_observations()
+            
+            # 4. 组装返回结果
+            result = {
+                'metadata': self.metadata,
+                'processed_data': processed,
+                'observations': {
+                    'values': obs_values,
+                    'locations': obs_locations,
+                    'errors': obs_errors,
+                },
+                'is_real_data': self.is_real_data(),
+                'data_format': self.data_format,
+                'station_type': self.station_type,
+                'record_count': len(self.data) if self.data else 0,
+            }
+            
+            # 5. 应用质量控制（如果启用）
+            apply_qc = kwargs.get('apply_qc', True)
+            if apply_qc and isinstance(processed, dict):
+                # 统计各字段有效观测数
+                quality_metrics = {}
+                for key, values in processed.items():
+                    if isinstance(values, list):
+                        valid = sum(1 for v in values if v is not None and v != '')
+                        quality_metrics[f'{key}_valid'] = valid
+                        quality_metrics[f'{key}_total'] = len(values)
+                result['quality_metrics'] = quality_metrics
+            
+            logger.info(
+                f"地面站数据获取成功: {file_path}, "
+                f"站点={self.metadata.get('station_id', 'unknown')}, "
+                f"记录数={len(obs_values)}"
+            )
+            return result
+            
+        except Exception as e:
+            logger.error(f"地面站数据获取失败: {e}")
+            return None
+
     def get_observations(self) -> Tuple[List[float], List[Tuple[float, float, float]], List[float]]:
         """
         获取观测数据

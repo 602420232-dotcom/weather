@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -90,11 +89,14 @@ class DatabaseHelper {
 
     // 索引
     await db.execute(
-        'CREATE INDEX idx_cached_paths_drone ON $tableCachedPaths(drone_id)');
+      'CREATE INDEX idx_cached_paths_drone ON $tableCachedPaths(drone_id)',
+    );
     await db.execute(
-        'CREATE INDEX idx_cached_weather_location ON $tableCachedWeather(location_key)');
+      'CREATE INDEX idx_cached_weather_location ON $tableCachedWeather(location_key)',
+    );
     await db.execute(
-        'CREATE INDEX idx_sync_queue_status ON $tableSyncQueue(status)');
+      'CREATE INDEX idx_sync_queue_status ON $tableSyncQueue(status)',
+    );
 
     LogUtil.i('离线数据库表结构创建完成');
   }
@@ -120,9 +122,9 @@ class DatabaseHelper {
 /// - 网络状态感知
 class OfflineManager {
   factory OfflineManager() => _instance;
-  OfflineManager._() : _dbHelper = DatabaseHelper.instance {
-    _monitor = NetworkMonitor();
-  }
+  OfflineManager._() 
+    : _dbHelper = DatabaseHelper.instance,
+      _monitor = NetworkMonitor();
   static final OfflineManager _instance = OfflineManager._();
 
   final DatabaseHelper _dbHelper;
@@ -220,7 +222,8 @@ class OfflineManager {
 
   /// 批量获取无人机的所有有效路径规划
   Future<List<Map<String, dynamic>>> getCachedPathPlansByDrone(
-      String droneId) async {
+    String droneId,
+  ) async {
     try {
       final db = await _dbHelper.database;
       final now = DateTime.now().millisecondsSinceEpoch;
@@ -279,7 +282,8 @@ class OfflineManager {
 
   /// 获取缓存的指定位置气象数据
   Future<Map<String, dynamic>?> getCachedWeatherData(
-      String locationKey) async {
+    String locationKey,
+  ) async {
     try {
       final db = await _dbHelper.database;
       final now = DateTime.now().millisecondsSinceEpoch;

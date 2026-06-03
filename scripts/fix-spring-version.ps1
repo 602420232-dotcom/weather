@@ -40,9 +40,9 @@ Write-Host "`n[3/5] 正在更新Spring版本..." -ForegroundColor Yellow
 $replacements = @{
     '<spring-boot\.version>.*?</spring-boot\.version>' = '<spring-boot.version>3.2.5</spring-boot.version>'
     '<spring-cloud\.version>.*?</spring-cloud\.version>' = '<spring-cloud.version>2023.0.3</spring-cloud.version>'
-    '<spring-cloud-alibaba\.version>.*?</spring-cloud-alibaba\.version>' = '<spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>'
-    '<spring-cloud-bootstrap\.version>.*?</spring-cloud-bootstrap\.version>' = '<spring-cloud-bootstrap.version>4.2.0</spring-cloud-bootstrap.version>'
-    '<spring-cloud-starters\.version>.*?</spring-cloud-starters\.version>' = '<spring-cloud-starters.version>4.2.0</spring-cloud-starters.version>'
+    '<spring-cloud-alibaba\.version>.*?</spring-cloud-alibaba\.version>' = '<spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>'
+    '<spring-cloud-bootstrap\.version>.*?</spring-cloud-bootstrap\.version>' = '<spring-cloud-bootstrap.version>4.1.0.0</spring-cloud-bootstrap.version>'
+    '<spring-cloud-starters\.version>.*?</spring-cloud-starters\.version>' = '<spring-cloud-starters.version>4.1.0.0</spring-cloud-starters.version>'
 }
 
 foreach ($pattern in $replacements.Keys) {

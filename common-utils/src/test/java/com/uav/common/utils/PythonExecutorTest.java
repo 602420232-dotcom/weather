@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * PythonExecutor 单元测试（通过委托模式调用 PythonScriptInvoker）
  */
+@SuppressWarnings("deprecation")
 @DisplayName("PythonExecutor测试")
 class PythonExecutorTest {
 

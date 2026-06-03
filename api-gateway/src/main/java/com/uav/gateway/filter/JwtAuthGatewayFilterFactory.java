@@ -93,10 +93,13 @@ public class JwtAuthGatewayFilterFactory
                 log.debug("JwtAuth: authenticated user [{}] for [{}]", username, path);
 
                 // 将用户身份注入请求头，透传到下游微服务
+                String rolesHeader = roles != null
+                    ? roles.stream().filter(Objects::nonNull).collect(java.util.stream.Collectors.joining(","))
+                    : "";
                 ServerHttpRequest mutatedRequest = request.mutate()
                         .header("X-User-Id", username)
-                        .header("X-User-Roles", roles != null ? String.join(",", roles) : "")
-                        .header("X-Token-Jti", jti)
+                        .header("X-User-Roles", rolesHeader)
+                        .header("X-Token-Jti", jti != null ? jti : "")
                         .header("X-Tenant-Id", tenantId != null ? tenantId : "")
                         .build();
 

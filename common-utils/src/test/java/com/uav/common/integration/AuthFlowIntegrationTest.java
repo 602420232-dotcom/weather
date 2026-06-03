@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 注意: 这些测试需要后端服务运行中。
  * 通过 -Dtest.target=http://localhost:8089 指定目标服务地址。
  */
+@SuppressWarnings({"unchecked", "null"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AuthFlowIntegrationTest {
 
@@ -180,7 +181,6 @@ public class AuthFlowIntegrationTest {
         return headers;
     }
 
-    @SuppressWarnings("unchecked")
     private HttpHeaders createAuthHeaders() {
         HttpHeaders headers = createJsonHeaders();
         if (authToken != null) {

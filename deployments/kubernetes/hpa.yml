@@ -33,7 +33,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 70
+          averageUtilization: 50  # lowered from 70 for faster scaling
     - type: Resource
       resource:
         name: memory
@@ -57,6 +57,12 @@ spec:
     - type: Resource
       resource:
         name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource                          # ADDED: memory metric
+      resource:
+        name: memory
         target:
           type: Utilization
           averageUtilization: 70
@@ -99,4 +105,4 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 80
+          averageUtilization: 60  # lowered from 80 for early scaling

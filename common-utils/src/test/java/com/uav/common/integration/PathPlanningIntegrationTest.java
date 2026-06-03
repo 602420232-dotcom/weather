@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 测试 VRPTW / A* / DWA / Full 三层规划流程。
  * 需要路径规划服务和认证服务运行中。
  */
+@SuppressWarnings({"unchecked", "null"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PathPlanningIntegrationTest {
 

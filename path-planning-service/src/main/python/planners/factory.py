@@ -4,6 +4,9 @@ from .rrt_star import RRTP, RRTStarPlanner
 from .dijkstra import DijkstraPlanner
 from .genetic import GeneticAlgorithmPlanner
 from .pso import ParticleSwarmOptimizationPlanner
+from .aco import ACOPlanner
+from .informed_rrt_star import InformedRRTStarPlanner
+from .cbs import CBSPlanner
 
 
 class PlannerFactory:
@@ -17,6 +20,11 @@ class PlannerFactory:
         'genetic_algorithm': GeneticAlgorithmPlanner,
         'pso': ParticleSwarmOptimizationPlanner,
         'particle_swarm': ParticleSwarmOptimizationPlanner,
+        'aco': ACOPlanner,
+        'ant_colony': ACOPlanner,
+        'informed_rrt_star': InformedRRTStarPlanner,
+        'cbs': CBSPlanner,
+        'conflict_based_search': CBSPlanner,
     }
 
     @classmethod

@@ -1,0 +1,24 @@
+# API Gateway Health Check Configuration
+management:
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,gateway
+  health:
+    status:
+      order: DOWN, OUT_OF_SERVICE, UNKNOWN, UP
+    redis:
+      enabled: true
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}

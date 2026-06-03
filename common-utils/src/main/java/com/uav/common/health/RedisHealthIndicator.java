@@ -4,8 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.Properties;
 
 /**
  * Redis 深度健康检查
@@ -26,36 +30,45 @@ public class RedisHealthIndicator implements HealthIndicator {
     public Health health() {
         try {
             long start = System.currentTimeMillis();
-            String pong = redisTemplate.getConnectionFactory().getConnection().ping();
-            long elapsed = System.currentTimeMillis() - start;
-
-            if (!"PONG".equalsIgnoreCase(pong)) {
+            
+            RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+            if (connectionFactory == null) {
                 return Health.down()
-                    .withDetail("redis", "unexpected response: " + pong)
+                    .withDetail("redis", "connection factory is null")
                     .build();
             }
-
-            Health.Builder builder = Health.up()
-                .withDetail("redis", "reachable")
-                .withDetail("responseTime", elapsed + "ms");
-
-            // 尝试获取内存信息
+            
+            RedisConnection conn = connectionFactory.getConnection();
+            
             try {
-                var conn = redisTemplate.getConnectionFactory().getConnection();
-                var info = conn.info("memory");
-                if (info != null) {
-                    String infoStr;
-                    if (info instanceof byte[]) {
-                        infoStr = new String((byte[]) info, java.nio.charset.StandardCharsets.UTF_8);
-                    } else {
-                        infoStr = info.toString();
-                    }
-                    builder.withDetail("usedMemory", extractValue(infoStr, "used_memory_human"));
-                    builder.withDetail("peakMemory", extractValue(infoStr, "used_memory_peak_human"));
-                }
-            } catch (Exception ignored) { }
+                String pong = conn.ping();
+                long elapsed = System.currentTimeMillis() - start;
 
-            return builder.build();
+                if (!"PONG".equalsIgnoreCase(pong)) {
+                    return Health.down()
+                        .withDetail("redis", "unexpected response: " + pong)
+                        .build();
+                }
+
+                Health.Builder builder = Health.up()
+                    .withDetail("redis", "reachable")
+                    .withDetail("responseTime", Long.valueOf(elapsed) + "ms");
+
+                // 尝试获取内存信息
+                try {
+                    Properties info = conn.serverCommands().info("memory");
+                    if (info != null) {
+                        String usedMemory = info.getProperty("used_memory_human", "unknown");
+                        String peakMemory = info.getProperty("used_memory_peak_human", "unknown");
+                        builder.withDetail("usedMemory", usedMemory);
+                        builder.withDetail("peakMemory", peakMemory);
+                    }
+                } catch (Exception ignored) { }
+
+                return builder.build();
+            } finally {
+                conn.close();
+            }
 
         } catch (Exception e) {
             log.error("Redis health check failed", e);
@@ -64,14 +77,5 @@ public class RedisHealthIndicator implements HealthIndicator {
                 .withDetail("error", e.getMessage())
                 .build();
         }
-    }
-
-    private String extractValue(String info, String key) {
-        for (String line : info.split("\n")) {
-            if (line.startsWith(key + ":")) {
-                return line.substring(key.length() + 1).trim();
-            }
-        }
-        return "unknown";
     }
 }

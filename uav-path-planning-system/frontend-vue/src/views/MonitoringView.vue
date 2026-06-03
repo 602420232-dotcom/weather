@@ -118,7 +118,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, h } from 'vue'
-import { CheckCircleOutlined, DashboardOutlined, DatabaseOutlined, HddOutlined, HeartOutlined } from '@ant-design/icons-vue'
+import { CheckCircleOutlined, DatabaseOutlined, HddOutlined, HeartOutlined } from '@ant-design/icons-vue'
 import * as echarts from 'echarts'
 
 // 响应式数据

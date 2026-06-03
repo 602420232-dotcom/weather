@@ -6,16 +6,21 @@ import java.util.Map;
 public class WeatherData {
     private String source;
     private String droneId;
+    private String stationId;
     private long timestamp;
     private double latitude, longitude, altitude;
     private double temperature, humidity, windSpeed, windDirection, windGust;
     private double pressure, visibility, turbulence, precipitation;
+    private double cloudCover;
+    private String countryCode;
+    private String parameters;
     private double dataQuality = 1.0;
 
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("source", source);
         map.put("drone_id", droneId);
+        map.put("station_id", stationId);
         map.put("timestamp", timestamp);
         map.put("latitude", latitude);
         map.put("longitude", longitude);
@@ -29,6 +34,9 @@ public class WeatherData {
         map.put("visibility", visibility);
         map.put("turbulence", turbulence);
         map.put("precipitation", precipitation);
+        map.put("cloud_cover", cloudCover);
+        map.put("country_code", countryCode);
+        map.put("parameters", parameters);
         map.put("data_quality", dataQuality);
         return map;
     }
@@ -63,6 +71,14 @@ public class WeatherData {
     public void setTurbulence(double turbulence) { this.turbulence = turbulence; }
     public double getPrecipitation() { return precipitation; }
     public void setPrecipitation(double precipitation) { this.precipitation = precipitation; }
+    public String getStationId() { return stationId; }
+    public void setStationId(String stationId) { this.stationId = stationId; }
+    public double getCloudCover() { return cloudCover; }
+    public void setCloudCover(double cloudCover) { this.cloudCover = cloudCover; }
+    public String getCountryCode() { return countryCode; }
+    public void setCountryCode(String countryCode) { this.countryCode = countryCode; }
+    public String getParameters() { return parameters; }
+    public void setParameters(String parameters) { this.parameters = parameters; }
     public double getDataQuality() { return dataQuality; }
     public void setDataQuality(double dataQuality) { this.dataQuality = dataQuality; }
 }

@@ -10,9 +10,10 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
-  redis:
-    host: redis
-    port: 6379
+  data:
+    redis:
+      host: redis
+      port: 6379
 
 logging:
   level:

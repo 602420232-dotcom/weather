@@ -39,7 +39,7 @@ class UNetTrainer:
         self.config = config or UNetConfig()
         self.model = UNetDownscaler(self.config).to(self.device)
         self.optimizer = optim.AdamW(self.model.parameters(), lr=1e-3, weight_decay=1e-5)
-        self.scheduler = optim.lr_cosineAnnealingLR(self.optimizer, T_max=100)
+        self.scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=100)
         self.writer = SummaryWriter("runs/unet_downscaler")
 
         self.best_val_loss = float("inf")

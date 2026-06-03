@@ -1,6 +1,6 @@
 package com.uav.gateway;
 
-import com.uav.gateway.config.RateLimitConfig;
+import com.uav.gateway.config.RateLimiterConfig;
 import com.uav.gateway.handler.RateLimitHandler;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -15,17 +15,17 @@ import static org.junit.jupiter.api.Assertions.*;
 class GatewayTests {
 
     @Test
-    @DisplayName("RateLimitConfig IP密钥解析器")
+    @DisplayName("RateLimiterConfig IP密钥解析器")
     void testIpKeyResolver() {
-        RateLimitConfig config = new RateLimitConfig();
+        RateLimiterConfig config = new RateLimiterConfig();
         KeyResolver resolver = config.ipKeyResolver();
         assertNotNull(resolver);
     }
 
     @Test
-    @DisplayName("RateLimitConfig 用户密钥解析器")
+    @DisplayName("RateLimiterConfig 用户密钥解析器")
     void testUserKeyResolver() {
-        RateLimitConfig config = new RateLimitConfig();
+        RateLimiterConfig config = new RateLimiterConfig();
         KeyResolver resolver = config.userKeyResolver();
         assertNotNull(resolver);
     }
@@ -33,7 +33,7 @@ class GatewayTests {
     @Test
     @DisplayName("IP密钥解析器从请求头获取")
     void testIpKeyResolverWithRequest() {
-        RateLimitConfig config = new RateLimitConfig();
+        RateLimiterConfig config = new RateLimiterConfig();
         KeyResolver resolver = config.ipKeyResolver();
 
         MockServerHttpRequest request = MockServerHttpRequest
@@ -49,7 +49,7 @@ class GatewayTests {
     @Test
     @DisplayName("用户密钥解析器处理无用户头请求")
     void testUserKeyResolverWithAnonymous() {
-        RateLimitConfig config = new RateLimitConfig();
+        RateLimiterConfig config = new RateLimiterConfig();
         KeyResolver resolver = config.userKeyResolver();
 
         MockServerHttpRequest request = MockServerHttpRequest.get("/api/test").build();

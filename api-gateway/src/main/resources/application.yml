@@ -17,9 +17,10 @@ spring:
       - io.github.resilience4j.timelimiter.autoconfigure.TimeLimiterAutoConfiguration
   application:
     name: api-gateway
-  redis:
-    host: ${REDIS_HOST:localhost}
-    port: ${REDIS_PORT:6379}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
   cloud:
     gateway:
       discovery:
@@ -67,6 +68,19 @@ spring:
               args:
                 key-resolver: "#{@userKeyResolver}"
                 rate-limiter: "#{@strictRateLimiter}"
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "${CORS_ORIGINS:http://localhost:3000,http://localhost:8080}"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
       default-filters:
         - name: RequestRateLimiter
           args:

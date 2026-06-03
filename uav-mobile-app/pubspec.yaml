@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
+  sdk: '^3.11.0'
 
 dependencies:
   flutter:
@@ -29,6 +29,8 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   flutter_secure_storage: ^9.0.0
+  sqflite: ^2.3.0
+  path: ^1.8.3
 
   # 地图
   flutter_map: ^6.1.0
@@ -51,6 +53,9 @@ dependencies:
   permission_handler: ^11.2.0
   path_provider: ^2.1.2
   package_info_plus: ^8.0.0
+
+  # WebSocket
+  web_socket_channel: ^2.4.0
 
   # 安全与加密
   crypto: ^3.0.3

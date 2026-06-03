@@ -151,11 +151,11 @@ spec:
               value: graceful
           resources:
             requests:
-              cpu: 300m
-              memory: 512Mi
+              cpu: 500m      # increased from 300m
+              memory: 1Gi    # increased from 512Mi
             limits:
               cpu: "2"
-              memory: 1Gi
+              memory: 2Gi    # increased from 1Gi
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
@@ -198,7 +198,7 @@ spec:
           resources:
             requests:
               cpu: "2"
-              memory: 4Gi
+              memory: 8Gi    # increased from 4Gi
             limits:
               cpu: "4"
               memory: 8Gi

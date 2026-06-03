@@ -28,6 +28,7 @@ public class PythonExecutor {
 
     private final PythonScriptInvoker delegate;
 
+    @Deprecated
     public PythonExecutor(PythonScriptInvoker delegate) {
         this.delegate = delegate;
         log.warn("PythonExecutor is deprecated. Use PythonScriptInvoker instead.");

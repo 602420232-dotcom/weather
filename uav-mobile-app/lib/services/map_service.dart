@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -12,9 +11,6 @@ class MapService {
   factory MapService() => _instance;
 
   static final MapService _instance = MapService._internal();
-
-  // 离线瓦片缓存
-  final Map<String, Uint8List> _tileCache = {};
 
   // 默认瓦片URL模板
   static const String _tileUrlTemplate =

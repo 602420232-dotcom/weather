@@ -65,3 +65,31 @@ repos:
         name: Spotless (Maven)
         stages: [commit]
         language_version: python3.11
+
+  # Java 代码检查
+  - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.14.0
+    hooks:
+      - id: pretty-format-java
+        args: [--autofix, --indent=4]
+        files: \.java$
+
+  # Dockerfile 检查
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+        args: [--ignore, DL3008, --ignore, DL3018]
+
+  # 禁止提交大文件
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-added-large-files
+        args: ['--maxkb=1024']
+
+  # 安全漏洞扫描
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.0
+    hooks:
+      - id: gitleaks-docker
