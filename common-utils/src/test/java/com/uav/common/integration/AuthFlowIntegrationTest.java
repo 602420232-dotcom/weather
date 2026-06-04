@@ -23,8 +23,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * 
  * 注意: 这些测试需要后端服务运行中。
  * 通过 -Dtest.target=http://localhost:8089 指定目标服务地址。
+ * 使用 -Dgroups=integration 单独运行集成测试。
  */
 @SuppressWarnings({"unchecked", "null"})
+@Tag("integration")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AuthFlowIntegrationTest {
 
