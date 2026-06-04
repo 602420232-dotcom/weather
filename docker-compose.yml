@@ -62,7 +62,7 @@ services:
     build:
       context: .
       dockerfile: ./api-gateway/Dockerfile
-    image: trae-api-gateway:${TAG:-latest}
+    image: ghcr.io/602420232-dotcom/weather/api-gateway:latest
     container_name: uav-gateway
     ports:
       - "8088:8088"
@@ -93,6 +93,7 @@ services:
     build:
       context: .
       dockerfile: ./wrf-processor-service/Dockerfile
+    image: ghcr.io/602420232-dotcom/weather/wrf-processor:latest
     container_name: wrf-processor
     ports:
       - "8081:8081"
@@ -127,6 +128,7 @@ services:
     build:
       context: .
       dockerfile: ./data-assimilation-service/Dockerfile
+    image: ghcr.io/602420232-dotcom/weather/data-assimilation:latest
     container_name: data-assimilation
     ports:
       - "8084:8084"
@@ -161,6 +163,7 @@ services:
     build:
       context: .
       dockerfile: ./meteor-forecast-service/Dockerfile
+    image: ghcr.io/602420232-dotcom/weather/meteor-forecast:latest
     container_name: meteor-forecast
     ports:
       - "8082:8082"
@@ -195,6 +198,7 @@ services:
     build:
       context: .
       dockerfile: ./path-planning-service/Dockerfile
+    image: ghcr.io/602420232-dotcom/weather/path-planning:latest
     container_name: path-planning
     ports:
       - "8083:8083"
@@ -229,7 +233,7 @@ services:
     build:
       context: .
       dockerfile: ./uav-platform-service/Dockerfile
-    image: trae-uav-platform:${TAG:-latest}
+    image: ghcr.io/602420232-dotcom/weather/uav-platform:latest
     container_name: uav-platform
     ports:
       - "8080:8080"
@@ -281,7 +285,7 @@ services:
     build:
       context: .
       dockerfile: ./uav-weather-collector/Dockerfile
-    image: trae-uav-weather-collector:${TAG:-latest}
+    image: ghcr.io/602420232-dotcom/weather/weather-collector:latest
     container_name: uav-weather
     ports:
       - "8086:8086"
@@ -317,6 +321,7 @@ services:
 
   edge-cloud-coordinator:
     build: ./edge-cloud-coordinator
+    image: ghcr.io/602420232-dotcom/weather/edge-cloud:latest
     container_name: uav-edge-cloud
     ports:
       - "8000:8000"
@@ -346,6 +351,7 @@ services:
     build:
       context: .
       dockerfile: ./fengwu-service/Dockerfile
+    image: ghcr.io/602420232-dotcom/weather/fengwu:latest
     container_name: uav-fengwu
     ports:
       - "8085:8085"
@@ -376,6 +382,7 @@ services:
     build:
       context: .
       dockerfile: ./model-engine/Dockerfile
+    image: ghcr.io/602420232-dotcom/weather/model-engine:latest
     container_name: uav-model-engine
     ports:
       - "8087:8087"
@@ -444,7 +451,7 @@ services:
     build:
       context: ./uav-path-planning-system/frontend-vue
       dockerfile: Dockerfile
-    image: trae-frontend-vue:${TAG:-1.0.0}
+    image: ghcr.io/602420232-dotcom/weather/frontend:latest
     container_name: uav-frontend
     ports:
       - "3000:80"
