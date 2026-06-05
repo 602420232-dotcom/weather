@@ -6,6 +6,9 @@
 # 配置模块
 
 
+import logging
+logger = logging.getLogger(__name__)
+
 from .config import (
     BaseConfig,
     OptimizedConfig,

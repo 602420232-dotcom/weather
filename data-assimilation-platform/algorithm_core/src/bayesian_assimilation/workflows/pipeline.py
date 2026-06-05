@@ -25,7 +25,7 @@ except ImportError:
             self.config = config
             self.logger = logging.getLogger(__name__)
 
-        def initialize_grid(self: Any, domain_size: int, resolution: Any = None):
+        def initialize_grid(self: Any, domain_size:     int, resolution: Any = None):
             self.domain_size = domain_size
             self.resolution = resolution
 

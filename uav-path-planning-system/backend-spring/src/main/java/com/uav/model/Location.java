@@ -1,8 +1,8 @@
 package com.uav.model;
 
 import lombok.Data;
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import jakarta.persistence.*;
 
 @Data
 @Entity

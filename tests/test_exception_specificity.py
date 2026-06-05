@@ -5,6 +5,9 @@
 中的 except Exception 已被替换为具体的异常类型组合。
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import ast
 import os
 import sys

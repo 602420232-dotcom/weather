@@ -6,6 +6,9 @@
 # 批处理工作流
 
 
+import logging
+logger = logging.getLogger(__name__)
+
 from .batch import (
     BatchAssimilator,
     batch_assimilate

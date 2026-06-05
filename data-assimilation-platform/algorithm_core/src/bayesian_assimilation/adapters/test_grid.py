@@ -1,11 +1,14 @@
-"""
+r"""
 Auto-generated unit test
 Source: d:\Developer\workplace\py\iteam\trae\data-assimilation-platform\algorithm_core\src\bayesian_assimilation\adapters\grid.py
 Generated: 2026-05-08 12:35:50
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import pytest
-from grid import *
+from grid import *  # type: ignore[reportWildcardImportFromLibrary]
 
 
 class TestBasic:
@@ -20,33 +23,23 @@ class TestGridAdapter:
     """Test class: GridAdapter"""
 
     @pytest.fixture
-
     def gridadapter_instance(self):
-    """Create instance for GridAdapter"""
+        """Create instance for GridAdapter"""
         # Initialize with default parameters for testing
         return None
 
     def test_interpolate(self):
-    """Test method: interpolate"""
+        """Test method: interpolate"""
         # Test logic: Verify basic functionality
         # Args: self, data, new_shape, method
+        result = None
         assert result is not None  # Assertion completed
 
-
-class TestGridAdapter:
-    """Test class: GridAdapter"""
-
-    @pytest.fixture
-
-    def gridadapter_instance(self):
-    """Create instance for GridAdapter"""
-        # Initialize with default parameters for testing
-        return None
-
     def test_resample(self):
-    """Test method: resample"""
+        """Test method: resample"""
         # Test logic: Verify basic functionality
         # Args: self, data, factor
+        result = None
         assert result is not None  # Assertion completed
 
 

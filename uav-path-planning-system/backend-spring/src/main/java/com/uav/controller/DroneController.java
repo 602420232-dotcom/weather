@@ -4,9 +4,8 @@ import com.uav.model.Drone;
 import com.uav.service.DroneService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/operator/drones")

@@ -2,6 +2,9 @@
 边云协调器单元测试
 （在import前mock numpy避免numpy依赖）
 """
+import logging
+logger = logging.getLogger(__name__)
+
 import sys
 import unittest
 from unittest.mock import MagicMock

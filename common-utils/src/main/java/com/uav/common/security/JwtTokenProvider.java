@@ -47,7 +47,7 @@ public class JwtTokenProvider {
                 .claim("jti", UUID.randomUUID().toString())
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + jwtProperties.getExpirationMs()))
-                .signWith(getKey())
+                .signWith(getKey(), Jwts.SIG.HS512)
                 .compact();
     }
 
@@ -61,7 +61,7 @@ public class JwtTokenProvider {
                 .claim("jti", UUID.randomUUID().toString())
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + jwtProperties.getRefreshExpirationMs()))
-                .signWith(getKey())
+                .signWith(getKey(), Jwts.SIG.HS512)
                 .compact();
     }
 

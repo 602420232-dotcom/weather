@@ -15,7 +15,8 @@ from multiprocessing import shared_memory
 
 
 try:
-    from bayesian_assimilation.core.assimilator import BayesianAssimilator
+    from bayesian_assimilation.core.assimilator import (
+        BayesianAssimilator)  # type: ignore[assignment]
 
 
 except ImportError:
@@ -27,7 +28,7 @@ except ImportError:
             self.config = config
             self.logger = logging.getLogger(__name__)
 
-        def initialize_grid(self: Any, domain_size: int, resolution: Any = None):
+        def initialize_grid(self: Any, domain_size: tuple[int, int, int], resolution: Any = None):
             self.domain_size = domain_size
             self.resolution = resolution
 
@@ -40,7 +41,8 @@ except ImportError:
 
 def _process_block(task_data):
     """处理单个数据块的函数"""
-    block_idx, start_x, end_x, bg_block, block_obs, adjusted_obs_loc, obs_errors, config_dict = task_data
+    (block_idx, start_x, end_x, bg_block, block_obs,
+     adjusted_obs_loc, obs_errors, config_dict) = task_data
     try:
         # 保护逻辑：如果没有观测点，直接返回背景场
         if block_obs is None or len(block_obs) == 0:
@@ -95,13 +97,15 @@ class BlockParallelAssimilator(BayesianAssimilator):
         super().__init__(config)
         self.logger = logging.getLogger(__name__)
 
-    def initialize_grid(self: Any, domain_size: int, resolution: Any = None):
+    def initialize_grid(self: Any, domain_size: Any, resolution: Any = None):
         """
         初始化网格
         """
         super().initialize_grid(domain_size, resolution)
 
-    def assimilate_block_parallel(self, background, observations, obs_locations, n_blocks=4, obs_errors=None):
+    def assimilate_block_parallel(
+            self, background, observations, obs_locations,
+            n_blocks=4, obs_errors=None):
         """
         分块并行执行3DVAR同化
 
@@ -163,11 +167,16 @@ class BlockParallelAssimilator(BayesianAssimilator):
                     config_dict = {
                         'domain_size': (end_x - start_x, ny, nz),
                         'target_resolution': self.resolution,
-                        'background_error_scale': getattr(self.config, 'background_error_scale', 1.5),
-                        'observation_error_scale': getattr(self.config, 'observation_error_scale', 0.8)
+                        'background_error_scale': getattr(
+                            self.config, 'background_error_scale', 1.5),
+                        'observation_error_scale': getattr(
+                            self.config, 'observation_error_scale', 0.8)
                     }
 
-                    block_tasks.append((block_idx, start_x, end_x, bg_block, block_obs, adjusted_obs_loc, obs_errors, config_dict))
+                    block_tasks.append(
+                        (block_idx, start_x, end_x, bg_block,
+                         block_obs, adjusted_obs_loc, obs_errors, config_dict)
+                    )
                 else:
                     # 无观测的块，直接使用背景场
                     results.append((block_idx, start_x, end_x, bg_block, np.zeros_like(bg_block)))
@@ -190,7 +199,8 @@ class BlockParallelAssimilator(BayesianAssimilator):
                     # 回退到ProcessPoolExecutor
                     self.logger.warning("Joblib未安装，回退到ProcessPoolExecutor")
                     max_workers = min(n_blocks, multiprocessing.cpu_count())
-                    with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
+                    with concurrent.futures.ProcessPoolExecutor(
+                            max_workers=max_workers) as executor:
                         future_to_block = {}
                         for task in block_tasks:
                             future = executor.submit(_process_block, task)
@@ -212,8 +222,8 @@ class BlockParallelAssimilator(BayesianAssimilator):
         analysis = np.copy(background)
         variance = np.zeros_like(background)
 
-        for block_idx, start_x, end_x, analysis_block, variance_block in sorted(results, key=lambda x:
-            x[0]):
+        for (block_idx, start_x, end_x, analysis_block,
+             variance_block) in sorted(results, key=lambda x: x[0]):
             analysis[start_x:end_x, :, :] = analysis_block
             variance[start_x:end_x, :, :] = variance_block
 
@@ -258,4 +268,5 @@ class BlockParallelAssimilator(BayesianAssimilator):
         """
         并行执行3DVAR同化（别名）
         """
-        return self.assimilate_block_parallel(background, observations, obs_locations, 4, obs_errors)
+        return self.assimilate_block_parallel(
+            background, observations, obs_locations, 4, obs_errors)

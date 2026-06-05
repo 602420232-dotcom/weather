@@ -15,6 +15,9 @@
     pytest tests/e2e/test_e2e_flows.py -v --headed
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import pytest
 import requests
 import json

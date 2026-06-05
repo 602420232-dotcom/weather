@@ -142,8 +142,12 @@ class DistributedInference:
                 shard_size = len(input_data) // len(shard_nodes)
                 idx = shard_nodes.index(node_id)
                 shard_data = input_data[idx * shard_size: (idx + 1) * shard_size]
-                results[node_id] = {"shard_size": len(shard_data), "status": "completed", "node": node_id}
-        return {"model": model_name, "shards": len(results), "status": "completed", "results": results}
+                results[node_id] = {
+                    "shard_size": len(shard_data),
+                    "status": "completed",
+                    "node": node_id}
+        return {"model": model_name, "shards": len(
+            results), "status": "completed", "results": results}
 
 
 class IncrementalLearning:

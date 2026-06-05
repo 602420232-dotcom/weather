@@ -54,7 +54,7 @@ PARALLEL_THRESHOLDS = {
 }
 
 
-def calculate_data_points(domain_size: int, resolution: Any):
+def calculate_data_points(domain_size: Tuple[int, int, int], resolution: Any):
     """计算总数据点数"""
     nx = int(domain_size[0] / resolution) + 1
     ny = int(domain_size[1] / resolution) + 1
@@ -72,7 +72,7 @@ def get_parallel_strategy(total_points):
         return 'process', min(mp.cpu_count(), 16)
 
 
-def create_data(domain_size: int, resolution: Any, n_obs: Any = 30):
+def create_data(domain_size: Tuple[int, int, int], resolution: Any, n_obs: Any = 30):
     """创建合成数据"""
     nx = int(domain_size[0] / resolution) + 1
     ny = int(domain_size[1] / resolution) + 1

@@ -1,5 +1,5 @@
 # Type annotations added: 2026-05-08 13:22:43
-from typing import Dict, Any
+from typing import Any
 
 """
 分辨率管理组件
@@ -34,7 +34,7 @@ class AdaptiveResolutionSelector:
         self.config = config
         self.performance_history = []
 
-    def select_resolution(self: Any, domain_size: int):
+    def select_resolution(self: Any, domain_size: Any):
         """
         根据域大小选择合适的分辨率
 
@@ -103,7 +103,8 @@ class MultiResolutionAssimilator:
             同化结果
         """
         config = AssimilationConfig(
-            domain_size=background_data.shape if hasattr(background_data, 'shape') else (1000, 1000, 100),
+            domain_size=background_data.shape
+            if hasattr(background_data, 'shape') else (1000, 1000, 100),
             target_resolution=self.base_resolution,
             background_error_scale=1.5,
             observation_error_scale=0.8
@@ -118,7 +119,7 @@ class MultiResolutionAssimilator:
         return result
 
 
-def interpolate_to_grid(data: Dict[str, Any], target_resolution: Any, current_resolution: Any = 50.0):
+def interpolate_to_grid(data: Any, target_resolution: Any, current_resolution: Any = 50.0):
     """
     将数据插值到目标分辨率
 

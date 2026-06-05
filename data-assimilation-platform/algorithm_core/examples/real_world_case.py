@@ -89,7 +89,7 @@ class MeteorologicalQualityControl:
         return temperature
 
     @staticmethod
-    def validate_humidity(humidity: str):
+    def validate_humidity(humidity: Any):
         """验证湿度数据"""
         min_humidity = 0.0
         max_humidity = 100.0
@@ -103,7 +103,7 @@ class MeteorologicalQualityControl:
         return humidity
 
     @staticmethod
-    def detect_outliers(data: Dict[str, Any], threshold: Any = 3.0):
+    def detect_outliers(data: Any, threshold: Any = 3.0):
         """检测异常值"""
         mean = np.mean(data)
         std = np.std(data)
@@ -139,7 +139,7 @@ class MeteorologicalQualityControl:
         return wind_speed
 
     @staticmethod
-    def check_time_consistency(time_series_data: float, max_change: Any = 10.0):
+    def check_time_consistency(time_series_data: Any, max_change: Any = 10.0):
         """检查时间一致性，确保气象数据随时间合理变化"""
         if len(time_series_data) < 2:
             return time_series_data
@@ -287,7 +287,7 @@ class TimeSeriesAnalyzer:
     """时间序列分析模块"""
 
     @staticmethod
-    def generate_time_series_data(domain_size: int, n_time_steps: float = 6):
+    def generate_time_series_data(domain_size: Tuple[int, int, int], n_time_steps: int = 6):
         """生成时间序列数据"""
         time_series = []
 
@@ -336,7 +336,7 @@ class TimeSeriesAnalyzer:
         return time_series
 
     @staticmethod
-    def analyze_risk_trend(risk_time_series: float):
+    def analyze_risk_trend(risk_time_series: Any):
         """分析风险趋势"""
         trend_data = []
         for i, risk_data in enumerate(risk_time_series):
@@ -872,7 +872,7 @@ def generate_performance_metrics():
         }
 
 
-def adaptive_gradient_threshold(grid_resolution: str, wind_speed_range: Any):
+def adaptive_gradient_threshold(grid_resolution: Any, wind_speed_range: Any):
     """动态计算梯度阈值"""
     base_threshold = 5.0  # 基础阈值
 
@@ -993,7 +993,7 @@ def enhanced_risk_assessment(analysis, variance, precipitation_data=None, precip
     }
 
 
-def probabilistic_risk_assessment(analysis: Any, variance: Any, confidence_level: str = 0.95):
+def probabilistic_risk_assessment(analysis: Any, variance: Any, confidence_level: float = 0.95):
     """概率风险评估"""
     # 计算置信区间
     z_score = 1.96  # 95%置信水平
@@ -1026,7 +1026,7 @@ def probabilistic_risk_assessment(analysis: Any, variance: Any, confidence_level
     }
 
 
-def seasonal_risk_analysis(time_series_data: float):
+def seasonal_risk_analysis(time_series_data: Any):
     """季节性风险分析"""
     if len(time_series_data) < 24:  # 至少需要24小时数据
         return None
@@ -1439,7 +1439,7 @@ def main():
         )
 
         # 生成时间序列数据并分析
-        time_series = TimeSeriesAnalyzer.generate_time_series_data(wrf_data['domain_size'], n_time_steps=12)  # 增加时间步长
+        time_series = TimeSeriesAnalyzer.generate_time_series_data(wrf_data['domain_size'], n_time_steps=12)  # type: ignore[arg-type]  # 增加时间步长
         risk_time_series = []
 
         for time_data in time_series:
@@ -1515,8 +1515,7 @@ def main():
             logger.info("\n季节性风险分析结果:")
             logger.info(f"主要周期: {seasonal_result['dominant_period']:.2f} 小时")
             logger.info("日变化模式:")
-            for hour_data in seasonal_result['daily_pattern'][:
-                5]:  # 只显示前5小时
+            for hour_data in seasonal_result['daily_pattern'][:5]:  # 只显示前5小时
                 logger.info(f"  小时 {hour_data['hour']}: 平均风险 {hour_data['mean_risk']:.2f}, 标准差 {hour_data['std_risk']:.2f}")
 
         # 生成风险预警

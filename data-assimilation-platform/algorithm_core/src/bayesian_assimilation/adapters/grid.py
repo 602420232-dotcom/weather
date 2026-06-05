@@ -21,7 +21,7 @@ class GridAdapter:
         self.default_method: str = self.config.get('interpolation_method', 'linear')
 
     def interpolate(self, data: np.ndarray, new_shape: Tuple[int, ...],
-                   method: Optional[str] = None) -> np.ndarray:
+                    method: Optional[str] = None) -> np.ndarray:
         """
         插值数据到新网格
 
@@ -132,7 +132,7 @@ class GridAdapter:
 
 
 def interpolate_data(data: np.ndarray, new_shape: Tuple[int, ...],
-                    method: Optional[str] = 'linear') -> np.ndarray:
+                     method: Optional[str] = 'linear') -> np.ndarray:
     """
     插值数据到新网格
 
@@ -188,12 +188,12 @@ def grid_to_points(grid_data: np.ndarray, points: np.ndarray) -> np.ndarray:
 
         # 归一化点坐标
         normalized_points = points.copy()
-        normalized_points[:, 0] = (points[:, 0] - points[:, 0].min()) / \
-                               (points[:, 0].max() - points[:, 0].min() + 1e-10)
-        normalized_points[:, 1] = (points[:, 1] - points[:, 1].min()) / \
-                               (points[:, 1].max() - points[:, 1].min() + 1e-10)
-        normalized_points[:, 2] = (points[:, 2] - points[:, 2].min()) / \
-                               (points[:, 2].max() - points[:, 2].min() + 1e-10)
+        normalized_points[:, 0] = (points[:, 0] - points[:, 0].min()) / (
+            points[:, 0].max() - points[:, 0].min() + 1e-10)
+        normalized_points[:, 1] = (points[:, 1] - points[:, 1].min()) / (
+            points[:, 1].max() - points[:, 1].min() + 1e-10)
+        normalized_points[:, 2] = (points[:, 2] - points[:, 2].min()) / (
+            points[:, 2].max() - points[:, 2].min() + 1e-10)
 
         # 创建插值器
         interp = interpolate.RegularGridInterpolator(
@@ -210,7 +210,7 @@ def grid_to_points(grid_data: np.ndarray, points: np.ndarray) -> np.ndarray:
 
 
 def points_to_grid(points: np.ndarray, values: np.ndarray,
-                  grid_shape: Tuple[int, int, int]) -> np.ndarray:
+                   grid_shape: Tuple[int, int, int]) -> np.ndarray:
     """
     将点数据转换为网格
 
@@ -228,11 +228,11 @@ def points_to_grid(points: np.ndarray, values: np.ndarray,
 
         # 归一化点坐标到网格索引
         x_indices = ((points[:, 0] - points[:, 0].min()) /
-                    (points[:, 0].max() - points[:, 0].min() + 1e-10) * (nx - 1)).astype(int)
+                     (points[:, 0].max() - points[:, 0].min() + 1e-10) * (nx - 1)).astype(int)
         y_indices = ((points[:, 1] - points[:, 1].min()) /
-                    (points[:, 1].max() - points[:, 1].min() + 1e-10) * (ny - 1)).astype(int)
+                     (points[:, 1].max() - points[:, 1].min() + 1e-10) * (ny - 1)).astype(int)
         z_indices = ((points[:, 2] - points[:, 2].min()) /
-                    (points[:, 2].max() - points[:, 2].min() + 1e-10) * (nz - 1)).astype(int)
+                     (points[:, 2].max() - points[:, 2].min() + 1e-10) * (nz - 1)).astype(int)
 
         # 确保索引在有效范围内
         x_indices = np.clip(x_indices, 0, nx - 1)

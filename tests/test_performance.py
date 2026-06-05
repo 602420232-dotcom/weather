@@ -3,6 +3,9 @@ Performance Tests for Data Assimilation Platform
 Test system performance and scalability
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import pytest
 import time
 import psutil
@@ -285,7 +288,7 @@ class TestScalability:
             rps = 100 / (end_time - start_time)
             throughputs.append(rps)
 
-        print("Thread scaling:")
+        logger.info("Thread scaling:")
         for threads, rps in zip(thread_counts, throughputs):
             print(f"  {threads} threads: {rps:.2f} rps")
 
@@ -398,7 +401,7 @@ class TestStress:
         avg_time = statistics.mean(requests)
         max_time = max(requests)
 
-        print("High load test:")
+        logger.info("High load test:")
         print(f"  Total requests: {total_requests}")
         print(f"  Average time: {avg_time * 1000:.3f} ms")
         print(f"  Max time: {max_time * 1000:.3f} ms")

@@ -48,8 +48,8 @@ async def compute_risk_field(request: RiskFieldRequest):
 
         # 计算网格
         n = int(request.grid_size_km / request.resolution_km)
-        x = torch.linspace(-request.grid_size_km/2, request.grid_size_km/2, n)
-        y = torch.linspace(-request.grid_size_km/2, request.grid_size_km/2, n)
+        x = torch.linspace(-request.grid_size_km / 2, request.grid_size_km / 2, n)
+        y = torch.linspace(-request.grid_size_km / 2, request.grid_size_km / 2, n)
         grid_x, grid_y = torch.meshgrid(x, y, indexing='ij')
         coords = torch.stack([grid_x.reshape(-1), grid_y.reshape(-1)], dim=1)
 

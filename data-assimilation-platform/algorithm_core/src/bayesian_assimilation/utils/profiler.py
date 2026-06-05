@@ -3,6 +3,9 @@
 提供代码性能剖析、函数耗时统计、调用次数分析等功能
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import time
 import cProfile
 import pstats

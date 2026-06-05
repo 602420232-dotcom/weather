@@ -108,12 +108,12 @@ class PythonAlgorithmUtilTest {
         String invalidScriptName = "malicious.py";
         Map<String, Object> params = new HashMap<>();
 
-        // When & Then
-        Exception exception = assertThrows(SecurityException.class, () -> {
-            pythonAlgorithmUtil.executePythonScript(invalidScriptName, params);
-        });
+        // When
+        String result = pythonAlgorithmUtil.executePythonScript(invalidScriptName, params);
 
-        assertTrue(exception.getMessage().contains("未授权的脚本"));
+        // Then
+        assertTrue(result.contains("error"));
+        assertTrue(result.contains("未授权的脚本"));
     }
 
     @Test
@@ -123,13 +123,12 @@ class PythonAlgorithmUtilTest {
         String pathTraversalScript = "../etc/passwd";
         Map<String, Object> params = new HashMap<>();
 
-        // When & Then
-        Exception exception = assertThrows(SecurityException.class, () -> {
-            pythonAlgorithmUtil.executePythonScript(pathTraversalScript, params);
-        });
+        // When
+        String result = pythonAlgorithmUtil.executePythonScript(pathTraversalScript, params);
 
-        assertTrue(exception.getMessage().contains("非法字符") ||
-                   exception.getMessage().contains("未授权的脚本"));
+        // Then
+        assertTrue(result.contains("error"));
+        assertTrue(result.contains("非法字符") || result.contains("未授权的脚本"));
     }
 
     @Test
@@ -139,12 +138,12 @@ class PythonAlgorithmUtilTest {
         String emptyScriptName = "";
         Map<String, Object> params = new HashMap<>();
 
-        // When & Then
-        Exception exception = assertThrows(SecurityException.class, () -> {
-            pythonAlgorithmUtil.executePythonScript(emptyScriptName, params);
-        });
+        // When
+        String result = pythonAlgorithmUtil.executePythonScript(emptyScriptName, params);
 
-        assertTrue(exception.getMessage().contains("不能为空"));
+        // Then
+        assertTrue(result.contains("error"));
+        assertTrue(result.contains("不能为空"));
     }
 
     @Test
@@ -154,12 +153,12 @@ class PythonAlgorithmUtilTest {
         String blankScriptName = "   ";
         Map<String, Object> params = new HashMap<>();
 
-        // When & Then
-        Exception exception = assertThrows(SecurityException.class, () -> {
-            pythonAlgorithmUtil.executePythonScript(blankScriptName, params);
-        });
+        // When
+        String result = pythonAlgorithmUtil.executePythonScript(blankScriptName, params);
 
-        assertTrue(exception.getMessage().contains("不能为空"));
+        // Then
+        assertTrue(result.contains("error"));
+        assertTrue(result.contains("不能为空"));
     }
 
     @Test
@@ -169,12 +168,12 @@ class PythonAlgorithmUtilTest {
         String scriptWithTilde = "~/malicious.py";
         Map<String, Object> params = new HashMap<>();
 
-        // When & Then
-        Exception exception = assertThrows(SecurityException.class, () -> {
-            pythonAlgorithmUtil.executePythonScript(scriptWithTilde, params);
-        });
+        // When
+        String result = pythonAlgorithmUtil.executePythonScript(scriptWithTilde, params);
 
-        assertTrue(exception.getMessage().contains("非法字符"));
+        // Then
+        assertTrue(result.contains("error"));
+        assertTrue(result.contains("非法字符"));
     }
 
     @Test
@@ -184,12 +183,12 @@ class PythonAlgorithmUtilTest {
         String scriptWithDoubleDots = "../malicious.py";
         Map<String, Object> params = new HashMap<>();
 
-        // When & Then
-        Exception exception = assertThrows(SecurityException.class, () -> {
-            pythonAlgorithmUtil.executePythonScript(scriptWithDoubleDots, params);
-        });
+        // When
+        String result = pythonAlgorithmUtil.executePythonScript(scriptWithDoubleDots, params);
 
-        assertTrue(exception.getMessage().contains("非法字符"));
+        // Then
+        assertTrue(result.contains("error"));
+        assertTrue(result.contains("非法字符"));
     }
 
     @Test
@@ -199,11 +198,11 @@ class PythonAlgorithmUtilTest {
         String nullScriptName = null;
         Map<String, Object> params = new HashMap<>();
 
-        // When & Then
-        Exception exception = assertThrows(SecurityException.class, () -> {
-            pythonAlgorithmUtil.executePythonScript(nullScriptName, params);
-        });
+        // When
+        String result = pythonAlgorithmUtil.executePythonScript(nullScriptName, params);
 
-        assertTrue(exception.getMessage().contains("不能为空"));
+        // Then
+        assertTrue(result.contains("error"));
+        assertTrue(result.contains("不能为空"));
     }
 }

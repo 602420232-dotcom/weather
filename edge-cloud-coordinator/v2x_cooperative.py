@@ -113,7 +113,7 @@ class CooperativePerception:
         all_obstacles = {}
         for did, obs_list in self.observations.items():
             for obs in obs_list[-5:
-                ]:
+                                ]:
                 for ob in obs.get("obstacles", []):
                     key = (round(ob.get("lon", 0), 4), round(ob.get("lat", 0), 4))
                     if key in all_obstacles:
@@ -139,7 +139,7 @@ class SwarmIntelligence:
 
     def register_drone(self, drone_id: str, capability: List[str] = None):
         self.drones[drone_id] = {"id": drone_id, "capabilities": capability or [],
-                                  "votes": {}, "last_vote": 0}
+                                 "votes": {}, "last_vote": 0}
 
     def propose_route(self, proposer: str, route: List[Tuple]) -> dict:
         """蜂群路线提议与共识"""

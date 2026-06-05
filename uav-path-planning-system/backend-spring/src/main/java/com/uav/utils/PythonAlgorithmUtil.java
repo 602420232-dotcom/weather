@@ -103,7 +103,7 @@ public class PythonAlgorithmUtil {
             return "{\"error\": \"执行超时\"}";
         } catch (SecurityException e) {
             log.error("安全验证失败: {}", scriptName, e);
-            return "{\"error\": \"安全验证失败: \" + e.getMessage() + \"\"}";
+            return "{\"error\": \"安全验证失败: " + e.getMessage() + "\"}";
         } catch (IOException e) {
             log.error("IO错误: {}", scriptName, e);
             return "{\"error\": \"文件IO错误\"}";

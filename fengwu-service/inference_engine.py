@@ -31,7 +31,8 @@ class FengWuEngine:
 
     # Variable ordering
     # Surface: u10, v10, t2m, msl
-    # Upper-air per level: z, q, u, v, t (13 levels: 50,100,150,200,250,300,400,500,600,700,850,925,1000 hPa)
+    # Upper-air per level: z, q, u, v, t (13 levels:
+    # 50,100,150,200,250,300,400,500,600,700,850,925,1000 hPa)
 
     def __init__(
         self,

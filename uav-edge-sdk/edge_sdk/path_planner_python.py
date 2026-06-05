@@ -7,6 +7,9 @@ UAV Edge SDK - 纯 Python 路径规划器（回退模块）
 性能较低，但功能完整
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import heapq
 from typing import List, Tuple
 

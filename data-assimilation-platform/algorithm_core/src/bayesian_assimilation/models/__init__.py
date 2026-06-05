@@ -1,8 +1,11 @@
 
 # bayesian_assimilation/models/__init__.py
 
+import logging
 import os
 import sys
+
+logger = logging.getLogger(__name__)
 
 SRC_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

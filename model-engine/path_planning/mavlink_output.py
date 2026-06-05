@@ -183,7 +183,7 @@ class MissionPlanGenerator:
 
         # 2. 途径点
         for i, wp in enumerate(waypoints[1:
-            -1], 1):
+                                         -1], 1):
             gp = self.geo.waypoint_to_geo(wp)
             items.append(self._make_item(
                 command=MAV_CMD.NAV_WAYPOINT,
@@ -300,13 +300,13 @@ class MAVLinkEncoder:
     def heartbeat(self, armed: bool = False) -> bytes:
         """HEARTBEAT (#0) — 告诉飞控地面站在线"""
         payload = struct.pack('<IBBBBB',
-            0,  # custom_mode
-            4 if armed else 0,  # type (4=地面站)
-            0,  # autopilot
-            3,  # base_mode (3=guided)
-            0,  # custom_state
-            0,  # system_status
-        )
+                              0,  # custom_mode
+                              4 if armed else 0,  # type (4=地面站)
+                              0,  # autopilot
+                              3,  # base_mode (3=guided)
+                              0,  # custom_state
+                              0,  # system_status
+                              )
         return self._encode_frame(0, payload)
 
     def goto_waypoint(self, lat: float, lon: float,
@@ -315,31 +315,31 @@ class MAVLinkEncoder:
         COMMAND_LONG (  #76) — 发送 MAV_CMD_NAV_WAYPOINT
         """
         payload = struct.pack('<BBfffffffH',
-            self.target_sys,
-            self.target_comp,
-            0, 0, 0, speed,
-            float(lat), float(lon), float(alt),
-            MAV_CMD.NAV_WAYPOINT,
-        )
+                              self.target_sys,
+                              self.target_comp,
+                              0, 0, 0, speed,
+                              float(lat), float(lon), float(alt),
+                              MAV_CMD.NAV_WAYPOINT,
+                              )
         return self._encode_frame(76, payload)
 
     def set_speed(self, speed_mps: float) -> bytes:
         """DO_CHANGE_SPEED — 调整巡航速度"""
         payload = struct.pack('<BBffffffHH',
-            self.target_sys, self.target_comp,
-            0, speed_mps, -1, 0, 0, 0, 0,
-            MAV_CMD.DO_CHANGE_SPEED, 0,
-        )
+                              self.target_sys, self.target_comp,
+                              0, speed_mps, -1, 0, 0, 0, 0,
+                              MAV_CMD.DO_CHANGE_SPEED, 0,
+                              )
         return self._encode_frame(76, payload)
 
     def rtl(self) -> bytes:
         """NAV_RETURN_TO_LAUNCH — 立即返航"""
         payload = struct.pack('<BBfffffffH',
-            self.target_sys,
-            self.target_comp,
-            0, 0, 0, 0, 0, 0, 0,
-            MAV_CMD.NAV_RETURN_TO_LAUNCH,
-        )
+                              self.target_sys,
+                              self.target_comp,
+                              0, 0, 0, 0, 0, 0, 0,
+                              MAV_CMD.NAV_RETURN_TO_LAUNCH,
+                              )
         return self._encode_frame(76, payload)
 
     def upload_mission_item(self, seq: int, command: int,
@@ -355,17 +355,17 @@ class MAVLinkEncoder:
           4. 飞控回复 MISSION_ACK (  #47)
         """
         payload = struct.pack('<BBBBHfffHHhh',
-            self.target_sys, self.target_comp,
-            0,  # seq
-            MAV_FRAME.GLOBAL_RELATIVE_ALT,  # frame
-            command,  # command
-            0, 0, 0,  # current, autocontinue, param1
-            0, 0,  # param2, param3
-            int(lat * 1e7),  # x (纬度 × 1e7)
-            int(lon * 1e7),  # y (经度 × 1e7)
-            int(alt * 1000),  # z (高度 mm)
-            0, 0, 0, 0,  # param4-7
-        )
+                              self.target_sys, self.target_comp,
+                              0,  # seq
+                              MAV_FRAME.GLOBAL_RELATIVE_ALT,  # frame
+                              command,  # command
+                              0, 0, 0,  # current, autocontinue, param1
+                              0, 0,  # param2, param3
+                              int(lat * 1e7),  # x (纬度 × 1e7)
+                              int(lon * 1e7),  # y (经度 × 1e7)
+                              int(alt * 1000),  # z (高度 mm)
+                              0, 0, 0, 0,  # param4-7
+                              )
         return self._encode_frame(73, payload)
 
 

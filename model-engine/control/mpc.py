@@ -233,7 +233,8 @@ class ModelPredictiveController:
         current_pos = np.array([self.uav.x, self.uav.y])
 
         for step in range(horizon):
-            risk_step = self._predicted_risk[step] if step < len(self._predicted_risk) else self._predicted_risk[-1]
+            risk_step = self._predicted_risk[step] if step < len(
+                self._predicted_risk) else self._predicted_risk[-1]
             wind_u_step, wind_v_step = (
                 self._predicted_wind[step] if step < len(self._predicted_wind)
                 else self._predicted_wind[-1]

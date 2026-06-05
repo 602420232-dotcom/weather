@@ -44,7 +44,9 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, WhiteKernel, ConstantKernel
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -155,7 +157,7 @@ class TrainingMonitor:
         self.best_epoch = 0
 
     def record_epoch(self, epoch: int, train_loss: float, val_loss: float,
-                    train_mae: float, val_mae: float, lr: float):
+                     train_mae: float, val_mae: float, lr: float):
         duration = (datetime.now() - self.start_time).total_seconds() if self.start_time else 0
         metric = TrainingMetrics(
             timestamp=datetime.now().isoformat(),
@@ -223,7 +225,7 @@ class HyperparameterTuner:
         best_score = float('inf')
 
         for i, config in enumerate(configurations):
-            logger.info(f"测试配置 {i+1}/{n_configs}: {config}")
+            logger.info(f"测试配置 {i + 1}/{n_configs}: {config}")
 
             try:
                 model = MeteorForecast()
@@ -272,7 +274,8 @@ class MeteorForecast:
         self.model_version = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.load_models()
 
-    def prepare_data(self, data: np.ndarray, look_back: Optional[int] = None) -> Tuple[np.ndarray, np.ndarray]:
+    def prepare_data(self, data: np.ndarray,
+                     look_back: Optional[int] = None) -> Tuple[np.ndarray, np.ndarray]:
         look_back = look_back or self.config.look_back
         X, y = [], []
         for i in range(len(data) - look_back):
@@ -290,7 +293,7 @@ class MeteorForecast:
             return_sequences = i < len(self.config.lstm_units) - 1
             if i == 0:
                 model.add(LSTM(units, return_sequences=return_sequences,
-                             input_shape=input_shape))
+                               input_shape=input_shape))
             else:
                 model.add(LSTM(units, return_sequences=return_sequences))
             model.add(Dropout(self.config.dropout_rate))
@@ -316,11 +319,11 @@ class MeteorForecast:
         )
 
     def train_lstm(self, X: np.ndarray, y: np.ndarray,
-                  X_val: Optional[np.ndarray] = None,
-                  y_val: Optional[np.ndarray] = None,
-                  epochs: Optional[int] = None,
-                  batch_size: Optional[int] = None,
-                  callbacks: Optional[List] = None) -> Dict[str, Any]:
+                   X_val: Optional[np.ndarray] = None,
+                   y_val: Optional[np.ndarray] = None,
+                   epochs: Optional[int] = None,
+                   batch_size: Optional[int] = None,
+                   callbacks: Optional[List] = None) -> Dict[str, Any]:
         epochs = epochs or self.config.epochs
         batch_size = batch_size or self.config.batch_size
 
@@ -393,7 +396,9 @@ class MeteorForecast:
     def _save_model(self, model_type: str):
         try:
             if model_type == 'lstm' and self.lstm_model is not None:
-                versioned_path = os.path.join(self.model_path, f'lstm_model_{self.model_version}.h5')
+                versioned_path = os.path.join(
+                    self.model_path, f'lstm_model_{
+                        self.model_version}.h5')
                 self.lstm_model.save(versioned_path)
 
                 latest_path = os.path.join(self.model_path, 'lstm_model.h5')
@@ -404,7 +409,9 @@ class MeteorForecast:
                 logger.info(f"LSTM模型已保存: {versioned_path}")
 
             elif model_type == 'xgb' and self.xgb_model is not None:
-                versioned_path = os.path.join(self.model_path, f'xgb_model_{self.model_version}.json')
+                versioned_path = os.path.join(
+                    self.model_path, f'xgb_model_{
+                        self.model_version}.json')
                 self.xgb_model.save_model(versioned_path)
 
                 latest_path = os.path.join(self.model_path, 'xgb_model.json')
@@ -474,7 +481,8 @@ class MeteorForecast:
             lstm_pred = self.lstm_model.predict(X, batch_size=32, verbose=0)
             xgb_pred = self.xgb_model.predict(lstm_pred)
 
-            predictions = self.preprocessor.inverse_transform(xgb_pred.reshape(-1, 1)).flatten().tolist()
+            predictions = self.preprocessor.inverse_transform(
+                xgb_pred.reshape(-1, 1)).flatten().tolist()
 
             if use_cache:
                 prediction_cache.set(cache_key, predictions)
@@ -528,7 +536,7 @@ class MeteorForecast:
             return {}
 
     def self_improve(self, new_data, epochs: Optional[int] = None,
-                    batch_size: Optional[int] = None) -> Dict[str, Any]:
+                     batch_size: Optional[int] = None) -> Dict[str, Any]:
         try:
             logger.info("开始自迭代改进模型...")
 
@@ -653,10 +661,10 @@ class MeteorForecast:
             return None
         model = Sequential([
             ConvLSTM2D(filters=32, kernel_size=(3, 3), padding='same',
-                      return_sequences=True, input_shape=input_shape),
+                       return_sequences=True, input_shape=input_shape),
             BatchNormalization(),
             ConvLSTM2D(filters=16, kernel_size=(3, 3), padding='same',
-                      return_sequences=False),
+                       return_sequences=False),
             BatchNormalization(),
             Flatten(),
             Dense(64, activation='relu'),
@@ -671,7 +679,11 @@ class MeteorForecast:
         try:
             if not hasattr(self, 'convlstm_model') or self.convlstm_model is None:
                 logger.info("ConvLSTM模型未初始化，构建默认模型")
-                input_shape = (spatial_series.shape[0], spatial_series.shape[1], spatial_series.shape[2], 1)
+                input_shape = (
+                    spatial_series.shape[0],
+                    spatial_series.shape[1],
+                    spatial_series.shape[2],
+                    1)
                 self.convlstm_model = self.build_convlstm_model(input_shape[1:])
             return self.convlstm_model.predict(spatial_series, verbose=0)
         except Exception as e:
@@ -731,8 +743,8 @@ class MeteorForecast:
                 if len(wrf_pred) > 0 and len(ghr_pred) > 0:
                     weights = [0.4, 0.3, 0.3]
                     fused_predictions = (predictions.flatten() * weights[0] +
-                                        wrf_pred[:len(predictions)] * weights[1] +
-                                        ghr_pred[:len(predictions)] * weights[2])
+                                         wrf_pred[:len(predictions)] * weights[1] +
+                                         ghr_pred[:len(predictions)] * weights[2])
                     predictions = fused_predictions
 
             result = predictions.flatten().tolist()

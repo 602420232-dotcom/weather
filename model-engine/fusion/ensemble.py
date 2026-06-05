@@ -16,8 +16,8 @@ class FusionConfig:
     # 初始权重 (业务评估后更新)
     initial_weights: Dict[str, float] = field(default_factory=lambda: {
         "fengwu_ghr": 0.15,  # 风乌 GHR: 全局背景
-        "tianzi":     0.25,  # 天资: 全球确定性
-        "fenglei":    0.60,  # 风雷: 区域高分辨率 (核心)
+        "tianzi": 0.25,  # 天资: 全球确定性
+        "fenglei": 0.60,  # 风雷: 区域高分辨率 (核心)
     })
     # 自适应权重更新周期 (步数)
     adapt_interval: int = 10
@@ -56,16 +56,18 @@ class DynamicWeightFusion:
                     result = w * model_field
                 else:
                     # 统一分辨率 (双线性插值到风雷分辨率)
-                    if model_field.shape[-2:
-                        ] != result.shape[-2:]:
+                    target_shape = result.shape[-2:]
+                    if model_field.shape[-2:] != target_shape:
                         model_field = torch.nn.functional.interpolate(
-                            model_field, size=result.shape[-2:], mode="bilinear", align_corners=False)
-                        result = result + w * model_field
-                    else:
-                        result = result + w * model_field
+                            model_field, size=target_shape,
+                            mode="bilinear", align_corners=False)
+                    result = result + w * model_field
                 total_weight += w
 
-        return result / total_weight if total_weight > 0 else result
+        if total_weight > 0:
+            assert result is not None
+            return result / total_weight
+        raise ValueError("No valid field with positive weight found for fusion")
 
     def update_weights(self, observations: Dict[str, torch.Tensor],
                        ground_truth: torch.Tensor):

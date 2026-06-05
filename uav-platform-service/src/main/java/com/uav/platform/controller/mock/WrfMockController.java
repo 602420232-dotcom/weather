@@ -2,11 +2,10 @@ package com.uav.platform.controller.mock;
 
 import com.uav.common.annotation.StubController;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 @StubController(
     reason = "前端联调和演示环境使用",

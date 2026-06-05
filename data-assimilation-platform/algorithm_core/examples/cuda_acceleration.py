@@ -55,7 +55,7 @@ def check_cuda_available():
         return False
 
 
-def create_synthetic_data(domain_size: int, resolution: Any, n_obs: Any = 20):
+def create_synthetic_data(domain_size: Tuple[int, int, int], resolution: Any, n_obs: Any = 20):
     """创建合成数据"""
     nx = int(domain_size[0] / resolution) + 1
     ny = int(domain_size[1] / resolution) + 1

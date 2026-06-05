@@ -1,11 +1,11 @@
 package com.uav.controller;
+
 import com.uav.model.PathPlan;
 import com.uav.service.PathPlanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/path-planning")

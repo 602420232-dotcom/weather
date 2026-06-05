@@ -31,7 +31,6 @@ class BayesianAssimilator(AssimilationBase):
 
     analysis_field: Optional[np.ndarray]
     variance_field: Optional[np.ndarray]
-    resolution: float
 
     def __init__(self, config: Optional[AssimilationConfig] = None) -> None:
         super().__init__(config)
@@ -162,14 +161,21 @@ class BayesianAssimilator(AssimilationBase):
         stats = {
             'grid_shape': self.grid_shape,
             'resolution': self.resolution,
-            'analysis_mean': np.mean(self.analysis_field) if self.analysis_field is not None else None,
-            'variance_mean': np.mean(self.variance_field) if self.variance_field is not None else None
+            'analysis_mean': (
+                np.mean(self.analysis_field) if self.analysis_field is not None
+                else None
+            ),
+            'variance_mean': (
+                np.mean(self.variance_field) if self.variance_field is not None
+                else None
+            )
         }
         return stats
 
-    def interpolate_to_path_grid(self,
-                                target_resolution: float = 10.0,
-                                method: str = 'linear') -> np.ndarray:
+    def interpolate_to_path_grid(
+            self,
+            target_resolution: float = 10.0,
+            method: str = 'linear') -> np.ndarray:
         """
         将方差场插值到路径规划栅格
 
@@ -222,9 +228,11 @@ class BayesianAssimilator(AssimilationBase):
             )
 
             nan_mask = np.isnan(variance_interp)
-            variance_interp[nan_mask] = nearest_interpolator(points[np.any(np.isnan(points), axis=1)])
+            variance_interp[nan_mask] = nearest_interpolator(
+                points[np.any(np.isnan(points), axis=1)]
+            )
 
         logger.info(f"方差场降尺度: {self.resolution}m → {target_resolution}m, "
-                   f"新维度: {variance_interp.shape}, 方法: {method}")
+                    f"新维度: {variance_interp.shape}, 方法: {method}")
 
         return variance_interp

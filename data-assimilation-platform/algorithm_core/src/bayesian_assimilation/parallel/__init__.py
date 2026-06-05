@@ -4,6 +4,8 @@ Bayesian Assimilation Parallel Computing Framework
 """
 
 
+import logging
+
 from .base import (
     ParallelManager,
     ParallelType,
@@ -37,6 +39,7 @@ try:
 except Exception:
     RAY_AVAILABLE = False
 
+logger = logging.getLogger(__name__)
 
 __all__ = [
     # 基类和工厂
@@ -69,13 +72,13 @@ if RAY_AVAILABLE:
     __all__.extend(['RayParallelManager', 'RayParallelAssimilator', 'create_ray_client'])
 
 # 注册所有并行管理器
-parallel_factory.register(ParallelType.BLOCK, BlockParallelAssimilator)
-parallel_factory.register(ParallelType.DASK, DaskParallelManager)
+parallel_factory.register(ParallelType.BLOCK, BlockParallelAssimilator)  # type: ignore[arg-type]
+parallel_factory.register(ParallelType.DASK, DaskParallelManager)  # type: ignore[arg-type]
 
 
 if MPI_AVAILABLE:
-    parallel_factory.register(ParallelType.MPI, MPIParallelManager)
+    parallel_factory.register(ParallelType.MPI, MPIParallelManager)  # type: ignore[arg-type]
 
 
 if RAY_AVAILABLE:
-    parallel_factory.register(ParallelType.RAY, RayParallelManager)
+    parallel_factory.register(ParallelType.RAY, RayParallelManager)  # type: ignore[arg-type]

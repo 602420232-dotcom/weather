@@ -723,7 +723,7 @@ def main():
     """主函数"""
     if len(sys.argv) < 2:
         logger.error("缺少文件路径参数")
-        print(json.dumps({'success': False, 'error': '缺少文件路径参数'}))
+        logger.info(json.dumps({'success': False, 'error': '缺少文件路径参数'}))
         return
 
     file_path = sys.argv[1]
@@ -747,7 +747,7 @@ def main():
         result = process_wrf_file(file_path, height)
 
     logger.info(f"WRF文件处理完成: {file_path}")
-    print(json.dumps(result))
+    logger.info(json.dumps(result))
 
 
 if __name__ == "__main__":

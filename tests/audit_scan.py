@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 """Full project audit scanner - produces issues report."""
+import logging
+logger = logging.getLogger(__name__)
+
 import os
 import re
 import json
@@ -90,4 +93,4 @@ for cat, lst in issues.items():
 
 with open(os.path.join(ROOT, 'tests', 'audit_scan_results.json'), 'w') as out:
     json.dump(issues, out, indent=2, ensure_ascii=False)
-print('\n\nFull results saved to tests/audit_scan_results.json')
+logger.info('\n\nFull results saved to tests/audit_scan_results.json')

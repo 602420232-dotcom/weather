@@ -2,9 +2,11 @@
 4D轨迹可视化引擎
 三维空间(x, y, z) + 时间轴(t) 四维轨迹生成与分析
 """
-import numpy as np
-from typing import List, Tuple, Optional
 from datetime import datetime, timedelta
+from typing import List, Tuple, Optional
+import numpy as np
+import logging
+logger = logging.getLogger(__name__)
 
 
 class Trajectory4DGenerator:
@@ -95,9 +97,13 @@ class Trajectory4DAnalyzer:
         anomalies = []
         for i, p in enumerate(track):
             if p["z"] > 300:
-                anomalies.append({"index": i, "time": p["t"], "type": "altitude_warning", "value": p["z"]})
+                anomalies.append(
+                    {"index": i, "time": p["t"], "type": "altitude_warning", "value": p["z"]})
             if i > 0 and p.get("speed", 0) > 20:
-                anomalies.append({"index": i, "time": p["t"], "type": "speed_warning", "value": p["speed"]})
+                anomalies.append({"index": i,
+                                  "time": p["t"],
+                                  "type": "speed_warning",
+                                  "value": p["speed"]})
         return anomalies
 
 

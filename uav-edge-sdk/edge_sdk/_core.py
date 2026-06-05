@@ -9,6 +9,9 @@ Author: Dithiothreitol
 License: Apache 2.0
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 from typing import List, Tuple, Dict, Any, Optional
 
 from .logger import get_logger

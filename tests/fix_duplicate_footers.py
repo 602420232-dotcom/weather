@@ -3,6 +3,9 @@
 修复重复的页脚问题
 删除所有旧的页脚，只保留统一的新页脚
 """
+import logging
+logger = logging.getLogger(__name__)
+
 import os
 import re
 

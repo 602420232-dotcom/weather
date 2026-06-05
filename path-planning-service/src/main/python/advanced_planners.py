@@ -11,7 +11,9 @@ import logging
 import random
 from typing import List, Dict, Optional, Tuple
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -96,10 +98,10 @@ class RRTP:
 
         # 计算移动方向
         direction = ((to_point[0] - from_node.position[0]) / distance,
-                    (to_point[1] - from_node.position[1]) / distance)
+                     (to_point[1] - from_node.position[1]) / distance)
         # 移动一步
         new_position = (from_node.position[0] + direction[0] * self.step_size,
-                       from_node.position[1] + direction[1] * self.step_size)
+                        from_node.position[1] + direction[1] * self.step_size)
 
         return new_position
 
@@ -153,13 +155,15 @@ class RRTP:
                 # 创建新节点
                 new_node = Node(new_position)
                 new_node.parent = nearest_node
-                new_node.cost = nearest_node.cost + self.calculate_distance(nearest_node.position, new_position)
+                new_node.cost = nearest_node.cost + \
+                    self.calculate_distance(nearest_node.position, new_position)
 
                 # 寻找最佳父节点
                 near_nodes = self.get_near_nodes(new_position, 5.0)
                 for near_node in near_nodes:
                     if not self.is_path_collision(near_node.position, new_position):
-                        new_cost = near_node.cost + self.calculate_distance(near_node.position, new_position)
+                        new_cost = near_node.cost + \
+                            self.calculate_distance(near_node.position, new_position)
                         if new_cost < new_node.cost:
                             new_node.parent = near_node
                             new_node.cost = new_cost
@@ -167,7 +171,8 @@ class RRTP:
                 # 重新连接附近的节点
                 for near_node in near_nodes:
                     if not self.is_path_collision(new_node.position, near_node.position):
-                        new_cost = new_node.cost + self.calculate_distance(new_node.position, near_node.position)
+                        new_cost = new_node.cost + \
+                            self.calculate_distance(new_node.position, near_node.position)
                         if new_cost < near_node.cost:
                             near_node.parent = new_node
                             near_node.cost = new_cost
@@ -180,7 +185,8 @@ class RRTP:
                     # 连接到目标
                     goal_node = Node(self.goal)
                     goal_node.parent = new_node
-                    goal_node.cost = new_node.cost + self.calculate_distance(new_node.position, self.goal)
+                    goal_node.cost = new_node.cost + \
+                        self.calculate_distance(new_node.position, self.goal)
                     self.nodes.append(goal_node)
 
                     # 提取路径
@@ -233,13 +239,14 @@ class DijkstraPlanner:
         """
         网格坐标转换为世界坐标
         """
-        return (grid_pos[0] - self.grid_size[0]/2, grid_pos[1] - self.grid_size[1]/2)
+        return (grid_pos[0] - self.grid_size[0] / 2, grid_pos[1] - self.grid_size[1] / 2)
 
     def _world_to_grid(self, world_pos: Tuple[float, float]) -> Tuple[int, int]:
         """
         世界坐标转换为网格坐标
         """
-        return (int(world_pos[0] + self.grid_size[0]/2), int(world_pos[1] + self.grid_size[1]/2))
+        return (int(world_pos[0] + self.grid_size[0] / 2),
+                int(world_pos[1] + self.grid_size[1] / 2))
 
     def calculate_distance(self, loc1: Tuple[float, float], loc2: Tuple[float, float]) -> float:
         """
@@ -268,14 +275,14 @@ class DijkstraPlanner:
 
             # 检查起点和终点是否有效
             if (start_grid[0] < 0 or start_grid[0] >= self.grid_size[0] or
-                start_grid[1] < 0 or start_grid[1] >= self.grid_size[1]):
+                    start_grid[1] < 0 or start_grid[1] >= self.grid_size[1]):
                 return {
                     'success': False,
                     'error': '起点超出网格范围'
                 }
 
             if (goal_grid[0] < 0 or goal_grid[0] >= self.grid_size[0] or
-                goal_grid[1] < 0 or goal_grid[1] >= self.grid_size[1]):
+                    goal_grid[1] < 0 or goal_grid[1] >= self.grid_size[1]):
                 return {
                     'success': False,
                     'error': '终点超出网格范围'
@@ -295,10 +302,12 @@ class DijkstraPlanner:
                 }
 
             # 初始化距离和前驱节点
-            distances = [[float('inf') for _ in range(self.grid_size[1])] for _ in range(self.grid_size[0])]
+            distances = [[float('inf') for _ in range(self.grid_size[1])]
+                         for _ in range(self.grid_size[0])]
             distances[start_grid[0]][start_grid[1]] = 0
 
-            predecessors = [[None for _ in range(self.grid_size[1])] for _ in range(self.grid_size[0])]
+            predecessors = [[None for _ in range(self.grid_size[1])]
+                            for _ in range(self.grid_size[0])]
 
             # 优先队列
             priority_queue = [(0, start_grid)]
@@ -341,7 +350,7 @@ class DijkstraPlanner:
 
                     # 检查边界
                     if (new_x < 0 or new_x >= self.grid_size[0] or
-                        new_y < 0 or new_y >= self.grid_size[1]):
+                            new_y < 0 or new_y >= self.grid_size[1]):
                         continue
 
                     # 检查碰撞
@@ -438,19 +447,20 @@ class GeneticAlgorithmPlanner:
         # 计算路径长度
         total_distance = 0
         for i in range(len(individual) - 1):
-            total_distance += self.calculate_distance(individual[i], individual[i+1])
+            total_distance += self.calculate_distance(individual[i], individual[i + 1])
 
         # 计算碰撞惩罚
         collision_penalty = 0
         for i in range(len(individual) - 1):
-            if self.is_path_collision(individual[i], individual[i+1]):
+            if self.is_path_collision(individual[i], individual[i + 1]):
                 collision_penalty += 1000
 
         # 适应度 = 1 / (路径长度 + 碰撞惩罚)
         fitness = 1 / (total_distance + collision_penalty + 1e-6)
         return fitness
 
-    def select_parents(self, population: List[List[Tuple[float, float]]], fitnesses: List[float]) -> Tuple[List[Tuple[float, float]], List[Tuple[float, float]]]:
+    def select_parents(self, population: List[List[Tuple[float, float]]], fitnesses: List[float]
+                       ) -> Tuple[List[Tuple[float, float]], List[Tuple[float, float]]]:
         """
         选择父母
         """
@@ -463,7 +473,8 @@ class GeneticAlgorithmPlanner:
 
         return parent1, parent2
 
-    def crossover(self, parent1: List[Tuple[float, float]], parent2: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
+    def crossover(self, parent1: List[Tuple[float, float]],
+                  parent2: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
         """
         交叉
         """
@@ -529,10 +540,11 @@ class GeneticAlgorithmPlanner:
                 collision_free = True
                 total_distance = 0
                 for i in range(len(best_individual) - 1):
-                    if self.is_path_collision(best_individual[i], best_individual[i+1]):
+                    if self.is_path_collision(best_individual[i], best_individual[i + 1]):
                         collision_free = False
                         break
-                    total_distance += self.calculate_distance(best_individual[i], best_individual[i+1])
+                    total_distance += self.calculate_distance(
+                        best_individual[i], best_individual[i + 1])
 
                 if collision_free:
                     logger.info("遗传算法路径规划完成")
@@ -609,12 +621,12 @@ class ParticleSwarmOptimizationPlanner:
         # 计算路径长度
         total_distance = 0
         for i in range(len(path) - 1):
-            total_distance += self.calculate_distance(path[i], path[i+1])
+            total_distance += self.calculate_distance(path[i], path[i + 1])
 
         # 计算碰撞惩罚
         collision_penalty = 0
         for i in range(len(path) - 1):
-            if self.is_path_collision(path[i], path[i+1]):
+            if self.is_path_collision(path[i], path[i + 1]):
                 collision_penalty += 1000
 
         # 适应度 = 1 / (路径长度 + 碰撞惩罚)
@@ -665,7 +677,7 @@ class ParticleSwarmOptimizationPlanner:
                     for j in range(len(swarm[i])):
                         # 认知分量
                         cognitive = (self.c1 * random.random() * (personal_best[i][j][0] - swarm[i][j][0]),
-                                    self.c1 * random.random() * (personal_best[i][j][1] - swarm[i][j][1]))
+                                     self.c1 * random.random() * (personal_best[i][j][1] - swarm[i][j][1]))
                         # 社会分量
                         social = (self.c2 * random.random() * (global_best[j][0] - swarm[i][j][0]),
                                   self.c2 * random.random() * (global_best[j][1] - swarm[i][j][1]))
@@ -706,10 +718,10 @@ class ParticleSwarmOptimizationPlanner:
                 collision_free = True
                 total_distance = 0
                 for i in range(len(global_best) - 1):
-                    if self.is_path_collision(global_best[i], global_best[i+1]):
+                    if self.is_path_collision(global_best[i], global_best[i + 1]):
                         collision_free = False
                         break
-                    total_distance += self.calculate_distance(global_best[i], global_best[i+1])
+                    total_distance += self.calculate_distance(global_best[i], global_best[i + 1])
 
                 if collision_free:
                     logger.info("粒子群优化路径规划完成")
@@ -747,7 +759,7 @@ def main():
     主函数
     """
     if len(sys.argv) < 2:
-        print(json.dumps({
+        logger.info(json.dumps({
             'success': False,
             'error': '缺少命令参数'
         }))
@@ -758,7 +770,7 @@ def main():
     if command == 'rrt_star':
         # RRT*规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -768,14 +780,19 @@ def main():
             input_data = load_input(2)
             start = tuple(input_data.get('start', (0, 0)))
             goal = tuple(input_data.get('goal', (10, 10)))
-            obstacles = [type('Obstacle', (), {'location': tuple(o['location']), 'radius': o['radius']})() for o in input_data.get('obstacles', [])]
+            obstacles = [
+                type(
+                    'Obstacle', (), {
+                        'location': tuple(
+                            o['location']), 'radius': o['radius']})() for o in input_data.get(
+                    'obstacles', [])]
 
             rrt = RRTP(start, goal, obstacles)
             result = rrt.plan()
-            print(json.dumps(result))
+            logger.info(json.dumps(result))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -783,7 +800,7 @@ def main():
     elif command == 'dijkstra':
         # Dijkstra规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -793,14 +810,19 @@ def main():
             input_data = load_input(2)
             start = tuple(input_data.get('start', (0, 0)))
             goal = tuple(input_data.get('goal', (10, 10)))
-            obstacles = [type('Obstacle', (), {'location': tuple(o['location']), 'radius': o['radius']})() for o in input_data.get('obstacles', [])]
+            obstacles = [
+                type(
+                    'Obstacle', (), {
+                        'location': tuple(
+                            o['location']), 'radius': o['radius']})() for o in input_data.get(
+                    'obstacles', [])]
 
             dijkstra = DijkstraPlanner(obstacles=obstacles)
             result = dijkstra.plan(start, goal)
-            print(json.dumps(result))
+            logger.info(json.dumps(result))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -808,7 +830,7 @@ def main():
     elif command == 'genetic':
         # 遗传算法规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -818,14 +840,19 @@ def main():
             input_data = load_input(2)
             start = tuple(input_data.get('start', (0, 0)))
             goal = tuple(input_data.get('goal', (10, 10)))
-            obstacles = [type('Obstacle', (), {'location': tuple(o['location']), 'radius': o['radius']})() for o in input_data.get('obstacles', [])]
+            obstacles = [
+                type(
+                    'Obstacle', (), {
+                        'location': tuple(
+                            o['location']), 'radius': o['radius']})() for o in input_data.get(
+                    'obstacles', [])]
 
             ga = GeneticAlgorithmPlanner(start, goal, obstacles)
             result = ga.plan()
-            print(json.dumps(result))
+            logger.info(json.dumps(result))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -833,7 +860,7 @@ def main():
     elif command == 'pso':
         # 粒子群优化规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -843,20 +870,25 @@ def main():
             input_data = load_input(2)
             start = tuple(input_data.get('start', (0, 0)))
             goal = tuple(input_data.get('goal', (10, 10)))
-            obstacles = [type('Obstacle', (), {'location': tuple(o['location']), 'radius': o['radius']})() for o in input_data.get('obstacles', [])]
+            obstacles = [
+                type(
+                    'Obstacle', (), {
+                        'location': tuple(
+                            o['location']), 'radius': o['radius']})() for o in input_data.get(
+                    'obstacles', [])]
 
             pso = ParticleSwarmOptimizationPlanner(start, goal, obstacles)
             result = pso.plan()
-            print(json.dumps(result))
+            logger.info(json.dumps(result))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
 
     else:
-        print(json.dumps({
+        logger.info(json.dumps({
             'success': False,
             'error': '未知命令'
         }))

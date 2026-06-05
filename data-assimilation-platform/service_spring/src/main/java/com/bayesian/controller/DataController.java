@@ -1,8 +1,8 @@
 package com.bayesian.controller;
+
 import org.springframework.http.ResponseEntity;
 import java.util.Map;
 import org.springframework.web.bind.annotation.*;
-
 @RestController
 @RequestMapping("/api/data")
 public class DataController {

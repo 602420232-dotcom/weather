@@ -4,6 +4,9 @@
 """
 
 # 配置模块
+import logging
+logger = logging.getLogger(__name__)
+
 from .utils.config import BaseConfig, OptimizedConfig, AdaptiveConfig, CompatibleConfig, ConfigFactory, AssimilationConfig
 
 # 核心同化模块

@@ -160,7 +160,7 @@ def monitor_resources():
     }
 
 
-def create_synthetic_data(domain_size: int, resolution: Any, n_obs: Any = 50):
+def create_synthetic_data(domain_size: Tuple[int, int, int], resolution: Any, n_obs: Any = 50):
     """优化版本：使用numpy向量化操作"""
     nx = int(domain_size[0] / resolution) + 1
     ny = int(domain_size[1] / resolution) + 1
@@ -198,7 +198,7 @@ def create_synthetic_data(domain_size: int, resolution: Any, n_obs: Any = 50):
     return background, observations, obs_locations
 
 
-def run_sequential(background: Any, observations: Any, obs_locations: Any, config: Dict[str, Any], iterations: Any = 10):
+def run_sequential(background: Any, observations: Any, obs_locations: Any, config: Any, iterations: Any = 10):
     """运行串行计算"""
     assimilator = BayesianAssimilator(config)
     assimilator.initialize_grid(config.domain_size)
@@ -571,7 +571,7 @@ def run_fair_benchmark(background, observations, obs_locations, config, n_blocks
     return results
 
 
-def calculate_adaptive_iterations(data_size: int, min_total_time: float, max_total_time: float = 10.0):
+def calculate_adaptive_iterations(data_size: str, min_total_time: float = 2.0, max_total_time: float = 10.0):
     """
     基于实际硬件性能的智能迭代计算
     min_total_time: 最小总测试时间（秒）
@@ -632,7 +632,7 @@ def calculate_adaptive_iterations(data_size: int, min_total_time: float, max_tot
     return iterations, time_per_iter
 
 
-def validate_memory_safety(data_size: int, iterations: Any):
+def validate_memory_safety(data_size: str, iterations: Any):
     """在创建数据前验证内存安全性"""
     preset = DATA_PRESETS[data_size]
     total_points = preset['target_points']

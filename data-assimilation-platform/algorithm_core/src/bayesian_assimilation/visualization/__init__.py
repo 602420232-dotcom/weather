@@ -6,6 +6,9 @@
 # 静态绘图模块
 
 
+import logging
+logger = logging.getLogger(__name__)
+
 from .plots import (
     VarianceFieldPlotter,
     WindFieldPlotter,

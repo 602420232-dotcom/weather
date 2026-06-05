@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 """Restore annotation wildcard imports that were incorrectly removed."""
+import logging
+logger = logging.getLogger(__name__)
+
 import re
 import os
 

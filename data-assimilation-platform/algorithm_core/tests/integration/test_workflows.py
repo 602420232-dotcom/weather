@@ -3,6 +3,9 @@
 测试批处理、流水线和流式处理工作流
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import pytest
 import numpy as np
 import os

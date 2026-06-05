@@ -4,6 +4,9 @@
 测试优化后的路径规划算法
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import unittest
 import sys
 import os
@@ -27,7 +30,7 @@ class TestOptimizedAlgorithm(unittest.TestCase):
         """
         测试优化的VRPTW规划器
         """
-        print("测试优化的VRPTW规划器...")
+        logger.info("测试优化的VRPTW规划器...")
 
         # 创建无人机和任务
         drones = [Drone("drone1", 10.0, 120.0, 20.0), Drone("drone2", 15.0, 150.0, 25.0)]
@@ -54,7 +57,7 @@ class TestOptimizedAlgorithm(unittest.TestCase):
             self.assertTrue(result['success'])
             self.assertIsNotNone(result['routes'])
             self.assertIsNotNone(result['unassigned_tasks'])
-            print("✓ 优化的VRPTW规划器测试通过")
+            logger.info("✓ 优化的VRPTW规划器测试通过")
         except Exception as e:
             self.fail(f"优化的VRPTW规划器测试失败: {e}")
 
@@ -62,7 +65,7 @@ class TestOptimizedAlgorithm(unittest.TestCase):
         """
         测试优化的A*规划器
         """
-        print("测试优化的A*规划器...")
+        logger.info("测试优化的A*规划器...")
 
         # 创建A*规划器
         obstacles = [Obstacle((5.0, 5.0), 2.0), Obstacle((10.0, 10.0), 1.5), Obstacle((15.0, 15.0), 2.5)]
@@ -92,7 +95,7 @@ class TestOptimizedAlgorithm(unittest.TestCase):
             self.assertIsNotNone(result2['path'])
             # 验证缓存生效（第二次执行时间应该更短）
             self.assertLess(execution_time2, execution_time1)
-            print("✓ 优化的A*规划器测试通过")
+            logger.info("✓ 优化的A*规划器测试通过")
         except Exception as e:
             self.fail(f"优化的A*规划器测试失败: {e}")
 
@@ -100,7 +103,7 @@ class TestOptimizedAlgorithm(unittest.TestCase):
         """
         测试优化的DWA规划器
         """
-        print("测试优化的DWA规划器...")
+        logger.info("测试优化的DWA规划器...")
 
         # 创建DWA规划器
         obstacles = [Obstacle((5.0, 5.0), 2.0), Obstacle((8.0, 8.0), 1.5)]
@@ -118,7 +121,7 @@ class TestOptimizedAlgorithm(unittest.TestCase):
             self.assertTrue(result['success'])
             self.assertIsNotNone(result['trajectory'])
             self.assertIsNotNone(result['score'])
-            print("✓ 优化的DWA规划器测试通过")
+            logger.info("✓ 优化的DWA规划器测试通过")
         except Exception as e:
             self.fail(f"优化的DWA规划器测试失败: {e}")
 
@@ -126,7 +129,7 @@ class TestOptimizedAlgorithm(unittest.TestCase):
         """
         测试优化的三层路径规划器
         """
-        print("测试优化的三层路径规划器...")
+        logger.info("测试优化的三层路径规划器...")
 
         # 创建无人机、任务、障碍物和禁飞区
         drones = [Drone("drone1", 10.0, 120.0, 20.0), Drone("drone2", 15.0, 150.0, 25.0)]
@@ -157,7 +160,7 @@ class TestOptimizedAlgorithm(unittest.TestCase):
             for route in result['routes']:
                 if route['tasks']:
                     self.assertIn('path', route)
-            print("✓ 优化的三层路径规划器测试通过")
+            logger.info("✓ 优化的三层路径规划器测试通过")
         except Exception as e:
             self.fail(f"优化的三层路径规划器测试失败: {e}")
 

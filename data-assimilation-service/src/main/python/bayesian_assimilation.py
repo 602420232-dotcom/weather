@@ -193,7 +193,7 @@ def main():
     主函数
     """
     if len(sys.argv) < 2:
-        print(json.dumps({
+        logger.info(json.dumps({
             'success': False,
             'error': '缺少命令参数'
         }))
@@ -204,7 +204,7 @@ def main():
     if command == 'execute':
         # 执行同化
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -227,10 +227,10 @@ def main():
 
             assimilator = BayesianAssimilation()
             result = assimilator.assimilate(background_np, observations_np, method)
-            print(json.dumps(result))
+            logger.info(json.dumps(result))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -238,7 +238,7 @@ def main():
     elif command == 'variance':
         # 获取方差场
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -266,13 +266,13 @@ def main():
             for var in uncertainty:
                 uncertainty_serializable[var] = uncertainty[var].tolist()
 
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': True,
                 'data': uncertainty_serializable
             }))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -280,7 +280,7 @@ def main():
     elif command == 'batch':
         # 批量处理
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -310,19 +310,19 @@ def main():
                 result = assimilator.assimilate(background_np, observations_np, method)
                 results.append(result)
 
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': True,
                 'data': results
             }))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
 
     else:
-        print(json.dumps({
+        logger.info(json.dumps({
             'success': False,
             'error': '未知命令'
         }))

@@ -1,6 +1,9 @@
 """
 安全模块单元测试 - mTLS + JWT + 数据加密
 """
+import logging
+logger = logging.getLogger(__name__)
+
 import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'edge-cloud-coordinator'))
@@ -9,7 +12,7 @@ import unittest
 
 
 from security import (
-    JWTProvider, mTLSManager, DataEncryptor,
+    JWTProvider, MtlsManager, DataEncryptor,
     SecureMessage, SecurityConfig, SecurityLevel
 )
 
@@ -92,11 +95,11 @@ class TestSecureMessage(unittest.TestCase):
         self.assertIsNone(result)
 
 
-class TestmTLSManager(unittest.TestCase):
+class TestMtlsManager(unittest.TestCase):
     """mTLS管理器测试"""
 
     def setUp(self):
-        self.manager = mTLSManager()
+        self.manager = MtlsManager()
 
     def test_register_and_verify(self):
         self.manager.register_certificate("service_a", "cert_pem_data")

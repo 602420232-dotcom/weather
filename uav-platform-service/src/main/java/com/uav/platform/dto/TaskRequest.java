@@ -1,7 +1,7 @@
 package com.uav.platform.dto;
 
-import jakarta.validation.constraints.*;
 import java.util.List;
+import jakarta.validation.constraints.*;
 
 public class TaskRequest {
 

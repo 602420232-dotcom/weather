@@ -36,7 +36,8 @@ class BasePlanner:
                 return True
         return False
 
-    def is_path_collision(self, start: Tuple[float, float], end: Tuple[float, float], steps: int = 10) -> bool:
+    def is_path_collision(self, start: Tuple[float, float],
+                          end: Tuple[float, float], steps: int = 10) -> bool:
         """Check if the straight-line path between start and end collides with any obstacle."""
         for i in range(steps + 1):
             t = i / steps

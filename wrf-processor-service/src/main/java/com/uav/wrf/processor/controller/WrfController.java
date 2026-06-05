@@ -1,6 +1,7 @@
 package com.uav.wrf.processor.controller;
 
 import com.uav.common.dto.WrfParseRequest;
+import com.uav.common.script.PythonScriptInvoker;
 import com.uav.wrf.processor.entity.WrfDataFile;
 import com.uav.wrf.processor.service.WrfDataService;
 import lombok.RequiredArgsConstructor;
@@ -11,25 +12,20 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/wrf")
 @Slf4j
 @RequiredArgsConstructor
 public class WrfController {
-
-    private static final Set<String> ALLOWED_SCRIPT_NAMES = Set.of(
-        "wrf_processor.py",
-        "wrf_parser.py",
-        "wrf_converter.py"
-    );
 
     private static final int MIN_HEIGHT = 1;
     private static final int MAX_HEIGHT = 30000;
@@ -42,16 +38,8 @@ public class WrfController {
     @Value("${wrf.data-path:./data}")
     private String dataPath;
 
-    @Value("${wrf.timeout:30000}")
-    private int timeout;
-
     private final WrfDataService wrfDataService;
-
-    private final ExecutorService executorService = new ThreadPoolExecutor(
-        4, 20, 60L, TimeUnit.SECONDS,
-        new LinkedBlockingQueue<>(200),
-        new ThreadPoolExecutor.CallerRunsPolicy()
-    );
+    private final PythonScriptInvoker pythonScriptInvoker;
 
     @PostMapping(value = "/parse-params", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> parseWrfData(@RequestBody WrfParseRequest request) {
@@ -108,8 +96,6 @@ public class WrfController {
                     "高度值必须在" + MIN_HEIGHT + "到" + MAX_HEIGHT + "之间");
             }
 
-            validateScriptPath(pythonScriptPath);
-
             String safeName = UUID.randomUUID().toString() + "_" + originalName.replaceAll("[^a-zA-Z0-9._-]", "_");
             tempFile = Paths.get(dataPath, safeName).normalize();
 
@@ -123,16 +109,14 @@ public class WrfController {
                 file.transferTo(targetFile);
             }
 
-            String result = executePythonScript(pythonScriptPath, tempFile.toString(), String.valueOf(height));
+            Map<String, Object> params = new HashMap<>();
+            params.put("filePath", tempFile.toString());
+            params.put("height", height);
+            String result = pythonScriptInvoker.execute(pythonScriptPath, "parse", params);
+
             WrfDataFile savedFile = wrfDataService.createWrfDataFile(originalName, tempFile.toString(), file.getSize());
 
             return Map.of("success", true, "data", result, "fileId", savedFile.getFileId());
-        } catch (TimeoutException e) {
-            log.error("WRF处理超时: {}", e.getMessage());
-            return Map.of("success", false, "error", "处理超时");
-        } catch (SecurityException e) {
-            log.error("安全异常: {}", e.getMessage());
-            return Map.of("success", false, "error", "安全验证失败: " + e.getMessage());
         } catch (Exception e) {
             log.error("处理失败: {}", e.getMessage(), e);
             return Map.of("success", false, "error", "处理失败: " + e.getClass().getSimpleName());
@@ -155,8 +139,11 @@ public class WrfController {
                 return Map.of("success", false, "error", "文件路径不能为空");
             }
 
-            String result = executePythonScript(pythonScriptPath, filePath, String.valueOf(height),
-                paramType != null ? paramType : "all");
+            Map<String, Object> params = new HashMap<>();
+            params.put("filePath", filePath);
+            params.put("height", height);
+            params.put("paramType", paramType != null ? paramType : "all");
+            String result = pythonScriptInvoker.execute(pythonScriptPath, "parse", params);
 
             return Map.of("success", true, "data", result);
         } catch (Exception e) {
@@ -297,40 +284,18 @@ public class WrfController {
 
     private Map<String, Object> processWrfFromFilePath(String filePath, int height, String paramType) {
         try {
-            validateScriptPath(pythonScriptPath);
-            List<String> command = new ArrayList<>(List.of("python3", pythonScriptPath, filePath, String.valueOf(height)));
+            Map<String, Object> params = new HashMap<>();
+            params.put("filePath", filePath);
+            params.put("height", height);
             if (paramType != null) {
-                command.add(paramType);
+                params.put("paramType", paramType);
             }
-            String result = executeCommand(command);
+            String result = pythonScriptInvoker.execute(pythonScriptPath, "parse", params);
             return Map.of("success", true, "code", 200, "message", "WRF文件处理成功", "data", result);
         } catch (Exception e) {
             log.error("Failed to process WRF file from path: {}", filePath, e);
             return Map.of("success", false, "code", 500, "message", "文件处理失败");
         }
-    }
-
-    private String executePythonScript(String... args) throws Exception {
-        List<String> command = new ArrayList<>();
-        command.add("python3");
-        command.addAll(Arrays.asList(args));
-        return executeCommand(command);
-    }
-
-    private String executeCommand(List<String> command) throws Exception {
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.redirectErrorStream(true);
-        return executorService.submit(() -> {
-            StringBuilder output = new StringBuilder();
-            Process process = processBuilder.start();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    output.append(line).append("\n");
-                }
-            }
-            return output.toString();
-        }).get(timeout, TimeUnit.MILLISECONDS);
     }
 
     private Map<String, Object> generateMockWeatherData(int height, Map<String, Double> bounds) {
@@ -356,18 +321,5 @@ public class WrfController {
             }
         }
         return grid;
-    }
-
-    private void validateScriptPath(String scriptPath) {
-        if (scriptPath == null || scriptPath.isBlank()) {
-            throw new SecurityException("脚本路径不能为空");
-        }
-        if (scriptPath.contains("..") || scriptPath.contains("~")) {
-            throw new SecurityException("脚本路径包含非法字符");
-        }
-        String scriptName = Paths.get(scriptPath).getFileName().toString();
-        if (!ALLOWED_SCRIPT_NAMES.contains(scriptName)) {
-            throw new SecurityException("未授权的脚本: " + scriptName);
-        }
     }
 }

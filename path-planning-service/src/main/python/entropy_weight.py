@@ -5,11 +5,14 @@
 基于各候选解在多个目标上的变异程度，自动计算客观权重。
 熵值越小 → 信息量越大 → 权重越高。
 """
-import numpy as np
 from typing import List, Dict, Tuple
+import numpy as np
+import logging
+logger = logging.getLogger(__name__)
 
 
-def entropy_weight(objectives_matrix: List[List[float]]) -> Tuple[List[float], List[float], List[float]]:
+def entropy_weight(objectives_matrix: List[List[float]]
+                   ) -> Tuple[List[float], List[float], List[float]]:
     """
     使用熵权法计算多目标权重
 
@@ -90,7 +93,7 @@ def auto_assign_weights(candidate_scores: List[Dict[str, float]],
         目标名到权重的映射
     """
     if not candidate_scores:
-        return {name: 1.0/len(objective_names) for name in objective_names}
+        return {name: 1.0 / len(objective_names) for name in objective_names}
 
     # 构建目标矩阵
     matrix = []
@@ -112,6 +115,6 @@ if __name__ == "__main__":
     ]
     names = ['distance', 'time', 'risk', 'energy']
     weights = auto_assign_weights(solutions, names)
-    print("熵权法自动分配权重:")
+    logger.info("熵权法自动分配权重:")
     for name, weight in weights.items():
         print(f"  {name}: {weight:.4f}")

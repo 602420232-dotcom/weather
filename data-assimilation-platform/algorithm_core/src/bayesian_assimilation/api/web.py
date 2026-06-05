@@ -42,7 +42,7 @@ def create_app(debug: bool = False):
         from bayesian_assimilation.quality_control import MeteorologicalQualityControl
         from bayesian_assimilation.risk_assessment import MeteorologicalRiskAssessment
         from bayesian_assimilation.time_series import TimeSeriesAnalyzer
-        from bayesian_assimilation.utils.logging import setup_logging
+        from bayesian_assimilation.utils.log_utils import setup_logging
 
         setup_logging()
 
@@ -65,7 +65,9 @@ def create_app(debug: bool = False):
 
                 # 创建配置
                 assimilation_config = AssimilationConfig()
-                assimilation_config.update(config)
+                for key, value in config.items():
+                    if hasattr(assimilation_config, key):
+                        setattr(assimilation_config, key, value)
 
                 # 创建同化器
                 assimilator = BayesianAssimilator(assimilation_config)

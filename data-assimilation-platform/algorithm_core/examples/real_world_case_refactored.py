@@ -356,8 +356,8 @@ def main():
 
         # 概率风险评估
         probabilistic_result = MeteorologicalRiskAssessment.probabilistic_risk_assessment(
-            assimilation_result['analysis'],
-            assimilation_result['variance']
+            assimilation_result['analysis'],  # type: ignore[arg-type]
+            assimilation_result['variance']  # type: ignore[arg-type]
         )
         logger.info(f"概率风险评估完成，置信水平: {probabilistic_result['confidence_level']}")
 

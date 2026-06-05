@@ -2,6 +2,9 @@
 错误处理框架单元测试
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import unittest
 import sys
 import os

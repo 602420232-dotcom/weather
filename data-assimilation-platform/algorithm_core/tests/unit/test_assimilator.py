@@ -2,6 +2,9 @@
 核心同化器单元测试
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import pytest
 import numpy as np
 import os

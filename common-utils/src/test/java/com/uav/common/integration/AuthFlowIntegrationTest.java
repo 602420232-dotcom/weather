@@ -1,15 +1,12 @@
 package com.uav.common.integration;
 
-import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
-
 import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
-
+import org.springframework.http.*;
+import org.junit.jupiter.api.*;
 /**
  * 认证流程集成测试
  * 

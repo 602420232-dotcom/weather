@@ -5,6 +5,8 @@ Coordinator API 安全验证模块
 """
 
 from typing import Tuple, Dict
+import logging
+logger = logging.getLogger(__name__)
 
 
 def sanitize_task_id(task_id: str) -> str:

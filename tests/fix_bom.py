@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 """Fix UTF-8 BOM in files."""
+import logging
+logger = logging.getLogger(__name__)
+
 import os
 import sys
 

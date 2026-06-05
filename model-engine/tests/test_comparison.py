@@ -115,7 +115,7 @@ class MethodBenchmark:
             names = list(self.results.keys())
             base = self.results[names[0]]
             for name in names[1:
-                ]:
+                              ]:
                 m = self.results[name]
                 improvement = (base.rmse - m.rmse) / base.rmse * 100
                 speedup = base.inference_time_ms / m.inference_time_ms

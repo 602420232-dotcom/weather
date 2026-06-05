@@ -65,14 +65,14 @@ class VariableConfig:
     """气象变量映射"""
     variables: dict = field(default_factory=lambda: {
         # [CMA 变量名, 中文名, 单位]
-        "u10":  "10m_u_wind", "v10":  "10m_v_wind",
-        "t2m":  "2m_temperature", "rh2m": "2m_relative_humidity",
-        "ps":   "surface_pressure", "blh":  "boundary_layer_height",
-        "swr":  "shortwave_radiation", "lwr":  "longwave_radiation",
+        "u10": "10m_u_wind", "v10": "10m_v_wind",
+        "t2m": "2m_temperature", "rh2m": "2m_relative_humidity",
+        "ps": "surface_pressure", "blh": "boundary_layer_height",
+        "swr": "shortwave_radiation", "lwr": "longwave_radiation",
         "hpbl": "pbl_height",
         # 高空层
-        "u":  "winds", "v": "winds", "t":  "temperature",
-        "q":  "humidity", "w": "vertical_velocity",
+        "u": "winds", "v": "winds", "t": "temperature",
+        "q": "humidity", "w": "vertical_velocity",
     })
 
     # 地面变量（张量通道顺序）

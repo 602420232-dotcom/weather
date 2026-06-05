@@ -4,6 +4,7 @@
 
 import pytest
 import logging
+logger = logging.getLogger(__name__)
 import os
 import sys
 from unittest.mock import patch, MagicMock

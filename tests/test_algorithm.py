@@ -2,6 +2,9 @@
 """
 算法单元测试
 """
+import logging
+logger = logging.getLogger(__name__)
+
 import unittest
 import sys
 import os
@@ -30,7 +33,7 @@ class TestAlgorithm(unittest.TestCase):
         """
         测试3D-VAR算法
         """
-        print("测试3D-VAR算法...")
+        logger.info("测试3D-VAR算法...")
 
         # 创建3D-VAR实例
         var3d = ThreeDimensionalVAR()
@@ -45,7 +48,7 @@ class TestAlgorithm(unittest.TestCase):
             analysis, innovation = var3d.assimilate(background, observations, obs_locations, obs_errors)
             self.assertIsNotNone(analysis)
             self.assertIsNotNone(innovation)
-            print("3D-VAR算法测试通过")
+            logger.info("3D-VAR算法测试通过")
         except Exception as e:
             self.fail(f"3D-VAR算法测试失败: {e}")
 
@@ -53,7 +56,7 @@ class TestAlgorithm(unittest.TestCase):
         """
         测试4D-VAR算法
         """
-        print("测试4D-VAR算法...")
+        logger.info("测试4D-VAR算法...")
 
         # 创建4D-VAR实例
         var4d = FourDimensionalVar()
@@ -62,7 +65,7 @@ class TestAlgorithm(unittest.TestCase):
         try:
             # 这里只是测试初始化和基本方法，实际运行需要真实的WRF数据
             self.assertIsNotNone(var4d)
-            print("4D-VAR算法测试通过")
+            logger.info("4D-VAR算法测试通过")
         except Exception as e:
             self.fail(f"4D-VAR算法测试失败: {e}")
 
@@ -70,7 +73,7 @@ class TestAlgorithm(unittest.TestCase):
         """
         测试EnKF算法
         """
-        print("测试EnKF算法...")
+        logger.info("测试EnKF算法...")
 
         # 创建EnKF实例
         enkf = EnKF(n_ensemble=10)
@@ -85,7 +88,7 @@ class TestAlgorithm(unittest.TestCase):
             analysis, innovation = enkf.assimilate(background, observations, obs_locations, obs_errors)
             self.assertIsNotNone(analysis)
             self.assertIsNotNone(innovation)
-            print("EnKF算法测试通过")
+            logger.info("EnKF算法测试通过")
         except Exception as e:
             self.fail(f"EnKF算法测试失败: {e}")
 
@@ -93,7 +96,7 @@ class TestAlgorithm(unittest.TestCase):
         """
         测试混合同化算法
         """
-        print("测试混合同化算法...")
+        logger.info("测试混合同化算法...")
 
         # 创建混合同化实例
         hybrid = HybridAssimilation()
@@ -108,7 +111,7 @@ class TestAlgorithm(unittest.TestCase):
             analysis, innovation = hybrid.assimilate(background, observations, obs_locations, obs_errors)
             self.assertIsNotNone(analysis)
             self.assertIsNotNone(innovation)
-            print("混合同化算法测试通过")
+            logger.info("混合同化算法测试通过")
         except Exception as e:
             self.fail(f"混合同化算法测试失败: {e}")
 
@@ -116,7 +119,7 @@ class TestAlgorithm(unittest.TestCase):
         """
         测试VRPTW规划器
         """
-        print("测试VRPTW规划器...")
+        logger.info("测试VRPTW规划器...")
 
         # 创建无人机和任务
         drones = [Drone("drone1", 10.0, 120.0, 20.0)]
@@ -133,7 +136,7 @@ class TestAlgorithm(unittest.TestCase):
             result = vrptw.plan()
             self.assertTrue(result['success'])
             self.assertIsNotNone(result['routes'])
-            print("VRPTW规划器测试通过")
+            logger.info("VRPTW规划器测试通过")
         except Exception as e:
             self.fail(f"VRPTW规划器测试失败: {e}")
 
@@ -141,7 +144,7 @@ class TestAlgorithm(unittest.TestCase):
         """
         测试A*规划器
         """
-        print("测试A*规划器...")
+        logger.info("测试A*规划器...")
 
         # 创建A*规划器
         obstacles = [Obstacle((5.0, 5.0), 2.0)]
@@ -153,7 +156,7 @@ class TestAlgorithm(unittest.TestCase):
             result = a_star.plan((0.0, 0.0), (20.0, 20.0))
             self.assertTrue(result['success'])
             self.assertIsNotNone(result['path'])
-            print("A*规划器测试通过")
+            logger.info("A*规划器测试通过")
         except Exception as e:
             self.fail(f"A*规划器测试失败: {e}")
 
@@ -161,7 +164,7 @@ class TestAlgorithm(unittest.TestCase):
         """
         测试DWA规划器
         """
-        print("测试DWA规划器...")
+        logger.info("测试DWA规划器...")
 
         # 创建DWA规划器
         obstacles = [Obstacle((5.0, 5.0), 2.0)]
@@ -171,7 +174,7 @@ class TestAlgorithm(unittest.TestCase):
             result = dwa.plan((0.0, 0.0, 0.0), (10.0, 10.0))
             self.assertTrue(result['success'])
             self.assertIsNotNone(result['trajectory'])
-            print("DWA规划器测试通过")
+            logger.info("DWA规划器测试通过")
         except Exception as e:
             self.fail(f"DWA规划器测试失败: {e}")
 
@@ -179,7 +182,7 @@ class TestAlgorithm(unittest.TestCase):
         """
         测试RRT*规划器
         """
-        print("测试RRT*规划器...")
+        logger.info("测试RRT*规划器...")
 
         # 创建RRT*规划器
         rrt = RRTStarPlanner((0.0, 0.0), (20.0, 20.0), [])
@@ -188,7 +191,7 @@ class TestAlgorithm(unittest.TestCase):
             result = rrt.plan()
             self.assertTrue(result['success'])
             self.assertIsNotNone(result['path'])
-            print("RRT*规划器测试通过")
+            logger.info("RRT*规划器测试通过")
         except Exception as e:
             self.fail(f"RRT*规划器测试失败: {e}")
 
@@ -196,7 +199,7 @@ class TestAlgorithm(unittest.TestCase):
         """
         测试Dijkstra规划器
         """
-        print("测试Dijkstra规划器...")
+        logger.info("测试Dijkstra规划器...")
 
         # 创建Dijkstra规划器
         dijkstra = DijkstraPlanner()
@@ -205,7 +208,7 @@ class TestAlgorithm(unittest.TestCase):
             result = dijkstra.plan((0.0, 0.0), (20.0, 20.0))
             self.assertTrue(result['success'])
             self.assertIsNotNone(result['path'])
-            print("Dijkstra规划器测试通过")
+            logger.info("Dijkstra规划器测试通过")
         except Exception as e:
             self.fail(f"Dijkstra规划器测试失败: {e}")
 
@@ -213,7 +216,7 @@ class TestAlgorithm(unittest.TestCase):
         """
         测试遗传算法规划器
         """
-        print("测试遗传算法规划器...")
+        logger.info("测试遗传算法规划器...")
 
         # 创建遗传算法规划器
         ga = GeneticAlgorithmPlanner((0.0, 0.0), (20.0, 20.0), [])
@@ -222,7 +225,7 @@ class TestAlgorithm(unittest.TestCase):
             result = ga.plan()
             self.assertTrue(result['success'])
             self.assertIsNotNone(result['path'])
-            print("遗传算法规划器测试通过")
+            logger.info("遗传算法规划器测试通过")
         except Exception as e:
             self.fail(f"遗传算法规划器测试失败: {e}")
 
@@ -230,7 +233,7 @@ class TestAlgorithm(unittest.TestCase):
         """
         测试粒子群优化规划器
         """
-        print("测试粒子群优化规划器...")
+        logger.info("测试粒子群优化规划器...")
 
         # 创建粒子群优化规划器
         pso = ParticleSwarmOptimizationPlanner((0.0, 0.0), (20.0, 20.0), [])
@@ -239,7 +242,7 @@ class TestAlgorithm(unittest.TestCase):
             result = pso.plan()
             self.assertTrue(result['success'])
             self.assertIsNotNone(result['path'])
-            print("粒子群优化规划器测试通过")
+            logger.info("粒子群优化规划器测试通过")
         except Exception as e:
             self.fail(f"粒子群优化规划器测试失败: {e}")
 

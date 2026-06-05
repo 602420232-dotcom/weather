@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 """Chaos Engineering 测试套件 — 验证系统弹性"""
+import logging
+logger = logging.getLogger(__name__)
+
 import requests
 import time
 import threading

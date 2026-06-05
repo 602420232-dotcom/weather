@@ -186,8 +186,8 @@ class weather_augmentation:
             crop_w = int(W * np.random.uniform(0.85, 0.95))
             y0 = np.random.randint(0, H - crop_h)
             x0 = np.random.randint(0, W - crop_w)
-            coarse = coarse[:, y0:y0+crop_h, x0:x0+crop_w]
-            dem = dem[:, y0:y0+crop_h, x0:x0+crop_w]
+            coarse = coarse[:, y0:y0 + crop_h, x0:x0 + crop_w]
+            dem = dem[:, y0:y0 + crop_h, x0:x0 + crop_w]
             # 上采样回原始大小
             from scipy.ndimage import zoom
             for c in range(coarse.shape[0]):
@@ -199,7 +199,7 @@ class weather_augmentation:
             crop_wf = int(Wf * crop_w / W)
             y0f = int(y0 * Hf / H)
             x0f = int(x0 * Wf / W)
-            fine = fine[:, y0f:y0f+crop_hf, x0f:x0f+crop_wf]
+            fine = fine[:, y0f:y0f + crop_hf, x0f:x0f + crop_wf]
             for c in range(fine.shape[0]):
                 fine[c] = zoom(fine[c], (Hf / crop_hf, Wf / crop_wf), order=1)
 

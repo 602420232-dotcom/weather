@@ -42,7 +42,7 @@ class SpatialCovariance:
         self.sigma_b = sigma_b
         self.correlation_length = correlation_length
 
-    def apply(self, x: np.ndarray, grid_coords: np.ndarray = None) -> np.ndarray:
+    def apply(self, x: np.ndarray, grid_coords: Optional[np.ndarray] = None) -> np.ndarray:
         """
         应用 B 矩阵到向量 x (B @ x)
         使用递归滤波器近似，避免显式构建大型 B 矩阵。
@@ -72,7 +72,7 @@ class SpatialCovariance:
         result = (self.sigma_b ** 2) * filtered.reshape(-1)
         return result
 
-    def apply_inverse(self, x: np.ndarray, grid_coords: np.ndarray = None) -> np.ndarray:
+    def apply_inverse(self, x: np.ndarray, grid_coords: Optional[np.ndarray] = None) -> np.ndarray:
         """
         应用 B^{-1} 到向量 x
         """

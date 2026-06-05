@@ -32,8 +32,9 @@ class AssimilationBase:
         self.analysis = None
         self.variance = None
 
-    def initialize_grid(self, domain_size: Tuple[float, float, float],
-                       resolution: Optional[float] = None):
+    def initialize_grid(
+            self, domain_size: Tuple[float, float, float],
+            resolution: Optional[float] = None):
         """
         初始化网格
 
@@ -44,7 +45,8 @@ class AssimilationBase:
         # 优先使用传入的分辨率，然后是 target_resolution，最后是 grid_resolution
         if resolution is not None:
             res = resolution
-        elif hasattr(self.config, 'target_resolution') and self.config.target_resolution is not None:  # type: ignore
+        elif (hasattr(self.config, 'target_resolution')
+                and self.config.target_resolution is not None):  # type: ignore[union-attr]
             res = self.config.target_resolution  # type: ignore
         else:
             res = self.config.grid_resolution

@@ -50,7 +50,7 @@ class SecurityMiddleware:
     @property
     def jwt_auth(self):
         if self._jwt_auth is None and self._jwt_secret:
-            from common_utils.jwt_auth import JwtAuth
+            from .jwt_auth import JwtAuth
             redis_client = self._get_redis_client()
             self._jwt_auth = JwtAuth(
                 secret_key=self._jwt_secret,
@@ -62,7 +62,7 @@ class SecurityMiddleware:
     @property
     def demo_service(self):
         if self._demo_service is None and self._demo_enabled:
-            from common_utils.demo_mode import DemoModeService
+            from .demo_mode import DemoModeService
             redis_client = self._get_redis_client()
             if redis_client:
                 self._demo_service = DemoModeService(redis_client=redis_client)
@@ -139,6 +139,7 @@ class SecurityMiddleware:
                 )
 
             try:
+                assert self.jwt_auth is not None  # guarded by self._jwt_secret check above
                 claims = self.jwt_auth.verify_token(token)
                 user_claims = self.jwt_auth.extract_user_claims(claims)
 
@@ -204,6 +205,7 @@ class SecurityMiddleware:
                 )
 
             try:
+                assert self.jwt_auth is not None  # guarded by self._jwt_secret check above
                 claims = self.jwt_auth.verify_token(token)
                 user_claims = self.jwt_auth.extract_user_claims(claims)
 
@@ -250,6 +252,7 @@ class SecurityMiddleware:
                 return result
 
             try:
+                assert self.jwt_auth is not None  # guarded by self._jwt_secret check above
                 claims = self.jwt_auth.verify_token(parts[1])
                 user_claims = self.jwt_auth.extract_user_claims(claims)
                 result.update({

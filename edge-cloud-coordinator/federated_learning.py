@@ -46,7 +46,8 @@ class FederatedLearning:
             aggregated[key] = sum(u.weights[key] * (u.n_samples / total_samples) for u in updates)
         return aggregated
 
-    def fedprox_aggregate(self, updates: List[ClientUpdate], mu: float = 0.01) -> Dict[str, np.ndarray]:
+    def fedprox_aggregate(self, updates: List[ClientUpdate],
+                          mu: float = 0.01) -> Dict[str, np.ndarray]:
         """FedProx 聚合（带近端项）"""
         return self.fedavg_aggregate(updates)
 
@@ -84,7 +85,8 @@ class FederatedLearning:
             'accuracy': float(avg_accuracy),
             'strategy': self.strategy
         })
-        logger.info(f"联邦学习聚合完成: 第{self.round_id}轮, {len(self.client_updates)}个客户端, 准确率{avg_accuracy:.3f}")
+        logger.info(
+            f"联邦学习聚合完成: 第{self.round_id}轮, {len(self.client_updates)}个客户端, 准确率{avg_accuracy:.3f}")
         self.client_updates = []
 
     def get_global_model(self) -> Optional[GlobalModel]:

@@ -1,4 +1,5 @@
 package com.bayesian.mapper;
+
 import com.bayesian.entity.Job;
 import java.util.List;
 import org.apache.ibatis.annotations.*;

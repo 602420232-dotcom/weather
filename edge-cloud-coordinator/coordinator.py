@@ -59,7 +59,8 @@ class EdgeCloudCoordinator:
             goal = tuple(task.data.get('goal', (10, 10)))
             return {'node': 'cloud', 'result': {'path': [start, goal], 'optimal': True}}
         elif task.task_type == TaskType.BATCH_PROCESSING:
-            return {'node': 'cloud', 'result': {'processed': len(task.data.get('items', [])), 'batch': True}}
+            return {'node': 'cloud', 'result': {'processed': len(
+                task.data.get('items', [])), 'batch': True}}
         return {'node': 'cloud', 'error': '未知任务类型'}
 
     def _edge_processing(self, task: EdgeTask) -> dict:
@@ -74,7 +75,8 @@ class EdgeCloudCoordinator:
             return {'node': f'edge_{self.node_id}', 'result': {'fused_data': fused}}
         return {'node': f'edge_{self.node_id}', 'error': '未知任务类型'}
 
-    def _local_avoidance(self, position: Tuple[float, float], obstacles: List) -> List[Tuple[float, float]]:
+    def _local_avoidance(self, position: Tuple[float, float],
+                         obstacles: List) -> List[Tuple[float, float]]:
         local_path = [position]
         for obs in obstacles:
             dx = obs[0] - position[0]
@@ -92,7 +94,7 @@ class EdgeCloudCoordinator:
             imu_pos = sensor_data['imu'].get('position', (0, 0))
             gps_weight = 0.7
             fused['position'] = (gps_pos[0] * gps_weight + imu_pos[0] * (1 - gps_weight),
-                                  gps_pos[1] * gps_weight + imu_pos[1] * (1 - gps_weight))
+                                 gps_pos[1] * gps_weight + imu_pos[1] * (1 - gps_weight))
         return fused
 
     def sync_model(self, model_name: str, model_data: dict, direction: str = "cloud_to_edge"):

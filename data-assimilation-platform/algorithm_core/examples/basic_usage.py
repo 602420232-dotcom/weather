@@ -60,7 +60,10 @@ class EnhancedAssimilationConfig(AssimilationConfig):
 
     def __post_init__(self):
         """验证配置参数的合理性"""
-        super().__post_init__()
+        try:
+            super().__post_init__()  # type: ignore[attr-defined]
+        except AttributeError:
+            pass  # 基类没有 __post_init__ 方法时忽略
         if self.target_resolution <= 0:
             raise ValueError("目标分辨率必须为正数")
         if self.background_error_scale < 0.1 or self.background_error_scale > 10:
@@ -69,7 +72,7 @@ class EnhancedAssimilationConfig(AssimilationConfig):
             logger.warning("观测误差尺度可能不合理，建议范围[0.01, 5]")
 
 
-def generate_background_field_chunked(grid_shape: str, domain_size: int):
+def generate_background_field_chunked(grid_shape: Tuple[int, int, int], domain_size: Tuple[float, float, float]):
     """分块生成背景风场，避免大数组一次性加载"""
     nx, ny, nz = grid_shape
     chunk_size = 100  # 每块100x100x100
@@ -101,7 +104,7 @@ def generate_background_field_chunked(grid_shape: str, domain_size: int):
     return field
 
 
-def generate_background_field(grid_shape: str, domain_size: int):
+def generate_background_field(grid_shape: Tuple[int, int, int], domain_size: Tuple[float, float, float]):
     """生成物理合理的背景风场 - 内存优化版本"""
     nx, ny, nz = grid_shape
 
@@ -121,7 +124,7 @@ def generate_background_field(grid_shape: str, domain_size: int):
     return np.maximum(field, 0.1)  # 最小风速0.1m/s
 
 
-def validate_observations(observations, locations):
+def validate_observations(observations: np.ndarray, locations: np.ndarray) -> bool:
     """验证观测数据的合理性"""
     if np.any(observations < 0):
         raise ValueError("观测风速不能为负值")
@@ -149,7 +152,7 @@ def assimilate_with_parallel(assimilator, background, observations, locations):
             return assimilator.assimilate_3dvar(background, observations, locations)
 
 
-def adaptive_resolution_assimilation(assimilator: Any, config: Dict[str, Any], min_resolution: Any = 5.0):
+def adaptive_resolution_assimilation(assimilator: Any, config: AssimilationConfig, min_resolution: float = 5.0) -> Tuple[int, int, int]:
     """动态分辨率同化，根据计算资源自动调整"""
     original_resolution = config.target_resolution
 
@@ -174,7 +177,7 @@ def adaptive_resolution_assimilation(assimilator: Any, config: Dict[str, Any], m
         return assimilator.grid_shape
 
 
-def generate_multi_variable_background(grid_shape: str, domain_size: int):
+def generate_multi_variable_background(grid_shape: Tuple[int, int, int], domain_size: Tuple[float, float, float]) -> Dict[str, np.ndarray]:
     """生成多变量背景场（风速、温度、湿度）"""
     nx, ny, nz = grid_shape
     x, y, z = np.meshgrid(
@@ -201,7 +204,7 @@ def generate_multi_variable_background(grid_shape: str, domain_size: int):
     }
 
 
-def assimilate_with_progress(assimilator, background, observations, locations):
+def assimilate_with_progress(assimilator: Any, background: np.ndarray, observations: np.ndarray, locations: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """带进度显示的同化计算"""
     try:
         from tqdm import tqdm
@@ -231,7 +234,7 @@ def assimilate_with_progress(assimilator, background, observations, locations):
         return assimilator.assimilate_3dvar(background, observations, locations)
 
 
-def load_config_from_file(config_path=None):
+def load_config_from_file(config_path: Optional[str] = None) -> EnhancedAssimilationConfig:
     """从配置文件加载参数"""
     if config_path is None:
         config_path = os.path.join(os.path.dirname(__file__), 'default_config.json')

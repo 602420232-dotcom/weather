@@ -46,8 +46,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 } else {
                     log.error(message);
                 }
-            } else if (jwtSecret.length() < 32) {
-                String message = "JWT secret is too short (minimum 32 chars required)";
+            } else if (jwtSecret.length() < 64) {
+                String message = "JWT secret is too short (minimum 64 chars required for HS512)";
                 if (isProductionEnvironment()) {
                     throw new IllegalStateException(message);
                 } else {

@@ -66,7 +66,8 @@ class EdgeAIInference:
             return InferenceBackend.TFLITE
         return InferenceBackend.PYTORCH
 
-    def quantize_to_int8(self, model_name: str, model: Any, calibration_data: np.ndarray) -> QuantizedModel:
+    def quantize_to_int8(self, model_name: str, model: Any,
+                         calibration_data: np.ndarray) -> QuantizedModel:
         """INT8 模型量化"""
         min_val = calibration_data.min()
         max_val = calibration_data.max()
@@ -80,7 +81,10 @@ class EdgeAIInference:
             latency_ms=2.0, memory_mb=calibration_data.nbytes / (1024 * 1024 * compression_ratio)
         )
         self.models[quantized_model.name] = quantized_model
-        logger.info(f"模型量化完成: {quantized_model.name} ({quantized.shape} → INT8, 压缩比 {compression_ratio}x)")
+        logger.info(
+            f"模型量化完成: {
+                quantized_model.name} ({
+                quantized.shape} → INT8, 压缩比 {compression_ratio}x)")
         return quantized_model
 
     def infer(self, model_name: str, input_data: np.ndarray) -> np.ndarray:

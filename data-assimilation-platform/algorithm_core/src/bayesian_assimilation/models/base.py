@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 # 基础同化模型类
 
 

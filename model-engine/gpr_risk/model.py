@@ -45,7 +45,8 @@ class SparseGPModel(gpytorch.models.ApproximateGP):
     """变分稀疏高斯过程（大规模数据用）"""
 
     def __init__(self, inducing_points):
-        variational_dist = gpytorch.variational.CholeskyVariationalDistribution(inducing_points.size(0))
+        variational_dist = gpytorch.variational.CholeskyVariationalDistribution(
+            inducing_points.size(0))
         variational_strategy = gpytorch.variational.VariationalStrategy(
             self, inducing_points, variational_dist, learn_inducing_locations=True)
         super().__init__(variational_strategy)
@@ -189,7 +190,11 @@ def compute_risk_score(mean: torch.Tensor, variance: torch.Tensor,
     wind_speed = torch.sqrt(mean[..., 0]**2 + mean[..., 1]**2)
     # 超阈值概率 (假设高斯分布)
     from scipy.stats import norm
-    exceed_prob = torch.tensor(norm.sf(wind_speed.cpu().numpy(), loc=mean.cpu(), scale=torch.sqrt(variance).cpu()))
+    exceed_prob = torch.tensor(
+        norm.sf(
+            wind_speed.cpu().numpy(),
+            loc=mean.cpu(),
+            scale=torch.sqrt(variance).cpu()))
     exceed_prob = exceed_prob.to(mean.device)
 
     risk = 0.3 * wind_speed + 0.4 * torch.sqrt(variance) + 0.3 * exceed_prob

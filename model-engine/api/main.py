@@ -232,12 +232,12 @@ def plan_path(start_x: float, start_y: float, end_x: float, end_y: float):
         wind_v = np.random.normal(0.5, 0.8, risk_map.shape)
 
         path = path_planner.plan(risk_map, wind_u, wind_v,
-                                  (start_x, start_y), (end_x, end_y))
+                                 (start_x, start_y), (end_x, end_y))
         return {
             "status": "success",
             "path": [{"x": w.x, "y": w.y, "z": w.z,
-                       "risk": w.risk, "wind_u": w.wind_u, "wind_v": w.wind_v}
-                      for w in path],
+                      "risk": w.risk, "wind_u": w.wind_u, "wind_v": w.wind_v}
+                     for w in path],
             "waypoints": len(path),
             "avg_risk": sum(w.risk for w in path) / len(path),
         }

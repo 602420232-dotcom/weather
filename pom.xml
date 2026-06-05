@@ -57,6 +57,11 @@
         <module>api-gateway</module>
         <module>uav-path-planning-system/backend-spring</module>
         <module>uav-weather-collector</module>
+        <module>buoy-weather-service</module>
+        <module>ground-station-weather-service</module>
+        <module>satellite-weather-service</module>
+        <module>radiosonde-weather-service</module>
+        <module>detection-drone-service</module>
         <!-- data-assimilation-platform/service_spring: 独立parent pom，使用独立构建 -->
     </modules>
 
@@ -348,7 +353,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration combine.self="override">
+                        <configuration>
                             <groups>integration</groups>
                         </configuration>
                     </plugin>

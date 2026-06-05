@@ -18,15 +18,17 @@ import time
 from contextlib import asynccontextmanager
 from typing import Optional
 
+import numpy as np
+from fastapi import FastAPI, HTTPException, Header, Depends, Request
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+
 
 sys.path.insert(
-    0, os.path.join(os.path.dirname(__file__), "..", "common-utils", "src", "main", "python")
+    0, os.path.join(
+        os.path.dirname(__file__), "..", "common-utils",
+        "src", "main", "python")
 )
-
-import numpy as np  # noqa: E402
-from fastapi import FastAPI, HTTPException, Header, Depends  # noqa: E402
-from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
-from pydantic import BaseModel, Field  # noqa: E402
 
 from inference_engine import get_engine, FengWuEngine  # noqa: E402
 from security_middleware import SecurityMiddleware  # noqa: E402
@@ -143,14 +145,17 @@ _jwt_middleware = None
 
 
 if _jwt_secret:
-    _jwt_middleware = SecurityMiddleware(
-        secret_key=_jwt_secret,
-        algorithm="HS512",
-    )
-    _jwt_middleware.protect_app(
-        app,
-        public_paths=["/health", "/actuator/health", "/health/ready"],
-    )
+    _jwt_middleware = SecurityMiddleware()
+
+    @app.middleware("http")
+    async def jwt_auth_middleware(
+            request: Request, call_next):
+        public_paths = {
+            "/health", "/actuator/health", "/health/ready"}
+        if request.url.path not in public_paths:
+            await _jwt_middleware.verify(request)  # type: ignore[arg-type]
+        return await call_next(request)
+
     logger.info("JWT authentication enabled")
 
 
@@ -267,7 +272,7 @@ async def forecast(request: ForecastRequest):
         raise HTTPException(
             status_code=400,
             detail=f"Input shape must be {expected_shape}, "
-                   f"got {input_0h.shape} and {input_6h.shape}",
+            f"got {input_0h.shape} and {input_6h.shape}",
         )
 
     # Run inference

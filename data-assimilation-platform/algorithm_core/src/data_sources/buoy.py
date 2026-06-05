@@ -3,6 +3,9 @@
 
 从海洋/湖泊浮标观测站获取气象数据。
 """
+import logging
+logger = logging.getLogger(__name__)
+
 import numpy as np
 from .base import DataSourceBase
 

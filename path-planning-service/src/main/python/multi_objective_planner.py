@@ -34,7 +34,8 @@ class MultiObjectivePlanner:
         total = sum(preferences.values())
         self.user_preferences = {k: v / total for k, v in preferences.items()}
 
-    def evaluate_objectives(self, waypoints: List[Tuple[float, float]], weather_data: dict = None) -> List[float]:
+    def evaluate_objectives(
+            self, waypoints: List[Tuple[float, float]], weather_data: dict = None) -> List[float]:
         """评估四个目标函数"""
         total_distance = sum(np.linalg.norm(np.array(waypoints[i]) - np.array(waypoints[i + 1]))
                              for i in range(len(waypoints) - 1))
@@ -44,7 +45,8 @@ class MultiObjectivePlanner:
         energy = total_distance * (1 + wind * 0.05)
         return [total_distance, total_time, risk, energy]
 
-    def crossover(self, parent1: List[Tuple], parent2: List[Tuple]) -> Tuple[List[Tuple], List[Tuple]]:
+    def crossover(self, parent1: List[Tuple], parent2: List[Tuple]
+                  ) -> Tuple[List[Tuple], List[Tuple]]:
         """模拟二进制交叉"""
         if len(parent1) < 2 or np.random.rand() > self.crossover_rate:
             return parent1, parent2
@@ -78,7 +80,7 @@ class MultiObjectivePlanner:
                     dominated[i].add(j)
                     domination_count[j] += 1
                 elif all(solutions[j].objectives[k] <= solutions[i].objectives[k] for k in range(4)) and \
-                     any(solutions[j].objectives[k] < solutions[i].objectives[k] for k in range(4)):
+                        any(solutions[j].objectives[k] < solutions[i].objectives[k] for k in range(4)):
                     dominated[j].add(i)
                     domination_count[i] += 1
 
@@ -111,12 +113,14 @@ class MultiObjectivePlanner:
             front.sort(key=lambda i: solutions[i].objectives[obj_idx])
             solutions[front[0]].crowding_distance = float('inf')
             solutions[front[-1]].crowding_distance = float('inf')
-            obj_range = solutions[front[-1]].objectives[obj_idx] - solutions[front[0]].objectives[obj_idx]
+            obj_range = solutions[front[-1]].objectives[obj_idx] - \
+                solutions[front[0]].objectives[obj_idx]
             if obj_range == 0:
                 continue
             for j in range(1, len(front) - 1):
                 solutions[front[j]].crowding_distance += \
-                    (solutions[front[j + 1]].objectives[obj_idx] - solutions[front[j - 1]].objectives[obj_idx]) / obj_range
+                    (solutions[front[j + 1]].objectives[obj_idx] -
+                     solutions[front[j - 1]].objectives[obj_idx]) / obj_range
 
     def select(self, solutions: List[Solution]) -> List[Solution]:
         """锦标赛选择"""
@@ -125,7 +129,7 @@ class MultiObjectivePlanner:
             i, j = np.random.randint(0, len(solutions), 2)
             if solutions[i].rank < solutions[j].rank or \
                (solutions[i].rank == solutions[j].rank and
-                solutions[i].crowding_distance > solutions[j].crowding_distance):
+                    solutions[i].crowding_distance > solutions[j].crowding_distance):
                 selected.append(solutions[i])
             else:
                 selected.append(solutions[j])
@@ -155,8 +159,18 @@ class MultiObjectivePlanner:
                 c1, c2 = self.crossover(p1.waypoints, p2.waypoints)
                 c1 = self.mutate(c1)
                 c2 = self.mutate(c2)
-                offspring.append(Solution(waypoints=c1, objectives=self.evaluate_objectives(c1, weather_data)))
-                offspring.append(Solution(waypoints=c2, objectives=self.evaluate_objectives(c2, weather_data)))
+                offspring.append(
+                    Solution(
+                        waypoints=c1,
+                        objectives=self.evaluate_objectives(
+                            c1,
+                            weather_data)))
+                offspring.append(
+                    Solution(
+                        waypoints=c2,
+                        objectives=self.evaluate_objectives(
+                            c2,
+                            weather_data)))
 
             combined = solutions + offspring
             fronts = self.non_dominated_sort(combined)
@@ -173,7 +187,8 @@ class MultiObjectivePlanner:
                    self.user_preferences.get('risk', 0.25),
                    self.user_preferences.get('energy', 0.25)]
 
-        best_idx = np.argmin([sum(w * o for w, o in zip(weights, s.objectives)) for s in pareto_front])
+        best_idx = np.argmin([sum(w * o for w, o in zip(weights, s.objectives))
+                             for s in pareto_front])
         best = pareto_front[best_idx]
 
         return {

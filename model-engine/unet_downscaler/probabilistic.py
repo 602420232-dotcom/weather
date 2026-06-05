@@ -70,7 +70,11 @@ class ProbabilisticUNet(nn.Module):
 
         # 【关键改动】输出两个分支: mean 和 log_var
         self.mean_head = nn.Conv2d(c.base_channels // 2, c.out_channels, kernel_size=3, padding=1)
-        self.log_var_head = nn.Conv2d(c.base_channels // 2, c.out_channels, kernel_size=3, padding=1)
+        self.log_var_head = nn.Conv2d(
+            c.base_channels // 2,
+            c.out_channels,
+            kernel_size=3,
+            padding=1)
 
     def forward(self, x: torch.Tensor,
                 obs: Optional[torch.Tensor] = None,

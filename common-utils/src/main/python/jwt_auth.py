@@ -99,7 +99,7 @@ class UserClaims:
     issued_at: Optional[datetime] = None
     expires_at: Optional[datetime] = None
     is_demo: bool = False
-    extra: Dict[str, Any] = None
+    extra: Dict[str, Any] | None = None
 
     def __post_init__(self):
         if self.extra is None:
@@ -358,7 +358,8 @@ class JwtAuth:
         try:
             from fastapi import Header, HTTPException, status
 
-            def dependency(authorization: Optional[str] = Header(None)):
+            def dependency(  # type: ignore[reportRedeclaration]
+                    authorization: Optional[str] = Header(None)):
                 token = self.extract_token_from_header(authorization)
                 if not token:
                     raise HTTPException(
@@ -388,6 +389,6 @@ class JwtAuth:
             return dependency
         except ImportError:
 
-            def dependency(token: str):
+            def dependency(token: str):  # type: ignore[reportRedeclaration]
                 return self.get_current_user(token, required_roles)
             return dependency

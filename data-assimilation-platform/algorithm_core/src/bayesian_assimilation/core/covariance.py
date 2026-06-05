@@ -3,6 +3,9 @@
 整合后的协方差实现
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import numpy as np
 from typing import Tuple, Optional
 from numba import jit, prange

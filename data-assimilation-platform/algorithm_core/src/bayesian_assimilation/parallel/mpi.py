@@ -12,7 +12,7 @@ import logging
 
 
 try:
-    from mpi4py import MPI
+    from mpi4py import MPI  # type: ignore[import-not-found]
     MPI4PY_AVAILABLE = True
 
 
@@ -21,6 +21,19 @@ except ImportError:
     # 创建一个模拟的MPI类，用于在没有安装mpi4py时的运行
 
     class DummyMPI:
+
+        @staticmethod
+        def Is_initialized():
+            return False
+
+        @staticmethod
+        def Init():
+            pass
+
+        @staticmethod
+        def Finalize():
+            pass
+
         COMM_WORLD = None
     MPI = DummyMPI()
 
@@ -28,7 +41,7 @@ except ImportError:
 
 
 try:
-    from .base import ParallelManager, ParallelType
+    from .base import ParallelManager, ParallelType  # type: ignore[assignment]
 
 
 except ImportError:
@@ -95,8 +108,8 @@ class MPIParallelManager(ParallelManager):
                 MPI.Init()
 
             self.comm = MPI.COMM_WORLD
-            self.rank = self.comm.Get_rank()
-            self.size = self.comm.Get_size()
+            self.rank = self.comm.Get_rank()  # type: ignore[union-attr]
+            self.size = self.comm.Get_size()  # type: ignore[union-attr]
             self.is_root = (self.rank == self.config["root_rank"])
 
             if self.is_root:
@@ -178,7 +191,8 @@ class MPIParallelManager(ParallelManager):
                 tasks = None
 
             # 广播任务分配信息
-            tasks = self.comm.bcast(tasks, root=self.config["root_rank"])
+            tasks = self.comm.bcast(  # type: ignore[union-attr]
+                tasks, root=self.config["root_rank"])
 
             # 获取当前进程的任务
             my_tasks = tasks[self.rank] if self.rank < len(tasks) else []
@@ -194,7 +208,8 @@ class MPIParallelManager(ParallelManager):
                     my_results.append(None)
 
             # 收集所有结果
-            all_results = self.comm.gather(my_results, root=self.config["root_rank"])
+            all_results = self.comm.gather(  # type: ignore[union-attr]
+                my_results, root=self.config["root_rank"])
 
             # 根进程合并结果
             if self.is_root:
@@ -245,7 +260,7 @@ class MPIParallelManager(ParallelManager):
         if not self.is_running() or self.size == 1:
             return data
 
-        return self.comm.bcast(data, root=self.config["root_rank"])
+        return self.comm.bcast(data, root=self.config["root_rank"])  # type: ignore[union-attr]
 
     def gather(self, data: Any) -> Optional[List[Any]]:
         """
@@ -254,7 +269,7 @@ class MPIParallelManager(ParallelManager):
         if not self.is_running() or self.size == 1:
             return [data]
 
-        return self.comm.gather(data, root=self.config["root_rank"])
+        return self.comm.gather(data, root=self.config["root_rank"])  # type: ignore[union-attr]
 
     def scatter(self, data: List[Any]) -> Any:
         """
@@ -263,7 +278,7 @@ class MPIParallelManager(ParallelManager):
         if not self.is_running() or self.size == 1:
             return data[0] if data else None
 
-        return self.comm.scatter(data, root=self.config["root_rank"])
+        return self.comm.scatter(data, root=self.config["root_rank"])  # type: ignore[union-attr]
 
     def get_resource_info(self) -> Dict:
         """
@@ -283,7 +298,8 @@ class MPIParallelManager(ParallelManager):
 
 
 try:
-    from bayesian_assimilation.core.assimilator import BayesianAssimilator
+    from bayesian_assimilation.core.assimilator import (
+        BayesianAssimilator)  # type: ignore[assignment]
 
 
 except ImportError:
@@ -295,7 +311,7 @@ except ImportError:
             self.config = config
             self.logger = logging.getLogger(__name__)
 
-        def initialize_grid(self: Any, domain_size: int, resolution: Any = None):
+        def initialize_grid(self: Any, domain_size: Any, resolution: Any = None):
             self.domain_size = domain_size
             self.resolution = resolution
 
@@ -313,13 +329,15 @@ class MPIParallelAssimilator(BayesianAssimilator):
         self.mpi_manager = MPIParallelManager()
         self.logger = logging.getLogger(__name__)
 
-    def initialize_grid(self: Any, domain_size: int, resolution: Any = None):
+    def initialize_grid(self: Any, domain_size: Any, resolution: Any = None):
         """
         初始化网格
         """
         super().initialize_grid(domain_size, resolution)
 
-    def assimilate_parallel(self, background, observations, obs_locations, n_blocks=None, obs_errors=None):
+    def assimilate_parallel(
+            self, background, observations, obs_locations,
+            n_blocks=None, obs_errors=None):
         """
         MPI并行执行3DVAR同化
         """
@@ -348,7 +366,10 @@ class MPIParallelAssimilator(BayesianAssimilator):
                     start_x = i * block_size_x
                     end_x = min((i + 1) * block_size_x, nx)
                     if start_x < end_x:
-                        tasks.append((start_x, end_x, background, observations, obs_locations, obs_errors))
+                        tasks.append(
+                            (start_x, end_x, background,
+                             observations, obs_locations, obs_errors)
+                        )
             else:
                 tasks = None
 
@@ -394,6 +415,8 @@ class MPIParallelAssimilator(BayesianAssimilator):
                 analysis = np.copy(background)
                 variance = np.zeros_like(background)
 
+                if all_results is None:
+                    all_results = []
                 for result in all_results:
                     if result is not None:
                         start_x, end_x, analysis_block, variance_block = result

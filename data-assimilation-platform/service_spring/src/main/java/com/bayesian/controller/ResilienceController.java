@@ -1,9 +1,9 @@
 package com.bayesian.controller;
+
 import com.bayesian.service.AlertService;
 import org.springframework.http.ResponseEntity;
 import java.util.Map;
 import org.springframework.web.bind.annotation.*;
-
 @RestController
 @RequestMapping("/api/resilience")
 public class ResilienceController {

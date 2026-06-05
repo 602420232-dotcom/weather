@@ -5,6 +5,7 @@ UAV Edge SDK - 日志模块
 """
 
 import logging
+logger = logging.getLogger(__name__)
 import sys
 from typing import Optional
 

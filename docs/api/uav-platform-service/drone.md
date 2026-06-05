@@ -1,6 +1,6 @@
 # 无人机管理接口
 
-> ⚠️ **注意**: 以下接口为计划中的 API 定义，当前版本尚未实现完整 CRUD。
+> ⚠️ **注意**: 当前版本无人机接口由 PlatformController 提供
 > 当前可用的无人机接口：`GET /api/platform/drones`（PlatformController）
 
 ## 获取无人机列表
@@ -8,7 +8,7 @@
 ### 请求
 
 ```
-GET /api/v1/drones
+GET /api/platform/drones
 Authorization: Bearer <JWT令牌>
 ```
 
@@ -66,7 +66,7 @@ Authorization: Bearer <JWT令牌>
 ### 请求
 
 ```
-GET /api/v1/drones/{id}
+GET /api/platform/drones/{id}
 Authorization: Bearer <JWT令牌>
 ```
 
@@ -113,7 +113,7 @@ Authorization: Bearer <JWT令牌>
 ### 请求
 
 ```
-POST /api/v1/drones
+POST /api/platform/drones
 Content-Type: application/json
 Authorization: Bearer <JWT令牌>
 ```
@@ -167,7 +167,7 @@ Authorization: Bearer <JWT令牌>
 ### 请求
 
 ```
-PUT /api/v1/drones/{id}
+PUT /api/platform/drones/{id}
 Content-Type: application/json
 Authorization: Bearer <JWT令牌>
 ```
@@ -221,7 +221,7 @@ Authorization: Bearer <JWT令牌>
 ### 请求
 
 ```
-DELETE /api/v1/drones/{id}
+DELETE /api/platform/drones/{id}
 Authorization: Bearer <JWT令牌>
 ```
 
@@ -248,6 +248,6 @@ Authorization: Bearer <JWT令牌>
 ```
 ---
 
-> **最后更新**: 2026-05-08  
-> **版本**: 2.1  
+> **最后更新**: 2026-06-05  
+> **版本**: 2.2  
 > **维护者**: DITHIOTHREITOL

@@ -4,11 +4,10 @@ import com.uav.common.annotation.StubController;
 import com.uav.platform.dto.ForecastRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.*;
 
 @StubController(
     reason = "前端联调和演示环境使用",

@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Automated fixer: wildcard imports, catch(Exception), docstrings"""
 # flake8: noqa: E741
+import logging
+logger = logging.getLogger(__name__)
+
 import re
 import os
 import json

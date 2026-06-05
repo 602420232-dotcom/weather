@@ -1,4 +1,5 @@
 package com.uav.common.resilience;
+
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
@@ -9,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.web.bind.annotation.*;
-
 /**
  * 熔断器监控REST接口
  * 提供熔断器状态查询和手动控制

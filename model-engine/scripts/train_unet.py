@@ -11,6 +11,8 @@ U-Net 降尺度器 — 训练脚本
   1. 预训练: 纯降尺度 (MSE)
   2. 微调: 加入观测同化 (注意力门)
 """
+from data_pipeline.dataset import WeatherDataModule
+from unet_downscaler.model import UNetDownscaler, UNetConfig
 import sys
 import logging
 from pathlib import Path
@@ -22,8 +24,6 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from unet_downscaler.model import UNetDownscaler, UNetConfig
-from data_pipeline.dataset import WeatherDataModule
 
 
 logging.basicConfig(level=logging.INFO,
@@ -142,7 +142,7 @@ class UNetTrainer:
             self.writer.add_scalar("loss/train", train_loss, epoch)
             self.writer.add_scalar("loss/val", val_loss, epoch)
 
-            logger.info(f"Epoch {epoch+1:3d}/{n_epochs}  "
+            logger.info(f"Epoch {epoch + 1:3d}/{n_epochs}  "
                         f"train={train_loss:.6f}  val={val_loss:.6f}")
 
             if (epoch + 1) % 20 == 0:

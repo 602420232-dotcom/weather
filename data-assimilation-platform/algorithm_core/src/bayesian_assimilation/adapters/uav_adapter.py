@@ -80,7 +80,9 @@ class UAVDataAdapter:
         return True
 
 
-def process_uav_data(uav_data: Dict[str, Any], config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def process_uav_data(
+    uav_data: Dict[str, Any], config: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
     """
     处理UAV数据
 

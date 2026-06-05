@@ -1,6 +1,5 @@
 package com.uav.common.resilience;
 
-import io.github.resilience4j.circuitbreaker.*;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
@@ -14,12 +13,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
-
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
-
+import io.github.resilience4j.circuitbreaker.*;
 /**
  * Resilience4j 熔断器配置类
  * 为微服务间调用提供熔断、重试、限流保护

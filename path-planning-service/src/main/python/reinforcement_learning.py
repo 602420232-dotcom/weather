@@ -16,7 +16,9 @@ from tensorflow.keras.optimizers import Adam
 from collections import deque
 import random
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -93,7 +95,8 @@ class DQNPlanner:
         for state, action, reward, next_state, done in minibatch:
             target = reward
             if not done:
-                target = reward + self.gamma * np.amax(self.target_model.predict(np.array([next_state]), verbose=0)[0])
+                target = reward + self.gamma * \
+                    np.amax(self.target_model.predict(np.array([next_state]), verbose=0)[0])
             target_f = self.model.predict(np.array([state]), verbose=0)
             target_f[0][action] = target
             self.model.fit(np.array([state]), target_f, epochs=1, verbose=0)
@@ -189,7 +192,8 @@ class PPOPlanner:
         model.add(Dense(64, activation='relu'))
         model.add(Dense(64, activation='relu'))
         model.add(Dense(self.action_size, activation='softmax'))
-        model.compile(loss='categorical_crossentropy', optimizer=Adam(learning_rate=self.learning_rate))
+        model.compile(loss='categorical_crossentropy',
+                      optimizer=Adam(learning_rate=self.learning_rate))
         return model
 
     def _build_critic(self):
@@ -231,7 +235,8 @@ class PPOPlanner:
                 next_state, reward, done, _ = env.step(action)
 
                 # 获取状态值
-                value = self.critic.predict(np.reshape(state, [1, self.state_size]), verbose=0)[0][0]
+                value = self.critic.predict(np.reshape(
+                    state, [1, self.state_size]), verbose=0)[0][0]
 
                 states.append(state)
                 actions.append(action)
@@ -245,7 +250,8 @@ class PPOPlanner:
             # 计算GAE
             returns = []
             advantages = []
-            last_value = self.critic.predict(np.reshape(state, [1, self.state_size]), verbose=0)[0][0]
+            last_value = self.critic.predict(np.reshape(
+                state, [1, self.state_size]), verbose=0)[0][0]
             G = last_value
             for i in reversed(range(len(rewards))):
                 G = rewards[i] + self.gamma * G
@@ -282,11 +288,13 @@ class PPOPlanner:
 
                         ratio = new_action_probs / old_action_probs
                         surr1 = ratio * batch_advantages
-                        surr2 = tf.clip_by_value(ratio, 1 - self.clip_epsilon, 1 + self.clip_epsilon) * batch_advantages
+                        surr2 = tf.clip_by_value(
+                            ratio, 1 - self.clip_epsilon, 1 + self.clip_epsilon) * batch_advantages
                         actor_loss = -tf.reduce_mean(tf.minimum(surr1, surr2))
 
                     actor_grads = tape.gradient(actor_loss, self.actor.trainable_variables)
-                    self.actor.optimizer.apply_gradients(zip(actor_grads, self.actor.trainable_variables))
+                    self.actor.optimizer.apply_gradients(
+                        zip(actor_grads, self.actor.trainable_variables))
 
                     # 训练Critic
                     with tf.GradientTape() as tape:
@@ -294,7 +302,8 @@ class PPOPlanner:
                         critic_loss = tf.reduce_mean(tf.square(batch_returns - values))
 
                     critic_grads = tape.gradient(critic_loss, self.critic.trainable_variables)
-                    self.critic.optimizer.apply_gradients(zip(critic_grads, self.critic.trainable_variables))
+                    self.critic.optimizer.apply_gradients(
+                        zip(critic_grads, self.critic.trainable_variables))
 
             if e % 10 == 0:
                 logger.info(f"Episode: {e}, Score: {score}")
@@ -370,14 +379,14 @@ class PathPlanningEnv:
         min_obstacle_dist = float('inf')
         for obstacle in self.obstacles:
             dist = np.sqrt((self.current_position[0] - obstacle.location[0])**2 +
-                         (self.current_position[1] - obstacle.location[1])**2) - obstacle.radius
+                           (self.current_position[1] - obstacle.location[1])**2) - obstacle.radius
             min_obstacle_dist = min(min_obstacle_dist, dist)
 
         # 计算到最近禁飞区的距离
         min_nfz_dist = float('inf')
         for nfz in self.no_fly_zones:
             dist = np.sqrt((self.current_position[0] - nfz.location[0])**2 +
-                         (self.current_position[1] - nfz.location[1])**2) - nfz.radius
+                           (self.current_position[1] - nfz.location[1])**2) - nfz.radius
             min_nfz_dist = min(min_nfz_dist, dist)
 
         state.append(max(0, min_obstacle_dist))
@@ -400,14 +409,14 @@ class PathPlanningEnv:
         collision = False
         for obstacle in self.obstacles:
             dist = np.sqrt((new_position[0] - obstacle.location[0])**2 +
-                         (new_position[1] - obstacle.location[1])**2)
+                           (new_position[1] - obstacle.location[1])**2)
             if dist < obstacle.radius:
                 collision = True
                 break
 
         for nfz in self.no_fly_zones:
             dist = np.sqrt((new_position[0] - nfz.location[0])**2 +
-                         (new_position[1] - nfz.location[1])**2)
+                           (new_position[1] - nfz.location[1])**2)
             if dist < nfz.radius:
                 collision = True
                 break
@@ -419,9 +428,9 @@ class PathPlanningEnv:
         else:
             # 距离奖励
             old_dist = np.sqrt((self.current_position[0] - self.goal[0])**2 +
-                             (self.current_position[1] - self.goal[1])**2)
+                               (self.current_position[1] - self.goal[1])**2)
             new_dist = np.sqrt((new_position[0] - self.goal[0])**2 +
-                             (new_position[1] - self.goal[1])**2)
+                               (new_position[1] - self.goal[1])**2)
             distance_reward = (old_dist - new_dist) * 10
 
             # 时间惩罚
@@ -440,7 +449,7 @@ class PathPlanningEnv:
         # 检查是否完成
         done = False
         if np.sqrt((self.current_position[0] - self.goal[0])**2 +
-                 (self.current_position[1] - self.goal[1])**2) < 1.0:
+                   (self.current_position[1] - self.goal[1])**2) < 1.0:
             done = True
         elif self.step_count >= self.max_steps:
             done = True
@@ -525,7 +534,7 @@ def main():
     主函数
     """
     if len(sys.argv) < 2:
-        print(json.dumps({
+        logger.info(json.dumps({
             'success': False,
             'error': '缺少命令参数'
         }))
@@ -536,7 +545,7 @@ def main():
     if command == 'train':
         # 训练命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少训练配置'
             }))
@@ -551,8 +560,10 @@ def main():
             from three_layer_planner import Obstacle, NoFlyZone
             start = tuple(config.get('start', (0, 0)))
             goal = tuple(config.get('goal', (10, 10)))
-            obstacles = [Obstacle(tuple(o['location']), o['radius']) for o in config.get('obstacles', [])]
-            no_fly_zones = [NoFlyZone(tuple(n['location']), n['radius']) for n in config.get('no_fly_zones', [])]
+            obstacles = [Obstacle(tuple(o['location']), o['radius'])
+                         for o in config.get('obstacles', [])]
+            no_fly_zones = [NoFlyZone(tuple(n['location']), n['radius'])
+                            for n in config.get('no_fly_zones', [])]
 
             env = PathPlanningEnv(start, goal, obstacles, no_fly_zones)
 
@@ -560,13 +571,13 @@ def main():
             planner = ReinforcementLearningPlanner(algorithm)
             planner.train(env, episodes)
 
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': True,
                 'message': f'{algorithm}模型训练完成'
             }))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -574,7 +585,7 @@ def main():
     elif command == 'plan':
         # 规划命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少规划配置'
             }))
@@ -589,13 +600,13 @@ def main():
             planner = ReinforcementLearningPlanner(algorithm)
             action = planner.plan(state)
 
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': True,
                 'action': action
             }))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -603,7 +614,7 @@ def main():
     elif command == 'improve':
         # 自迭代改进命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少改进配置'
             }))
@@ -618,8 +629,10 @@ def main():
             from three_layer_planner import Obstacle, NoFlyZone
             start = tuple(config.get('start', (0, 0)))
             goal = tuple(config.get('goal', (10, 10)))
-            obstacles = [Obstacle(tuple(o['location']), o['radius']) for o in config.get('obstacles', [])]
-            no_fly_zones = [NoFlyZone(tuple(n['location']), n['radius']) for n in config.get('no_fly_zones', [])]
+            obstacles = [Obstacle(tuple(o['location']), o['radius'])
+                         for o in config.get('obstacles', [])]
+            no_fly_zones = [NoFlyZone(tuple(n['location']), n['radius'])
+                            for n in config.get('no_fly_zones', [])]
 
             env = PathPlanningEnv(start, goal, obstacles, no_fly_zones)
 
@@ -627,19 +640,19 @@ def main():
             planner = ReinforcementLearningPlanner(algorithm)
             planner.self_improve(env, episodes)
 
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': True,
                 'message': f'{algorithm}模型自迭代改进完成'
             }))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
 
     else:
-        print(json.dumps({
+        logger.info(json.dumps({
             'success': False,
             'error': '未知命令'
         }))

@@ -108,7 +108,7 @@ class KafkaProducerMock:
 
     def send(self, topic: str, key: str, data: dict):
         event = StreamEvent(topic=topic, key=key, data=data,
-                           timestamp=time.time(), source='kafka')
+                            timestamp=time.time(), source='kafka')
         self.sent.append(event)
         logger.info(f"Kafka 发送: {topic}/{key}")
         return event

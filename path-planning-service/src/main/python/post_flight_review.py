@@ -127,11 +127,13 @@ class PostFlightReview:
         # 统计
         total_distance = sum(s.distance for s in self.segments)
         total_energy = sum(s.energy_consumed for s in self.segments)
-        avg_speed = sum(s.avg_speed for s in self.segments) / len(self.segments) if self.segments else 0
+        avg_speed = sum(s.avg_speed for s in self.segments) / \
+            len(self.segments) if self.segments else 0
         max_risk = max((s.risk_score for s in self.segments), default=0)
 
         # 事件统计
-        warning_count = sum(1 for e in self.events if e.severity == 'WARNING' or e.severity == 'ERROR')
+        warning_count = sum(1 for e in self.events if e.severity ==
+                            'WARNING' or e.severity == 'ERROR')
 
         # 生成改进建议
         improvements = []
@@ -206,4 +208,4 @@ if __name__ == "__main__":
     review.add_event(FlightEvent(600, "LANDING", "降落完成", "INFO"))
 
     report = review.generate_report()
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+    logger.info(json.dumps(report, ensure_ascii=False, indent=2))

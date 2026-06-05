@@ -88,13 +88,14 @@ class DigitalTwinEngine:
         wind_effect = self.env_state.wind_speed * np.cos(np.radians(self.env_state.wind_direction))
 
         ax = (thrust * np.sin(pitch) - drag * vx) / mass + wind_effect * 0.01
-        ay = (thrust * np.sin(roll) - drag * vy) / mass + self.env_state.turbulence * np.random.randn()
+        ay = (thrust * np.sin(roll) - drag * vy) / mass + \
+            self.env_state.turbulence * np.random.randn()
         az = (thrust * np.cos(pitch) * np.cos(roll) - mass * 9.81 - drag * vz) / mass
 
         x, y, z = self.drone_state.position
         self.drone_state.position = (x + vx * dt + 0.5 * ax * dt**2,
-                                      y + vy * dt + 0.5 * ay * dt**2,
-                                      z + vz * dt + 0.5 * az * dt**2)
+                                     y + vy * dt + 0.5 * ay * dt**2,
+                                     z + vz * dt + 0.5 * az * dt**2)
         self.drone_state.velocity = (vx + ax * dt, vy + ay * dt, vz + az * dt)
         self.drone_state.attitude = (roll, pitch, 0)
         self.drone_state.battery -= (thrust / self.physical_parameters['max_thrust']) * dt * 0.5
@@ -113,7 +114,7 @@ class DigitalTwinEngine:
         predicted_trajectory = []
 
         for i, wpt in enumerate(waypoints[1:
-            ], 1):
+                                          ], 1):
             if i - 1 < len(weather_forecast):
                 self.update_environment(weather_forecast[i - 1])
 
@@ -125,8 +126,8 @@ class DigitalTwinEngine:
             n_steps = max(10, int(dist / 5))
             for _ in range(n_steps):
                 control = (self.physical_parameters['max_thrust'] * 0.6,
-                          np.arctan2(dy, dx) * 0.1,
-                          np.arctan2(dz, dist) * 0.1)
+                           np.arctan2(dy, dx) * 0.1,
+                           np.arctan2(dz, dist) * 0.1)
                 self.simulate_physics(self.sync_interval, control)
                 predicted_trajectory.append({
                     'position': list(self.drone_state.position),
@@ -140,7 +141,7 @@ class DigitalTwinEngine:
             'trajectory': predicted_trajectory,
             'total_distance': sum(np.linalg.norm(np.array(w2) - np.array(w1))
                                   for w1, w2 in zip(waypoints[:
-                                      -1], waypoints[1:])),
+                                                              -1], waypoints[1:])),
             'estimated_duration': self.drone_state.timestamp,
             'final_battery': remaining_battery,
             'feasible': feasibility,
@@ -156,5 +157,5 @@ class DigitalTwinEngine:
             result['scenario_id'] = i
             results.append(result)
             logger.info(f"What-If 场景 {i}: 可行性={result['feasible']}, "
-                       f"电量={result['final_battery']:.1f}%")
+                        f"电量={result['final_battery']:.1f}%")
         return results

@@ -1,4 +1,5 @@
 package com.uav.model;
+
 import lombok.Data;
 import java.time.LocalDateTime;
 import jakarta.persistence.*;

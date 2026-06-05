@@ -93,7 +93,10 @@ class JAXAccelerator(BaseAccelerator):
         except ImportError:
             logger.error("❌ JAX未安装，无法使用JAX加速")
             logger.info("安装JAX CPU版本: pip install jax jaxlib")
-            logger.info("安装JAX GPU版本: pip install jax[cuda11_pip] -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html")
+            logger.info(
+                "安装JAX GPU版本: pip install jax[cuda11_pip] "
+                "-f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
+            )
             self.initialized = False
             return False
         except Exception as e:

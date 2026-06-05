@@ -102,9 +102,18 @@ class MeteorologicalRiskAssessment:
 
         risk_levels = np.zeros_like(turbulence_index, dtype=int)
         risk_levels[turbulence_index > thresholds['extreme']] = 4
-        risk_levels[(turbulence_index > thresholds['high']) & (turbulence_index <= thresholds['extreme'])] = 3
-        risk_levels[(turbulence_index > thresholds['moderate']) & (turbulence_index <= thresholds['high'])] = 2
-        risk_levels[(turbulence_index > thresholds['low']) & (turbulence_index <= thresholds['moderate'])] = 1
+        risk_levels[
+            (turbulence_index > thresholds['high'])
+            & (turbulence_index <= thresholds['extreme'])
+        ] = 3
+        risk_levels[
+            (turbulence_index > thresholds['moderate'])
+            & (turbulence_index <= thresholds['high'])
+        ] = 2
+        risk_levels[
+            (turbulence_index > thresholds['low'])
+            & (turbulence_index <= thresholds['moderate'])
+        ] = 1
 
         return risk_levels
 
@@ -123,9 +132,18 @@ class MeteorologicalRiskAssessment:
 
         risk_levels = np.zeros_like(vertical_shear, dtype=int)
         risk_levels[vertical_shear > thresholds['extreme']] = 4
-        risk_levels[(vertical_shear > thresholds['high']) & (vertical_shear <= thresholds['extreme'])] = 3
-        risk_levels[(vertical_shear > thresholds['moderate']) & (vertical_shear <= thresholds['high'])] = 2
-        risk_levels[(vertical_shear > thresholds['low']) & (vertical_shear <= thresholds['moderate'])] = 1
+        risk_levels[
+            (vertical_shear > thresholds['high'])
+            & (vertical_shear <= thresholds['extreme'])
+        ] = 3
+        risk_levels[
+            (vertical_shear > thresholds['moderate'])
+            & (vertical_shear <= thresholds['high'])
+        ] = 2
+        risk_levels[
+            (vertical_shear > thresholds['low'])
+            & (vertical_shear <= thresholds['moderate'])
+        ] = 1
 
         return risk_levels
 
@@ -158,9 +176,18 @@ class MeteorologicalRiskAssessment:
 
         # 计算风险等级
         extreme_mask = precipitation_data > thresholds['extreme']
-        high_mask = (precipitation_data > thresholds['high']) & (precipitation_data <= thresholds['extreme'])
-        moderate_mask = (precipitation_data > thresholds['moderate']) & (precipitation_data <= thresholds['high'])
-        low_mask = (precipitation_data > thresholds['low']) & (precipitation_data <= thresholds['moderate'])
+        high_mask = (
+            (precipitation_data > thresholds['high'])
+            & (precipitation_data <= thresholds['extreme'])
+        )
+        moderate_mask = (
+            (precipitation_data > thresholds['moderate'])
+            & (precipitation_data <= thresholds['high'])
+        )
+        low_mask = (
+            (precipitation_data > thresholds['low'])
+            & (precipitation_data <= thresholds['moderate'])
+        )
 
         risk_levels[extreme_mask] = 4
         risk_levels[high_mask] = 3
@@ -174,7 +201,7 @@ class MeteorologicalRiskAssessment:
 
     @staticmethod
     def enhanced_precipitation_risk(precipitation: np.ndarray, duration: float,
-                                   trend: float) -> np.ndarray:
+                                    trend: float) -> np.ndarray:
         """
         增强降水风险评估
 
@@ -198,10 +225,10 @@ class MeteorologicalRiskAssessment:
 
     @classmethod
     def composite_risk_assessment(cls, analysis: np.ndarray, variance: np.ndarray,
-                                 precipitation_data: Optional[np.ndarray] = None,
-                                 precipitation_duration: float = 1.0,
-                                 precipitation_trend: float = 0.0,
-                                 wind_speed: Optional[np.ndarray] = None) -> Dict[str, Any]:
+                                  precipitation_data: Optional[np.ndarray] = None,
+                                  precipitation_duration: float = 1.0,
+                                  precipitation_trend: float = 0.0,
+                                  wind_speed: Optional[np.ndarray] = None) -> Dict[str, Any]:
         """
         综合风险评估
 
@@ -293,7 +320,7 @@ class MeteorologicalRiskAssessment:
 
     @staticmethod
     def probabilistic_risk_assessment(analysis: np.ndarray, variance: np.ndarray,
-                                     confidence_level: float = 0.95) -> Dict[str, Any]:
+                                      confidence_level: float = 0.95) -> Dict[str, Any]:
         """
         概率风险评估
 

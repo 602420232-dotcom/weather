@@ -3,6 +3,9 @@
 覆盖: validators, error_handler, exception handling
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import pytest
 import numpy as np
 import os

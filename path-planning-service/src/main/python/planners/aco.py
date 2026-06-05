@@ -124,7 +124,7 @@ class ACOPlanner(BasePlanner):
                 continue
             deposit = self.q / cost
             for i in range(len(path) - 1):
-                self.pheromone[path[i], path[i+1]] += deposit
+                self.pheromone[path[i], path[i + 1]] += deposit
             # 返回起点的边
             if len(path) > 1:
                 self.pheromone[path[-1], path[0]] += deposit
@@ -174,7 +174,8 @@ class ACOPlanner(BasePlanner):
                 self._update_pheromone(paths)
 
                 if (iteration + 1) % 20 == 0:
-                    logger.info(f"  ACO 迭代 {iteration+1}/{self.n_iterations}, 当前最优: {self.best_cost:.2f}")
+                    logger.info(
+                        f"  ACO 迭代 {iteration + 1}/{self.n_iterations}, 当前最优: {self.best_cost:.2f}")
 
             # 将路径索引转换为坐标
             if self.best_path:

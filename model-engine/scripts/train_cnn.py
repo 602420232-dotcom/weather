@@ -10,6 +10,8 @@ CNN 空间订正器 — 训练脚本
   python scripts/train_cnn.py                    # 模拟数据训练
   python scripts/train_cnn.py --real-data ./data  # 真实数据
 """
+from data_pipeline.dataset import WeatherDataset, WeatherDataModule
+from cnn_corrector.model import CNNCorrector, CNNConfig
 import sys
 import logging
 from pathlib import Path
@@ -22,8 +24,6 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from cnn_corrector.model import CNNCorrector, CNNConfig
-from data_pipeline.dataset import WeatherDataset, WeatherDataModule
 
 
 logging.basicConfig(level=logging.INFO,
@@ -115,7 +115,7 @@ class Trainer:
             self.writer.add_scalar("loss/val", val_loss, epoch)
             self.writer.add_scalar("lr", self.optimizer.param_groups[0]["lr"], epoch)
 
-            logger.info(f"Epoch {epoch+1:3d}/{n_epochs}  "
+            logger.info(f"Epoch {epoch + 1:3d}/{n_epochs}  "
                         f"train={train_loss:.6f}  val={val_loss:.6f}")
 
             if (epoch + 1) % 10 == 0:

@@ -2,6 +2,9 @@
 加速器抽象基类
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Optional, Any, Dict, Type
@@ -127,7 +130,9 @@ class AcceleratorFactory:
         """
         self._accelerators[accelerator_type] = accelerator_class
 
-    def create(self, accelerator_type: AcceleratorType, config: Optional[Any] = None) -> BaseAccelerator:
+    def create(
+        self, accelerator_type: AcceleratorType, config: Optional[Any] = None
+    ) -> BaseAccelerator:
         """
         创建加速器实例
 

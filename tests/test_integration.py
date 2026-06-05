@@ -3,6 +3,9 @@ Integration Tests for Data Assimilation Platform
 Test end-to-end workflows and system integration
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import pytest
 import time
 from datetime import datetime, timedelta

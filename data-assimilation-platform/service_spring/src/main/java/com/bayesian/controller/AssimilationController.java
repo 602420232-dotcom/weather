@@ -1,9 +1,9 @@
 package com.bayesian.controller;
+
 import com.bayesian.service.AssimilationService;
 import org.springframework.http.ResponseEntity;
 import java.util.Map;
 import org.springframework.web.bind.annotation.*;
-
 @RestController
 @RequestMapping("/api/assimilation")
 public class AssimilationController {

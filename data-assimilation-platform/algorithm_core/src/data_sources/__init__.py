@@ -1,5 +1,8 @@
 # data_sources/__init__.py
 
+import logging
+logger = logging.getLogger(__name__)
+
 from .base import DataSourceBase
 from .satellite import SatelliteDataSource
 from .radar import RadarDataSource

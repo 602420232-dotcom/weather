@@ -3,6 +3,9 @@
 UAV Platform - Performance Benchmark (Python)
 Tests key API endpoints for response time, throughput, and error rate
 """
+import logging
+logger = logging.getLogger(__name__)
+
 import asyncio
 import aiohttp
 import time
@@ -75,9 +78,9 @@ async def main():
     ]
 
     print("=" * 70)
-    print("  UAV Platform Performance Benchmark")
+    logger.info("  UAV Platform Performance Benchmark")
     print(f"  Target: {base_url}")
-    print("  Concurrency: 20, Requests per endpoint: 100")
+    logger.info("  Concurrency: 20, Requests per endpoint: 100")
     print("=" * 70)
 
     results = []
@@ -91,19 +94,19 @@ async def main():
               f"TPS: {result.throughput:6.0f} | ❌: {result.error_rate:.1f}%")
 
     print("\n" + "=" * 70)
-    print("  Summary")
+    logger.info("  Summary")
     print("=" * 70)
 
     all_ok = all(r.error_rate < 1.0 for r in results)
     all_fast = all(r.p95_ms < 500 for r in results)
 
     if all_ok and all_fast:
-        print("  ✅ ALL BENCHMARKS PASSED")
+        logger.info("  ✅ ALL BENCHMARKS PASSED")
     else:
         if not all_ok:
-            print("  ❌ Some endpoints have high error rates")
+            logger.info("  ❌ Some endpoints have high error rates")
         if not all_fast:
-            print("  ❌ Some endpoints exceed P95 < 500ms target")
+            logger.info("  ❌ Some endpoints exceed P95 < 500ms target")
         for r in results:
             if r.error_rate >= 1.0:
                 print(f"    - {r.endpoint}: error rate {r.error_rate:.1f}%")

@@ -4,6 +4,9 @@
 不依赖外部库，只测试基本功能
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import unittest
 import sys
 import os
@@ -21,7 +24,7 @@ class TestBasic(unittest.TestCase):
         """
         测试系统结构是否完整
         """
-        print("测试系统结构...")
+        logger.info("测试系统结构...")
 
         # 检查主要目录是否存在
         self.assertTrue(os.path.exists('uav-path-planning-system'))
@@ -35,13 +38,13 @@ class TestBasic(unittest.TestCase):
         # 检查配置文件是否存在
         self.assertTrue(os.path.exists('docker-compose.yml'))
 
-        print("OK 系统结构测试通过")
+        logger.info("OK 系统结构测试通过")
 
     def test_frontend_files(self):
         """
         测试前端文件是否存在
         """
-        print("测试前端文件...")
+        logger.info("测试前端文件...")
 
         frontend_path = 'uav-path-planning-system/frontend-vue'
         self.assertTrue(os.path.exists(f'{frontend_path}/package.json'))
@@ -56,13 +59,13 @@ class TestBasic(unittest.TestCase):
         self.assertTrue(os.path.exists(f'{frontend_path}/src/utils/errorHandler.js'))
         self.assertTrue(os.path.exists(f'{frontend_path}/src/utils/visualization.js'))
 
-        print("OK 前端文件测试通过")
+        logger.info("OK 前端文件测试通过")
 
     def test_backend_files(self):
         """
         测试后端文件是否存在
         """
-        print("测试后端文件...")
+        logger.info("测试后端文件...")
 
         backend_path = 'uav-path-planning-system/backend-spring'
         self.assertTrue(os.path.exists(f'{backend_path}/src/main/java/com/uav/config/SecurityConfig.java'))
@@ -72,13 +75,13 @@ class TestBasic(unittest.TestCase):
         self.assertTrue(os.path.exists(f'{backend_path}/src/main/java/com/uav/model/Role.java'))
         self.assertTrue(os.path.exists(f'{backend_path}/src/main/java/com/uav/service/CustomUserDetailsService.java'))
 
-        print("OK 后端文件测试通过")
+        logger.info("OK 后端文件测试通过")
 
     def test_algorithm_files(self):
         """
         测试算法文件是否存在
         """
-        print("测试算法文件...")
+        logger.info("测试算法文件...")
 
         # 检查贝叶斯同化算法
         assimilation_path = 'data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models'
@@ -106,13 +109,13 @@ class TestBasic(unittest.TestCase):
         edge_path = 'uav-edge-sdk/src'
         self.assertTrue(os.path.exists(f'{edge_path}/edge_sdk.py'))
 
-        print("OK 算法文件测试通过")
+        logger.info("OK 算法文件测试通过")
 
     def test_deployment_files(self):
         """
         测试部署文件是否存在
         """
-        print("测试部署文件...")
+        logger.info("测试部署文件...")
 
         # 检查Kubernetes配置
         k8s_path = 'deployments/kubernetes'
@@ -130,7 +133,7 @@ class TestBasic(unittest.TestCase):
         db_path = 'deployments/database'
         self.assertTrue(os.path.exists(f'{db_path}/optimize.sql'))
 
-        print("OK 部署文件测试通过")
+        logger.info("OK 部署文件测试通过")
 
 
 if __name__ == '__main__':

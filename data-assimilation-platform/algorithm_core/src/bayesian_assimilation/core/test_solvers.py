@@ -4,6 +4,9 @@ Source: d:\Developer\workplace\py\iteam\trae\data-assimilation-platform\algorith
 Generated: 2026-05-08 12:35:50
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import pytest
 from solvers import *
 

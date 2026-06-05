@@ -96,7 +96,7 @@ class SingleAgentPlanner(BasePlanner):
                 if has_constraint:
                     continue
 
-                tentative_g = g_score[current] + math.sqrt(dx*dx + dy*dy)
+                tentative_g = g_score[current] + math.sqrt(dx * dx + dy * dy)
                 if neighbor not in g_score or tentative_g < g_score[neighbor]:
                     came_from[neighbor] = current
                     g_score[neighbor] = tentative_g
@@ -105,7 +105,8 @@ class SingleAgentPlanner(BasePlanner):
 
         return [], float('inf')
 
-    def _reconstruct_path(self, came_from: Dict, current: Tuple[int, int]) -> List[Tuple[float, float]]:
+    def _reconstruct_path(self, came_from: Dict,
+                          current: Tuple[int, int]) -> List[Tuple[float, float]]:
         path = []
         while current in came_from:
             path.append((float(current[0]), float(current[1])))
@@ -309,6 +310,6 @@ class CBSPlanner:
     def _path_cost(self, path: List[Tuple[float, float]]) -> float:
         """计算路径总长度"""
         return sum(
-            math.sqrt((path[i][0] - path[i-1][0])**2 + (path[i][1] - path[i-1][1])**2)
+            math.sqrt((path[i][0] - path[i - 1][0])**2 + (path[i][1] - path[i - 1][1])**2)
             for i in range(1, len(path))
         )

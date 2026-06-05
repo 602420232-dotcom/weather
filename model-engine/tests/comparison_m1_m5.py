@@ -92,7 +92,7 @@ class M1to5Experiment:
         """
         results = {}
         for name, fn in self.models.items():
-            print(f"\n{'='*50}")
+            print(f"\n{'=' * 50}")
             print(f"运行 {name}...")
             t0 = time.time()
             results[name] = self._evaluate(fn, test_data,
@@ -116,7 +116,7 @@ class M1to5Experiment:
                    for lt in self.config.forecast_lead_hours}
 
         for idx, (coarse, truth) in enumerate(test_data[:
-            self.config.n_test_samples]):
+                                                        self.config.n_test_samples]):
             # 根据模型名称调用不同方法
             if "M1" in model_fn.__name__:
                 pred = self._m1_persistence(coarse)
@@ -193,7 +193,7 @@ class M1to5Experiment:
                     results[lt_key]["mae"].append(np.abs(diff).mean())
 
             if (idx + 1) % 10 == 0:
-                print(f"  样本 {idx+1}/{min(self.config.n_test_samples, len(test_data))}")
+                print(f"  样本 {idx + 1}/{min(self.config.n_test_samples, len(test_data))}")
 
         # 聚合
         for lt in self.config.forecast_lead_hours:
@@ -268,8 +268,8 @@ class M1to5Experiment:
         lines.append("-" * 80)
 
         for name in ["M1_persistence", "M2_deterministic_unet",
-                       "M3_probabilistic_unet", "M4_random_assimilation",
-                       "M5_active_assimilation"]:
+                     "M3_probabilistic_unet", "M4_random_assimilation",
+                     "M5_active_assimilation"]:
             if name not in results:
                 continue
             row = f"{name:<25}"
@@ -323,7 +323,7 @@ class M1to5Experiment:
 
             if save:
                 plt.savefig(self.output_dir / "decision_efficiency_curve.png",
-                           dpi=300, bbox_inches='tight')
+                            dpi=300, bbox_inches='tight')
                 print(f"✅ 决策效能曲线已保存: {self.output_dir}/decision_efficiency_curve.png")
             plt.close()
 

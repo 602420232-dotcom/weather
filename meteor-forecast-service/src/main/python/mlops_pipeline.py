@@ -38,7 +38,8 @@ class MLOpsPipeline:
     """MLOps 生命周期管理流水线"""
 
     def __init__(self, model_registry_path: str = None):
-        self.registry_path = model_registry_path or os.path.join(os.path.dirname(__file__), 'model_registry')
+        self.registry_path = model_registry_path or os.path.join(
+            os.path.dirname(__file__), 'model_registry')
         os.makedirs(self.registry_path, exist_ok=True)
         self.registry_file = os.path.join(self.registry_path, 'model_registry.json')
         self.models = self._load_registry()
@@ -119,7 +120,8 @@ class MLOpsPipeline:
         logger.info(f"A/B 测试结果: {result['winner']} 胜出")
         return result
 
-    def auto_rollback(self, name: str, current_version: str, previous_version: str, threshold: float = 0.05):
+    def auto_rollback(self, name: str, current_version: str,
+                      previous_version: str, threshold: float = 0.05):
         """自动回滚机制"""
         current = next((m for m in self.models['models']
                        if m['name'] == name and m['version'] == current_version), None)
@@ -129,7 +131,8 @@ class MLOpsPipeline:
             curr_mse = current['metrics']['mse']
             prev_mse = previous['metrics']['mse']
             if curr_mse > prev_mse * (1 + threshold):
-                logger.warning(f"性能下降 {((curr_mse - prev_mse) / prev_mse) * 100:.1f}%，自动回滚到 {previous_version}")
+                logger.warning(
+                    f"性能下降 {((curr_mse - prev_mse) / prev_mse) * 100:.1f}%，自动回滚到 {previous_version}")
                 self.promote_to_production(name, previous_version)
                 return True
         return False

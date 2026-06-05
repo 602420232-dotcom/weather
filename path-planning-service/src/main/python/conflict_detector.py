@@ -139,7 +139,7 @@ class ConflictDetector:
                 'priority_drone': priority_drone,
                 'yield_drone': yield_drone,
                 'suggestion': f"无人机 {yield_drone} 在时间 {conflict.time:.1f}s 时减速或绕行，"
-                              f"让无人机 {priority_drone} 优先通过",
+                f"让无人机 {priority_drone} 优先通过",
                 'required_separation': self.min_separation - conflict.separation,
                 'adjustment_options': [
                     f"{yield_drone} 提前减速等待 {self.time_step * 2:.0f}s",
@@ -186,7 +186,7 @@ class ConflictDetector:
                     'mean': sum(time_seps) / len(time_seps),
                     'min': min(time_seps),
                     'max': max(time_seps),
-                    'std': math.sqrt(sum((s - sum(time_seps)/len(time_seps))**2 for s in time_seps) / len(time_seps))
+                    'std': math.sqrt(sum((s - sum(time_seps) / len(time_seps))**2 for s in time_seps) / len(time_seps))
                 })
 
         avg_seps = [s['mean'] for s in separations_over_time]

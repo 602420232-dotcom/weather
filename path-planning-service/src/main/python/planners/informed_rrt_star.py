@@ -119,7 +119,7 @@ class InformedRRTStarPlanner(BasePlanner):
                 if self.calculate_distance(new_node.position, goal) <= self.goal_radius:
                     path = self._extract_path(new_node)
                     path_cost = sum(
-                        self.calculate_distance(path[j], path[j+1])
+                        self.calculate_distance(path[j], path[j + 1])
                         for j in range(len(path) - 1)
                     )
                     if path_cost < self.best_path_cost:
@@ -215,7 +215,8 @@ class InformedRRTStarPlanner(BasePlanner):
 
         new_node = Node((new_x, new_y))
         new_node.parent = from_node
-        new_node.cost = from_node.cost + self.calculate_distance(from_node.position, new_node.position)
+        new_node.cost = from_node.cost + \
+            self.calculate_distance(from_node.position, new_node.position)
         return new_node
 
     def _find_near_nodes(self, node: Node) -> List[Node]:

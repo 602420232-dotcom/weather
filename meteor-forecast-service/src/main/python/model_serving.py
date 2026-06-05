@@ -115,7 +115,8 @@ class ModelServingAPI:
             return {"error": f"模型 {name}:{version} 不存在"}
         model = joblib.load(model_path)
         result = model.predict(input_data)
-        return {"model": name, "version": version, "result": result.tolist() if hasattr(result, 'tolist') else result}
+        return {"model": name, "version": version,
+                "result": result.tolist() if hasattr(result, 'tolist') else result}
 
     def _get_active_version(self, name: str) -> Optional[str]:
         for m in self.registry["models"]:

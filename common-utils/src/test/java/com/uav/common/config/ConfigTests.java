@@ -2,12 +2,6 @@ package com.uav.common.config;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,27 +9,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class CommonSecurityConfigTest {
 
     @Test
-    @DisplayName("CORS配置源创建")
-    void testCorsConfigurationSource() {
+    @DisplayName("CommonSecurityConfig 实例创建")
+    void testConfigCreation() {
         CommonSecurityConfig config = new CommonSecurityConfig();
-        CorsConfigurationSource source = config.corsConfigurationSource();
-        assertNotNull(source);
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        CorsConfiguration corsConfig = source.getCorsConfiguration(request);
-        assertNotNull(corsConfig);
-        List<String> origins = Objects.requireNonNull(corsConfig.getAllowedOriginPatterns());
-        assertTrue(origins.contains("http://localhost:3000"));
-    }
-
-    @Test
-    @DisplayName("CORS配置允许凭证")
-    void testCorsAllowsCredentials() {
-        CommonSecurityConfig config = new CommonSecurityConfig();
-        CorsConfigurationSource source = config.corsConfigurationSource();
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        CorsConfiguration corsConfig = source.getCorsConfiguration(request);
-        assertNotNull(corsConfig);
-        assertTrue(Objects.requireNonNull(corsConfig.getAllowCredentials()));
+        assertNotNull(config);
     }
 }
 

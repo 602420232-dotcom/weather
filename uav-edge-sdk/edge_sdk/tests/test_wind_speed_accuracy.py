@@ -9,6 +9,9 @@
 2. 对比预报值与真实值的误差统计
 3. 计算RMSE, MAE, 以及≤0.5m/s的百分比
 """
+import logging
+logger = logging.getLogger(__name__)
+
 import sys
 import os
 import math
@@ -104,39 +107,39 @@ def calculate_metrics(samples):
 
 def main():
     print("=" * 60)
-    print("  风速预报精度验证测试")
-    print("  低空风速预报误差目标: ≤ 0.5 m/s")
+    logger.info("  风速预报精度验证测试")
+    logger.info("  低空风速预报误差目标: ≤ 0.5 m/s")
     print("=" * 60)
 
     # 生成测试数据
-    print("\n[1/3] 生成测试数据...")
+    logger.info("\n[1/3] 生成测试数据...")
     samples = generate_test_data(2000)
     print(f"  生成 {len(samples)} 个样本")
 
     # 计算指标
-    print("\n[2/3] 计算精度指标...")
+    logger.info("\n[2/3] 计算精度指标...")
     metrics = calculate_metrics(samples)
 
     # 输出结果
-    print("\n[3/3] 验证结果:")
+    logger.info("\n[3/3] 验证结果:")
     print("-" * 60)
 
-    print("\n【WRF 原始预报】")
+    logger.info("\n【WRF 原始预报】")
     print(f"  RMSE: {metrics['wrf_raw']['rmse']:.3f} m/s")
     print(f"  MAE:  {metrics['wrf_raw']['mae']:.3f} m/s")
     print(f"  ≤0.5m/s达标率: {metrics['wrf_raw']['within_05m_s']:.1f}%")
 
-    print("\n【风乌AI订正后】")
+    logger.info("\n【风乌AI订正后】")
     print(f"  RMSE: {metrics['ai_corrected']['rmse']:.3f} m/s")
     print(f"  MAE:  {metrics['ai_corrected']['mae']:.3f} m/s")
     print(f"  ≤0.5m/s达标率: {metrics['ai_corrected']['within_05m_s']:.1f}%")
 
-    print("\n【改进幅度】")
+    logger.info("\n【改进幅度】")
     print(f"  RMSE降低: {metrics['improvement']['rmse_reduction']}")
     print(f"  MAE降低:  {metrics['improvement']['mae_reduction']}")
     print(f"  精度提升:  {metrics['improvement']['accuracy_gain']}")
 
-    print("\n【按高度分层统计 (风乌AI订正)】")
+    logger.info("\n【按高度分层统计 (风乌AI订正)】")
     print(f"  {'高度':>8} | {'样本数':>6} | {'RMSE':>8} | {'≤0.5m/s达标率':>12}")
     print("-" * 42)
     for h, stats in metrics['height_layers'].items():

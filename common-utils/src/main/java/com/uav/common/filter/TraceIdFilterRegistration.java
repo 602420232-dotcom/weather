@@ -20,7 +20,12 @@ import org.springframework.context.annotation.Bean;
 public class TraceIdFilterRegistration {
 
     @Bean
-    public FilterRegistrationBean<Filter> traceIdFilter(TraceIdFilter traceIdFilter) {
+    public TraceIdFilter traceIdFilterBean() {
+        return new TraceIdFilter();
+    }
+
+    @Bean
+    public FilterRegistrationBean<Filter> traceIdFilterRegistrationBean(TraceIdFilter traceIdFilter) {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>();
         bean.setFilter((request, response, chain) -> {
             HttpServletRequest httpRequest = (HttpServletRequest) request;

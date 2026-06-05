@@ -90,7 +90,7 @@ class PhysicsConstrainedGenerator:
         dem = self._add_dem(Hc, Wc)
 
         coarse = np.stack([u10, v10, t2m, rh2m, ps, blh, dem,
-                           u10*0.1, v10*0.1, t2m*0.01, ps*0.001], axis=0)
+                           u10 * 0.1, v10 * 0.1, t2m * 0.01, ps * 0.001], axis=0)
 
         # 细网格: 添加小尺度湍流
         u10_f = self._upscale_add_noise(u10, Hf, Wf, 0.3)
@@ -114,7 +114,7 @@ class PhysicsConstrainedGenerator:
 
         coarse = np.stack([u10, v10, t2m, rh2m, ps, blh,
                            self._add_dem(Hc, Wc),
-                           u10*0.1, v10*0.1, t2m*0.01, ps*0.001], axis=0)
+                           u10 * 0.1, v10 * 0.1, t2m * 0.01, ps * 0.001], axis=0)
 
         fine = np.stack([
             self._upscale_add_noise(u10, Hf, Wf, 0.5),
@@ -142,7 +142,7 @@ class PhysicsConstrainedGenerator:
                               100, (Hc, Wc))
 
         coarse = np.stack([u10, v10, t2m, rh2m, ps, blh, dem_c,
-                           u10*0.1, v10*0.1, t2m*0.01, ps*0.001], axis=0)
+                           u10 * 0.1, v10 * 0.1, t2m * 0.01, ps * 0.001], axis=0)
         fine = np.stack([
             self._upscale_add_noise(u10, Hf, Wf, 1.0),
             self._upscale_add_noise(v10, Hf, Wf, 0.8),
@@ -167,7 +167,7 @@ class PhysicsConstrainedGenerator:
         blh = 500 + 300 * uplift + self.rng.normal(0, 100, (Hc, Wc))
 
         coarse = np.stack([u10, v10, t2m, rh2m, ps, blh, dem_c,
-                           u10*0.1, v10*0.1, t2m*0.01, ps*0.001], axis=0)
+                           u10 * 0.1, v10 * 0.1, t2m * 0.01, ps * 0.001], axis=0)
         fine = np.stack([
             self._upscale_add_noise(u10, Hf, Wf, 0.5),
             self._upscale_add_noise(v10, Hf, Wf, 0.3),
@@ -198,7 +198,7 @@ class PhysicsConstrainedGenerator:
 
         coarse = np.stack([u10, v10, t2m, rh2m, ps, blh,
                            self._add_dem(Hc, Wc),
-                           u10*0.1, v10*0.1, t2m*0.01, ps*0.001], axis=0)
+                           u10 * 0.1, v10 * 0.1, t2m * 0.01, ps * 0.001], axis=0)
         fine = np.stack([
             self._upscale_add_noise(u10, Hf, Wf, 0.3),
             self._upscale_add_noise(v10, Hf, Wf, 0.2),
@@ -243,7 +243,7 @@ class PhysicsConstrainedGenerator:
 
             pairs.append((coarse, fine))
             if (i + 1) % 200 == 0:
-                logger.info(f"  生成 {i+1}/{n_pairs} 组")
+                logger.info(f"  生成 {i + 1}/{n_pairs} 组")
 
         return pairs
 

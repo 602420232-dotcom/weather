@@ -1,7 +1,6 @@
 package com.uav.platform.dto;
 
 import jakarta.validation.constraints.*;
-
 public class DroneRequest {
 
     @NotBlank(message = "无人机名称不能为空")

@@ -13,7 +13,9 @@ import threading
 import concurrent.futures
 from typing import List, Dict, Optional, Tuple
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # 缓存机制
@@ -65,7 +67,8 @@ class Task:
     任务类
     """
 
-    def __init__(self, id: str, location: Tuple[float, float], demand: float, start_time: float, end_time: float):
+    def __init__(self, id: str, location: Tuple[float, float],
+                 demand: float, start_time: float, end_time: float):
         self.id = id
         self.location = location
         self.demand = demand
@@ -121,7 +124,8 @@ class VRPTWPlanner:
         """
         try:
             # 生成缓存键
-            cache_key = str([d.id for d in self.drones]) + str([t.id for t in self.tasks]) + str(self.weather_data)
+            cache_key = str([d.id for d in self.drones]) + \
+                str([t.id for t in self.tasks]) + str(self.weather_data)
             # 检查缓存
             cached_result = vrptw_cache.get(cache_key)
             if cached_result:
@@ -226,7 +230,8 @@ class AStarPlanner:
     A*路径规划器
     """
 
-    def __init__(self, weather_data: Optional[Dict] = None, obstacles: Optional[List[Obstacle]] = None, no_fly_zones: Optional[List[NoFlyZone]] = None):
+    def __init__(self, weather_data: Optional[Dict] = None, obstacles: Optional[List[Obstacle]]
+                 = None, no_fly_zones: Optional[List[NoFlyZone]] = None):
         self.weather_data = weather_data or {}
         self.obstacles = obstacles or []
         self.no_fly_zones = no_fly_zones or []
@@ -261,7 +266,9 @@ class AStarPlanner:
         """
         try:
             # 生成缓存键
-            cache_key = str(start) + str(goal) + str([(o.location, o.radius) for o in self.obstacles]) + str([(n.location, n.radius) for n in self.no_fly_zones])
+            cache_key = str(start) + str(goal) + str([(o.location,
+                                                       o.radius) for o in self.obstacles]) + str([(n.location,
+                                                                                                   n.radius) for n in self.no_fly_zones])
             # 检查缓存
             cached_result = astar_cache.get(cache_key)
             if cached_result:
@@ -322,12 +329,14 @@ class AStarPlanner:
                         continue
 
                     # 计算g_score
-                    tentative_g_score = g_score[current] + self.calculate_distance(current, neighbor)
+                    tentative_g_score = g_score[current] + \
+                        self.calculate_distance(current, neighbor)
 
                     if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
                         came_from[neighbor] = current
                         g_score[neighbor] = tentative_g_score
-                        f_score[neighbor] = tentative_g_score + self.calculate_distance(neighbor, goal)
+                        f_score[neighbor] = tentative_g_score + \
+                            self.calculate_distance(neighbor, goal)
 
                         if neighbor not in open_set:
                             open_set.add(neighbor)
@@ -353,7 +362,8 @@ class DERRTStarPlanner:
     DE-RRT*路径规划器
     """
 
-    def __init__(self, weather_data: Optional[Dict] = None, obstacles: Optional[List[Obstacle]] = None, no_fly_zones: Optional[List[NoFlyZone]] = None):
+    def __init__(self, weather_data: Optional[Dict] = None, obstacles: Optional[List[Obstacle]]
+                 = None, no_fly_zones: Optional[List[NoFlyZone]] = None):
         self.weather_data = weather_data or {}
         self.obstacles = obstacles or []
         self.no_fly_zones = no_fly_zones or []
@@ -409,7 +419,8 @@ class DERRTStarPlanner:
             # 假设环境范围为[-100, 100]
             return (np.random.uniform(-100, 100), np.random.uniform(-100, 100))
 
-    def nearest(self, nodes: List[Tuple[float, float]], point: Tuple[float, float]) -> Tuple[float, float]:
+    def nearest(self, nodes: List[Tuple[float, float]],
+                point: Tuple[float, float]) -> Tuple[float, float]:
         """
         找到最近的节点
         """
@@ -422,7 +433,8 @@ class DERRTStarPlanner:
                 nearest_node = node
         return nearest_node
 
-    def steer(self, from_node: Tuple[float, float], to_point: Tuple[float, float]) -> Tuple[float, float]:
+    def steer(self, from_node: Tuple[float, float],
+              to_point: Tuple[float, float]) -> Tuple[float, float]:
         """
         朝着目标点移动最大步长
         """
@@ -436,7 +448,8 @@ class DERRTStarPlanner:
                 from_node[1] + self.max_step * np.sin(angle)
             )
 
-    def rewire(self, nodes: List[Tuple[float, float]], new_node: Tuple[float, float], parent_map: Dict, cost_map: Dict):
+    def rewire(self, nodes: List[Tuple[float, float]],
+               new_node: Tuple[float, float], parent_map: Dict, cost_map: Dict):
         """
         重连附近的节点
         """
@@ -457,7 +470,9 @@ class DERRTStarPlanner:
         """
         try:
             # 生成缓存键
-            cache_key = str(start) + str(goal) + str([(o.location, o.radius) for o in self.obstacles]) + str([(n.location, n.radius) for n in self.no_fly_zones])
+            cache_key = str(start) + str(goal) + str([(o.location,
+                                                       o.radius) for o in self.obstacles]) + str([(n.location,
+                                                                                                   n.radius) for n in self.no_fly_zones])
             # 检查缓存
             cached_result = derrt_cache.get(cache_key)
             if cached_result:
@@ -479,11 +494,13 @@ class DERRTStarPlanner:
                 new_node = self.steer(nearest_node, sample_point)
 
                 # 检查碰撞
-                if not self.is_collision(new_node) and self.is_collision_free(nearest_node, new_node):
+                if not self.is_collision(new_node) and self.is_collision_free(
+                        nearest_node, new_node):
                     # 添加新节点
                     nodes.append(new_node)
                     parent_map[new_node] = nearest_node
-                    cost_map[new_node] = cost_map[nearest_node] + self.calculate_distance(nearest_node, new_node)
+                    cost_map[new_node] = cost_map[nearest_node] + \
+                        self.calculate_distance(nearest_node, new_node)
 
                     # 重连附近的节点
                     self.rewire(nodes, new_node, parent_map, cost_map)
@@ -494,7 +511,8 @@ class DERRTStarPlanner:
                         if self.is_collision_free(new_node, goal):
                             nodes.append(goal)
                             parent_map[goal] = new_node
-                            cost_map[goal] = cost_map[new_node] + self.calculate_distance(new_node, goal)
+                            cost_map[goal] = cost_map[new_node] + \
+                                self.calculate_distance(new_node, goal)
 
                             # 重建路径
                             path = []
@@ -535,7 +553,8 @@ class DWAPlanner:
     DWA路径规划器
     """
 
-    def __init__(self, weather_data: Optional[Dict] = None, obstacles: Optional[List[Obstacle]] = None):
+    def __init__(self, weather_data: Optional[Dict] = None,
+                 obstacles: Optional[List[Obstacle]] = None):
         self.weather_data = weather_data or {}
         self.obstacles = obstacles or []
 
@@ -563,7 +582,8 @@ class DWAPlanner:
         """
         try:
             # 生成缓存键
-            cache_key = str(current_pose) + str(goal) + str([(o.location, o.radius) for o in self.obstacles])
+            cache_key = str(current_pose) + str(goal) + \
+                str([(o.location, o.radius) for o in self.obstacles])
             # 检查缓存
             cached_result = dwa_cache.get(cache_key)
             if cached_result:
@@ -643,7 +663,8 @@ class ThreeLayerPlanner:
     三层路径规划器
     """
 
-    def __init__(self, drones: List[Drone], tasks: List[Task], weather_data: Optional[Dict] = None, obstacles: Optional[List[Obstacle]] = None, no_fly_zones: Optional[List[NoFlyZone]] = None):
+    def __init__(self, drones: List[Drone], tasks: List[Task], weather_data: Optional[Dict] = None,
+                 obstacles: Optional[List[Obstacle]] = None, no_fly_zones: Optional[List[NoFlyZone]] = None):
         self.drones = drones
         self.tasks = tasks
         self.weather_data = weather_data or {}
@@ -654,7 +675,8 @@ class ThreeLayerPlanner:
         self.derrt_star = DERRTStarPlanner(weather_data, obstacles, no_fly_zones)
         self.dwa = DWAPlanner(weather_data, obstacles)
 
-    def calculate_comprehensive_cost(self, route: Dict, weather_data: Optional[Dict] = None) -> float:
+    def calculate_comprehensive_cost(
+            self, route: Dict, weather_data: Optional[Dict] = None) -> float:
         """
         计算四维综合代价：距离 + 能耗 + 时间 + 气象风险
 
@@ -730,7 +752,8 @@ class ThreeLayerPlanner:
                     route['path'] = route_path
                     # 计算四维综合代价
                     if self.weather_data:
-                        route['comprehensive_cost'] = self.calculate_comprehensive_cost(route, self.weather_data)
+                        route['comprehensive_cost'] = self.calculate_comprehensive_cost(
+                            route, self.weather_data)
                 return route
 
             # 使用并行处理
@@ -751,7 +774,8 @@ class ThreeLayerPlanner:
                 'error': str(e)
             }
 
-    def dynamic_replan(self, current_route: Dict, new_weather_data: Optional[Dict] = None, new_obstacles: Optional[List[Obstacle]] = None, new_no_fly_zones: Optional[List[NoFlyZone]] = None) -> Dict:
+    def dynamic_replan(self, current_route: Dict, new_weather_data: Optional[Dict] = None, new_obstacles: Optional[
+                       List[Obstacle]] = None, new_no_fly_zones: Optional[List[NoFlyZone]] = None) -> Dict:
         """
         动态重规划
         :param current_route: 当前路径
@@ -872,7 +896,7 @@ def main():
     主函数
     """
     if len(sys.argv) < 2:
-        print(json.dumps({
+        logger.info(json.dumps({
             'success': False,
             'error': '缺少命令参数'
         }))
@@ -883,7 +907,7 @@ def main():
     if command == 'vrptw':
         # VRPTW规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -891,16 +915,30 @@ def main():
 
         try:
             input_data = load_input(2)
-            drones = [Drone(d['id'], float(d['max_payload']), float(d['max_endurance']), float(d['max_speed'])) for d in input_data.get('drones', [])]
-            tasks = [Task(t['id'], (float(t['location'][0]), float(t['location'][1])), float(t['demand']), float(t['start_time']), float(t['end_time'])) for t in input_data.get('tasks', [])]
+            drones = [
+                Drone(
+                    d['id'], float(
+                        d['max_payload']), float(
+                        d['max_endurance']), float(
+                        d['max_speed'])) for d in input_data.get(
+                    'drones', [])]
+            tasks = [
+                Task(
+                    t['id'], (float(
+                        t['location'][0]), float(
+                        t['location'][1])), float(
+                        t['demand']), float(
+                        t['start_time']), float(
+                            t['end_time'])) for t in input_data.get(
+                                'tasks', [])]
             weather_data = input_data.get('weather_data', {})
 
             vrptw = VRPTWPlanner(drones, tasks, weather_data)
             result = vrptw.plan()
-            print(json.dumps(result))
+            logger.info(json.dumps(result))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -908,7 +946,7 @@ def main():
     elif command == 'astar':
         # A*规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -921,15 +959,27 @@ def main():
             goal_data = input_data.get('goal', (10, 10))
             goal = (float(goal_data[0]), float(goal_data[1]))
             weather_data = input_data.get('weather_data', {})
-            obstacles = [Obstacle((float(o['location'][0]), float(o['location'][1])), float(o['radius'])) for o in input_data.get('obstacles', [])]
-            no_fly_zones = [NoFlyZone((float(n['location'][0]), float(n['location'][1])), float(n['radius'])) for n in input_data.get('no_fly_zones', [])]
+            obstacles = [
+                Obstacle(
+                    (float(
+                        o['location'][0]), float(
+                        o['location'][1])), float(
+                        o['radius'])) for o in input_data.get(
+                    'obstacles', [])]
+            no_fly_zones = [
+                NoFlyZone(
+                    (float(
+                        n['location'][0]), float(
+                        n['location'][1])), float(
+                        n['radius'])) for n in input_data.get(
+                    'no_fly_zones', [])]
 
             a_star = AStarPlanner(weather_data, obstacles, no_fly_zones)
             result = a_star.plan(start, goal)
-            print(json.dumps(result))
+            logger.info(json.dumps(result))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -937,7 +987,7 @@ def main():
     elif command == 'dwa':
         # DWA规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -950,14 +1000,20 @@ def main():
             goal_data = input_data.get('goal', (10, 10))
             goal = (float(goal_data[0]), float(goal_data[1]))
             weather_data = input_data.get('weather_data', {})
-            obstacles = [Obstacle((float(o['location'][0]), float(o['location'][1])), float(o['radius'])) for o in input_data.get('obstacles', [])]
+            obstacles = [
+                Obstacle(
+                    (float(
+                        o['location'][0]), float(
+                        o['location'][1])), float(
+                        o['radius'])) for o in input_data.get(
+                    'obstacles', [])]
 
             dwa = DWAPlanner(weather_data, obstacles)
             result = dwa.plan(current_pose, goal)
-            print(json.dumps(result))
+            logger.info(json.dumps(result))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -965,7 +1021,7 @@ def main():
     elif command == 'full':
         # 完整路径规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -973,18 +1029,44 @@ def main():
 
         try:
             input_data = load_input(2)
-            drones = [Drone(d['id'], float(d['max_payload']), float(d['max_endurance']), float(d['max_speed'])) for d in input_data.get('drones', [])]
-            tasks = [Task(t['id'], (float(t['location'][0]), float(t['location'][1])), float(t['demand']), float(t['start_time']), float(t['end_time'])) for t in input_data.get('tasks', [])]
+            drones = [
+                Drone(
+                    d['id'], float(
+                        d['max_payload']), float(
+                        d['max_endurance']), float(
+                        d['max_speed'])) for d in input_data.get(
+                    'drones', [])]
+            tasks = [
+                Task(
+                    t['id'], (float(
+                        t['location'][0]), float(
+                        t['location'][1])), float(
+                        t['demand']), float(
+                        t['start_time']), float(
+                            t['end_time'])) for t in input_data.get(
+                                'tasks', [])]
             weather_data = input_data.get('weather_data', {})
-            obstacles = [Obstacle((float(o['location'][0]), float(o['location'][1])), float(o['radius'])) for o in input_data.get('obstacles', [])]
-            no_fly_zones = [NoFlyZone((float(n['location'][0]), float(n['location'][1])), float(n['radius'])) for n in input_data.get('no_fly_zones', [])]
+            obstacles = [
+                Obstacle(
+                    (float(
+                        o['location'][0]), float(
+                        o['location'][1])), float(
+                        o['radius'])) for o in input_data.get(
+                    'obstacles', [])]
+            no_fly_zones = [
+                NoFlyZone(
+                    (float(
+                        n['location'][0]), float(
+                        n['location'][1])), float(
+                        n['radius'])) for n in input_data.get(
+                    'no_fly_zones', [])]
 
             planner = ThreeLayerPlanner(drones, tasks, weather_data, obstacles, no_fly_zones)
             result = planner.plan()
-            print(json.dumps(result))
+            logger.info(json.dumps(result))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -992,7 +1074,7 @@ def main():
     elif command == 'derrt':
         # DE-RRT*路径规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -1005,15 +1087,27 @@ def main():
             goal_data = input_data.get('goal', (10, 10))
             goal = (float(goal_data[0]), float(goal_data[1]))
             weather_data = input_data.get('weather_data', {})
-            obstacles = [Obstacle((float(o['location'][0]), float(o['location'][1])), float(o['radius'])) for o in input_data.get('obstacles', [])]
-            no_fly_zones = [NoFlyZone((float(n['location'][0]), float(n['location'][1])), float(n['radius'])) for n in input_data.get('no_fly_zones', [])]
+            obstacles = [
+                Obstacle(
+                    (float(
+                        o['location'][0]), float(
+                        o['location'][1])), float(
+                        o['radius'])) for o in input_data.get(
+                    'obstacles', [])]
+            no_fly_zones = [
+                NoFlyZone(
+                    (float(
+                        n['location'][0]), float(
+                        n['location'][1])), float(
+                        n['radius'])) for n in input_data.get(
+                    'no_fly_zones', [])]
 
             derrt_star = DERRTStarPlanner(weather_data, obstacles, no_fly_zones)
             result = derrt_star.plan(start, goal)
-            print(json.dumps(result))
+            logger.info(json.dumps(result))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -1021,7 +1115,7 @@ def main():
     elif command == 'replan':
         # 动态重规划
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -1031,23 +1125,54 @@ def main():
             input_data = load_input(2)
             current_route = input_data.get('current_route', {})
             new_weather_data = input_data.get('new_weather_data', {})
-            new_obstacles = [Obstacle((float(o['location'][0]), float(o['location'][1])), float(o['radius'])) for o in input_data.get('new_obstacles', [])]
-            new_no_fly_zones = [NoFlyZone((float(n['location'][0]), float(n['location'][1])), float(n['radius'])) for n in input_data.get('new_no_fly_zones', [])]
-            drones = [Drone(d['id'], float(d['max_payload']), float(d['max_endurance']), float(d['max_speed'])) for d in input_data.get('drones', [])]
-            tasks = [Task(t['id'], (float(t['location'][0]), float(t['location'][1])), float(t['demand']), float(t['start_time']), float(t['end_time'])) for t in input_data.get('tasks', [])]
+            new_obstacles = [
+                Obstacle(
+                    (float(
+                        o['location'][0]), float(
+                        o['location'][1])), float(
+                        o['radius'])) for o in input_data.get(
+                    'new_obstacles', [])]
+            new_no_fly_zones = [
+                NoFlyZone(
+                    (float(
+                        n['location'][0]), float(
+                        n['location'][1])), float(
+                        n['radius'])) for n in input_data.get(
+                    'new_no_fly_zones', [])]
+            drones = [
+                Drone(
+                    d['id'], float(
+                        d['max_payload']), float(
+                        d['max_endurance']), float(
+                        d['max_speed'])) for d in input_data.get(
+                    'drones', [])]
+            tasks = [
+                Task(
+                    t['id'], (float(
+                        t['location'][0]), float(
+                        t['location'][1])), float(
+                        t['demand']), float(
+                        t['start_time']), float(
+                            t['end_time'])) for t in input_data.get(
+                                'tasks', [])]
 
-            planner = ThreeLayerPlanner(drones, tasks, new_weather_data, new_obstacles, new_no_fly_zones)
-            result = planner.dynamic_replan(current_route, new_weather_data, new_obstacles, new_no_fly_zones)
-            print(json.dumps(result))
+            planner = ThreeLayerPlanner(drones, tasks, new_weather_data,
+                                        new_obstacles, new_no_fly_zones)
+            result = planner.dynamic_replan(
+                current_route,
+                new_weather_data,
+                new_obstacles,
+                new_no_fly_zones)
+            logger.info(json.dumps(result))
 
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
 
     else:
-        print(json.dumps({
+        logger.info(json.dumps({
             'success': False,
             'error': '未知命令'
         }))

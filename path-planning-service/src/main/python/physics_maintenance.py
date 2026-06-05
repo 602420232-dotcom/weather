@@ -96,7 +96,8 @@ class PredictiveMaintenance:
             elif comp_name == "motor":
                 rpm = telemetry.get("motor_rpm", 0)
                 motor_temp = telemetry.get("motor_temp", 30)
-                comp.health_score = max(0, 100 - abs(rpm - 5000) / 200 - max(0, motor_temp - 60) * 1.5)
+                comp.health_score = max(0, 100 - abs(rpm - 5000) / 200 -
+                                        max(0, motor_temp - 60) * 1.5)
                 comp.remaining_life_hours = comp.health_score * 3
 
             if comp.health_score < 60:
@@ -132,7 +133,7 @@ class PredictiveMaintenance:
             "overall_health": np.mean([c.health_score for c in self.components.values()]),
             "components": {n: {"health": c.health_score, "status": c.status.value,
                                "remaining_hours": round(c.remaining_life_hours, 1)}
-                          for n, c in self.components.items()},
+                           for n, c in self.components.items()},
             "predictions": self.predict_failure()
         }
 

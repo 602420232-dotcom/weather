@@ -2,6 +2,9 @@
 配置模块单元测试
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import pytest
 import os
 import sys

@@ -1,15 +1,12 @@
 package com.uav.common.integration;
 
-import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
-
-import java.util.*;
-
 import static org.junit.jupiter.api.Assertions.*;
-
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 /**
  * 路径规划服务集成测试
  * 

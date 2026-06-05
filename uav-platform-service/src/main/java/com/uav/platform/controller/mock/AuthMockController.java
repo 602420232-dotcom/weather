@@ -5,9 +5,8 @@ import com.uav.common.security.JwtTokenProvider;
 import com.uav.platform.dto.LoginRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 @StubController(
     reason = "前端联调和演示环境使用",

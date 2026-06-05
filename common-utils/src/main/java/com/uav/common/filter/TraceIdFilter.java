@@ -10,6 +10,9 @@ import java.util.UUID;
  * 在Servlet环境下，由 TraceIdFilterRegistration 自动注册为Servlet Filter。
  * Reactive环境（如API Gateway）不受影响。
  */
+import org.springframework.stereotype.Component;
+
+@Component
 public class TraceIdFilter {
 
     private static final String TRACE_ID_HEADER = "X-Trace-Id";

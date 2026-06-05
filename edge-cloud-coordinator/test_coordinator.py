@@ -2,12 +2,15 @@
 edge-cloud-coordinator 单元测试
 覆盖所有14个模块的核心功能
 """
-import os
-import sys
-import json
-import time
-import pytest
 from unittest.mock import MagicMock, patch, AsyncMock
+import pytest
+import time
+import json
+import sys
+import os
+import logging
+logger = logging.getLogger(__name__)
+
 
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))

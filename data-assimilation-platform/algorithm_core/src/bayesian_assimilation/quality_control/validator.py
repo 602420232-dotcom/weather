@@ -107,7 +107,7 @@ class MeteorologicalQualityControl:
 
     @classmethod
     def check_wind_gradient(cls, wind_speed: np.ndarray,
-                           max_gradient: Optional[float] = None) -> np.ndarray:
+                            max_gradient: Optional[float] = None) -> np.ndarray:
         """
         检查风速梯度，检测不合理的风速突变
 
@@ -135,8 +135,13 @@ class MeteorologicalQualityControl:
         max_gradient_y = gradient_y.max()
         max_gradient_z = gradient_z.max()
 
-        if max_gradient_x > max_gradient or max_gradient_y > max_gradient or max_gradient_z > max_gradient:
-            logger.warning(f"风速梯度超过阈值: x={max_gradient_x:.2f}, y={max_gradient_y:.2f}, z={max_gradient_z:.2f} m/s")
+        if (max_gradient_x > max_gradient
+                or max_gradient_y > max_gradient
+                or max_gradient_z > max_gradient):
+            logger.warning(
+                f"风速梯度超过阈值: x={max_gradient_x:.2f}, "
+                f"y={max_gradient_y:.2f}, z={max_gradient_z:.2f} m/s"
+            )
 
             # 平滑处理
             wind_speed = gaussian_filter(wind_speed, sigma=1.0)
@@ -168,18 +173,27 @@ class MeteorologicalQualityControl:
             max_time_change = time_change.max()
 
             if max_time_change > max_change:
-                logger.warning(f"检测到时间不一致: 最大变化 {max_time_change:.2f} m/s 超过阈值 {max_change:.2f} m/s")
+                logger.warning(
+                    f"检测到时间不一致: 最大变化 {max_time_change:.2f} "
+                    f"m/s 超过阈值 {max_change:.2f} m/s"
+                )
 
                 # 平滑处理
-                time_series_data[i]['wind_speed'] = 0.7 * current_data + 0.3 * previous_data
-                time_series_data[i]['wind_speed'] = MeteorologicalQualityControl.validate_wind_speed(
+                time_series_data[i]['wind_speed'] = (
+                    0.7 * current_data + 0.3 * previous_data
+                )
+                validated = MeteorologicalQualityControl.validate_wind_speed(
                     time_series_data[i]['wind_speed']
                 )
+                time_series_data[i]['wind_speed'] = validated
 
         return time_series_data
 
     @staticmethod
-    def quality_control_observations(observations: np.ndarray, obs_types: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def quality_control_observations(
+            observations: np.ndarray,
+            obs_types: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """
         质量控制观测数据
 
@@ -226,7 +240,7 @@ class MeteorologicalQualityControl:
 
     @classmethod
     def adaptive_gradient_threshold(cls, grid_resolution: float,
-                                   wind_speed_range: Tuple[float, float]) -> float:
+                                    wind_speed_range: Tuple[float, float]) -> float:
         """
         动态计算梯度阈值
 

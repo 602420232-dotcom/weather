@@ -19,7 +19,9 @@ from sklearn.metrics import mean_squared_error
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, WhiteKernel, ConstantKernel
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # 缓存机制
@@ -97,7 +99,13 @@ class MeteorForecast:
         try:
             # 构建LSTM模型
             self.lstm_model = Sequential()
-            self.lstm_model.add(LSTM(50, return_sequences=True, input_shape=(X.shape[1], X.shape[2])))
+            self.lstm_model.add(
+                LSTM(
+                    50,
+                    return_sequences=True,
+                    input_shape=(
+                        X.shape[1],
+                        X.shape[2])))
             self.lstm_model.add(Dropout(0.2))
             self.lstm_model.add(LSTM(50, return_sequences=False))
             self.lstm_model.add(Dropout(0.2))
@@ -126,7 +134,8 @@ class MeteorForecast:
         """
         try:
             # 构建XGBoost模型
-            self.xgb_model = XGBRegressor(n_estimators=100, learning_rate=0.1, max_depth=5, n_jobs=-1)
+            self.xgb_model = XGBRegressor(
+                n_estimators=100, learning_rate=0.1, max_depth=5, n_jobs=-1)
 
             # 训练模型
             self.xgb_model.fit(X, y)
@@ -287,7 +296,13 @@ class MeteorForecast:
             if self.lstm_model is None:
                 logger.info("LSTM模型未初始化，创建新模型")
                 self.lstm_model = Sequential()
-                self.lstm_model.add(LSTM(50, return_sequences=True, input_shape=(X.shape[1], X.shape[2])))
+                self.lstm_model.add(
+                    LSTM(
+                        50,
+                        return_sequences=True,
+                        input_shape=(
+                            X.shape[1],
+                            X.shape[2])))
                 self.lstm_model.add(Dropout(0.2))
                 self.lstm_model.add(LSTM(50, return_sequences=False))
                 self.lstm_model.add(Dropout(0.2))
@@ -297,7 +312,8 @@ class MeteorForecast:
 
             if self.xgb_model is None:
                 logger.info("XGBoost模型未初始化，创建新模型")
-                self.xgb_model = XGBRegressor(n_estimators=100, learning_rate=0.1, max_depth=5, n_jobs=-1)
+                self.xgb_model = XGBRegressor(
+                    n_estimators=100, learning_rate=0.1, max_depth=5, n_jobs=-1)
 
             # 继续训练LSTM模型
             history = self.lstm_model.fit(X, y, epochs=epochs, batch_size=batch_size, verbose=1, validation_split=0.2)  # noqa: F841
@@ -371,7 +387,8 @@ class MeteorForecast:
     def build_convlstm_model(self, input_shape):
         """构建ConvLSTM时空预测模型"""
         model = Sequential([
-            ConvLSTM2D(filters=32, kernel_size=(3, 3), padding='same', return_sequences=True, input_shape=input_shape),
+            ConvLSTM2D(filters=32, kernel_size=(3, 3), padding='same',
+                       return_sequences=True, input_shape=input_shape),
             BatchNormalization(),
             ConvLSTM2D(filters=16, kernel_size=(3, 3), padding='same', return_sequences=False),
             BatchNormalization(),
@@ -389,7 +406,11 @@ class MeteorForecast:
         try:
             if not hasattr(self, 'convlstm_model') or self.convlstm_model is None:
                 logger.info("ConvLSTM模型未初始化，构建默认模型")
-                input_shape = (spatial_series.shape[0], spatial_series.shape[1], spatial_series.shape[2], 1)
+                input_shape = (
+                    spatial_series.shape[0],
+                    spatial_series.shape[1],
+                    spatial_series.shape[2],
+                    1)
                 self.convlstm_model = self.build_convlstm_model(input_shape[1:])
             return self.convlstm_model.predict(spatial_series, verbose=0)
         except Exception as e:
@@ -400,7 +421,8 @@ class MeteorForecast:
         """训练高斯过程回归模型"""
         try:
             kernel = ConstantKernel(1.0) * RBF(length_scale=1.0) + WhiteKernel(noise_level=0.1)
-            self.gpr_model = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=5, alpha=1e-6)
+            self.gpr_model = GaussianProcessRegressor(
+                kernel=kernel, n_restarts_optimizer=5, alpha=1e-6)
             self.gpr_model.fit(X_train, y_train)
             logger.info("GPR模型训练完成")
             return True
@@ -464,8 +486,8 @@ class MeteorForecast:
                     # 加权融合
                     weights = [0.4, 0.3, 0.3]  # LSTM+XGBoost, WRF, GHR的权重
                     fused_predictions = (predictions * weights[0] +
-                                        wrf_pred[:len(predictions)] * weights[1] +
-                                        ghr_pred[:len(predictions)] * weights[2])
+                                         wrf_pred[:len(predictions)] * weights[1] +
+                                         ghr_pred[:len(predictions)] * weights[2])
                     predictions = fused_predictions
 
             result = predictions.tolist()
@@ -540,7 +562,7 @@ def main():
     """
     if len(sys.argv) < 2:
         logger.error("缺少命令参数")
-        print(json.dumps({
+        logger.info(json.dumps({
             'success': False,
             'error': '缺少命令参数'
         }))
@@ -553,7 +575,7 @@ def main():
         # 预测命令
         if len(sys.argv) < 3:
             logger.error("缺少输入数据")
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -563,13 +585,13 @@ def main():
             input_data = load_input(2)
             predictions = model.predict(input_data)
             logger.info("预测完成")
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': True,
                 'data': predictions
             }))
         except Exception as e:
             logger.error(f"预测失败: {e}")
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -578,7 +600,7 @@ def main():
         # 订正命令
         if len(sys.argv) < 4:
             logger.error("缺少预测数据和观测数据")
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少预测数据和观测数据'
             }))
@@ -588,12 +610,12 @@ def main():
             forecast_data = load_input(2)
             observed_data = load_input(3)
             corrected_data = model.correct(forecast_data, observed_data)
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': True,
                 'data': corrected_data
             }))
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -601,7 +623,7 @@ def main():
     elif command == 'train':
         # 训练命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少训练数据'
             }))
@@ -615,12 +637,12 @@ def main():
             # 训练模型
             model.train_lstm(X, y)
             model.train_xgb(X.reshape(X.shape[0], -1), y)
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': True,
                 'message': '模型训练完成'
             }))
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -628,7 +650,7 @@ def main():
     elif command == 'improve':
         # 自迭代改进命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少改进数据'
             }))
@@ -641,12 +663,12 @@ def main():
             batch_size = improve_data.get('batch_size', 32)
             # 执行自迭代改进
             result = model.self_improve(new_data, epochs, batch_size)
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': result['success'],
                 'data': result
             }))
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -654,7 +676,7 @@ def main():
     elif command == 'fusion':
         # 双预报引擎融合预测命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少输入数据'
             }))
@@ -672,12 +694,12 @@ def main():
 
             # 执行融合预测
             predictions = model.fusion_forecast(forecast_data)
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': True,
                 'data': predictions
             }))
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
@@ -685,7 +707,7 @@ def main():
     elif command == 'risk':
         # 生成风险热力图命令
         if len(sys.argv) < 3:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': '缺少预测数据'
             }))
@@ -697,18 +719,18 @@ def main():
 
             # 生成风险热力图
             risk_data = model.generate_risk_heatmap(forecast_data)
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': True,
                 'data': risk_data
             }))
         except Exception as e:
-            print(json.dumps({
+            logger.info(json.dumps({
                 'success': False,
                 'error': str(e)
             }))
 
     else:
-        print(json.dumps({
+        logger.info(json.dumps({
             'success': False,
             'error': '未知命令'
         }))

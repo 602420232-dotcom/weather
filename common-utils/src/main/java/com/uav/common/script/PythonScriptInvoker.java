@@ -5,10 +5,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -51,8 +55,16 @@ public class PythonScriptInvoker {
             "correct", "get_forecast", "get_detailed_forecast", "get_realtime_weather"
     );
 
+    private static final Set<String> ALLOWED_EXECUTABLES = Set.of(
+            "python3", "python", "/usr/bin/python3", "/usr/local/bin/python3",
+            "C:\\Python310\\python.exe", "C:\\Python311\\python.exe", "C:\\Python312\\python.exe",
+            "/usr/bin/python", "/usr/local/bin/python"
+    );
+
     private static final int MAX_THREAD_POOL_SIZE = 10;
     private static final int THREAD_KEEP_ALIVE_SECONDS = 60;
+    private static final long MAX_SCRIPT_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+    private static final long MAX_PARAMS_SIZE_BYTES = 1 * 1024 * 1024; // 1MB
 
     @Value("${uav.python.script-path:src/main/python}")
     private String scriptPath;
@@ -62,6 +74,9 @@ public class PythonScriptInvoker {
 
     @Value("${uav.python.enabled:true}")
     private boolean enabled;
+
+    @Value("${uav.python.security.hashing-enabled:true}")
+    private boolean hashingEnabled;
 
     private final ExecutorService executorService;
     private final ObjectMapper objectMapper;
@@ -85,6 +100,7 @@ public class PythonScriptInvoker {
     public String execute(String scriptName, String action, Map<String, Object> params, int timeoutMs) {
         validateScriptName(scriptName);
         validateAction(action);
+        validateParams(params);
 
         if (!enabled) {
             log.warn("Python script execution is disabled");
@@ -100,18 +116,27 @@ public class PythonScriptInvoker {
                 throw new IllegalArgumentException("Script file does not exist: " + scriptName);
             }
 
+            validateScriptFile(scriptFullPath);
+
             Path tempFile = Files.createTempFile("python_params_", ".json");
+            tempFile.toFile().deleteOnExit();
 
             try {
-                objectMapper.writeValue(tempFile.toFile(), params);
+                byte[] paramsBytes = objectMapper.writeValueAsBytes(params);
+                if (paramsBytes.length > MAX_PARAMS_SIZE_BYTES) {
+                    throw new SecurityException("Parameters size exceeds maximum allowed size");
+                }
+                Files.write(tempFile, paramsBytes);
 
                 ProcessBuilder pb = new ProcessBuilder(
-                        "python3",
+                        getValidPythonExecutable(),
                         scriptFullPath,
                         action,
                         tempFile.toString()
                 );
                 pb.redirectErrorStream(true);
+                pb.directory(new File(scriptPath));
+                pb.environment().remove("PYTHONPATH");
 
                 Process process = pb.start();
 
@@ -122,6 +147,10 @@ public class PythonScriptInvoker {
                         String line;
                         while ((line = reader.readLine()) != null) {
                             output.append(line).append("\n");
+                            if (output.length() > MAX_SCRIPT_SIZE_BYTES) {
+                                log.warn("Script output exceeded maximum size, truncating");
+                                break;
+                            }
                         }
                     }
                     return output.toString();
@@ -270,6 +299,89 @@ public class PythonScriptInvoker {
         } catch (Exception e) {
             log.warn("Failed to parse Python result as Map, returning raw: {}", e.getMessage());
             return Map.of("success", false, "error", "Failed to parse result", "raw", result);
+        }
+    }
+
+    private void validateParams(Map<String, Object> params) {
+        if (params == null) {
+            throw new SecurityException("Parameters cannot be null");
+        }
+        validateParamsRecursive(params, "", 0);
+    }
+
+    private void validateParamsRecursive(Object value, String path, int depth) {
+        if (depth > 10) {
+            throw new SecurityException("Parameter nesting depth exceeds maximum allowed");
+        }
+
+        if (value instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) value;
+            for (Object key : map.keySet()) {
+                if (!(key instanceof String)) {
+                    throw new SecurityException("Parameter keys must be strings");
+                }
+                String keyStr = (String) key;
+                if (keyStr.contains("..") || keyStr.contains("/") || keyStr.contains("\\")) {
+                    throw new SecurityException("Invalid parameter key: " + keyStr);
+                }
+                validateParamsRecursive(map.get(key), path + "." + keyStr, depth + 1);
+            }
+        } else if (value instanceof Iterable) {
+            int index = 0;
+            for (Object item : (Iterable<?>) value) {
+                validateParamsRecursive(item, path + "[" + index + "]", depth + 1);
+                index++;
+            }
+        } else if (value instanceof String) {
+            String strValue = (String) value;
+            if (strValue.length() > 100000) {
+                throw new SecurityException("String value too long at " + path);
+            }
+        }
+    }
+
+    private void validateScriptFile(String scriptPath) throws Exception {
+        Path path = Paths.get(scriptPath);
+        
+        if (!Files.isRegularFile(path)) {
+            throw new SecurityException("Path is not a regular file: " + scriptPath);
+        }
+
+        long fileSize = Files.size(path);
+        if (fileSize > MAX_SCRIPT_SIZE_BYTES) {
+            throw new SecurityException("Script file exceeds maximum allowed size");
+        }
+
+        if (Files.isSymbolicLink(path)) {
+            throw new SecurityException("Symbolic links are not allowed");
+        }
+    }
+
+    private String getValidPythonExecutable() {
+        for (String executable : ALLOWED_EXECUTABLES) {
+            try {
+                Process process = new ProcessBuilder(executable, "--version")
+                        .redirectErrorStream(true)
+                        .start();
+                int exitCode = process.waitFor();
+                if (exitCode == 0) {
+                    return executable;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        throw new SecurityException("No valid Python executable found in allowed list");
+    }
+
+    private String computeFileHash(String filePath) throws NoSuchAlgorithmException {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
+            byte[] hashBytes = digest.digest(fileBytes);
+            return Base64.getEncoder().encodeToString(hashBytes);
+        } catch (Exception e) {
+            log.warn("Failed to compute file hash: {}", e.getMessage());
+            return null;
         }
     }
 }

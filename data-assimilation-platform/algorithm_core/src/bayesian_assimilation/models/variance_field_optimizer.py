@@ -3,20 +3,18 @@
 
 import os
 import sys
+import logging
+import concurrent.futures
+import multiprocessing
+
+import numpy as np
+from scipy.optimize import minimize
+from scipy import sparse
+from typing import Optional, Tuple, List, Dict, Any, Union
 
 SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-
 if SRC_DIR not in sys.path:
     sys.path.insert(0, SRC_DIR)
-
-import numpy as np  # noqa: E402
-from scipy.optimize import minimize  # noqa: E402
-from scipy import sparse  # noqa: E402
-from typing import Optional, Tuple, List, Dict, Any, Union  # noqa: E402
-import logging  # noqa: E402
-import concurrent.futures  # noqa: E402
-import multiprocessing  # noqa: E402
 
 from bayesian_assimilation.utils.config import BaseConfig  # noqa: E402
 
@@ -62,12 +60,15 @@ class VarianceFieldOptimizer:
             if hasattr(self.config, 'observation_error_scale'):
                 self.observation_error_scale = float(self.config.observation_error_scale)
             if hasattr(self.config, 'correlation_length_scale'):
-                self.correlation_length_scale = float(self.config.correlation_length_scale)  # type: ignore
+                self.correlation_length_scale = float(
+                    self.config.correlation_length_scale)  # type: ignore
             if hasattr(self.config, 'regularization'):
-                self.regularization = float(self.config.regularization)  # type: ignore
+                self.regularization = float(
+                    self.config.regularization)  # type: ignore
 
-    def _build_sparse_observation_operator(self, obs_locations: np.ndarray,
-                                          nx: int, ny: int, nz: int):
+    def _build_sparse_observation_operator(
+            self, obs_locations: np.ndarray,
+            nx: int, ny: int, nz: int):
         """
         构建稀疏观测算子
 
@@ -98,8 +99,9 @@ class VarianceFieldOptimizer:
 
         return sparse.csr_matrix((vals, (rows, cols)), shape=(n_obs, n_total))
 
-    def _build_dense_observation_operator(self, obs_locations: np.ndarray,
-                                         nx: int, ny: int, nz: int) -> np.ndarray:
+    def _build_dense_observation_operator(
+            self, obs_locations: np.ndarray,
+            nx: int, ny: int, nz: int) -> np.ndarray:
         """
         构建稠密观测算子
 
@@ -126,8 +128,9 @@ class VarianceFieldOptimizer:
 
         return H
 
-    def _build_observation_operator(self, obs_locations: np.ndarray,
-                                   nx: int, ny: int, nz: int):
+    def _build_observation_operator(
+            self, obs_locations: np.ndarray,
+            nx: int, ny: int, nz: int):
         """
         构建观测算子（根据配置选择稀疏或稠密）
 
@@ -142,10 +145,11 @@ class VarianceFieldOptimizer:
             return self._build_sparse_observation_operator(obs_locations, nx, ny, nz)
         return self._build_dense_observation_operator(obs_locations, nx, ny, nz)
 
-    def _compute_objective_single(self, params: np.ndarray,
-                                 background: np.ndarray,
-                                 observations: np.ndarray,
-                                 obs_locations: np.ndarray) -> float:
+    def _compute_objective_single(
+            self, params: np.ndarray,
+            background: np.ndarray,
+            observations: np.ndarray,
+            obs_locations: np.ndarray) -> float:
         """
         计算单个参数组的目标函数值
 
@@ -221,10 +225,11 @@ class VarianceFieldOptimizer:
             logger.warning(f"目标函数计算失败: {e}")
             return float('inf')
 
-    def _objective_function(self, params: np.ndarray,
-                           background: np.ndarray,
-                           observations: np.ndarray,
-                           obs_locations: np.ndarray) -> float:
+    def _objective_function(
+            self, params: np.ndarray,
+            background: np.ndarray,
+            observations: np.ndarray,
+            obs_locations: np.ndarray) -> float:
         """
         目标函数（支持并行计算）
 
@@ -239,10 +244,11 @@ class VarianceFieldOptimizer:
         """
         return self._compute_objective_single(params, background, observations, obs_locations)
 
-    def _objective_parallel(self, params: np.ndarray,
-                           backgrounds: List[np.ndarray],
-                           observations_list: List[np.ndarray],
-                           obs_locations_list: List[np.ndarray]) -> float:
+    def _objective_parallel(
+            self, params: np.ndarray,
+            backgrounds: List[np.ndarray],
+            observations_list: List[np.ndarray],
+            obs_locations_list: List[np.ndarray]) -> float:
         """
         并行目标函数计算（用于多数据集优化）
 
@@ -291,11 +297,13 @@ class VarianceFieldOptimizer:
 
         return options
 
-    def optimize(self, background: Union[np.ndarray, List[np.ndarray]],
-                observations: Union[np.ndarray, List[np.ndarray]],
-                obs_locations: Union[np.ndarray, List[np.ndarray]],
-                method: str = 'L-BFGS-B',
-                verbose: int = 0) -> Dict[str, Any]:
+    def optimize(
+            self,
+            background: Union[np.ndarray, List[np.ndarray]],
+            observations: Union[np.ndarray, List[np.ndarray]],
+            obs_locations: Union[np.ndarray, List[np.ndarray]],
+            method: str = 'L-BFGS-B',
+            verbose: int = 0) -> Dict[str, Any]:
         """
         优化参数
 
@@ -329,9 +337,11 @@ class VarianceFieldOptimizer:
 
         def callback(x):
             if is_parallel:
-                f_val = self._objective_parallel(x, background, observations, obs_locations)  # type: ignore
+                f_val = self._objective_parallel(
+                    x, background, observations, obs_locations)  # type: ignore
             else:
-                f_val = self._objective_function(x, background, observations, obs_locations)  # pyright: ignore[reportArgumentType]
+                f_val = self._objective_function(
+                    x, background, observations, obs_locations)  # type: ignore
             history.append({
                 'iteration': len(history) + 1,
                 'params': x.copy(),
@@ -344,10 +354,14 @@ class VarianceFieldOptimizer:
 
         if is_parallel:
             def obj_func(p):
-                return self._objective_parallel(p, background, observations, obs_locations)  # noqa: E501
+                return self._objective_parallel(
+                    p, background, observations,  # type: ignore[arg-type]
+                    obs_locations)  # type: ignore[arg-type]
         else:
             def obj_func(p):
-                return self._objective_function(p, background, observations, obs_locations)  # noqa: E501
+                return self._objective_function(
+                    p, background, observations,  # type: ignore[arg-type]
+                    obs_locations)  # type: ignore[arg-type]
 
         result = minimize(
             fun=obj_func,
@@ -384,12 +398,13 @@ class VarianceFieldOptimizer:
             'nfev': result.nfev if hasattr(result, 'nfev') else None
         }
 
-    def optimize_with_cv(self, background: np.ndarray,
-                        observations: np.ndarray,
-                        obs_locations: np.ndarray,
-                        n_folds: int = 5,
-                        method: str = 'L-BFGS-B',
-                        verbose: int = 0) -> Dict[str, Any]:
+    def optimize_with_cv(
+            self, background: np.ndarray,
+            observations: np.ndarray,
+            obs_locations: np.ndarray,
+            n_folds: int = 5,
+            method: str = 'L-BFGS-B',
+            verbose: int = 0) -> Dict[str, Any]:
         """
         使用交叉验证优化参数
 
@@ -411,26 +426,32 @@ class VarianceFieldOptimizer:
 
         for i in range(n_folds):
             val_indices = slice(i * fold_size, (i + 1) * fold_size)
-            train_indices = np.concatenate([np.arange(i * fold_size),
-                                          np.arange((i + 1) * fold_size, n_obs)])
+            train_indices = np.concatenate([
+                np.arange(i * fold_size),
+                np.arange((i + 1) * fold_size, n_obs)])
 
             train_obs = observations[train_indices]
             train_loc = obs_locations[train_indices]
             val_obs = observations[val_indices]
             val_loc = obs_locations[val_indices]
 
-            fold_result = self.optimize(background, train_obs, train_loc,
-                                       method=method, verbose=verbose - 1)
+            fold_result = self.optimize(
+                background, train_obs, train_loc,
+                method=method, verbose=verbose - 1)
 
             if fold_result['best_params']:
-                self.background_error_scale = fold_result['best_params']['background_error_scale']
-                self.observation_error_scale = fold_result['best_params']['observation_error_scale']
-                self.correlation_length_scale = fold_result['best_params']['correlation_length_scale']
+                self.background_error_scale = (
+                    fold_result['best_params']['background_error_scale'])
+                self.observation_error_scale = (
+                    fold_result['best_params']['observation_error_scale'])
+                self.correlation_length_scale = (
+                    fold_result['best_params']['correlation_length_scale'])
 
                 val_score = self._compute_objective_single(
-                    np.array([self.background_error_scale,
-                             self.observation_error_scale,
-                             self.correlation_length_scale]),
+                    np.array([
+                        self.background_error_scale,
+                        self.observation_error_scale,
+                        self.correlation_length_scale]),
                     background, val_obs, val_loc
                 )
                 fold_result['val_score'] = val_score
@@ -566,7 +587,8 @@ class AdaptiveVarianceField(VarianceFieldOptimizer):
             background_residual = np.mean((Hxb - observations)**2)
 
             eps = 1e-10
-            improvement_ratio = background_residual / max(analysis_residual, eps)
+            improvement_ratio = float(
+                background_residual / max(float(analysis_residual), eps))
 
             if improvement_ratio < 0.85:
                 self.background_error_scale = min(
@@ -587,7 +609,7 @@ class AdaptiveVarianceField(VarianceFieldOptimizer):
                     (1 - self.smoothing_factor) * analysis_residual
                 )  # type: ignore
             else:
-                self.last_incremental_score = analysis_residual  # pyright: ignore[reportAttributeAccessIssue]
+                self.last_incremental_score = analysis_residual  # type: ignore[assignment]
 
         except Exception as e:
             logger.warning(f"自适应调整失败: {e}")
@@ -643,8 +665,9 @@ if __name__ == "__main__":
 
     logger.info("\n2. 测试交叉验证优化")
     logger.info("-" * 70)
-    cv_result = optimizer.optimize_with_cv(background, observations, obs_locations,
-                                          n_folds=3, verbose=1)
+    cv_result = optimizer.optimize_with_cv(
+        background, observations, obs_locations,
+        n_folds=3, verbose=1)
     logger.info(f"交叉验证平均分数: {cv_result['avg_val_score']:.6f}")
 
     logger.info("\n3. 测试自适应方差场")

@@ -6,7 +6,7 @@ REST API 封装模块
 import logging
 import sys
 import os
-from typing import Dict, Any, Optional
+from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 from http import HTTPStatus
 
@@ -21,7 +21,7 @@ from bayesian_assimilation.utils.config import AssimilationConfig  # noqa: E402
 from bayesian_assimilation.quality_control import MeteorologicalQualityControl  # noqa: E402
 from bayesian_assimilation.risk_assessment import MeteorologicalRiskAssessment  # noqa: E402
 from bayesian_assimilation.time_series import TimeSeriesAnalyzer  # noqa: E402
-from bayesian_assimilation.utils.logging import setup_logging  # noqa: E402
+from bayesian_assimilation.utils.log_utils import setup_logging  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,9 @@ class AssimilationAPI:
             # 创建配置
             assimilation_config = AssimilationConfig()
             if config:
-                assimilation_config.update(config)
+                for key, value in config.items():
+                    if hasattr(assimilation_config, key):
+                        setattr(assimilation_config, key, value)
 
             # 创建同化器
             assimilator = BayesianAssimilator(assimilation_config)
@@ -138,7 +140,7 @@ class AssimilationAPI:
             )
 
     def quality_control(self, data: Dict[str, Any],
-                       data_type: str = 'all') -> APIResponse:
+                        data_type: str = 'all') -> APIResponse:
         """
         质量控制
 
@@ -207,9 +209,12 @@ class AssimilationAPI:
 
             if variance is not None and isinstance(variance, list):
                 variance = np.array(variance)
+            if variance is None:
+                variance = np.zeros_like(wind_speed)
+            variance_arr = variance
 
             risk_result = MeteorologicalRiskAssessment.composite_risk_assessment(
-                wind_speed, variance
+                wind_speed, variance_arr  # type: ignore[reportArgumentType]
             )
 
             result = {
@@ -239,8 +244,8 @@ class AssimilationAPI:
                 error=str(e)
             )
 
-    def time_series_analysis(self, time_series_data: Dict[str, Any],
-                            predict_steps: int = 3) -> APIResponse:
+    def time_series_analysis(self, time_series_data: List[Dict[str, Any]],
+                             predict_steps: int = 3) -> APIResponse:
         """
         时间序列分析
 
@@ -303,7 +308,7 @@ class AssimilationAPI:
             from ..utils.validation import DataValidator
 
             validator = DataValidator()
-            result = validator.validate(data)
+            result = validator.validate(data)  # type: ignore[reportAttributeAccessIssue]
 
             return APIResponse(
                 success=result['valid'],
@@ -342,6 +347,7 @@ class AssimilationAPI:
 # FastAPI 路由定义
 
 
+app = None
 try:
     from fastapi import FastAPI, HTTPException
     from pydantic import BaseModel
@@ -430,17 +436,20 @@ try:
         """检查 API 服务状态"""
         return {"status": "healthy", "service": "Bayesian Assimilation API"}
 
-    def run(host: str = "0.0.0.0", port: int = 8000):
-        """启动 API 服务"""
-        import uvicorn
-        logger.info(f"启动 API 服务: http://{host}:{port}")
-        uvicorn.run(app, host=host, port=port)
+    FASTAPI_AVAILABLE = True
 
 except ImportError:
+    FASTAPI_AVAILABLE = False
     logger.warning("FastAPI 未安装，REST API 功能不可用")
 
-    def run(*args, **kwargs):
+
+def run(host: str = "0.0.0.0", port: int = 8000):
+    """启动 API 服务"""
+    if not FASTAPI_AVAILABLE or app is None:
         raise RuntimeError("FastAPI 未安装，请先安装: pip install fastapi uvicorn")
+    import uvicorn
+    logger.info(f"启动 API 服务: http://{host}:{port}")
+    uvicorn.run(app, host=host, port=port)
 
 
 if __name__ == '__main__':

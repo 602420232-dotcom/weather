@@ -4,6 +4,9 @@ Standardize .md file footers and reorganize docs/ directory.
 Phase 1: Add uniform footer to all .md files
 Phase 2: Reorganize docs/ into logical hierarchy
 """
+import logging
+logger = logging.getLogger(__name__)
+
 import os
 import shutil
 
@@ -158,13 +161,13 @@ def reorganize_docs():
 
 if __name__ == '__main__':
     print('=' * 60)
-    print('PHASE 1: Standardizing .md footers')
+    logger.info('PHASE 1: Standardizing .md footers')
     print('=' * 60)
     footer_count = add_footer()
 
     print()
     print('=' * 60)
-    print('PHASE 2: Reorganizing docs/ directory')
+    logger.info('PHASE 2: Reorganizing docs/ directory')
     print('=' * 60)
     changes = reorganize_docs()
 
@@ -272,5 +275,5 @@ docs/
     print(f'Reorganization report saved to: {os.path.relpath(report_path, ROOT)}')
     print()
     print('=' * 60)
-    print('DONE')
+    logger.info('DONE')
     print('=' * 60)

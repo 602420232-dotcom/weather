@@ -1,7 +1,6 @@
 package com.uav.platform.dto;
 
 import jakarta.validation.constraints.*;
-
 public class LoginRequest {
 
     @NotBlank(message = "用户名不能为空")

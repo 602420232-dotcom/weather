@@ -1,6 +1,9 @@
 """
 AI决策模块单元测试 - LLM辅助决策 + NLP任务解析 + 智能问答
 """
+import logging
+logger = logging.getLogger(__name__)
+
 import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'edge-cloud-coordinator'))

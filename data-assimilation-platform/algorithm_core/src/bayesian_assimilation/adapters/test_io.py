@@ -1,11 +1,14 @@
-"""
+r"""
 Auto-generated unit test
 Source: d:\Developer\workplace\py\iteam\trae\data-assimilation-platform\algorithm_core\src\bayesian_assimilation\adapters\io.py
 Generated: 2026-05-08 12:35:50
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import pytest
-from io import *
+from io import *  # type: ignore[reportWildcardImportFromLibrary]
 
 
 class TestBasic:
@@ -20,33 +23,23 @@ class TestIOAdapter:
     """Test class: IOAdapter"""
 
     @pytest.fixture
-
     def ioadapter_instance(self):
-    """Create instance for IOAdapter"""
+        """Create instance for IOAdapter"""
         # Initialize with default parameters for testing
         return None
 
     def test_read(self):
-    """Test method: read"""
+        """Test method: read"""
         # Test logic: Verify basic functionality
         # Args: self, file_path
+        result = None
         assert result is not None  # Assertion completed
 
-
-class TestIOAdapter:
-    """Test class: IOAdapter"""
-
-    @pytest.fixture
-
-    def ioadapter_instance(self):
-    """Create instance for IOAdapter"""
-        # Initialize with default parameters for testing
-        return None
-
     def test_write(self):
-    """Test method: write"""
+        """Test method: write"""
         # Test logic: Verify basic functionality
         # Args: self, file_path, data
+        result = None
         assert result is not None  # Assertion completed
 
 
@@ -54,33 +47,23 @@ class TestNetCDFReader:
     """Test class: NetCDFReader"""
 
     @pytest.fixture
-
     def netcdfreader_instance(self):
-    """Create instance for NetCDFReader"""
+        """Create instance for NetCDFReader"""
         # Initialize with default parameters for testing
         return None
 
     def test_read(self):
-    """Test method: read"""
+        """Test method: read"""
         # Test logic: Verify basic functionality
         # Args: self, file_path
+        result = None
         assert result is not None  # Assertion completed
 
-
-class TestNetCDFReader:
-    """Test class: NetCDFReader"""
-
-    @pytest.fixture
-
-    def netcdfreader_instance(self):
-    """Create instance for NetCDFReader"""
-        # Initialize with default parameters for testing
-        return None
-
     def test_write(self):
-    """Test method: write"""
+        """Test method: write"""
         # Test logic: Verify basic functionality
         # Args: self, file_path, data
+        result = None
         assert result is not None  # Assertion completed
 
 
@@ -88,33 +71,23 @@ class TestHDF5Reader:
     """Test class: HDF5Reader"""
 
     @pytest.fixture
-
     def hdf5reader_instance(self):
-    """Create instance for HDF5Reader"""
+        """Create instance for HDF5Reader"""
         # Initialize with default parameters for testing
         return None
 
     def test_read(self):
-    """Test method: read"""
+        """Test method: read"""
         # Test logic: Verify basic functionality
         # Args: self, file_path
+        result = None
         assert result is not None  # Assertion completed
 
-
-class TestHDF5Reader:
-    """Test class: HDF5Reader"""
-
-    @pytest.fixture
-
-    def hdf5reader_instance(self):
-    """Create instance for HDF5Reader"""
-        # Initialize with default parameters for testing
-        return None
-
     def test_write(self):
-    """Test method: write"""
+        """Test method: write"""
         # Test logic: Verify basic functionality
         # Args: self, file_path, data
+        result = None
         assert result is not None  # Assertion completed
 
 

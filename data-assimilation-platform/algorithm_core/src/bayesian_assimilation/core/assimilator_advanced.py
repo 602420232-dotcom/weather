@@ -32,7 +32,7 @@ class GPUAccelerator:
         self.config = config
         self.gpu_available = False
 
-    def estimate_capacity(self: Any, grid_shape: str):
+    def estimate_capacity(self: Any, grid_shape: Any):
         """估计GPU容量"""
         nx, ny, nz = grid_shape
         max_points = 4_000_000
@@ -96,7 +96,7 @@ class BlockDecomposition:
         self.config = config
         self.block_size = 100
 
-    def decompose(self: Any, grid_shape: str):
+    def decompose(self: Any, grid_shape: Any):
         """分解网格"""
         nx, ny, nz = grid_shape
         blocks = []
@@ -137,7 +137,7 @@ class AdaptiveResolutionSelector:
         self.config = config
         self.performance_history = []
 
-    def select_resolution(self: Any, domain_size: int):
+    def select_resolution(self: Any, domain_size: Any):
         """选择分辨率"""
         if len(domain_size) >= 2:
             max_domain = max(domain_size[:2])
@@ -153,7 +153,7 @@ class AdaptiveResolutionSelector:
         else:
             return 10.0
 
-    def update_performance(self: Any, resolution: Any, elapsed: Any, grid_points: str):
+    def update_performance(self: Any, resolution: Any, elapsed: Any, grid_points: Any):
         """更新性能历史"""
         self.performance_history.append({
             'resolution': resolution,
@@ -258,7 +258,9 @@ class AdvancedBayesianAssimilator(BayesianAssimilator):
         if strategy == 'full':
             result = self._assimilate_full(background, observations, obs_locations, obs_errors)
         elif strategy == 'incremental':
-            result = self._assimilate_incremental(background, observations, obs_locations, obs_errors)
+            result = self._assimilate_incremental(
+                background, observations, obs_locations, obs_errors
+            )
         elif strategy == 'block':
             result = self._assimilate_block(background, observations, obs_locations, obs_errors)
         else:
@@ -313,7 +315,8 @@ class AdvancedBayesianAssimilator(BayesianAssimilator):
         region_info = self.incremental.get_update_region(change_mask)
 
         if region_info is None:
-            if self.incremental.previous_analysis is not None and self.incremental.previous_variance is not None:
+            if (self.incremental.previous_analysis is not None
+                    and self.incremental.previous_variance is not None):
                 return (self.incremental.previous_analysis, self.incremental.previous_variance)
             return self._assimilate_full(bg, obs, obs_locs, obs_errs)
 

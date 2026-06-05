@@ -6,6 +6,9 @@ UAV Edge SDK - 纯 Python 风险评估器（回退模块）
 当 C++ 模块不可用时使用此模块
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 from typing import Dict, List, Any
 
 

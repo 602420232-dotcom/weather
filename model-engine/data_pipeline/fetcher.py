@@ -55,7 +55,8 @@ class CMAFetcher:
         cache_file = Path(self.cfg.cache_dir) / f"{cache_key}.nc"
 
         # 优先读缓存
-        if cache_file.exists() and (datetime.now() - datetime.fromtimestamp(cache_file.stat().st_mtime)).seconds < self.cfg.update_interval_min * 60:
+        if cache_file.exists() and (datetime.now() - datetime.fromtimestamp(cache_file.stat().st_mtime)
+                                    ).seconds < self.cfg.update_interval_min * 60:
             logger.info(f"[{name}] 命中缓存: {cache_file}")
             return xr.open_dataset(cache_file)
 
@@ -100,8 +101,10 @@ class CMAFetcher:
         """裁剪到成都平原"""
         lat_min = self.domain.lat_center - self.domain.height_km / 111.0 / 2
         lat_max = self.domain.lat_center + self.domain.height_km / 111.0 / 2
-        lon_min = self.domain.lon_center - self.domain.width_km / (111.0 * np.cos(np.radians(self.domain.lat_center))) / 2
-        lon_max = self.domain.lon_center + self.domain.width_km / (111.0 * np.cos(np.radians(self.domain.lat_center))) / 2
+        lon_min = self.domain.lon_center - self.domain.width_km / \
+            (111.0 * np.cos(np.radians(self.domain.lat_center))) / 2
+        lon_max = self.domain.lon_center + self.domain.width_km / \
+            (111.0 * np.cos(np.radians(self.domain.lat_center))) / 2
         return ds.sel(latitude=slice(lat_min, lat_max),
                       longitude=slice(lon_min, lon_max))
 

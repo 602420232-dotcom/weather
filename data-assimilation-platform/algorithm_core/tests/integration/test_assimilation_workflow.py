@@ -3,6 +3,9 @@
 测试完整的数据同化流程
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import pytest
 import numpy as np
 import os

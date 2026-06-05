@@ -55,7 +55,8 @@ class JWTProvider:
                 "JWT secret key must be provided via parameter or JWT_SECRET_KEY environment variable"
             )
         if len(self.secret) < 32:
-            logger.warning("JWT secret key is shorter than 32 characters, consider using a stronger key")
+            logger.warning(
+                "JWT secret key is shorter than 32 characters, consider using a stronger key")
 
     def generate_token(self, drone_id: str, role: str = "drone") -> str:
         header = base64.b64encode(json.dumps({"alg": "HS256", "typ": "JWT"}).encode()).decode()
@@ -64,7 +65,10 @@ class JWTProvider:
             "iat": int(time.time()),
             "exp": int(time.time()) + 3600
         }).encode()).decode()
-        signature = hmac.new(self.secret.encode(), f"{header}.{payload}".encode(), hashlib.sha256).hexdigest()
+        signature = hmac.new(
+            self.secret.encode(),
+            f"{header}.{payload}".encode(),
+            hashlib.sha256).hexdigest()
         return f"{header}.{payload}.{signature}"
 
     def verify_token(self, token: str) -> Optional[dict]:
@@ -72,7 +76,10 @@ class JWTProvider:
             parts = token.split(".")
             if len(parts) != 3:
                 return None
-            expected = hmac.new(self.secret.encode(), f"{parts[0]}.{parts[1]}".encode(), hashlib.sha256).hexdigest()
+            expected = hmac.new(
+                self.secret.encode(), f"{
+                    parts[0]}.{
+                    parts[1]}".encode(), hashlib.sha256).hexdigest()
             if expected != parts[2]:
                 return None
             payload = json.loads(base64.b64decode(parts[1] + "==").decode())
@@ -94,7 +101,8 @@ class DataEncryptor:
                 "Encryption key must be provided via parameter or ENCRYPTION_KEY environment variable"
             )
         if len(encryption_key) < 32:
-            logger.warning("Encryption key is shorter than 32 characters, consider using a stronger key")
+            logger.warning(
+                "Encryption key is shorter than 32 characters, consider using a stronger key")
         self.key = hashlib.sha256(encryption_key.encode()).digest()
 
     def encrypt(self, data: dict) -> str:
@@ -123,7 +131,7 @@ class DataEncryptor:
             raise ValueError("数据解密失败")
 
 
-class mTLSManager:
+class MtlsManager:
     """mTLS 服务间通信"""
 
     def __init__(self):

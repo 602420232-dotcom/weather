@@ -1,2 +1,5 @@
+import logging
+logger = logging.getLogger(__name__)
+
 # 避免循环导入，直接在需要的地方导入
 __all__ = []

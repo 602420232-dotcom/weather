@@ -291,7 +291,9 @@ class DemoModeService:
                 raise DemoSessionExpiredError()
 
             import ast
-            data = ast.literal_eval(session_data.decode() if isinstance(session_data, bytes) else session_data)
+            data = ast.literal_eval(
+                session_data.decode() if isinstance(session_data, bytes) else session_data
+            )
 
             expires_at = datetime.fromisoformat(data.get("expires_at", ""))
             if datetime.now() > expires_at:
@@ -387,7 +389,7 @@ class DemoModeService:
         try:
             from fastapi import Header, HTTPException, status
 
-            def dependency(
+            def dependency(  # type: ignore[reportRedeclaration]
                 x_demo_user_id: Optional[str] = Header(None),
                 x_demo_session_id: Optional[str] = Header(None),
             ):
@@ -419,7 +421,8 @@ class DemoModeService:
             return dependency
         except ImportError:
 
-            def dependency(user_id: str, session_id: Optional[str] = None):
+            def dependency(  # type: ignore[reportRedeclaration]
+                    user_id: str, session_id: Optional[str] = None):
                 session_info = self.validate_demo_session(user_id, session_id)
                 if check_rate_limit:
                     self.record_api_call(user_id, action_type)

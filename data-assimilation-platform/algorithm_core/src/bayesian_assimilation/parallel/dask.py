@@ -18,7 +18,7 @@ except ImportError:
 
 
 try:
-    from .base import ParallelManager
+    from .base import ParallelManager  # type: ignore[assignment]
 
 
 except ImportError:
@@ -82,7 +82,11 @@ class DaskParallelManager(ParallelManager):
                     maximum=self.config["adaptive_max_workers"],
                     target_duration=self.config["adaptive_target_duration"]
                 )
-                self.logger.info(f"启用自适应扩展，工作节点范围: {self.config['adaptive_min_workers']}-{self.config['adaptive_max_workers']}")
+                self.logger.info(
+                    f"启用自适应扩展，工作节点范围: "
+                    f"{self.config['adaptive_min_workers']}-"
+                    f"{self.config['adaptive_max_workers']}"
+                )
 
             self.logger.info(f"Dask集群启动成功，工作节点数: {self.config['n_workers']}")
             if self.client:
@@ -115,7 +119,9 @@ class DaskParallelManager(ParallelManager):
         """
         检查Dask集群是否运行
         """
-        return self.client is not None and not self.client.cluster.status == "closed"
+        return (self.client is not None
+                and self.client.cluster is not None
+                and self.client.cluster.status != "closed")
 
     def parallelize(self, func, data: List[Any], batch_size: Optional[int] = None) -> List[Any]:
         """
@@ -140,19 +146,25 @@ class DaskParallelManager(ParallelManager):
                     return [func(item) for item in batch]
                 # 并行执行批处理
                 futures = self.client.map(batch_func, batches)
-                results = self.client.gather(futures)
+                results = self.client.gather(futures)  # type: ignore[assignment]
                 # 展平结果
-                return [item for batch in results for item in batch]
+                return [
+                    item
+                    for batch in results  # type: ignore[reportGeneralTypeIssues]
+                    for item in batch
+                ]
             else:
                 # 使用Dask的map函数并行执行
                 futures = self.client.map(func, data)
-                results = self.client.gather(futures)
-                return results
+                results = self.client.gather(futures)  # type: ignore[assignment]
+                return results  # type: ignore[return-value]
         except Exception as e:
             self.logger.error(f"并行执行失败: {e}")
             return [func(item) for item in data]
 
-    def create_memory_mapped_array(self, file_path: str, shape: tuple, dtype: np.dtype = np.float32) -> Optional[Any]:
+    def create_memory_mapped_array(
+            self, file_path: str, shape: tuple,
+            dtype: Any = np.float32) -> Optional[Any]:
         """
         创建内存映射Dask数组
         file_path: 文件路径
@@ -182,7 +194,7 @@ class DaskParallelManager(ParallelManager):
 
             # 创建Dask数组
             chunks = self._calculate_chunks(shape)
-            dask_array = da.from_array(mm, chunks=chunks)
+            dask_array = da.from_array(mm, chunks=chunks)  # type: ignore[arg-type]
 
             self.logger.info(f"成功创建内存映射数组: {file_path}")
             return dask_array
@@ -210,7 +222,9 @@ class DaskParallelManager(ParallelManager):
             self.logger.error(f"并行计算失败: {e}")
             return dask_array.compute()
 
-    def create_dask_array(self, data: np.ndarray, chunks: Optional[tuple] = None, optimize: bool = True) -> Optional[Any]:
+    def create_dask_array(
+            self, data: np.ndarray, chunks: Optional[tuple] = None,
+            optimize: bool = True) -> Optional[Any]:
         """
         创建Dask数组
         data: NumPy数组
@@ -226,7 +240,7 @@ class DaskParallelManager(ParallelManager):
             # 自动分块
             chunks = self._calculate_chunks(data.shape)
 
-        dask_array = da.from_array(data, chunks=chunks)
+        dask_array = da.from_array(data, chunks=chunks)  # type: ignore[arg-type]
 
         # 优化数组
         if optimize and self.config.get("optimize_chunks", True):
@@ -280,7 +294,9 @@ class DaskParallelManager(ParallelManager):
 
         return tuple(chunks)
 
-    def parallel_assimilate(self, assimilation_func, backgrounds: List[Dict], observations: List[List[Dict]]) -> List[tuple]:
+    def parallel_assimilate(
+            self, assimilation_func, backgrounds: List[Dict],
+            observations: List[List[Dict]]) -> List[tuple]:
         """
         并行执行同化
         assimilation_func: 同化函数
@@ -298,9 +314,9 @@ class DaskParallelManager(ParallelManager):
 
             # 并行执行
             futures = self.client.map(lambda x: assimilation_func(x[0], x[1]), tasks)
-            results = self.client.gather(futures)
+            results = self.client.gather(futures)  # type: ignore[assignment]
 
-            return results
+            return results  # type: ignore[return-value]
         except Exception as e:
             self.logger.error(f"并行同化失败: {e}")
             return [assimilation_func(bg, obs) for bg, obs in zip(backgrounds, observations)]
@@ -317,7 +333,10 @@ class DaskParallelManager(ParallelManager):
             resource_info = {
                 "status": "running",
                 "n_workers": len(workers),
-                "dashboard_link": self.client.dashboard_link if hasattr(self.client, 'dashboard_link') else "N/A",
+                "dashboard_link": (
+                    self.client.dashboard_link
+                    if hasattr(self.client, 'dashboard_link') else "N/A"
+                ),
                 "workers": {}
             }
 
@@ -366,7 +385,8 @@ def create_dask_client(config: Optional[Dict] = None) -> DaskParallelManager:
 
 
 try:
-    from bayesian_assimilation.core.assimilator import BayesianAssimilator
+    from bayesian_assimilation.core.assimilator import (
+        BayesianAssimilator)  # type: ignore[assignment]
 
 
 except ImportError:
@@ -378,7 +398,7 @@ except ImportError:
             self.config = config
             self.logger = logging.getLogger(__name__)
 
-        def initialize_grid(self: Any, domain_size: int, resolution: Any = None):
+        def initialize_grid(self: Any, domain_size: Any, resolution: Any = None):
             self.domain_size = domain_size
             self.resolution = resolution
 
@@ -396,7 +416,7 @@ class DaskParallelAssimilator(BayesianAssimilator):
         self.parallel_manager = None
         self.logger = logging.getLogger(__name__)
 
-    def initialize_grid(self: Any, domain_size: int, resolution: Any = None):
+    def initialize_grid(self: Any, domain_size: Any, resolution: Any = None):
         """
         初始化网格
         """
@@ -460,13 +480,14 @@ class DaskParallelAssimilator(BayesianAssimilator):
 
             # 并行执行
             futures = client.map(process_block, blocks)
-            results = client.gather(futures)
+            results = client.gather(futures)  # type: ignore[assignment]
 
             # 合并结果
             analysis = np.copy(background)
             variance = np.zeros_like(background)
 
-            for start_x, end_x, analysis_block, variance_block in results:
+            for start_x, end_x, analysis_block, variance_block in (  # type: ignore[reportGeneralTypeIssues]  # noqa: E501
+                    results):
                 analysis[start_x:end_x, :, :] = analysis_block
                 variance[start_x:end_x, :, :] = variance_block
 
