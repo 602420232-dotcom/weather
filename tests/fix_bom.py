@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Fix UTF-8 BOM in files."""
-import logging
-logger = logging.getLogger(__name__)
 
 import os
 import sys
+
+import logging
+logger = logging.getLogger(__name__)
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else r'd:\Developer\workplace\py\iteam\trae'
 
@@ -12,7 +13,9 @@ bom_files = []
 
 
 for dp, dn, fn in os.walk(ROOT):
-    dn[:] = [d for d in dn if d not in {'.git', 'node_modules', 'target', '__pycache__', '.idea', '.pytest_cache'}]
+    dn[:] = [d for d in dn if d not in {
+        '.git', 'node_modules', 'target', '__pycache__', '.idea', '.pytest_cache'
+    }]
     for f in fn:
         fp = os.path.join(dp, f)
         if not f.endswith(

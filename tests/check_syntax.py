@@ -35,7 +35,9 @@ def main():
 
     for filepath in python_files:
         # 跳过一些目录
-        if any(skip in filepath for skip in ['__pycache__', '.venv', 'venv', 'node_modules', '.git', 'build', 'dist']):
+        if any(skip in filepath
+               for skip in ['__pycache__', '.venv', 'venv', 'node_modules',
+                            '.git', 'build', 'dist']):
             continue
 
         valid, error = check_python_file(filepath)

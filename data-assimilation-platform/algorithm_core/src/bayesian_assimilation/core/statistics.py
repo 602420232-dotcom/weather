@@ -87,7 +87,9 @@ class CovarianceOperator:
         return np.exp(-distance**2 / (2 * length_scale**2))
 
     @staticmethod
-    def localize_covariance(covariance: np.ndarray, localization_radius: float, grid_shape: tuple) -> np.ndarray:
+    def localize_covariance(
+        covariance: np.ndarray, localization_radius: float, grid_shape: tuple
+    ) -> np.ndarray:
         """
         本地化协方差矩阵
 

@@ -1,6 +1,6 @@
 """
 Auto-generated unit test
-Source: d:\Developer\workplace\py\iteam\trae\data-assimilation-platform\algorithm_core\src\bayesian_assimilation\core\compatible_assimilator.py
+Source: d:/Developer/workplace/py/iteam/trae/data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/compatible_assimilator.py
 Generated: 2026-05-08 12:35:50
 """
 
@@ -23,67 +23,37 @@ class TestCompatibleAssimilator:
     """Test class: CompatibleAssimilator"""
 
     @pytest.fixture
-
     def compatibleassimilator_instance(self):
-    """Create instance for CompatibleAssimilator"""
+        """Create instance for CompatibleAssimilator"""
         # Initialize with default parameters for testing
         return None
 
     def test_initialize_grid_safe(self):
-    """Test method: initialize_grid_safe"""
+        """Test method: initialize_grid_safe"""
         # Test logic: Verify basic functionality
         # Args: self, domain_size
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
-
-
-class TestCompatibleAssimilator:
-    """Test class: CompatibleAssimilator"""
-
-    @pytest.fixture
-
-    def compatibleassimilator_instance(self):
-    """Create instance for CompatibleAssimilator"""
-        # Initialize with default parameters for testing
-        return None
 
     def test_assimilate_safe(self):
-    """Test method: assimilate_safe"""
+        """Test method: assimilate_safe"""
         # Test logic: Verify basic functionality
         # Args: self, bg, obs, obs_loc, obs_err
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
-
-
-class TestCompatibleAssimilator:
-    """Test class: CompatibleAssimilator"""
-
-    @pytest.fixture
-
-    def compatibleassimilator_instance(self):
-    """Create instance for CompatibleAssimilator"""
-        # Initialize with default parameters for testing
-        return None
 
     def test_assimilate_3dvar(self):
-    """Test method: assimilate_3dvar"""
+        """Test method: assimilate_3dvar"""
         # Test logic: Verify basic functionality
         # Args: self, background, observations, obs_locations, obs_errors
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
 
-
-class TestCompatibleAssimilator:
-    """Test class: CompatibleAssimilator"""
-
-    @pytest.fixture
-
-    def compatibleassimilator_instance(self):
-    """Create instance for CompatibleAssimilator"""
-        # Initialize with default parameters for testing
-        return None
-
     def test_assimilate(self):
-    """Test method: assimilate"""
+        """Test method: assimilate"""
         # Test logic: Verify basic functionality
         # Args: self, background, observations, obs_locations, obs_errors
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
 
 
@@ -91,33 +61,23 @@ class TestFastSparseBackgroundCovariance:
     """Test class: FastSparseBackgroundCovariance"""
 
     @pytest.fixture
-
     def fastsparsebackgroundcovariance_instance(self):
-    """Create instance for FastSparseBackgroundCovariance"""
+        """Create instance for FastSparseBackgroundCovariance"""
         # Initialize with default parameters for testing
         return None
 
     def test_apply(self):
-    """Test method: apply"""
+        """Test method: apply"""
         # Test logic: Verify basic functionality
         # Args: self, x
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
 
-
-class TestFastSparseBackgroundCovariance:
-    """Test class: FastSparseBackgroundCovariance"""
-
-    @pytest.fixture
-
-    def fastsparsebackgroundcovariance_instance(self):
-    """Create instance for FastSparseBackgroundCovariance"""
-        # Initialize with default parameters for testing
-        return None
-
     def test_apply_inverse(self):
-    """Test method: apply_inverse"""
+        """Test method: apply_inverse"""
         # Test logic: Verify basic functionality
         # Args: self, x
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
 
 

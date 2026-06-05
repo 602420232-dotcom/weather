@@ -36,10 +36,11 @@ class RRTP(BasePlanner):
     def get_random_point(self) -> Tuple[float, float]:
         """Sample a random point with 10% goal bias for faster convergence."""
         if random.random() < 0.1:
+            assert self.goal is not None
             return self.goal
         return (random.uniform(-50, 50), random.uniform(-50, 50))
 
-    def get_nearest_node(self, point: Tuple[float, float]) -> Node:
+    def get_nearest_node(self, point: Tuple[float, float]) -> Optional[Node]:
         """Find the tree node nearest to the given point."""
         min_distance = float('inf')
         nearest_node = None
@@ -71,11 +72,15 @@ class RRTP(BasePlanner):
 
     def plan(self) -> Dict:
         try:
+            assert self.start is not None
+            assert self.goal is not None
             self.nodes = [Node(self.start)]
 
             for _ in range(self.max_iterations):
                 random_point = self.get_random_point()
                 nearest_node = self.get_nearest_node(random_point)
+                if nearest_node is None:
+                    continue
                 new_position = self.steer(nearest_node, random_point)
 
                 if self.is_collision(new_position):

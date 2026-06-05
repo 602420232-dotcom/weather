@@ -26,6 +26,7 @@ class UNetConfig:
     use_attention: bool = True
     obs_channels: int = 4           # 站点/无人机观测通道
     dropout: float = 0.05
+    lr: float = 1e-3                # 学习率
 
 
 class DoubleConv(nn.Module):

@@ -17,12 +17,12 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src', 'main', 'python'))
 
-from planners.base import BasePlanner
-from planners.rrt_star import RRTP, RRTStarPlanner
-from planners.dijkstra import DijkstraPlanner
-from planners.genetic import GeneticAlgorithmPlanner
-from planners.pso import ParticleSwarmOptimizationPlanner
-from planners.factory import PlannerFactory, create_planner
+from planners.base import BasePlanner  # type: ignore[import-not-found]
+from planners.rrt_star import RRTP, RRTStarPlanner  # type: ignore[import-not-found]
+from planners.dijkstra import DijkstraPlanner  # type: ignore[import-not-found]
+from planners.genetic import GeneticAlgorithmPlanner  # type: ignore[import-not-found]
+from planners.pso import ParticleSwarmOptimizationPlanner  # type: ignore[import-not-found]
+from planners.factory import PlannerFactory, create_planner  # type: ignore[import-not-found]
 
 
 def _make_obstacle(location, radius):
@@ -104,7 +104,7 @@ class TestRRTStar(unittest.TestCase):
             self.assertIsInstance(p[0], float)
 
     def test_get_nearest_node_single(self):
-        from planners.rrt_star import Node
+        from planners.rrt_star import Node  # type: ignore[import-not-found]
         self.planner.nodes = [Node((0, 0))]
         nearest = self.planner.get_nearest_node((5, 5))
         self.assertEqual(nearest.position, (0, 0))

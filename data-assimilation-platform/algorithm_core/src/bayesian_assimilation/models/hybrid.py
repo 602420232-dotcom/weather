@@ -34,8 +34,8 @@ class HybridAssimilation(AssimilationBase):
     def __init__(
         self,
         config: Optional[BaseConfig] = None,
-        algorithm_types: List[str] = None
-    ):  # type: ignore
+        algorithm_types: Optional[List[str]] = None
+    ):
         """
         初始化混合同化器
 
@@ -194,8 +194,8 @@ class AdaptiveHybridAssimilation(HybridAssimilation):
     def __init__(
         self,
         config: Optional[BaseConfig] = None,
-        algorithm_types: List[str] = None
-    ):  # type: ignore
+        algorithm_types: Optional[List[str]] = None
+    ):
         super().__init__(config, algorithm_types)
         self.adaptation_rate = 0.1
         self.max_weight = 0.85

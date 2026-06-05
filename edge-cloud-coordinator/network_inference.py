@@ -31,7 +31,7 @@ class EdgeNode:
     load: float = 0.0
     is_active: bool = True
     last_seen: float = 0.0
-    model_cache: List[str] = None
+    model_cache: Optional[List[str]] = None
 
 
 class SelfOrganizingNetwork:
@@ -45,7 +45,7 @@ class SelfOrganizingNetwork:
         self._running = False
 
     def register_node(self, node_id: str, role: NodeRole, ip: str, port: int,
-                      capabilities: List[str] = None):
+                      capabilities: Optional[List[str]] = None):
         """注册节点到自组织网络"""
         node = EdgeNode(
             node_id=node_id, role=role, ip=ip, port=port,
@@ -70,7 +70,8 @@ class SelfOrganizingNetwork:
     def _can_connect(self, a: EdgeNode, b: EdgeNode) -> bool:
         return a.role.value <= b.role.value or b.role.value <= a.role.value
 
-    def find_optimal_edge(self, task_type: str, drone_location: tuple = None) -> Optional[str]:
+    def find_optimal_edge(self, task_type: str,
+                          drone_location: Optional[tuple] = None) -> Optional[str]:
         """为任务找到最优边缘节点"""
         candidates = [(nid, n) for nid, n in self.nodes.items()
                       if n.is_active and task_type in (n.capabilities or ["compute"])]
@@ -138,7 +139,8 @@ class DistributedInference:
         shard_nodes = list(self.model_shards[model_name].keys())
         results = {}
         for node_id in shard_nodes:
-            if self.network.nodes.get(node_id, EdgeNode("", NodeRole.DRONE, "", 0)).is_active:
+            fallback = EdgeNode("", NodeRole.DRONE, "", 0, [], set())
+            if self.network.nodes.get(node_id, fallback).is_active:
                 shard_size = len(input_data) // len(shard_nodes)
                 idx = shard_nodes.index(node_id)
                 shard_data = input_data[idx * shard_size: (idx + 1) * shard_size]
@@ -148,6 +150,13 @@ class DistributedInference:
                     "node": node_id}
         return {"model": model_name, "shards": len(
             results), "status": "completed", "results": results}
+
+
+class NetworkInference:
+    """兼容性封装类（为测试提供向后兼容）"""
+    def __init__(self):
+        self.network = SelfOrganizingNetwork()
+        self.distributed = DistributedInference(self.network)
 
 
 class IncrementalLearning:

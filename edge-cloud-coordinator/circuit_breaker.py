@@ -5,7 +5,7 @@ Edge-Cloud Coordinator Circuit Breaker Module
 提供HTTP和WebSocket调用的熔断器保护
 """
 
-import pybreaker
+import pybreaker  # type: ignore[reportMissingImports]
 import logging
 from functools import wraps
 from typing import Callable, Any, Optional

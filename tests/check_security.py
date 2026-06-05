@@ -61,7 +61,9 @@ class SecurityChecker(ast.NodeVisitor):
         for lineno, line in enumerate(lines, 1):
             for func in unsafe_funcs:
                 if re.search(r'\b' + re.escape(func) + r'\s*\(', line):
-                    self.findings.append(('MEDIUM', lineno, f"Usage of potentially unsafe function: {func}"))
+                    self.findings.append(
+                        ('MEDIUM', lineno, f"Usage of potentially unsafe function: {func}")
+                    )
 
     def visit_Call(self, node):
         # Check for unsafe function calls
@@ -76,7 +78,8 @@ class SecurityChecker(ast.NodeVisitor):
     def visit_With(self, node):
         # Check for unsafe context managers
         for item in node.items:
-            if isinstance(item.context_expr, ast.Call) and isinstance(item.context_expr.func, ast.Name):
+            if (isinstance(item.context_expr, ast.Call)
+                    and isinstance(item.context_expr.func, ast.Name)):
                 if item.context_expr.func.id == 'open':
                     pass  # This is OK
         self.generic_visit(node)
@@ -91,7 +94,9 @@ def main():
     logger.info("Scanning for security issues...")
 
     for filepath in python_files:
-        if any(skip in filepath for skip in ['__pycache__', '.venv', 'venv', 'node_modules', '.git', 'build', 'dist']):
+        if any(skip in filepath
+               for skip in ['__pycache__', '.venv', 'venv', 'node_modules',
+                            '.git', 'build', 'dist']):
             continue
 
         checker = SecurityChecker()

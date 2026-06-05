@@ -9,12 +9,12 @@ Author: Dithiothreitol
 License: Apache 2.0
 """
 
-import logging
-logger = logging.getLogger(__name__)
-
 from typing import List, Tuple, Dict, Any, Optional
 
 from .logger import get_logger
+
+import logging
+logger = logging.getLogger(__name__)
 
 logger = get_logger(__name__)
 
@@ -237,7 +237,7 @@ class EdgeSDK:
     def get_uav_state(self) -> Dict[str, Any]:
         """获取无人机状态"""
         try:
-            state = self.flight_controller.get_state()
+            state: Any = self.flight_controller.get_state()
             return {
                 "latitude": state.latitude,
                 "longitude": state.longitude,

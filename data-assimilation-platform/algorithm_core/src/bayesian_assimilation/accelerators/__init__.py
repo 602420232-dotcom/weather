@@ -2,13 +2,13 @@
 Bayesian Assimilation Accelerators
 """
 
-import logging
-logger = logging.getLogger(__name__)
-
 from .base import BaseAccelerator, AcceleratorType, accelerator_factory
 from .cpu import CPUAccelerator, OpenMPAccelerator, BLASAccelerator
 from .jax import JAXAccelerator, TPUAccelerator, GPUAccelerator, CUDAAccelerator as JAXCUDAAccelerator
 from .cuda import CUDAAccelerator, CuPyAccelerator, PyCUDAccelerator
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 __all__ = [

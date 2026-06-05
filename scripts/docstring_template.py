@@ -8,6 +8,7 @@ Date: 2026-05-08
 """
 
 import logging
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -74,9 +75,9 @@ def generate_class_docstring(
     name: str,
     short_description: str,
     long_description: str = "",
-    attributes: list = None,
+    attributes: Optional[list] = None,
     example: str = "",
-    see_also: list = None
+    see_also: Optional[list] = None
 
 
 ) -> str:
@@ -113,9 +114,9 @@ def generate_function_docstring(
     name: str,
     short_description: str,
     long_description: str = "",
-    args: list = None,
+    args: Optional[list] = None,
     returns: str = "None",
-    raises: list = None,
+    raises: Optional[list] = None,
     example: str = ""
 
 
@@ -158,7 +159,7 @@ def generate_module_docstring(
     author: str = "",
     date: str = "",
     version: str = "1.0.0",
-    submodules: list = None,
+    submodules: Optional[list] = None,
     usage: str = "",
     usage_example: str = ""
 

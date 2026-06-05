@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 """Full project audit scanner - produces issues report."""
-import logging
-logger = logging.getLogger(__name__)
 
 import os
 import re
 import json
 
+import logging
+logger = logging.getLogger(__name__)
+
 ROOT = r'd:\Developer\workplace\py\iteam\trae'
-SKIP_DIRS = {'.git', 'node_modules', 'target', '__pycache__', '.idea', '.pytest_cache', '.trae', 'dist', 'build'}
+SKIP_DIRS = {
+    '.git', 'node_modules', 'target', '__pycache__', '.idea',
+    '.pytest_cache', '.trae', 'dist', 'build'
+}
 
 
 issues = {
@@ -32,7 +36,7 @@ for dp, dn, fn in os.walk(ROOT):
         # Check empty source files
         try:
             if os.path.getsize(fp) == 0 and f.endswith(
-            ('.java', '.py', '.xml', '.yml', '.yaml', '.properties', '.json', '.sh')):
+                    ('.java', '.py', '.xml', '.yml', '.yaml', '.properties', '.json', '.sh')):
                 issues['empty_files'].append(rel)
         except Exception:
             pass

@@ -6,17 +6,18 @@ WebSocket 实时状态同步 - 增强版
 import logging
 import asyncio
 import time
-from typing import Dict, List, Optional, Callable
+from typing import Any, Dict, List, Optional, Callable
 from dataclasses import dataclass, field
 from enum import Enum
 
 logger = logging.getLogger(__name__)
 
+
 # ==================== Prometheus 指标 ====================
 
 
 try:
-    from prometheus_client import Counter, Gauge
+    from prometheus_client import Counter, Gauge  # pyright: ignore[reportMissingImports]
     HAS_PROMETHEUS = True
 
     ws_active_connections = Gauge(
@@ -106,7 +107,7 @@ class WSMessage:
 @dataclass
 class ConnectionInfo:
     """单个连接的完整信息"""
-    websocket: object
+    websocket: Any
     drone_id: str
     connected_at: float = field(default_factory=time.time)
     last_heartbeat: float = field(default_factory=time.time)
@@ -154,7 +155,7 @@ class WebSocketSync:
 
     # ---- 连接生命周期 ----
 
-    async def connect(self, drone_id: str, ws: object) -> ConnectionInfo:
+    async def connect(self, drone_id: str, ws: Any) -> ConnectionInfo:
         """建立 WebSocket 连接
 
         如果已存在同名连接，自动关闭旧连接并计入重连计数。

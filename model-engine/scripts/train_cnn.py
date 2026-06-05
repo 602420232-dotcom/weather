@@ -16,12 +16,13 @@ import sys
 import logging
 from pathlib import Path
 from datetime import datetime
+from typing import Optional
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
+from torch.utils.tensorboard.writer import SummaryWriter
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -34,7 +35,7 @@ logger = logging.getLogger(__name__)
 class Trainer:
     """CNN 订正器训练器"""
 
-    def __init__(self, config: CNNConfig = None, device: str = "cuda"):
+    def __init__(self, config: Optional[CNNConfig] = None, device: str = "cuda"):
         self.device = device if torch.cuda.is_available() else "cpu"
         logger.info(f"设备: {self.device}")
 
@@ -42,7 +43,7 @@ class Trainer:
         self.model = CNNCorrector(self.config).to(self.device)
         self.optimizer = optim.AdamW(self.model.parameters(), lr=1e-3, weight_decay=1e-4)
         self.scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=50)
-        self.criterion = nn.MultiScaleLoss() if hasattr(nn, 'MultiScaleLoss') else self._combined_loss
+        self.criterion = nn.MultiScaleLoss() if hasattr(nn, 'MultiScaleLoss') else self._combined_loss  # pyright: ignore[reportAttributeAccessIssue]
         self.writer = SummaryWriter("runs/cnn_corrector")
 
         self.best_val_loss = float("inf")

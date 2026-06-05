@@ -68,7 +68,9 @@ def complete_todo_in_file(file_path: str) -> Dict:
 
         for pattern, replacement in edge_cases.items():
             if pattern in content:
-                content = content.replace(pattern + '\n        # TODO:', pattern + '\n        """Test edge case"""')
+                content = content.replace(
+                    pattern + '\n        # TODO:',
+                    pattern + '\n        """Test edge case"""')
 
         # Write back if changed
         if content != original_content:

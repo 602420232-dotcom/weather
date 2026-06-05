@@ -31,6 +31,7 @@ class PlanningConfig:
     risk_threshold_safe: float = 0.3
     risk_threshold_caution: float = 0.6
     risk_threshold_high: float = 0.8
+    risk_threshold_no_fly: float = 0.9
 
     # 无人机约束
     max_speed: float = 15.0       # m/s
@@ -118,11 +119,11 @@ class GPRPathPlanner:
         risk = risk.copy()
 
         # 禁飞区 (风险极高)
-        no_fly = risk > self.config.risk_threshold_no_fly if hasattr(
-            self.config, 'risk_threshold_no_fly') else risk > 0.9
+        no_fly = risk > self.config.risk_threshold_no_fly
         risk[no_fly] = np.inf
 
-        start, end = tuple(start), tuple(end)
+        start = (int(start[0]), int(start[1]))
+        end = (int(end[0]), int(end[1]))
 
         # A*
         g_score = {start: 0.0}
@@ -176,7 +177,7 @@ class GPRPathPlanner:
                        n_interp: int = 50) -> List[Tuple[float, float]]:
         """贝塞尔曲线平滑"""
         if len(path) < 2:
-            return path
+            return [(float(p[0]), float(p[1])) for p in path]
 
         path_xy = np.array(path, dtype=float)
         t = np.linspace(0, 1, n_interp)

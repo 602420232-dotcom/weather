@@ -23,7 +23,7 @@
 """
 import numpy as np
 from dataclasses import dataclass
-from typing import Optional, List, Tuple
+from typing import Any, Optional, List, Tuple
 from scipy.spatial.distance import cdist
 
 
@@ -64,7 +64,7 @@ class BayesianActiveObserver:
         self.config = config or ActiveObsConfig()
         self.sampled_positions: List[np.ndarray] = []
         self.sampled_values: List[float] = []
-        self.gpr_model: Optional[object] = None
+        self.gpr_model: Any = None
 
     def select_observation_points(self, variance_map: np.ndarray,
                                   existing_sites: Optional[List[Tuple[float, float]]] = None,

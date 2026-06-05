@@ -14,7 +14,9 @@ import os
 
 
 try:
-    from bayesian_assimilation.core.base import AssimilationBase  # type: ignore[assignment]
+    from bayesian_assimilation.core.base import (  # noqa: E501
+        AssimilationBase,  # type: ignore[reportAssignmentType]
+    )
 except ImportError:
 
     class AssimilationBase:
@@ -24,8 +26,9 @@ except ImportError:
             self.logger = logging.getLogger(__name__)
 
 try:
-    from bayesian_assimilation.core.assimilator import (  # type: ignore[assignment]
-        BayesianAssimilator)
+    from bayesian_assimilation.core.assimilator import (
+        BayesianAssimilator  # type: ignore[reportAssignmentType]
+    )
 
 
 except ImportError:
@@ -47,8 +50,10 @@ except ImportError:
             return self.assimilate_3dvar(background, observations, obs_locations, obs_errors)
 
 try:
-    from bayesian_assimilation.adapters.data import (  # type: ignore[assignment]
-        WRFDataAdapter, ObservationAdapter)
+    from bayesian_assimilation.adapters.data import (
+        WRFDataAdapter,  # type: ignore[reportAssignmentType]
+        ObservationAdapter,  # type: ignore[reportAssignmentType]
+    )
 
 
 except ImportError:
@@ -70,8 +75,10 @@ except ImportError:
             return np.zeros((10, 10)), np.zeros((0, 3)), np.zeros(0)
 
 try:
-    from bayesian_assimilation.adapters.io import (  # type: ignore[assignment]
-        NetCDFReader, write_netcdf)
+    from bayesian_assimilation.adapters.io import (
+        NetCDFReader,  # type: ignore[reportAssignmentType]
+        write_netcdf,  # type: ignore[reportAssignmentType]
+    )
 
 
 except ImportError:

@@ -43,7 +43,9 @@ class GeneticAlgorithmPlanner(BasePlanner):
 
     def generate_individual(self) -> List[Tuple[float, float]]:
         """Generate a random path from start to goal via waypoints."""
-        individual = [self.start]
+        assert self.start is not None
+        assert self.goal is not None
+        individual: List[Tuple[float, float]] = [self.start]
         for _ in range(self.num_waypoints):
             t = random.random()
             x = self.start[0] + (self.goal[0] - self.start[0]) * t + random.uniform(-5, 5)

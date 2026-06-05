@@ -4,10 +4,11 @@
 UAV Edge SDK - 日志模块
 """
 
-import logging
-logger = logging.getLogger(__name__)
 import sys
 from typing import Optional
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 def get_logger(name: str, level: Optional[str] = None) -> logging.Logger:

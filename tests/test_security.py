@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'edge-cloud-coo
 import unittest
 
 
-from security import (
+from security import (  # type: ignore[import-not-found]
     JWTProvider, MtlsManager, DataEncryptor,
     SecureMessage, SecurityConfig, SecurityLevel
 )

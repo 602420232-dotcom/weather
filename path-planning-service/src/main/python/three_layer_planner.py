@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 """
 三层路径规划服务
-集成VRPTW、A*和DWA算法
+集成VRPTW、A*和DWA算法，支持气象风险感知
+
+新增功能：
+- 气象风险映射：将风场、湍流映射为飞行风险
+- 风险感知路径规划：在路径规划中考虑气象风险
 """
 
 import heapq
 import numpy as np
 import json
 import sys
+import os
 import logging
 import threading
 import concurrent.futures
@@ -17,6 +22,58 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# 尝试导入风险映射模块
+try:
+    # 添加data-assimilation-platform的路径
+    PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    DATA_ASSIMILATION_PATH = os.path.join(PROJECT_ROOT, '..', 'data-assimilation-platform',
+                                          'algorithm_core', 'src')
+    if DATA_ASSIMILATION_PATH not in sys.path:
+        sys.path.insert(0, DATA_ASSIMILATION_PATH)
+
+    from bayesian_assimilation.utils.risk_mapper import (
+        WeatherToRiskMapper,  # type: ignore[assignment]
+        RiskAwarePathCostCalculator,  # type: ignore[assignment]
+        RiskLevel  # type: ignore[assignment]
+    )
+    RISK_MAPPER_AVAILABLE = True
+    logger.info("风险映射模块加载成功")
+except ImportError as e:
+    RISK_MAPPER_AVAILABLE = False
+    logger.warning(f"风险映射模块不可用: {e}")
+
+    # 定义简化版本
+    class RiskLevel:
+        LOW = "LOW"
+        MEDIUM = "MEDIUM"
+        HIGH = "HIGH"
+        EXTREME = "EXTREME"
+
+    class WeatherToRiskMapper:
+        def __init__(self, grid_resolution=100.0, constraints=None):
+            self.grid_resolution = grid_resolution
+
+        def compute_comprehensive_risk(self, assimilation_result, heading=0.0):
+            shape = assimilation_result.get('grid', {}).get('shape', (10, 10))
+            return {
+                'risk_grid': np.zeros(shape),
+                'risk_level': np.full(shape, RiskLevel.LOW, dtype=object),
+                'summary': {'avg_risk': 0.0, 'max_risk': 0.0}
+            }
+
+    class RiskAwarePathCostCalculator:
+        def __init__(self, mapper):
+            self.mapper = mapper
+
+        def set_risk_field(self, risk_result):
+            pass
+
+        def get_risk_at_position(self, position):
+            return 0.0
+
+        def compute_segment_risk_cost(self, start, end, steps=10):
+            return 0.0
 
 # 缓存机制
 
@@ -155,7 +212,8 @@ class VRPTWPlanner:
 
                     for task in unassigned_tasks:
                         distance = self.calculate_distance(current_location, task.location)
-                        if distance < min_distance and drone.current_payload + task.demand <= drone.max_payload:
+                        if (distance < min_distance and
+                                drone.current_payload + task.demand <= drone.max_payload):
                             min_distance = distance
                             nearest_task = task
 
@@ -286,7 +344,7 @@ class AStarPlanner:
             heap = [(0.0, 0, start)]
             tie_breaker = 1
             came_from = {}
-            g_score = {start: 0}
+            g_score = {start: 0.0}
             f_score = {start: self.calculate_distance(start, goal)}
 
             while heap:
@@ -430,7 +488,7 @@ class DERRTStarPlanner:
             return (np.random.uniform(-100, 100), np.random.uniform(-100, 100))
 
     def nearest(self, nodes: List[Tuple[float, float]],
-                point: Tuple[float, float]) -> Tuple[float, float]:
+                point: Tuple[float, float]) -> Optional[Tuple[float, float]]:
         """
         找到最近的节点
         """
@@ -492,8 +550,10 @@ class DERRTStarPlanner:
                 return cached_result
 
             nodes = [start]
-            parent_map = {start: None}
-            cost_map = {start: 0.0}
+            parent_map: Dict[Tuple[float, float], Optional[Tuple[float, float]]] = {
+                start: None
+            }
+            cost_map: Dict[Tuple[float, float], float] = {start: 0.0}
 
             for i in range(self.max_iterations):
                 # 采样随机点
@@ -501,6 +561,7 @@ class DERRTStarPlanner:
 
                 # 找到最近的节点
                 nearest_node = self.nearest(nodes, sample_point)
+                assert nearest_node is not None
 
                 # 朝着采样点移动
                 new_node = self.steer(nearest_node, sample_point)
@@ -673,6 +734,11 @@ class DWAPlanner:
 class ThreeLayerPlanner:
     """
     三层路径规划器
+
+    支持气象风险感知功能：
+    - 自动从同化结果计算风险场
+    - 在路径规划中考虑气象风险
+    - 支持风险规避和动态重规划
     """
 
     def __init__(
@@ -681,17 +747,60 @@ class ThreeLayerPlanner:
         tasks: List[Task],
         weather_data: Optional[Dict] = None,
         obstacles: Optional[List[Obstacle]] = None,
-        no_fly_zones: Optional[List[NoFlyZone]] = None
+        no_fly_zones: Optional[List[NoFlyZone]] = None,
+        assimilation_result: Optional[Dict] = None,  # 新增：同化结果输入
+        risk_weight: float = 0.35  # 新增：风险权重
     ):
         self.drones = drones
         self.tasks = tasks
         self.weather_data = weather_data or {}
         self.obstacles = obstacles or []
         self.no_fly_zones = no_fly_zones or []
+        self.risk_weight = risk_weight
+
+        # 初始化风险映射
+        self.risk_mapper: Optional[WeatherToRiskMapper] = None
+        self.risk_cost_calculator: Optional[RiskAwarePathCostCalculator] = None
+        self.risk_result: Optional[Dict] = None
+
+        if assimilation_result and RISK_MAPPER_AVAILABLE:
+            self._init_risk_mapping(assimilation_result)
+
         self.vrptw = VRPTWPlanner(drones, tasks, weather_data)
         self.a_star = AStarPlanner(weather_data, obstacles, no_fly_zones)
         self.derrt_star = DERRTStarPlanner(weather_data, obstacles, no_fly_zones)
         self.dwa = DWAPlanner(weather_data, obstacles)
+
+    def _init_risk_mapping(self, assimilation_result: Dict):
+        """
+        初始化风险映射
+
+        Args:
+            assimilation_result: 同化结果，格式如下：
+                {
+                    'variables': {
+                        'u_wind': np.ndarray,
+                        'v_wind': np.ndarray,
+                        ...
+                    },
+                    'grid': {'shape': (rows, cols)}
+                }
+        """
+        try:
+            self.risk_mapper = WeatherToRiskMapper(grid_resolution=10.0)
+            self.risk_result = self.risk_mapper.compute_comprehensive_risk(assimilation_result)
+
+            self.risk_cost_calculator = RiskAwarePathCostCalculator(self.risk_mapper)
+            self.risk_cost_calculator.set_risk_field(self.risk_result)
+
+            logger.info(
+                f"风险映射初始化完成: 平均风险={self.risk_result['summary']['avg_risk']:.3f}, "
+                f"安全区域={self.risk_result['summary']['safe_area_ratio']:.1%}"
+            )
+        except Exception as e:
+            logger.warning(f"风险映射初始化失败: {e}")
+            self.risk_mapper = None
+            self.risk_cost_calculator = None
 
     def calculate_comprehensive_cost(
         self,
@@ -699,10 +808,10 @@ class ThreeLayerPlanner:
         weather_data: Optional[Dict] = None
     ) -> float:
         """
-        计算四维综合代价：距离 + 能耗 + 时间 + 气象风险
+        计算五维综合代价：距离 + 能耗 + 时间 + 气象风险 + 路径风险
 
         Args:
-            route: 包含 total_distance, total_time, total_payload 的路径
+            route: 包含 total_distance, total_time, total_payload, path 的路径
             weather_data: 气象数据（风速等）
 
         Returns:
@@ -715,23 +824,40 @@ class ThreeLayerPlanner:
         # 能耗：与距离和载重成正比
         energy = distance * (1 + payload / 10.0)
 
-        # 气象风险
+        # 基础气象风险
         wind_speed = 0
         if weather_data:
             wind_speed = weather_data.get('wind_speed', 0) or 0
-        risk = distance * wind_speed / 100.0
+        base_risk = distance * wind_speed / 100.0
 
-        # 四维加权综合代价
-        w_dist = 0.3
-        w_energy = 0.2
-        w_time = 0.25
-        w_risk = 0.25
+        # ⭐ 新增：路径风险（基于风险映射）
+        path_risk = 0.0
+        if self.risk_cost_calculator and 'path' in route and route['path']:
+            path = route['path']
+            total_risk_cost = 0.0
+            for i in range(len(path) - 1):
+                segment_cost = self.risk_cost_calculator.compute_segment_risk_cost(
+                    path[i], path[i + 1], steps=5
+                )
+                total_risk_cost += segment_cost
+            # 归一化路径风险
+            path_risk = total_risk_cost / max(len(path) - 1, 1)
 
-        return w_dist * distance + w_energy * energy + w_time * time_cost + w_risk * risk
+        # 五维加权综合代价
+        w_dist = 0.25
+        w_energy = 0.15
+        w_time = 0.20
+        w_base_risk = 0.15
+        w_path_risk = 0.25  # 路径风险权重
+
+        return (w_dist * distance + w_energy * energy + w_time * time_cost +
+                w_base_risk * base_risk + w_path_risk * path_risk)
 
     def plan(self) -> Dict:
         """
-        执行完整路径规划
+        执行完整路径规划（支持气象风险感知）
+
+        如果初始化时提供了同化结果，会自动计算风险场并规避高风险区域
         """
         try:
             # 1. VRPTW任务调度
@@ -747,46 +873,98 @@ class ThreeLayerPlanner:
                     # 从基地到第一个任务点
                     start = (0.0, 0.0)
                     route_path = []
+                    total_path_risk = 0.0
+
                     for task_id in route['tasks']:
                         task = next(t for t in self.tasks if t.id == task_id)
                         goal = task.location
-                        # 使用DE-RRT*算法
-                        derrt_result = self.derrt_star.plan(start, goal)
-                        if derrt_result['success']:
-                            route_path.extend(derrt_result['path'])
-                            start = goal
-                        else:
-                            # 如果DE-RRT*失败，使用A*作为备选
-                            astar_result = self.a_star.plan(start, goal)
+
+                        # ⭐ 新增：风险感知路径规划
+                        planned = False
+                        if self.risk_cost_calculator:
+                            # 尝试风险感知A*规划
+                            try:
+                                from risk_aware_planner import RiskAwareAStarPlanner
+                                risk_astar = RiskAwareAStarPlanner(
+                                    risk_result=self.risk_result,
+                                    risk_weight=self.risk_weight
+                                )
+                                astar_result = risk_astar.plan(start, goal)
+                                if astar_result['success']:
+                                    route_path.extend(astar_result['path'])
+                                    total_path_risk += astar_result.get('avg_risk', 0)
+                                    start = goal
+                                    planned = True
+                            except Exception as e:
+                                logger.warning(f"风险感知规划失败，回退到标准规划: {e}")
+
+                        if not planned:
+                            # 使用DE-RRT*算法
+                            derrt_result = self.derrt_star.plan(start, goal)
+                            if derrt_result['success']:
+                                route_path.extend(derrt_result['path'])
+                                start = goal
+                            else:
+                                # 如果DE-RRT*失败，使用A*作为备选
+                                astar_result = self.a_star.plan(start, goal)
+                                if astar_result['success']:
+                                    route_path.extend(astar_result['path'])
+                                    start = goal
+
+                    # 从最后一个任务点返回基地
+                    planned = False
+                    if self.risk_cost_calculator:
+                        try:
+                            from risk_aware_planner import RiskAwareAStarPlanner
+                            risk_astar = RiskAwareAStarPlanner(
+                                risk_result=self.risk_result,
+                                risk_weight=self.risk_weight
+                            )
+                            astar_result = risk_astar.plan(start, (0.0, 0.0))
                             if astar_result['success']:
                                 route_path.extend(astar_result['path'])
-                                start = goal
-                    # 从最后一个任务点返回基地
-                    derrt_result = self.derrt_star.plan(start, (0.0, 0.0))
-                    if derrt_result['success']:
-                        route_path.extend(derrt_result['path'])
-                    else:
-                        # 如果DE-RRT*失败，使用A*作为备选
-                        astar_result = self.a_star.plan(start, (0.0, 0.0))
-                        if astar_result['success']:
-                            route_path.extend(astar_result['path'])
+                                total_path_risk += astar_result.get('avg_risk', 0)
+                                planned = True
+                        except Exception:
+                            pass
+
+                    if not planned:
+                        derrt_result = self.derrt_star.plan(start, (0.0, 0.0))
+                        if derrt_result['success']:
+                            route_path.extend(derrt_result['path'])
+                        else:
+                            # 如果DE-RRT*失败，使用A*作为备选
+                            astar_result = self.a_star.plan(start, (0.0, 0.0))
+                            if astar_result['success']:
+                                route_path.extend(astar_result['path'])
+
                     route['path'] = route_path
-                    # 计算四维综合代价
-                    if self.weather_data:
+                    route['path_risk'] = total_path_risk / max(len(route['tasks']), 1)
+
+                    # 计算五维综合代价
+                    if self.weather_data or self.risk_cost_calculator:
                         route['comprehensive_cost'] = self.calculate_comprehensive_cost(
                             route, self.weather_data)
                 return route
 
             # 使用并行处理
-            with concurrent.futures.ThreadPoolExecutor(max_workers=min(10, len(routes))) as executor:
+            max_workers = min(10, len(routes))
+            with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
                 routes = list(executor.map(process_route, routes))
 
-            logger.info("三层路径规划完成")
-            return {
+            # ⭐ 新增：返回风险摘要
+            result = {
                 'success': True,
                 'routes': routes,
                 'unassigned_tasks': vrptw_result['unassigned_tasks']
             }
+
+            if self.risk_result:
+                result['risk_summary'] = self.risk_result['summary']
+                result['risk_weight_used'] = self.risk_weight
+
+            logger.info("三层路径规划完成")
+            return result
 
         except Exception as e:
             logger.error(f"三层路径规划失败: {e}")

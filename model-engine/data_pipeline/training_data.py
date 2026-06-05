@@ -221,7 +221,7 @@ class PhysicsConstrainedGenerator:
         noise = self.rng.normal(0, noise_std, (Hf + 4, Wf + 4))
         from scipy.ndimage import gaussian_filter
         noise = gaussian_filter(noise, sigma=2)[2:-2, 2:-2]
-        return up + noise
+        return np.asarray(up + noise)
 
     def generate_dataset(self, n_pairs: int = 1000,
                          save_dir: Optional[Path] = None) -> List[Tuple[np.ndarray, np.ndarray]]:
@@ -278,7 +278,7 @@ def load_wrf_output(file_path: Path) -> Tuple[np.ndarray, np.ndarray]:
             data = ds[varname].sel(south_north=lat_slice, west_east=lon_slice).values
             from scipy.ndimage import zoom
             sy, sx = target_shape[0] / data.shape[0], target_shape[1] / data.shape[1]
-            return zoom(data, (sy, sx), order=1)
+            return np.asarray(zoom(data, (sy, sx), order=1))
         return np.zeros(target_shape)
 
     coarse_vars = ["U10", "V10", "T2", "Q2", "PSFC", "PBLH"]
@@ -303,7 +303,7 @@ def _load_dem(H: int, W: int) -> np.ndarray:
     """加载或生成 DEM"""
     from scipy.ndimage import zoom
     base_dem = np.fromfunction(lambda i, j: 500 + 400 * (1 - i / 50) - 200 * (j / 50), (50, 50))
-    return zoom(base_dem, (H / 50, W / 50), order=1)
+    return np.asarray(zoom(base_dem, (H / 50, W / 50), order=1))
 
 
 # ── 批量数据生成入口 ────────────────────────────

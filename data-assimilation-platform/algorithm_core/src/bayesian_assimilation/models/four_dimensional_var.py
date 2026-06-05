@@ -205,10 +205,10 @@ class FourDimensionalVar(AssimilationBase):
         model_time_series = self.run_wrf_model(x0)
 
         # —— 初始化伴随变量
-        lambda_T = np.zeros_like(x0['T'])
-        lambda_U = np.zeros_like(x0['U'])
-        lambda_V = np.zeros_like(x0['V'])
-        lambda_Ps = np.zeros_like(x0['Ps'])
+        lambda_T: np.ndarray = np.zeros_like(x0['T'])
+        lambda_U: np.ndarray = np.zeros_like(x0['U'])
+        lambda_V: np.ndarray = np.zeros_like(x0['V'])
+        lambda_Ps: np.ndarray = np.zeros_like(x0['Ps'])
 
         # —— 逆时间循环（伴随核心）
         for k in reversed(range(len(model_time_series))):
@@ -217,7 +217,7 @@ class FourDimensionalVar(AssimilationBase):
                 if obs.get('time_idx', 0) == k:
                     Hx = H(model_time_series[k])
                     diff = Hx - obs['value']
-                    adj_obs = R_inv @ diff
+                    adj_obs: np.ndarray = R_inv @ diff
                     # 观测算子H的伴随 - 只对对应位置添加贡献
                     lat_idx = int(obs.get('lat_idx', 0))
                     lon_idx = int(obs.get('lon_idx', 0))

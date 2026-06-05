@@ -9,6 +9,7 @@ import logging
 from pathlib import Path
 import subprocess
 import time
+from typing import List, Optional
 
 
 logging.basicConfig(level=logging.INFO,
@@ -16,7 +17,7 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 
-def run_script(script_name: str, args: list = None):
+def run_script(script_name: str, args: Optional[List[str]] = None):
     """运行 Python 脚本"""
     script_path = Path(__file__).parent / script_name
     cmd = [sys.executable, str(script_path)] + (args or [])

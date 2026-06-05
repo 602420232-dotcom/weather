@@ -84,7 +84,9 @@ class RiskCostFunction:
         risk = self._interp(risk_map, mid)
 
         # 每个子代价
-        met_cost = self._meteorological_cost(u, v, risk, tke, precipitation, mid)
+        _tke = self._interp(tke, mid) if tke is not None else None
+        _precip = self._interp(precipitation, mid) if precipitation is not None else None
+        met_cost = self._meteorological_cost(u, v, risk, _tke, _precip, mid)
         energy_cost = self._energy_cost(u, v, p1, p2)
         dist_cost = self._distance_cost(p1, p2)
         smooth_cost = 0.0  # 在路径规划器里做

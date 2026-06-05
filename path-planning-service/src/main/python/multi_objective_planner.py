@@ -5,7 +5,7 @@
 """
 import numpy as np
 import logging
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -35,10 +35,12 @@ class MultiObjectivePlanner:
         self.user_preferences = {k: v / total for k, v in preferences.items()}
 
     def evaluate_objectives(
-            self, waypoints: List[Tuple[float, float]], weather_data: dict = None) -> List[float]:
+            self, waypoints: List[Tuple[float, float]],
+            weather_data: Optional[dict] = None) -> List[float]:
         """评估四个目标函数"""
-        total_distance = sum(np.linalg.norm(np.array(waypoints[i]) - np.array(waypoints[i + 1]))
-                             for i in range(len(waypoints) - 1))
+        total_distance = float(sum(
+            np.linalg.norm(np.array(waypoints[i]) - np.array(waypoints[i + 1]))
+            for i in range(len(waypoints) - 1)))
         total_time = total_distance / 10.0
         wind = weather_data.get('wind_speed', 0) if weather_data else 0
         risk = total_distance * wind / 100
@@ -66,7 +68,7 @@ class MultiObjectivePlanner:
                 mutated[i] = (x, y)
         return mutated
 
-    def non_dominated_sort(self, solutions: List[Solution]) -> List[List[Solution]]:
+    def non_dominated_sort(self, solutions: List[Solution]) -> List[List[int]]:
         """非支配排序"""
         n = len(solutions)
         dominated = [set() for _ in range(n)]
@@ -75,12 +77,16 @@ class MultiObjectivePlanner:
 
         for i in range(n):
             for j in range(i + 1, n):
-                if all(solutions[i].objectives[k] <= solutions[j].objectives[k] for k in range(4)) and \
-                   any(solutions[i].objectives[k] < solutions[j].objectives[k] for k in range(4)):
+                if (all(solutions[i].objectives[k] <= solutions[j].objectives[k]
+                        for k in range(4))
+                    and any(solutions[i].objectives[k] < solutions[j].objectives[k]
+                            for k in range(4))):
                     dominated[i].add(j)
                     domination_count[j] += 1
-                elif all(solutions[j].objectives[k] <= solutions[i].objectives[k] for k in range(4)) and \
-                        any(solutions[j].objectives[k] < solutions[i].objectives[k] for k in range(4)):
+                elif (all(solutions[j].objectives[k] <= solutions[i].objectives[k]
+                          for k in range(4))
+                      and any(solutions[j].objectives[k] < solutions[i].objectives[k]
+                              for k in range(4))):
                     dominated[j].add(i)
                     domination_count[i] += 1
 
@@ -136,7 +142,8 @@ class MultiObjectivePlanner:
         return selected
 
     def plan(self, start: Tuple[float, float], goal: Tuple[float, float],
-             obstacles: List[Tuple] = None, weather_data: dict = None) -> dict:
+             obstacles: Optional[List[Tuple]] = None,
+             weather_data: Optional[dict] = None) -> dict:
         """执行多目标优化路径规划"""
         obstacles = obstacles or []
         solutions = []

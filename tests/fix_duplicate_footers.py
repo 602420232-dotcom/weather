@@ -3,11 +3,12 @@
 修复重复的页脚问题
 删除所有旧的页脚，只保留统一的新页脚
 """
-import logging
-logger = logging.getLogger(__name__)
 
 import os
 import re
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 def fix_duplicate_footers(root_dir):
@@ -40,7 +41,8 @@ def fix_duplicate_footers(root_dir):
 
     for dirpath, dirnames, filenames in os.walk(root_dir):
         # 跳过一些不需要的目录
-        if any(part in ['.git', 'node_modules', 'venv', '__pycache__'] for part in dirpath.split(os.sep)):
+        if any(part in ['.git', 'node_modules', 'venv', '__pycache__']
+               for part in dirpath.split(os.sep)):
             continue
 
         for filename in filenames:
@@ -60,9 +62,9 @@ def fix_duplicate_footers(root_dir):
                     # 2. 移除重复的新页脚（只保留最后一个）
                     # 先移除所有现有的新页脚
                     new_footer_pattern = (
-                    r'---\s*\n> \*\*最后更新\*\*: 2026-05-08  \n'
-                    r'> \*\*版本\*\*: 2\.1  \n> \*\*维护者\*\*: DITHIOTHREITOL'
-                )
+                        r'---\s*\n> \*\*最后更新\*\*: 2026-05-08  \n'
+                        r'> \*\*版本\*\*: 2\.1  \n> \*\*维护者\*\*: DITHIOTHREITOL'
+                    )
                     content = re.sub(new_footer_pattern, '', content)
 
                     # 清理多余的空行和分隔线

@@ -15,8 +15,8 @@ class Trajectory4DGenerator:
 
     @staticmethod
     def generate_4d(waypoints: List[Tuple[float, float, float]],
-                    speeds: List[float] = None,
-                    start_time: str = None) -> dict:
+                    speeds: Optional[List[float]] = None,
+                    start_time: Optional[str] = None) -> dict:
         """生成4D轨迹"""
         speeds = speeds or [10.0] * (len(waypoints) - 1)
         start_time = start_time or datetime.now().isoformat()

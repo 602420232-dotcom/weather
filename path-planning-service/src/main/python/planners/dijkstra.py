@@ -50,8 +50,10 @@ class DijkstraPlanner(BasePlanner):
                 return self._make_result(False, error='终点碰撞')
 
             w, h = self.grid_size
-            distances = [[float('inf') for _ in range(h)] for _ in range(w)]
-            predecessors = [[None for _ in range(h)] for _ in range(w)]
+            distances: List[List[float]] = [
+                [float('inf') for _ in range(h)] for _ in range(w)]
+            predecessors: List[List[Optional[Tuple[int, int]]]] = [
+                [None for _ in range(h)] for _ in range(w)]
             distances[start_grid[0]][start_grid[1]] = 0
 
             priority_queue = [(0.0, start_grid)]

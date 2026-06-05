@@ -31,10 +31,12 @@ _ensure_import()
 
 
 try:
-    from meteor_forecast import MeteorForecast
-    from meteor_forecast_enhanced import MeteorForecast as MeteorForecastEnhanced
-    from mlops_pipeline import MLOpsPipeline
-    from model_serving import ModelServingAPI
+    from meteor_forecast import MeteorForecast  # pyright: ignore[reportMissingImports]
+    from meteor_forecast_enhanced import (  # pyright: ignore[reportMissingImports]
+        MeteorForecast as MeteorForecastEnhanced
+    )
+    from mlops_pipeline import MLOpsPipeline  # pyright: ignore[reportMissingImports]
+    from model_serving import ModelServingAPI  # pyright: ignore[reportMissingImports]
     LEGACY_AVAILABLE = True
     logger.info("✅ 原项目 meteor-forecast 模块成功桥接")
 

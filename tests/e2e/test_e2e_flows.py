@@ -62,7 +62,7 @@ class TestAuthenticationFlow:
         if resp.status_code == 200:
             data = resp.json()
             assert "token" in data
-            self.__class__.token = data["token"]
+            self.__class__.token = data["token"]  # type: ignore[attribute-access]
 
     def test_03_login_failure_wrong_password(self):
         """错误密码登录失败"""

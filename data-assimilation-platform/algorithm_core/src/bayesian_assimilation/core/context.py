@@ -1,11 +1,11 @@
 # algorithm_core/src/bayesian_assimilation/core/context.py
 
-import logging
-logger = logging.getLogger(__name__)
-
 from typing import Optional, Dict, Any, Tuple
 from dataclasses import dataclass, field
 import numpy as np
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 @dataclass

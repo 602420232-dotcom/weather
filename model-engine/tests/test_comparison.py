@@ -15,7 +15,7 @@ import time
 import numpy as np
 import torch
 from dataclasses import dataclass, field
-from typing import Dict, List
+from typing import Callable, Dict, List
 
 
 @dataclass
@@ -49,7 +49,7 @@ class MethodBenchmark:
     def __init__(self):
         self.results: Dict[str, ComparisonMetrics] = {}
 
-    def run_comparison(self, test_data, methods: Dict[str, callable]):
+    def run_comparison(self, test_data, methods: Dict[str, Callable]):
         """
         运行对比
 

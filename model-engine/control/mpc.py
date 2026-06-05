@@ -22,8 +22,8 @@ from dataclasses import dataclass
 from typing import List, Optional, Tuple
 from enum import Enum
 
-from .cost_function import RiskCostFunction, CostConfig
-from .planner import GPRPathPlanner
+from path_planning.cost_function import RiskCostFunction, CostConfig
+from path_planning.planner import GPRPathPlanner
 
 
 class MPCStatus(Enum):
@@ -267,10 +267,13 @@ class ModelPredictiveController:
                 gy = np.clip(gy, 0, risk_step.shape[1] - 1)
                 risk_profile.append(float(risk_step[gx, gy]))
 
+                pred_state = (predicted_states[step]
+                              if step < len(predicted_states)
+                              else predicted_states[-1])
+
                 cost = self.cost_fn.edge_cost(
-                    predicted_states[step] if step < len(predicted_states)
-                    else predicted_states[-1],
-                    next_wp, wind_u_step, wind_v_step,
+                    np.array([pred_state.y + 37.5, pred_state.x + 37.5]),
+                    np.array(next_wp, dtype=float), wind_u_step, wind_v_step,
                     risk_step, tke, restricted, precip,
                 )
                 costs.append(cost)

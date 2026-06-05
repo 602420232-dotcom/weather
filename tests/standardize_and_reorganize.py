@@ -4,11 +4,12 @@ Standardize .md file footers and reorganize docs/ directory.
 Phase 1: Add uniform footer to all .md files
 Phase 2: Reorganize docs/ into logical hierarchy
 """
-import logging
-logger = logging.getLogger(__name__)
 
 import os
 import shutil
+
+import logging
+logger = logging.getLogger(__name__)
 
 ROOT = r'd:\Developer\workplace\py\iteam\trae'
 

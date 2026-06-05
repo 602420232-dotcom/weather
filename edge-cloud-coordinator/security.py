@@ -48,7 +48,7 @@ class SecurityConfig:
 class JWTProvider:
     """JWT 认证"""
 
-    def __init__(self, secret: str = None):
+    def __init__(self, secret: Optional[str] = None):
         self.secret = secret or os.environ.get("JWT_SECRET_KEY")
         if not self.secret:
             raise ValueError(
@@ -67,7 +67,7 @@ class JWTProvider:
             "exp": int(time.time()) + 3600
         }).encode()).decode()
         signature = hmac.new(
-            self.secret.encode(),
+            self.secret.encode(),  # type: ignore[reportOptionalMemberAccess]
             f"{header}.{payload}".encode(),
             hashlib.sha256).hexdigest()
         return f"{header}.{payload}.{signature}"
@@ -78,9 +78,10 @@ class JWTProvider:
             if len(parts) != 3:
                 return None
             expected = hmac.new(
-                self.secret.encode(), f"{
-                    parts[0]}.{
-                    parts[1]}".encode(), hashlib.sha256).hexdigest()
+                self.secret.encode(),  # type: ignore[reportOptionalMemberAccess]
+                f"{parts[0]}.{parts[1]}".encode(),
+                hashlib.sha256
+            ).hexdigest()
             if expected != parts[2]:
                 return None
             payload = json.loads(base64.b64decode(parts[1] + "==").decode())
@@ -95,7 +96,7 @@ class JWTProvider:
 class DataEncryptor:
     """AES-256-GCM 加密"""
 
-    def __init__(self, key: str = None):
+    def __init__(self, key: Optional[str] = None):
         encryption_key = key or os.environ.get("ENCRYPTION_KEY")
         if not encryption_key:
             raise ValueError(
@@ -175,3 +176,20 @@ class SecureMessage:
             logger.warning("JWT验证失败")
             return None
         return self.encryptor.decrypt(message.get("payload", ""))
+
+
+class Security:
+    """兼容性封装类（为测试提供向后兼容）"""
+
+    def __init__(self, secret_key: str = ""):
+        self.encryptor = DataEncryptor(secret_key)
+        self.jwt = JWTProvider(secret_key)
+
+    def encrypt(self, data: str) -> str:
+        """加密字符串（兼容性接口）"""
+        return self.encryptor.encrypt({"data": data})
+
+    def decrypt(self, encrypted: str) -> str:
+        """解密字符串（兼容性接口）"""
+        result = self.encryptor.decrypt(encrypted)
+        return result.get("data", "")

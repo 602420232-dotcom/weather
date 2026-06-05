@@ -18,13 +18,15 @@ from enum import Enum
 
 
 try:
-    from tensorflow.keras.models import Sequential, load_model
-    from tensorflow.keras.layers import (
+    from tensorflow.keras.models import (  # pyright: ignore[reportMissingImports]
+        Sequential, load_model)
+    from tensorflow.keras.layers import (  # pyright: ignore[reportMissingImports]
             LSTM, Dense, Dropout, ConvLSTM2D,
             BatchNormalization, Flatten
         )
-    from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-    from tensorflow.keras.optimizers import Adam
+    from tensorflow.keras.callbacks import (  # pyright: ignore[reportMissingImports]
+        EarlyStopping, ReduceLROnPlateau)
+    from tensorflow.keras.optimizers import Adam  # pyright: ignore[reportMissingImports]
 
 
 except ImportError:
@@ -63,7 +65,7 @@ class ScalerType(Enum):
 class ModelConfig:
     """模型配置"""
     look_back: int = 24
-    lstm_units: List[int] = None
+    lstm_units: Optional[List[int]] = None
     dropout_rate: float = 0.2
     dense_units: int = 25
     xgb_n_estimators: int = 100
@@ -99,7 +101,7 @@ class TrainingMetrics:
         return asdict(self)
 
 
-from common_utils.cache import Cache  # noqa: E402
+from common_utils.cache import Cache  # pyright: ignore[reportMissingImports]  # noqa: E402
 
 
 prediction_cache = Cache()
@@ -127,17 +129,17 @@ class DataPreprocessor:
     def fit_transform(self, data: np.ndarray) -> np.ndarray:
         self.scaler.fit(data)
         self.is_fitted = True
-        return self.scaler.transform(data)
+        return self.scaler.transform(data)  # pyright: ignore[reportReturnType]
 
     def transform(self, data: np.ndarray) -> np.ndarray:
         if not self.is_fitted:
             raise ValueError("预处理器未拟合")
-        return self.scaler.transform(data)
+        return self.scaler.transform(data)  # pyright: ignore[reportReturnType]
 
     def inverse_transform(self, data: np.ndarray) -> np.ndarray:
         if not self.is_fitted:
             raise ValueError("预处理器未拟合")
-        return self.scaler.inverse_transform(data)
+        return self.scaler.inverse_transform(data)  # pyright: ignore[reportReturnType]
 
     def fit(self, data: np.ndarray):
         self.scaler.fit(data)
@@ -286,8 +288,8 @@ class MeteorForecast:
             y.append(data[i + look_back])
         return np.array(X), np.array(y)
 
-    def _build_lstm_model(self, input_shape: Tuple[int, int]) -> Optional['Sequential']:
-        if Sequential is None:
+    def _build_lstm_model(self, input_shape: Tuple[int, int]) -> Any:
+        if Sequential is None or self.config.lstm_units is None:
             return None
 
         model = Sequential()
@@ -309,7 +311,7 @@ class MeteorForecast:
 
         return model
 
-    def _build_xgb_model(self) -> Optional['XGBRegressor']:
+    def _build_xgb_model(self) -> Any:  # pyright: ignore[reportInvalidTypeForm]
         if XGBRegressor is None:
             return None
 
@@ -333,6 +335,8 @@ class MeteorForecast:
         try:
             if self.lstm_model is None:
                 self.lstm_model = self._build_lstm_model((X.shape[1], X.shape[2]))
+
+            assert self.lstm_model is not None, "LSTM模型构建失败"
 
             if callbacks is None:
                 callbacks = [
@@ -386,6 +390,7 @@ class MeteorForecast:
             if self.xgb_model is None:
                 self.xgb_model = self._build_xgb_model()
 
+            assert self.xgb_model is not None, "XGBoost模型构建失败"
             self.xgb_model.fit(X, y)
             self._save_model('xgb')
 
@@ -400,8 +405,7 @@ class MeteorForecast:
         try:
             if model_type == 'lstm' and self.lstm_model is not None:
                 versioned_path = os.path.join(
-                    self.model_path, f'lstm_model_{
-                        self.model_version}.h5')
+                    self.model_path, f'lstm_model_{self.model_version}.h5')
                 self.lstm_model.save(versioned_path)
 
                 latest_path = os.path.join(self.model_path, 'lstm_model.h5')
@@ -444,6 +448,7 @@ class MeteorForecast:
         try:
             lstm_path = os.path.join(self.model_path, 'lstm_model.h5')
             if os.path.exists(lstm_path) and Sequential is not None:
+                assert load_model is not None
                 self.lstm_model = load_model(lstm_path)
                 logger.info(f"LSTM模型加载成功: {lstm_path}")
 
@@ -499,6 +504,9 @@ class MeteorForecast:
 
     def correct(self, forecast_data, observed_data) -> List[float]:
         try:
+            if self.xgb_model is None:
+                logger.warning("XGBoost模型未初始化，无法进行订正")
+                return list(forecast_data)
             error = np.array(observed_data) - np.array(forecast_data)  # noqa: F841
             X = np.array(forecast_data).reshape(-1, 1)
             error_pred = self.xgb_model.predict(X)
@@ -553,7 +561,9 @@ class MeteorForecast:
             lstm_result = self.train_lstm(X_train, y_train, X_val, y_val, epochs, batch_size)
 
             if lstm_result.get('success'):
-                xgb_result = self.train_xgb(X_train.reshape(X_train.shape[0], -1), y_train)  # noqa: F841
+                xgb_result = self.train_xgb(  # noqa: F841
+                    X_train.reshape(X_train.shape[0], -1), y_train
+                )
 
                 eval_result = self.evaluate(X_val, y_val)
                 current_score = eval_result.get('rmse', float('inf'))
@@ -588,10 +598,12 @@ class MeteorForecast:
     def _quick_validate(self, X_train, y_train, X_val, y_val) -> float:
         try:
             model = self._build_lstm_model((X_train.shape[1], X_train.shape[2]))
+            assert model is not None, "LSTM模型构建失败"
             model.fit(X_train, y_train, epochs=5, batch_size=self.config.batch_size, verbose=0)
 
             lstm_pred = model.predict(X_val, batch_size=32, verbose=0)
             xgb = self._build_xgb_model()
+            assert xgb is not None, "XGBoost模型构建失败"
             xgb.fit(X_train.reshape(X_train.shape[0], -1), y_train)
             xgb_pred = xgb.predict(lstm_pred)
 
@@ -688,6 +700,7 @@ class MeteorForecast:
                     spatial_series.shape[2],
                     1)
                 self.convlstm_model = self.build_convlstm_model(input_shape[1:])
+            assert self.convlstm_model is not None, "ConvLSTM模型未初始化"
             return self.convlstm_model.predict(spatial_series, verbose=0)
         except Exception as e:
             logger.error(f"ConvLSTM预测失败: {e}", exc_info=True)

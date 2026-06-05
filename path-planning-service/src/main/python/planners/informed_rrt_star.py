@@ -21,7 +21,7 @@ class Node:
 
     def __init__(self, position: Tuple[float, float]):
         self.position = position
-        self.parent = None
+        self.parent: Optional['Node'] = None
         self.cost = 0.0
 
 
@@ -54,9 +54,9 @@ class InformedRRTStarPlanner(BasePlanner):
         self.nodes: List[Node] = []
         self.goal_node: Optional[Node] = None
         self.best_path_cost = float('inf')
-        self.center = None
-        self.c_axis = None
-        self.c_matrix = None
+        self.center: Optional[Tuple[float, float]] = None
+        self.c_axis: Optional[float] = None
+        self.c_matrix: Optional[np.ndarray] = None
 
     def plan(self, start: Tuple[float, float], goal: Tuple[float, float]) -> dict:
         """执行 Informed RRT* 规划"""
@@ -149,6 +149,8 @@ class InformedRRTStarPlanner(BasePlanner):
     def _sample_ellipse(self, start: Tuple[float, float],
                         goal: Tuple[float, float]) -> Tuple[float, float]:
         """椭圆采样（Informed 核心）"""
+        assert self.c_axis is not None
+        assert self.center is not None
         c_best = self.best_path_cost
         if c_best < self.c_axis * 2:
             return self._sample_uniform(start, goal)

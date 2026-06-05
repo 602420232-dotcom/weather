@@ -3,8 +3,6 @@
 UAV Platform - Performance Benchmark (Python)
 Tests key API endpoints for response time, throughput, and error rate
 """
-import logging
-logger = logging.getLogger(__name__)
 
 import asyncio
 import aiohttp
@@ -12,6 +10,9 @@ import time
 import statistics
 import sys
 from dataclasses import dataclass
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -42,8 +43,10 @@ class BenchRunner:
         except Exception as e:
             return {"success": False, "error": str(e), "elapsed_ms": (time.time() - start) * 1000}
 
-    async def benchmark_endpoint(self, endpoint: str, concurrency: int = 20,
-                                 requests: int = 100, method: str = "GET", **kwargs) -> BenchmarkResult:
+    async def benchmark_endpoint(
+        self, endpoint: str, concurrency: int = 20,
+        requests: int = 100, method: str = "GET", **kwargs
+    ) -> BenchmarkResult:
         connector = aiohttp.TCPConnector(limit=concurrency, limit_per_host=concurrency)
         async with aiohttp.ClientSession(connector=connector) as session:
             tasks = [self.run_single(session, endpoint, method, **kwargs) for _ in range(requests)]

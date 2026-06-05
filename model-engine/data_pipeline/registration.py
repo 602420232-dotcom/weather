@@ -121,7 +121,7 @@ class SpatiotemporalRegistrator:
         """加载 DEM (简化版)"""
         from scipy.ndimage import zoom
         base = np.fromfunction(lambda i, j: 500 + 400 * (1 - i / 50) - 200 * (j / 50), (50, 50))
-        return zoom(base, (H / 50, W / 50), order=1)
+        return np.asarray(zoom(base, (H / 50, W / 50), order=1))
 
     def register_pair(self, coarse: np.ndarray, fine: np.ndarray,
                       coarse_res_km: float = 25.0) -> Tuple[np.ndarray, np.ndarray]:

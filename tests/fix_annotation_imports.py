@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Restore annotation wildcard imports that were incorrectly removed."""
-import logging
-logger = logging.getLogger(__name__)
 
 import re
 import os
+
+import logging
+logger = logging.getLogger(__name__)
 
 ROOT = r'd:\Developer\workplace\py\iteam\trae'
 SKIP = {'.git', 'node_modules', 'target', '__pycache__', '.idea', '.pytest_cache', '.trae'}

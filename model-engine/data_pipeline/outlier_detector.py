@@ -185,11 +185,17 @@ class OutlierDetector:
         from scipy.ndimage import uniform_filter
         for c in range(C):
             ch = data[:, c]
-            local_mean = uniform_filter(ch, size=(1, self.config.spatial_kernel,
-                                                  self.config.spatial_kernel))
+            local_mean = uniform_filter(
+                ch,
+                size=(1, self.config.spatial_kernel,
+                      self.config.spatial_kernel),  # pyright: ignore[reportArgumentType]
+            )
             local_std = np.sqrt(
-                uniform_filter(ch**2, size=(1, self.config.spatial_kernel,
-                                            self.config.spatial_kernel))
+                uniform_filter(
+                    ch**2,
+                    size=(1, self.config.spatial_kernel,
+                          self.config.spatial_kernel),  # pyright: ignore[reportArgumentType]
+                )
                 - local_mean**2
             )
             diff = np.abs(ch - local_mean)

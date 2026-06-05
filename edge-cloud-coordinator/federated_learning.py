@@ -98,6 +98,24 @@ class FederatedLearning:
                 return r
         return None
 
+    def train_round(self, client_id: str, client_update: dict) -> dict:
+        """训练回合（为测试提供兼容）"""
+        weights = client_update.get('weights', {})
+        n_samples = client_update.get('samples', 100)
+        metrics = client_update.get('metrics', {})
+
+        if weights:
+            self.receive_update(client_id, weights, n_samples, metrics)
+
+        if self.client_updates:
+            self.fedavg_aggregate(self.client_updates)
+
+        return {
+            "round": self.round_id,
+            "status": "completed",
+            "model_updated": True
+        }
+
 
 class DroneClient:
     """无人机客户端 - 联邦学习参与方"""

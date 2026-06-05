@@ -8,9 +8,9 @@ GPU 加速器组件
 保留此文件仅用于向后兼容。
 """
 
+from bayesian_assimilation.accelerators.gpu import GPUAccelerator
+
 import logging
 logger = logging.getLogger(__name__)
-
-from bayesian_assimilation.accelerators.gpu import GPUAccelerator
 
 __all__ = ['GPUAccelerator']

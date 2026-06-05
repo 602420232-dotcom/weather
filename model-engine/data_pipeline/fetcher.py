@@ -55,8 +55,9 @@ class CMAFetcher:
         cache_file = Path(self.cfg.cache_dir) / f"{cache_key}.nc"
 
         # 优先读缓存
-        if cache_file.exists() and (datetime.now() - datetime.fromtimestamp(cache_file.stat().st_mtime)
-                                    ).seconds < self.cfg.update_interval_min * 60:
+        if (cache_file.exists() and
+                (datetime.now() - datetime.fromtimestamp(
+                    cache_file.stat().st_mtime)).seconds < self.cfg.update_interval_min * 60):
             logger.info(f"[{name}] 命中缓存: {cache_file}")
             return xr.open_dataset(cache_file)
 

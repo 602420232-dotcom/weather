@@ -12,8 +12,8 @@ import numpy as np
 
 from .bridge import (
     LEGACY_AVAILABLE,
-    MeteorForecast, MeteorForecastEnhanced,
-    MLOpsPipeline, ModelServingAPI,
+    MeteorForecast, MeteorForecastEnhanced,  # pyright: ignore[reportAttributeAccessIssue]
+    MLOpsPipeline, ModelServingAPI,  # pyright: ignore[reportAttributeAccessIssue]
 )
 
 logger = logging.getLogger(__name__)
@@ -55,7 +55,7 @@ class LegacyModelAdapter:
 
     def lstm_predict(self, sequence: np.ndarray) -> np.ndarray:
         """原 LSTM 时序预测 → 供 CNN 订正器的时序模块使用"""
-        if not self.available:
+        if not self.available or self.model is None:
             return self._passthrough(sequence)
         return np.array(self.model.predict(sequence))
 
@@ -67,6 +67,7 @@ class LegacyModelAdapter:
             return self._passthrough(coarse_field)
         if self.model_enhanced:
             return np.array(self.model_enhanced.predict(coarse_field))
+        assert self.model is not None
         return np.array(self.model.predict(coarse_field))
 
     # ── GPR 风险场 ──

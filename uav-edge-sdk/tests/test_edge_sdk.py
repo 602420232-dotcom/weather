@@ -69,7 +69,7 @@ def test_upload_and_execute_mission():
     """测试上传和执行任务"""
     sdk = create_sdk()
     waypoints = [(0, 0, 10), (1, 1, 15), (2, 2, 10)]
-    result_upload = sdk.upload_mission(waypoints)
+    result_upload = sdk.upload_mission(waypoints)  # type: ignore[arg-type]
     assert result_upload is not None, "Upload mission should return a result"
     result_exec = sdk.execute_mission()
     assert result_exec is not None, "Execute mission should return a result"
@@ -122,14 +122,14 @@ def test_offline_cache():
 def test_path_smoothing():
     """测试路径平滑功能（使用几何方法验证）"""
     # 验证 Bezier 路径比原始路径更平滑（点间距更均匀）
-    from edge_sdk._core import HAS_CPP_MODULE
+    from edge_sdk.core import HAS_CPP_MODULE
 
     if not HAS_CPP_MODULE:
         # 纯 Python 验证平滑概念
         raw_path = [(0, 0), (2, 3), (5, 5), (8, 7), (10, 10)]
 
         # 简单平滑: 三点滑动平均
-        smoothed = [raw_path[0]]
+        smoothed: list = [raw_path[0]]
         for i in range(1, len(raw_path)-1):
             avg_x = (raw_path[i-1][0] + raw_path[i][0] + raw_path[i+1][0]) / 3
             avg_y = (raw_path[i-1][1] + raw_path[i][1] + raw_path[i+1][1]) / 3
@@ -198,7 +198,7 @@ def test_serialization():
 def test_performance():
     """测试性能基准"""
     import time
-    from edge_sdk._core import HAS_CPP_MODULE
+    from edge_sdk.core import HAS_CPP_MODULE
 
     # 路径规划性能
     sdk = create_sdk()
@@ -231,7 +231,7 @@ def main():
     print("UAV Edge SDK - Comprehensive Test Suite")
     print("=" * 60)
     print(f"Python: {sys.version.split()[0]}")
-    from edge_sdk._core import HAS_CPP_MODULE
+    from edge_sdk.core import HAS_CPP_MODULE
     print(f"C++ Module: {'Available' if HAS_CPP_MODULE else 'Not found (using Python fallback)'}")
     print()
 

@@ -279,7 +279,7 @@ class MAVLinkEncoder:
             (msg_id >> 16) & 0xFF,
         ])
         # CRC (简化: 用 XOR, 实际应用需用 MAVLink CRC)
-        crc = self._crc(header + payload)
+        crc = self._crc(bytes(header + payload))
         return bytes(header) + payload + crc.to_bytes(2, 'little')
 
     @staticmethod

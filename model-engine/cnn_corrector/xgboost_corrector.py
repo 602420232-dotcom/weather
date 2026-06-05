@@ -47,8 +47,9 @@ class XGBoostCorrector:
         for var in variables:
             path = f"{self.model_path}/xgboost_{var}.json"
             if os.path.exists(path):
-                self.models[var] = xgb.Booster()
-                self.models[var].load_model(path)
+                booster = xgb.Booster()
+                booster.load_model(path)
+                self.models[var] = booster
                 logger.info(f"Loaded XGBoost model for {var}")
             else:
                 logger.warning(f"No XGBoost model found for {var} at {path}")
@@ -84,8 +85,11 @@ class XGBoostCorrector:
                     X[:, i] = feat.reshape(-1)[:n_samples]
 
             # 预测残差
+            model = self.models.get(var)
+            if model is None:
+                continue
             dmatrix = xgb.DMatrix(X, feature_names=self.feature_names)
-            residuals = self.models[var].predict(dmatrix)
+            residuals = model.predict(dmatrix)
             corrected[:, c] += residuals.reshape(B, H, W)
 
         logger.info(f"XGBoost correction applied: {list(self.models.keys())}")

@@ -80,7 +80,7 @@ class RRTP:
         y = random.uniform(-50, 50)
         return (x, y)
 
-    def get_nearest_node(self, point: Tuple[float, float]) -> Node:
+    def get_nearest_node(self, point: Tuple[float, float]) -> Optional[Node]:
         """
         获取最近的节点
         """
@@ -147,6 +147,8 @@ class RRTP:
 
                 # 获取最近的节点
                 nearest_node = self.get_nearest_node(random_point)
+                if nearest_node is None:
+                    continue
 
                 # 向随机点移动一步
                 new_position = self.steer(nearest_node, random_point)
@@ -313,8 +315,9 @@ class DijkstraPlanner:
                          for _ in range(self.grid_size[0])]
             distances[start_grid[0]][start_grid[1]] = 0
 
-            predecessors = [[None for _ in range(self.grid_size[1])]
-                            for _ in range(self.grid_size[0])]
+            predecessors: List[List[Optional[Tuple[int, int]]]] = [
+                [None for _ in range(self.grid_size[1])]
+                for _ in range(self.grid_size[0])]
 
             # 优先队列
             priority_queue = [(0, start_grid)]
@@ -705,11 +708,15 @@ class ParticleSwarmOptimizationPlanner:
                     new_velocity = []
                     for j in range(len(swarm[i])):
                         # 认知分量
-                        cognitive = (self.c1 * random.random() * (personal_best[i][j][0] - swarm[i][j][0]),
-                                     self.c1 * random.random() * (personal_best[i][j][1] - swarm[i][j][1]))
+                        cognitive = (self.c1 * random.random()
+                                     * (personal_best[i][j][0] - swarm[i][j][0]),
+                                     self.c1 * random.random()
+                                     * (personal_best[i][j][1] - swarm[i][j][1]))
                         # 社会分量
-                        social = (self.c2 * random.random() * (global_best[j][0] - swarm[i][j][0]),
-                                  self.c2 * random.random() * (global_best[j][1] - swarm[i][j][1]))
+                        social = (self.c2 * random.random()
+                                  * (global_best[j][0] - swarm[i][j][0]),
+                                  self.c2 * random.random()
+                                  * (global_best[j][1] - swarm[i][j][1]))
                         # 新速度
                         new_vx = self.w * velocities[i][j][0] + cognitive[0] + social[0]
                         new_vy = self.w * velocities[i][j][1] + cognitive[1] + social[1]

@@ -19,9 +19,10 @@ from typing import Tuple, Optional, List
 class CNNConfig:
     """CNN 订正器配置"""
     in_channels: int = 12         # 6 (surface) + 5 (pressure levels) + 1 (DEM)
-    hidden_channels: List[int] = None
+    hidden_channels: Optional[List[int]] = None
     out_channels: int = 6         # 订正后: u10, v10, t2m, rh2m, ps, blh
     kernel_size: int = 3
+    lr: float = 1e-3
     dropout: float = 0.1
     grid_size: Tuple[int, int] = (50, 50)  # 粗网格
     lstm_hidden: int = 64
@@ -41,6 +42,7 @@ class SpatialCorrector(nn.Module):
     def __init__(self, config: CNNConfig):
         super().__init__()
         cfg = config
+        assert cfg.hidden_channels is not None, "hidden_channels must not be None"
         in_ch = cfg.in_channels
 
         # DEM 编码
@@ -159,7 +161,7 @@ class CNNCorrector(nn.Module):
         )
 
     def forward(self, x: torch.Tensor, dem: torch.Tensor,
-                return_seq: bool = False) -> torch.Tensor:
+                return_seq: bool = False):
         """
         Args:
             x: 输入 (B, T, 11, H, W) 或 (B, 11, H, W)

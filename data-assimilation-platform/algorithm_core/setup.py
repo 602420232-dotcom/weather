@@ -13,6 +13,7 @@ spec = importlib.util.spec_from_file_location(
     '__version__', os.path.join(here, 'src/bayesian_assimilation/__version__.py'))
 assert spec is not None
 mod = importlib.util.module_from_spec(spec)
+assert spec.loader is not None
 spec.loader.exec_module(mod)
 __version__ = getattr(mod, '__version__', '1.0.0')
 

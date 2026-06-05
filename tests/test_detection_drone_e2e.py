@@ -163,8 +163,8 @@ def step1_create_mission():
     try:
         resp = post(config.DETECTION_DRONE_PORT, "/api/detection/mission/create", payload)
         body = assert_ok(resp, "创建探测任务")
-        mission_id = body.get("missionId")
-        route_count = body.get("routeCount", 0)
+        mission_id = body.get("missionId")  # type: ignore[union-attr]
+        route_count = body.get("routeCount", 0)  # type: ignore[union-attr]
         info(f"任务ID: {mission_id}, 航线航点数: {route_count}")
         return mission_id
     except requests.exceptions.ConnectionError:
@@ -378,12 +378,12 @@ def _samples_to_grid(samples):
                     w = max(1.0 / (d + 0.001), 0.001)
                     v = float(values[0]) if isinstance(values, list) else values
                     total_w += w
-                    total_v += w * (float(s.get(_field_name(values), 0)) if isinstance(values, str) else values)
+                    total_v += w * (float(s.get(_field_name(values), 0)) if isinstance(values, str) else values)  # type: ignore[operator]
                 if np:
-                    grid[i, j] = round(total_v / total_w, 2) if total_w > 0 else 0
+                    grid[i, j] = round(total_v / total_w, 2) if total_w > 0 else 0  # type: ignore[index]
                 else:
-                    grid[i][j] = round(total_v / total_w, 2) if total_w > 0 else 0
-        return grid.tolist() if np else grid
+                    grid[i][j] = round(total_v / total_w, 2) if total_w > 0 else 0  # type: ignore[index]
+        return grid.tolist() if np else grid  # type: ignore[union-attr]
 
     fields = ["temperature", "humidity", "windSpeed", "pressure"]
     obs = {}

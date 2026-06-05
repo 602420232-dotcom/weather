@@ -110,13 +110,14 @@ def check_docker_environment():
 def check_algorithm_implementation():
     logger.info("\n=== 检查算法实现 ===")
 
+    base_path = "data-assimilation-platform/algorithm_core/src/bayesian_assimilation"
     assimilation_files = [
-        "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/three_dimensional_var.py",
-        "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/four_dimensional_var.py",
-        "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/enkf.py",
-        "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/enhanced_bayesian.py",
-        "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/assimilator.py",
-        "data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/base.py"
+        f"{base_path}/models/three_dimensional_var.py",
+        f"{base_path}/models/four_dimensional_var.py",
+        f"{base_path}/models/enkf.py",
+        f"{base_path}/models/enhanced_bayesian.py",
+        f"{base_path}/core/assimilator.py",
+        f"{base_path}/core/base.py"
     ]
 
     for file_path in assimilation_files:
@@ -189,7 +190,8 @@ def check_security_implementation():
         "uav-path-planning-system/backend-spring/src/main/java/com/uav/config/JwtFilter.java",
         "uav-path-planning-system/backend-spring/src/main/java/com/uav/model/User.java",
         "uav-path-planning-system/backend-spring/src/main/java/com/uav/model/Role.java",
-        "uav-path-planning-system/backend-spring/src/main/java/com/uav/service/CustomUserDetailsService.java"
+        "uav-path-planning-system/backend-spring/src/main/java/"
+        "com/uav/service/CustomUserDetailsService.java"
     ]
 
     existing_count = 0

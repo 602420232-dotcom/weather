@@ -183,7 +183,10 @@ class WrfProcessor:
             for tke_var in ['QKE', 'TKE', 'TKE_PBL', 'tke']:
                 if tke_var in self.dataset.variables:
                     raw = self.dataset.variables[tke_var][:]
-                    tke_data = np.mean(raw, axis=tuple(range(1, len(raw.shape)))) if raw.ndim > 1 else raw
+                    tke_data = (
+                        np.mean(raw, axis=tuple(range(1, len(raw.shape))))
+                        if raw.ndim > 1 else raw
+                    )
                     logger.info(f"使用WRF变量 {tke_var} 提取湍流动能")
                     break
 
@@ -475,7 +478,8 @@ class WrfProcessor:
 
         Returns:
             Dict: {
-                'layers': [{height, wind_speed, wind_dir, temperature, humidity, pressure, turbulence}, ...],
+                'layers': [{height, wind_speed, wind_dir, temperature, humidity,
+                            pressure, turbulence}, ...],
                 'layer_count': int,
                 'max_height': int
             }
@@ -519,7 +523,7 @@ class WrfProcessor:
                 q_profile = self.dataset.variables['QVAPOR'][:]
 
             for h in layers:
-                layer_data = {'height': h}
+                layer_data: dict = {'height': h}
 
                 # 如果存在垂直剖面，按高度插值
                 if z_vals is not None and u_profile is not None and v_profile is not None:

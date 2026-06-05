@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'edge-cloud-coo
 
 import pytest
 import numpy as np
-from federated_learning import FederatedLearning, ClientUpdate, DroneClient
+from federated_learning import FederatedLearning, ClientUpdate, DroneClient  # type: ignore[import-not-found]
 
 
 class TestFederatedLearning:

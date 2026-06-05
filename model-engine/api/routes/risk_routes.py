@@ -44,7 +44,9 @@ async def compute_risk_field(request: RiskFieldRequest):
     使用高斯过程回归生成不确定性方差场和综合风险评分。
     """
     try:
-        from model_engine.gpr_risk.model import GPRiskEstimator
+        from model_engine.gpr_risk.model import (  # pyright: ignore[reportMissingImports]
+            GPRiskEstimator
+        )
 
         # 计算网格
         n = int(request.grid_size_km / request.resolution_km)

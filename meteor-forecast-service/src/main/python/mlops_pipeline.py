@@ -37,7 +37,7 @@ class ModelVersion:
 class MLOpsPipeline:
     """MLOps 生命周期管理流水线"""
 
-    def __init__(self, model_registry_path: str = None):
+    def __init__(self, model_registry_path: Optional[str] = None):
         self.registry_path = model_registry_path or os.path.join(
             os.path.dirname(__file__), 'model_registry')
         os.makedirs(self.registry_path, exist_ok=True)
@@ -141,7 +141,8 @@ class MLOpsPipeline:
             prev_mse = previous['metrics']['mse']
             if curr_mse > prev_mse * (1 + threshold):
                 logger.warning(
-                    f"性能下降 {((curr_mse - prev_mse) / prev_mse) * 100:.1f}%，自动回滚到 {previous_version}")
+                    f"性能下降 {((curr_mse - prev_mse) / prev_mse) * 100:.1f}%，"
+                    f"自动回滚到 {previous_version}")
                 self.promote_to_production(name, previous_version)
                 return True
         return False

@@ -200,7 +200,8 @@ class M1to5Experiment:
             lt_key = f"{lt}h"
             for metric in self.config.metrics:
                 vals = results[lt_key][metric]
-                results[lt_key][metric] = float(np.mean(vals)) if vals else 0.0
+                mean_val = float(np.mean(vals)) if vals else 0.0
+                results[lt_key][metric] = mean_val  # pyright: ignore[reportArgumentType]
 
         return results
 

@@ -41,6 +41,7 @@ class WeatherDataset(Dataset):
         self.n_samples = n_samples
 
         if mode == "file":
+            assert data_dir is not None, "data_dir is required when mode='file'"
             self.data_dir = Path(data_dir)
             self.coarse_files = sorted(self.data_dir.glob("coarse_*.npy"))
             self.fine_files = sorted(self.data_dir.glob("fine_*.npy"))
@@ -65,7 +66,7 @@ class WeatherDataset(Dataset):
             fine = np.load(self.fine_files[idx])
         else:
             pattern = self.patterns[idx % len(self.patterns)]
-            coarse, fine, _ = self.generator.generate_pair(pattern)
+            coarse, fine = self.generator.generate_pair(pattern)
 
         # 分离 DEM (索引6)
         dem = coarse[6:7].copy()  # (1, H, W)

@@ -146,7 +146,7 @@ def add_python_docstrings():
                 m_def = re.match(r'^\s*def\s+(\w+)', line)
 
                 if m_class or m_def:
-                    name = m_class.group(1) if m_class else m_def.group(1)
+                    name = m_class.group(1) if m_class else m_def.group(1)  # type: ignore[union-attr]
                     # Skip private/special methods
                     if m_def and name.startswith('_') and not name.startswith('__'):
                         new_lines.append(line)

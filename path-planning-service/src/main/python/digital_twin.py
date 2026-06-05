@@ -4,7 +4,7 @@
 """
 import numpy as np
 import logging
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
@@ -43,8 +43,8 @@ class DigitalTwinEngine:
     """数字孪生仿真引擎"""
 
     def __init__(self):
-        self.drone_state = None
-        self.env_state = None
+        self.drone_state: Optional[DroneState] = None
+        self.env_state: Optional[EnvironmentState] = None
         self.physical_parameters = {
             'mass': 2.5, 'wing_area': 0.3, 'drag_coeff': 0.04,
             'max_thrust': 15.0, 'battery_capacity': 100.0
@@ -70,6 +70,7 @@ class DigitalTwinEngine:
 
     def update_environment(self, weather_data: dict):
         """从真实传感器更新环境状态"""
+        assert self.env_state is not None
         self.env_state = EnvironmentState(
             wind_speed=weather_data.get('wind_speed', self.env_state.wind_speed),
             wind_direction=weather_data.get('wind_direction', self.env_state.wind_direction),
@@ -80,6 +81,8 @@ class DigitalTwinEngine:
 
     def simulate_physics(self, dt: float, control_input: Tuple[float, float, float]):
         """物理引擎仿真"""
+        assert self.drone_state is not None
+        assert self.env_state is not None
         thrust, roll, pitch = control_input
         mass = self.physical_parameters['mass']
         drag = self.physical_parameters['drag_coeff']
@@ -111,6 +114,7 @@ class DigitalTwinEngine:
                        weather_forecast: List[dict]) -> dict:
         """预测飞行轨迹"""
         self.initialize(waypoints[0])
+        assert self.drone_state is not None
         predicted_trajectory = []
 
         for i, wpt in enumerate(waypoints[1:

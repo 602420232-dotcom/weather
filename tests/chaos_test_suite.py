@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Chaos Engineering 测试套件 — 验证系统弹性"""
-import logging
-logger = logging.getLogger(__name__)
 
 import requests
 import time
 import threading
 import os
+
+import logging
+logger = logging.getLogger(__name__)
 
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8088")
 TIMEOUT = 10

@@ -130,7 +130,7 @@ def run_pipeline(request: ForecastRequest) -> Dict:
         # 用残差拟合 GPR
         residual = torch.randn_like(fine[:, :1]) * 0.1
         gpr_estimator.fit(residual)
-        risk_map = gpr_estimator.risk_field(fine_grid=fine.shape[-2:], device=device)
+        risk_map = gpr_estimator.risk_field(fine_grid=fine.shape[-2:], device=str(device))
         risk = compute_risk_score(fine, risk_map.unsqueeze(0).expand_as(fine))
 
     result = {
@@ -197,7 +197,7 @@ def model_info():
 
 
 @app.post("/api/v1/forecast", response_model=ForecastResponse)
-def forecast(request: ForecastRequest = None):
+def forecast(request: Optional[ForecastRequest] = None):
     """执行完整预测管线"""
     if request is None:
         request = ForecastRequest()

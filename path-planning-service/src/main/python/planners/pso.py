@@ -38,9 +38,11 @@ class ParticleSwarmOptimizationPlanner(BasePlanner):
         )
         return 1 / (total_distance + collision_penalty + 1e-6)
 
-    def _generate_path(self):
+    def _generate_path(self) -> List[Tuple[float, float]]:
         """Generate a random path from start to goal via waypoints."""
-        path = [self.start]
+        assert self.start is not None
+        assert self.goal is not None
+        path: List[Tuple[float, float]] = [self.start]
         for _ in range(self.num_waypoints):
             t = random.random()
             x = self.start[0] + (self.goal[0] - self.start[0]) * t + random.uniform(-5, 5)

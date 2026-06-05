@@ -140,7 +140,7 @@ class TestObservationOperator:
         # 验证是稀疏矩阵
         assert H is not None
         assert hasattr(H, 'toarray') or hasattr(H, 'nnz')
-        assert H.shape[0] == len(observations)
+        assert H.shape[0] == len(observations)  # type: ignore[reportOptionalSubscript]
 
     def test_observation_operator_clips_out_of_bounds(self):
         """测试观测算子边界裁剪"""

@@ -82,7 +82,8 @@ class ConfigChecker:
         # 检查密码配置
         if 'password' in str(config).lower():
             if 'password' in config and isinstance(config['password'], str):
-                if not any(marker in config.get('password', '') for marker in ['${', 'ENV', 'env', 'SECRET']):
+                if not any(marker in config.get('password', '')
+                           for marker in ['${', 'ENV', 'env', 'SECRET']):
                     self.issues.append({
                         'file': yaml_file,
                         'severity': 'HIGH',
@@ -94,7 +95,9 @@ class ConfigChecker:
         if 'jwt' in str(config).lower() or 'secret' in str(config).lower():
             if config.get('jwt', {}).get('secret'):
                 secret = config['jwt']['secret']
-                if len(str(secret)) < 32 and not any(marker in str(secret) for marker in ['${', 'ENV']):
+                if len(str(secret)) < 32 and not any(
+                    marker in str(secret) for marker in ['${', 'ENV']
+                ):
                     self.issues.append({
                         'file': yaml_file,
                         'severity': 'MEDIUM',
@@ -168,7 +171,9 @@ class ConfigChecker:
                         if 'password' in line.lower() and '=' in line:
                             key, value = line.split('=', 1)
                             value = value.strip()
-                            if value and not any(marker in value for marker in ['${', 'ENV', '\\${']):
+                            if value and not any(
+                                marker in value for marker in ['${', 'ENV', '\\${']
+                            ):
                                 self.issues.append({
                                     'file': prop_file,
                                     'severity': 'HIGH',

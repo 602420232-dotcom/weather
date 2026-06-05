@@ -423,7 +423,10 @@ def main():
 
     elif mode == "replace":
         if len(sys.argv) < 5:
-            logger.info("用法: python wrf_initializer.py replace <analysis.json> <wrfinput.nc> <output.nc>")
+            logger.info(
+                "用法: python wrf_initializer.py replace "
+                "<analysis.json> <wrfinput.nc> <output.nc>"
+            )
             sys.exit(1)
         analysis = WrfInitializer.load_analysis_from_json(sys.argv[2])
         init.read_template(sys.argv[3])
@@ -432,7 +435,10 @@ def main():
 
     elif mode == "nudging":
         if len(sys.argv) < 5:
-            logger.info("用法: python wrf_initializer.py nudging <analysis.json> <wrfinput.nc> <output.nc>")
+            logger.info(
+                "用法: python wrf_initializer.py nudging "
+                "<analysis.json> <wrfinput.nc> <output.nc>"
+            )
             sys.exit(1)
         analysis = WrfInitializer.load_analysis_from_json(sys.argv[2])
         init.read_template(sys.argv[3])

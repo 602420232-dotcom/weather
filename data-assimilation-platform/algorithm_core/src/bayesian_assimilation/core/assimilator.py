@@ -14,7 +14,7 @@ import numpy as np  # noqa: E402
 import logging  # noqa: E402
 from typing import Optional, Tuple  # noqa: E402
 
-from bayesian_assimilation.utils.config import AssimilationConfig  # noqa: E402
+from bayesian_assimilation.utils.config import AssimilationConfig, BaseConfig  # noqa: E402
 from bayesian_assimilation.core.base import AssimilationBase  # noqa: E402
 
 from scipy.interpolate import RegularGridInterpolator  # noqa: E402
@@ -32,12 +32,12 @@ class BayesianAssimilator(AssimilationBase):
     analysis_field: Optional[np.ndarray]
     variance_field: Optional[np.ndarray]
 
-    def __init__(self, config: Optional[AssimilationConfig] = None) -> None:
+    def __init__(self, config: Optional[BaseConfig] = None) -> None:
         super().__init__(config)
         self.config = config or AssimilationConfig()
         self.analysis_field = None
         self.variance_field = None
-        self.resolution: float = getattr(self.config, 'target_resolution', 50.0)  # type: ignore
+        self.resolution: float = getattr(self.config, 'target_resolution', 50.0)
 
     def assimilate(self,
                    background: np.ndarray,

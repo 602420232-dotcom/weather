@@ -10,10 +10,10 @@ GPR 贝叶斯风险方差场
 import torch
 from dataclasses import dataclass
 from typing import Optional, Tuple
-import gpytorch
-from gpytorch.means import ConstantMean
-from gpytorch.kernels import RBFKernel, ScaleKernel
-from gpytorch.distributions import MultivariateNormal
+import gpytorch  # pyright: ignore[reportMissingImports]
+from gpytorch.means import ConstantMean  # pyright: ignore[reportMissingImports]
+from gpytorch.kernels import RBFKernel, ScaleKernel  # pyright: ignore[reportMissingImports]
+from gpytorch.distributions import MultivariateNormal  # pyright: ignore[reportMissingImports]
 
 
 @dataclass
@@ -74,7 +74,7 @@ class GPRiskEstimator:
         self.trained = False
 
     def _prepare_data(self, residual: torch.Tensor,
-                      coords: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+                      coords: Optional[torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         """将残差场转为训练数据 (N, 2) -> (N,)"""
         B, C, H, W = residual.shape
         if coords is None:
@@ -140,6 +140,9 @@ class GPRiskEstimator:
         """
         if not self.trained:
             raise RuntimeError("GPR not fitted yet")
+
+        assert self.model is not None
+        assert self.likelihood is not None
 
         self.model.eval()
         self.likelihood.eval()

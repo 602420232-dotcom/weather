@@ -9,10 +9,11 @@ import json
 import sys
 import os
 import logging
-import tensorflow as tf
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import Dense, Input
-from tensorflow.keras.optimizers import Adam
+from typing import Optional, Union
+import tensorflow as tf  # pyright: ignore[reportMissingImports]
+from tensorflow.keras.models import Sequential, load_model  # pyright: ignore[reportMissingImports]
+from tensorflow.keras.layers import Dense, Input  # pyright: ignore[reportMissingImports]
+from tensorflow.keras.optimizers import Adam  # pyright: ignore[reportMissingImports]
 from collections import deque
 import random
 
@@ -293,8 +294,9 @@ class PPOPlanner:
                         actor_loss = -tf.reduce_mean(tf.minimum(surr1, surr2))
 
                     actor_grads = tape.gradient(actor_loss, self.actor.trainable_variables)
-                    self.actor.optimizer.apply_gradients(
-                        zip(actor_grads, self.actor.trainable_variables))
+                    assert actor_grads is not None
+                    gv = zip(actor_grads, self.actor.trainable_variables)  # type: ignore[arg-type]
+                    self.actor.optimizer.apply_gradients(gv)
 
                     # 训练Critic
                     with tf.GradientTape() as tape:
@@ -302,8 +304,9 @@ class PPOPlanner:
                         critic_loss = tf.reduce_mean(tf.square(batch_returns - values))
 
                     critic_grads = tape.gradient(critic_loss, self.critic.trainable_variables)
-                    self.critic.optimizer.apply_gradients(
-                        zip(critic_grads, self.critic.trainable_variables))
+                    assert critic_grads is not None
+                    gv = zip(critic_grads, self.critic.trainable_variables)  # type: ignore
+                    self.critic.optimizer.apply_gradients(gv)
 
             if e % 10 == 0:
                 logger.info(f"Episode: {e}, Score: {score}")
@@ -469,7 +472,7 @@ class ReinforcementLearningPlanner:
         :param algorithm: 算法类型 ('dqn' 或 'ppo')
         """
         self.algorithm = algorithm
-        self.planner = None
+        self.planner: Optional[Union[DQNPlanner, PPOPlanner]] = None
 
     def initialize(self, state_size=6, action_size=4):
         """
@@ -488,6 +491,7 @@ class ReinforcementLearningPlanner:
         """
         if not self.planner:
             self.initialize()
+        assert self.planner is not None
         self.planner.train(env, episodes)
 
     def load_model(self):
@@ -496,6 +500,7 @@ class ReinforcementLearningPlanner:
         """
         if not self.planner:
             self.initialize()
+        assert self.planner is not None
         self.planner.load_model()
 
     def plan(self, state):
@@ -505,6 +510,7 @@ class ReinforcementLearningPlanner:
         if not self.planner:
             self.initialize()
             self.load_model()
+        assert self.planner is not None
         return self.planner.plan(state)
 
     def self_improve(self, env, episodes=100):
@@ -515,6 +521,7 @@ class ReinforcementLearningPlanner:
             self.initialize()
             self.load_model()
 
+        assert self.planner is not None
         # 继续训练以改进模型
         self.planner.train(env, episodes)
         logger.info("模型自迭代改进完成")

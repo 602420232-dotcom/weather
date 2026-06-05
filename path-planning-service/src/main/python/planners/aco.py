@@ -39,7 +39,7 @@ class ACOPlanner(BasePlanner):
         self.beta = beta
         self.rho = rho
         self.q = q
-        self.pheromone = None
+        self.pheromone: Optional[np.ndarray] = None
         self.best_path = None
         self.best_cost = float('inf')
 
@@ -57,6 +57,7 @@ class ACOPlanner(BasePlanner):
     def _select_next_node(self, current: int, visited: set,
                           eta: np.ndarray) -> Optional[int]:
         """使用轮盘赌选择下一个节点"""
+        assert self.pheromone is not None
         n_nodes = eta.shape[0]
         unvisited = [i for i in range(n_nodes) if i not in visited]
 
@@ -115,6 +116,7 @@ class ACOPlanner(BasePlanner):
 
     def _update_pheromone(self, paths: List[Tuple[List[int], float]]):
         """更新信息素（挥发 + 沉积）"""
+        assert self.pheromone is not None
         # 挥发
         self.pheromone *= (1 - self.rho)
 

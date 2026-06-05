@@ -67,7 +67,7 @@ fi
 echo ""
 echo "Verifying build..."
 python3 -c "
-from edge_sdk._core import HAS_CPP_MODULE
+from edge_sdk.core import HAS_CPP_MODULE
 if HAS_CPP_MODULE:
     print('  ✓ C++ module loaded successfully!')
     from edge_sdk import create_sdk

@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'edge-cloud-coo
 import unittest
 
 
-from ai_decision import (
+from ai_decision import (  # type: ignore[import-not-found]
     LLMAssistedDecision, SmartQASystem, NLPTask,
     IntentType
 )

@@ -122,7 +122,7 @@ struct SerialConfig {
 
 /**
  * @brief PX4/ArduPilot 飞控通信接口
- * 
+ *
  * 基于 MAVLink v2 协议的完整飞控通信实现
  * 支持 PX4 和 ArduPilot（两者使用同一 MAVLink 协议）
  */
@@ -172,7 +172,7 @@ public:
 
 private:
     // MAVLink 协议
-    uint8_t calculate_crc(const uint8_t* data, size_t len);
+    uint16_t calculate_crc(const uint8_t* data, size_t len);
     bool validate_crc(const uint8_t* frame, size_t len);
     bool send_mavlink(uint32_t msg_id, const uint8_t* payload, uint8_t payload_len);
     bool receive_mavlink(MAVLinkFrame& header, std::vector<uint8_t>& payload);
@@ -196,7 +196,7 @@ private:
     void close_serial();
     bool read_serial(uint8_t* buffer, size_t size, size_t& bytes_read);
     bool write_serial(const uint8_t* data, size_t size);
-    
+
     // 接收线程
     void receive_loop();
     void send_heartbeat();
@@ -208,25 +208,25 @@ private:
     int serial_fd_;
 #endif
     bool connected_;
-    
+
     // 飞控状态
     UAVState current_state_;
     mutable std::mutex state_mutex_;
     std::atomic<int64_t> last_heartbeat_ms_{0};
-    
+
     // 配置
     SerialConfig serial_config_;
     uint8_t system_id_;
     uint8_t component_id_;
     uint8_t sequence_{0};
-    
+
     // 接收线程
     std::thread receive_thread_;
     std::atomic<bool> receive_thread_running_{false};
-    
+
     // 回调
     StateCallback state_callback_;
-    
+
     // CRC16-CCITT 表
     static const uint16_t crc_table_[256];
 };

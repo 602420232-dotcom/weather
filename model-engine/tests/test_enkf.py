@@ -1,10 +1,10 @@
 """EnKF 同化测试"""
 import numpy as np
-from gpr_risk.enkf import EnsembleKalmanFilter
+from gpr_risk.enkf import EnKFConfig, EnsembleKalmanFilter
 
 
 def test_enkf_generate_ensemble():
-    enkf = EnsembleKalmanFilter(n_ensemble=20)
+    enkf = EnsembleKalmanFilter(EnKFConfig(n_ensemble=20))
     mean = np.random.randn(6, 50, 50) * 0.1
     log_var = np.random.randn(6, 50, 50) * 0.1
     ensemble = enkf.generate_ensemble(mean, log_var)
@@ -14,7 +14,7 @@ def test_enkf_generate_ensemble():
 
 
 def test_enkf_assimilate():
-    enkf = EnsembleKalmanFilter(n_ensemble=20)
+    enkf = EnsembleKalmanFilter(EnKFConfig(n_ensemble=20))
     H, W = 10, 10
     mean = np.zeros((6, H, W))
     log_var = np.ones((6, H, W)) * (-2)
@@ -40,7 +40,7 @@ def test_enkf_assimilate():
 
 def test_enkf_uncertainty_reduction():
     """同化后不确定性应下降"""
-    enkf = EnsembleKalmanFilter(n_ensemble=50)
+    enkf = EnsembleKalmanFilter(EnKFConfig(n_ensemble=50))
     H, W = 10, 10
     mean = np.zeros((1, H, W))
     log_var = np.ones((1, H, W)) * (-1)

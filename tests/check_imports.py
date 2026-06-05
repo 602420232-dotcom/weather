@@ -28,7 +28,9 @@ class ImportChecker(ast.NodeVisitor):
     def visit_ImportFrom(self, node):
         for name in node.names:
             alias = name.asname or name.name
-            self.imports[alias] = (f"{node.module}.{name.name}" if node.module else name.name, node.lineno)
+            self.imports[alias] = (
+                f"{node.module}.{name.name}" if node.module else name.name, node.lineno
+            )
         self.generic_visit(node)
 
     def visit_Name(self, node):
@@ -66,7 +68,9 @@ def main():
     logger.info("Checking for unused imports...")
 
     for filepath in python_files:
-        if any(skip in filepath for skip in ['__pycache__', '.venv', 'venv', 'node_modules', '.git', 'build', 'dist']):
+        if any(skip in filepath
+               for skip in ['__pycache__', '.venv', 'venv', 'node_modules',
+                            '.git', 'build', 'dist']):
             continue
 
         unused, error = check_file(filepath)

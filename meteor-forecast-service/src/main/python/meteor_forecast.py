@@ -11,8 +11,10 @@ import sys
 import os
 import logging
 import threading
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import LSTM, Dense, Dropout, ConvLSTM2D, BatchNormalization, Flatten
+from tensorflow.keras.models import Sequential, load_model  # pyright: ignore[reportMissingImports]
+from tensorflow.keras.layers import (  # pyright: ignore[reportMissingImports]
+    LSTM, Dense, Dropout, ConvLSTM2D, BatchNormalization, Flatten
+)
 from xgboost import XGBRegressor
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
@@ -225,6 +227,10 @@ class MeteorForecast:
         :return: 订正结果
         """
         try:
+            if self.xgb_model is None:
+                logger.warning("XGBoost模型未初始化，无法执行订正")
+                return forecast_data
+
             # 计算预测误差
             error = np.array(observed_data) - np.array(forecast_data)  # noqa: F841
 

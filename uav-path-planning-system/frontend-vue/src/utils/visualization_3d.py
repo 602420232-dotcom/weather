@@ -2,7 +2,7 @@
 可视化增强引擎 - 3D轨迹可视化 + 气象场动态展示 + 多无人机协同展示
 """
 import numpy as np
-from typing import List, Tuple, Dict
+from typing import List, Optional, Tuple, Dict
 
 
 class TrajectoryVisualizer3D:
@@ -109,18 +109,26 @@ class MultiDroneCoordinator:
         """注册无人机"""
         self.drones[drone_id] = {
             "id": drone_id,
-            "position": {"lon": initial_position[0], "lat": initial_position[1], "alt": initial_position[2]},
+            "position": {
+                "lon": initial_position[0],
+                "lat": initial_position[1],
+                "alt": initial_position[2]
+            },
             "status": "idle",
             "battery": 100,
             "speed": 0,
             "heading": 0
         }
 
-    def update_drone_position(self, drone_id: str, position: Tuple[float, float, float],
-                              status: str = None, battery: float = None):
+    def update_drone_position(
+        self, drone_id: str, position: Tuple[float, float, float],
+        status: Optional[str] = None, battery: Optional[float] = None
+    ):
         """更新无人机位置"""
         if drone_id in self.drones:
-            self.drones[drone_id]["position"] = {"lon": position[0], "lat": position[1], "alt": position[2]}
+            self.drones[drone_id]["position"] = {
+                "lon": position[0], "lat": position[1], "alt": position[2]
+            }
             if status:
                 self.drones[drone_id]["status"] = status
             if battery is not None:
@@ -134,7 +142,10 @@ class MultiDroneCoordinator:
         return {
             "drones": list(self.drones.values()),
             "paths": {k: v[-100:] for k, v in self.flight_paths.items()},
-            "active_count": sum(1 for d in self.drones.values() if d["status"] in ("flying", "hovering")),
+            "active_count": sum(
+                1 for d in self.drones.values()
+                if d["status"] in ("flying", "hovering")
+            ),
             "timestamp": __import__("time").time()
         }
 

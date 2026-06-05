@@ -5,7 +5,7 @@ Based on pytest framework
 
 import os
 from pathlib import Path
-from typing import List, Dict, Tuple
+from typing import Any, List, Dict, Tuple
 from datetime import datetime
 import ast
 
@@ -34,7 +34,9 @@ class PythonFunctionExtractor(ast.NodeVisitor):
             'name': node.name,
             'class': self.current_class,
             'args': [arg.arg for arg in node.args.args],
-            'decorators': [d.id if hasattr(d, 'id') else str(d) for d in node.decorator_list],
+            'decorators': [
+                d.id if isinstance(d, ast.Name) else str(d) for d in node.decorator_list
+            ],
             'returns': 'Any',
             'has_docstring': ast.get_docstring(node) is not None
         }
@@ -67,9 +69,9 @@ def generate_test_file(python_file: str, functions: List[Dict]) -> Tuple[bool, s
 
     # Find src directory
     try:
-        src_idx = next(i for i, p in enumerate(parts) if p in [
+        _src_idx = next(i for i, p in enumerate(parts) if p in [  # noqa: F841
             'src', 'algorithm_core', 'platform-core'
-        ])  # noqa: F841
+        ])
         base_name = path.stem
         test_file = path.parent / f'test_{base_name}.py'
 
@@ -204,7 +206,7 @@ def generate_test_code(source_file: str, functions: List[Dict]) -> str:
     return '\n'.join(lines)
 
 
-def scan_and_generate_tests(root_dir: str) -> Dict[str, any]:
+def scan_and_generate_tests(root_dir: str) -> Dict[str, Any]:
     """Scan and generate tests"""
 
     print("=" * 60)

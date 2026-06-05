@@ -10,7 +10,7 @@ import shutil
 
 
 try:
-    from meteor_forecast_enhanced import (
+    from meteor_forecast_enhanced import (  # pyright: ignore[reportMissingImports]
         MeteorForecast,
         DataPreprocessor,
         TrainingMonitor,

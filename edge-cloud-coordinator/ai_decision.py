@@ -130,7 +130,7 @@ class LLMAssistedDecision:
             "params": {"command": action, "drone_id": "UAV-001"}
         }
 
-    def chat(self, message: str, context: dict = None) -> str:
+    def chat(self, message: str, context: dict | None = None) -> str:
         """自然语言对话接口"""
         task = self.understand_intent(message)
         if task.confidence < 0.5:
@@ -162,3 +162,34 @@ class SmartQASystem:
             if keyword in question:
                 return answer
         return "该问题暂无预设答案，建议查阅系统文档或联系技术支持"
+
+
+class AIDecision:
+    """兼容性封装类（为测试提供向后兼容）"""
+
+    def __init__(self):
+        self.llm_assistant = LLMAssistedDecision()
+
+    def make_decision(self, data: dict) -> dict:
+        """决策接口（兼容性接口）"""
+        wind_speed = data.get("wind_speed", 0)
+        battery = data.get("battery", 100)
+
+        if wind_speed > 15:
+            return {
+                "decision": "delay",
+                "confidence": 0.95,
+                "reasoning": f"风速{wind_speed}m/s超过安全阈值，建议延迟任务"
+            }
+        elif battery < 20:
+            return {
+                "decision": "return",
+                "confidence": 0.9,
+                "reasoning": f"电量{battery}%不足，建议返航"
+            }
+        else:
+            return {
+                "decision": "proceed",
+                "confidence": 0.9,
+                "reasoning": "当前条件适合执行任务"
+            }

@@ -4,12 +4,12 @@
 UAV Edge SDK - 配置管理模块
 """
 
-import logging
-logger = logging.getLogger(__name__)
-
 from typing import Dict, Any, Optional
 import json
 import os
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class SDKConfig:

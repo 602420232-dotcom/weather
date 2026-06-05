@@ -14,7 +14,7 @@ sys.modules['numpy'] = MagicMock()
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'edge-cloud-coordinator'))
 
-from coordinator import EdgeCloudCoordinator, EdgeTask, TaskType
+from coordinator import EdgeCloudCoordinator, EdgeTask, TaskType  # type: ignore[import-not-found]
 
 
 class TestEdgeTask(unittest.TestCase):

@@ -15,16 +15,16 @@ class Entity:
     name: str
     type: str
     properties: dict
-    embedding: List[float] = None
+    embedding: Optional[List[float]] = None
 
 
 @dataclass
 class Relation:
     source: str
-    target: str
+    target: Optional[str]
     relation_type: str
     weight: float = 1.0
-    properties: dict = None
+    properties: Optional[dict] = None
 
 
 class KnowledgeGraph:

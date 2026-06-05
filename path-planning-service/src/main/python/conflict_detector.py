@@ -196,9 +196,12 @@ class ConflictDetector:
             'drone_count': len(drone_ids),
             'analysis_duration': max_len * self.time_step if max_len > 0 else 0,
             'average_separation': sum(avg_seps) / len(avg_seps) if avg_seps else 0,
-            'min_separation': min(sep['min'] for sep in separations_over_time) if separations_over_time else 0,
-            'max_separation': max(sep['max'] for sep in separations_over_time) if separations_over_time else 0,
-            'separation_stability': min(sep['std'] for sep in separations_over_time) if separations_over_time else 0,
+            'min_separation': min(sep['min'] for sep in separations_over_time)
+            if separations_over_time else 0,
+            'max_separation': max(sep['max'] for sep in separations_over_time)
+            if separations_over_time else 0,
+            'separation_stability': min(sep['std'] for sep in separations_over_time)
+            if separations_over_time else 0,
             'time_points': len(separations_over_time),
             'details': separations_over_time
         }

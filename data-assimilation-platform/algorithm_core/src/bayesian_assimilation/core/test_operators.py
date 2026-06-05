@@ -1,6 +1,6 @@
 """
 Auto-generated unit test
-Source: d:\Developer\workplace\py\iteam\trae\data-assimilation-platform\algorithm_core\src\bayesian_assimilation\core\operators.py
+Source: d:/Developer/workplace/py/iteam/trae/data-assimilation-platform/algorithm_core/src/bayesian_assimilation/core/operators.py
 Generated: 2026-05-08 12:35:50
 """
 
@@ -23,33 +23,23 @@ class TestObservationOperator:
     """Test class: ObservationOperator"""
 
     @pytest.fixture
-
     def observationoperator_instance(self):
-    """Create instance for ObservationOperator"""
+        """Create instance for ObservationOperator"""
         # Initialize with default parameters for testing
         return None
 
     def test_build(self):
-    """Test method: build"""
+        """Test method: build"""
         # Test logic: Verify basic functionality
         # Args: self, obs_locations
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
 
-
-class TestObservationOperator:
-    """Test class: ObservationOperator"""
-
-    @pytest.fixture
-
-    def observationoperator_instance(self):
-    """Create instance for ObservationOperator"""
-        # Initialize with default parameters for testing
-        return None
-
     def test_apply(self):
-    """Test method: apply"""
+        """Test method: apply"""
         # Test logic: Verify basic functionality
         # Args: self, state, obs_locations
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
 
 
@@ -57,33 +47,23 @@ class TestNearestNeighborOperator:
     """Test class: NearestNeighborOperator"""
 
     @pytest.fixture
-
     def nearestneighboroperator_instance(self):
-    """Create instance for NearestNeighborOperator"""
+        """Create instance for NearestNeighborOperator"""
         # Initialize with default parameters for testing
         return None
 
     def test_build(self):
-    """Test method: build"""
+        """Test method: build"""
         # Test logic: Verify basic functionality
         # Args: self, obs_locations
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
 
-
-class TestNearestNeighborOperator:
-    """Test class: NearestNeighborOperator"""
-
-    @pytest.fixture
-
-    def nearestneighboroperator_instance(self):
-    """Create instance for NearestNeighborOperator"""
-        # Initialize with default parameters for testing
-        return None
-
     def test_apply(self):
-    """Test method: apply"""
+        """Test method: apply"""
         # Test logic: Verify basic functionality
         # Args: self, state, obs_locations
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
 
 
@@ -91,33 +71,23 @@ class TestBilinearOperator:
     """Test class: BilinearOperator"""
 
     @pytest.fixture
-
     def bilinearoperator_instance(self):
-    """Create instance for BilinearOperator"""
+        """Create instance for BilinearOperator"""
         # Initialize with default parameters for testing
         return None
 
     def test_build(self):
-    """Test method: build"""
+        """Test method: build"""
         # Test logic: Verify basic functionality
         # Args: self, obs_locations
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
 
-
-class TestBilinearOperator:
-    """Test class: BilinearOperator"""
-
-    @pytest.fixture
-
-    def bilinearoperator_instance(self):
-    """Create instance for BilinearOperator"""
-        # Initialize with default parameters for testing
-        return None
-
     def test_apply(self):
-    """Test method: apply"""
+        """Test method: apply"""
         # Test logic: Verify basic functionality
         # Args: self, state, obs_locations
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
 
 
@@ -125,33 +95,23 @@ class TestGaussianOperator:
     """Test class: GaussianOperator"""
 
     @pytest.fixture
-
     def gaussianoperator_instance(self):
-    """Create instance for GaussianOperator"""
+        """Create instance for GaussianOperator"""
         # Initialize with default parameters for testing
         return None
 
     def test_build(self):
-    """Test method: build"""
+        """Test method: build"""
         # Test logic: Verify basic functionality
         # Args: self, obs_locations
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
 
-
-class TestGaussianOperator:
-    """Test class: GaussianOperator"""
-
-    @pytest.fixture
-
-    def gaussianoperator_instance(self):
-    """Create instance for GaussianOperator"""
-        # Initialize with default parameters for testing
-        return None
-
     def test_apply(self):
-    """Test method: apply"""
+        """Test method: apply"""
         # Test logic: Verify basic functionality
         # Args: self, state, obs_locations
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
 
 
@@ -159,16 +119,16 @@ class TestOperatorFactory:
     """Test class: OperatorFactory"""
 
     @pytest.fixture
-
     def operatorfactory_instance(self):
-    """Create instance for OperatorFactory"""
+        """Create instance for OperatorFactory"""
         # Initialize with default parameters for testing
         return None
 
     def test_create(self):
-    """Test method: create"""
+        """Test method: create"""
         # Test logic: Verify basic functionality
         # Args: operator_type, grid_shape, resolution
+        result = None  # Assertion placeholder
         assert result is not None  # Assertion completed
 
 

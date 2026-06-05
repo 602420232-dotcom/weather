@@ -157,7 +157,10 @@ class PostFlightReview:
                 'segment_count': len(self.segments),
                 'event_count': len(self.events),
                 'warning_count': warning_count,
-                'flight_duration': (self.end_time - self.start_time) if self.start_time and self.end_time else 0
+                'flight_duration': (
+                    (self.end_time - self.start_time)
+                    if self.start_time and self.end_time else 0
+                )
             },
             'anomalies': anomalies,
             'improvement_suggestions': improvements,

@@ -18,7 +18,7 @@ except ImportError:
     HAS_FASTAPI = False
     logging.warning("FastAPI not installed. Running in demo mode.")
 
-from coordinator import EdgeCloudCoordinator, EdgeTask, TaskType
+from coordinator import EdgeCloudCoordinator, EdgeTask
 from federated_learning import FederatedLearning, DroneClient
 from websocket_sync import WebSocketSync
 
@@ -164,7 +164,7 @@ if HAS_FASTAPI:
         根据任务类型自动分配到云端或边缘处理
         """
         try:
-            task_type = TaskType(request.task_type)
+            task_type = request.task_type
 
             task = EdgeTask(
                 task_id=f"task_{len(coordinator.task_queue) + 1}",
@@ -180,7 +180,7 @@ if HAS_FASTAPI:
             return TaskSubmitResponse(
                 task_id=task_id,
                 status="submitted",
-                message=f"任务已提交到{getattr(task_type, 'value', request.task_type)}队列"
+                message=f"任务已提交到{request.task_type}队列"
             )
 
         except ValueError:
@@ -196,19 +196,21 @@ if HAS_FASTAPI:
             if task.task_id == task_id:
                 return TaskStatusResponse(
                     task_id=task.task_id,
-                    task_type=task.task_type.value,
+                    task_type=task.task_type,
                     priority=task.priority,
                     status=task.status
                 )
 
         for task in coordinator.completed_tasks:
-            if task.task_id == task_id:
+            if task.get("task_id") == task_id:  # type: ignore[reportAttributeAccessIssue]
                 return TaskStatusResponse(
-                    task_id=task.task_id,
-                    task_type=task.task_type.value,
-                    priority=task.priority,
-                    status=task.status,
-                    result=task.data.get("result") if task.data else None
+                    task_id=task["task_id"],  # type: ignore[reportAttributeAccessIssue]
+                    task_type=task["task_type"],  # type: ignore[reportAttributeAccessIssue]
+                    priority=task.get("priority", 5),  # type: ignore[reportAttributeAccessIssue]
+                    status=task.get(  # type: ignore[reportAttributeAccessIssue]
+                        "status", "unknown"),
+                    result=task.get(  # type: ignore[reportAttributeAccessIssue]
+                        "data", {}).get("result")
                 )
 
         raise HTTPException(status_code=404, detail=f"任务 {task_id} 不存在")
@@ -229,19 +231,27 @@ if HAS_FASTAPI:
         limit: int = 10
     ):
         """获取任务列表"""
-        tasks = coordinator.task_queue[:limit]
-
         if status == "completed":
-            tasks = coordinator.completed_tasks[:limit]
+            source = coordinator.completed_tasks[:limit]
+            return [
+                TaskStatusResponse(
+                    task_id=t["task_id"],  # type: ignore[reportAttributeAccessIssue]
+                    task_type=t["task_type"],  # type: ignore[reportAttributeAccessIssue]
+                    priority=t.get("priority", 5),  # type: ignore[reportAttributeAccessIssue]
+                    status=t.get("status", "unknown"),  # type: ignore[reportAttributeAccessIssue]
+                )
+                for t in source
+            ]
 
+        source = coordinator.task_queue[:limit]
         return [
             TaskStatusResponse(
                 task_id=task.task_id,
-                task_type=task.task_type.value,
+                task_type=task.task_type,
                 priority=task.priority,
                 status=task.status
             )
-            for task in tasks
+            for task in source
         ]
 
     @app.get("/status", response_model=SystemStatusResponse, tags=["Coordinator"])
@@ -260,7 +270,7 @@ if HAS_FASTAPI:
     async def sync_with_cloud():
         """同步云端模型"""
         try:
-            coordinator.sync_cloud_models()
+            coordinator.sync_cloud_models()  # type: ignore[reportAttributeAccessIssue]
             return {
                 "message": "云端同步完成",
                 "models": list(coordinator.cloud_models.keys())
@@ -274,7 +284,7 @@ if HAS_FASTAPI:
         """上传边缘数据到云端"""
 
         def _upload():
-            coordinator.upload_edge_data()
+            coordinator.upload_edge_data()  # type: ignore[reportAttributeAccessIssue]
 
         background_tasks.add_task(_upload)
         return {"message": "数据上传任务已提交"}
@@ -295,7 +305,7 @@ if HAS_FASTAPI:
         results = []
         for req in tasks:
             try:
-                task_type = TaskType(req.task_type)
+                task_type = req.task_type
                 task = EdgeTask(
                     task_id=f"task_{len(coordinator.task_queue) + 1}",
                     task_type=task_type,
@@ -409,7 +419,9 @@ if HAS_FASTAPI:
     async def prometheus_metrics():
         """Prometheus 指标暴露端点"""
         try:
-            from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+            from prometheus_client import (  # type: ignore[reportMissingImports]
+                generate_latest, CONTENT_TYPE_LATEST
+            )
             data = generate_latest()
             return Response(content=data, media_type=CONTENT_TYPE_LATEST)
         except ImportError:

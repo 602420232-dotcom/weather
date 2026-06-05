@@ -11,12 +11,12 @@ UAV Edge SDK - Python Package
     sdk = EdgeSDK()
 """
 
-import logging
-logger = logging.getLogger(__name__)
-
-from ._core import EdgeSDK, create_sdk, plan_path, assess_weather
+from .core import EdgeSDK, create_sdk, plan_path, assess_weather
 from .config import SDKConfig, get_config, set_config
 from .logger import get_logger
+
+import logging
+logger = logging.getLogger(__name__)
 
 __version__ = "1.0.0"
 

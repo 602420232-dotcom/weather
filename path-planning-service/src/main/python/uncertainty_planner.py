@@ -4,7 +4,7 @@
 """
 import numpy as np
 import logging
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
@@ -58,8 +58,8 @@ class UncertaintyAwarePlanner:
             path.append((base_x + perturbation, base_y + perturbation))
 
         path.append(goal)
-        cost = sum(np.linalg.norm(np.array(path[j]) - np.array(path[j + 1]))
-                   for j in range(len(path) - 1))
+        cost = float(sum(np.linalg.norm(np.array(path[j]) - np.array(path[j + 1]))
+                         for j in range(len(path) - 1)))
         risk_score = wind * 0.3 + turbulence * 10 + max(0, scenario.get('wind_gust', 0)) * 0.5
         return EnsemblePath(path=path, cost=cost, risk_score=risk_score)
 
@@ -90,7 +90,7 @@ class UncertaintyAwarePlanner:
         }
 
     def plan(self, start: Tuple[float, float], goal: Tuple[float, float],
-             weather_ensemble: dict = None) -> dict:
+             weather_ensemble: Optional[dict] = None) -> dict:
         """执行不确定性感知路径规划"""
         scenarios = self.generate_scenarios(weather_ensemble or {})
         ensemble_paths = [self.simulate_path(start, goal, s) for s in scenarios]

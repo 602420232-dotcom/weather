@@ -11,7 +11,7 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'common-utils', 'src', 'main', 'python'))
 
-from errors import AppError, ErrorCode, Result, handle_errors
+from errors import AppError, ErrorCode, Result, handle_errors  # type: ignore[import-not-found]
 
 
 class TestErrorCode(unittest.TestCase):

@@ -44,9 +44,10 @@ class AdaptiveAssimilator:
         """评估数据质量"""
         n_valid = np.sum(~np.isnan(observations))
         total = observations.size
-        completeness = n_valid / total if total > 0 else 0
-        spatial_std = np.nanstd(observations)
-        temporal_std = np.nanstd(np.diff(observations, axis=0)) if observations.shape[0] > 1 else 0
+        completeness = float(n_valid / total) if total > 0 else 0.0
+        spatial_std = float(np.nanstd(observations))
+        temporal_std = float(np.nanstd(np.diff(observations, axis=0))) \
+            if observations.shape[0] > 1 else 0.0
         return {
             'completeness': completeness,
             'spatial_variability': spatial_std,
@@ -71,9 +72,9 @@ class AdaptiveAssimilator:
             logger.info(f"使用指定算法: {method_hint}")
             return method_hint
 
-        scores = {}
-        for name, algo_cls in self.algorithms.items():
-            score = 0
+        scores: Dict[str, float] = {}
+        for name, _algo_cls in self.algorithms.items():
+            score: float = 0
             if name == '3dvar':
                 score = data_quality['completeness'] * 40 + \
                     (100 - compute_resources['memory_percent']) * 30 + 30
@@ -85,7 +86,7 @@ class AdaptiveAssimilator:
                     data_quality['temporal_variability'] * 30 + 40
             scores[name] = score
 
-        best_algo = max(scores, key=scores.get)
+        best_algo = max(scores, key=lambda k: scores[k])
         logger.info(f"自适应选择算法: {best_algo} (评分: {scores})")
         return best_algo
 

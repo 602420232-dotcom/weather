@@ -5,7 +5,6 @@ from api.models.request import BatchRequest  # type: ignore[import-not-found]
 from api.models.response import BatchResponse  # type: ignore[import-not-found]
 from api.core.assimilation_service import AssimilationService
 import logging
-import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +21,7 @@ def set_assimilation_service(service: AssimilationService):
 
 
 @router.post("/batch", response_model=BatchResponse)
-async def batch_assimilation(request: BatchRequest):
+def batch_assimilation(request: BatchRequest):
     """
     批量同化计算
 
@@ -46,11 +45,19 @@ async def batch_assimilation(request: BatchRequest):
             }
             requests.append(request_dict)
 
-        # 并行处理
-        tasks = [  # type: ignore[attr-defined]
-            assimilation_service.compute(req) for req in requests
-        ]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        # 处理请求
+        results = []
+        for req in requests:
+            try:
+                result = assimilation_service.execute(
+                    algorithm=req.get("config", {}).get("algorithm", "3dvar"),
+                    background=req["background_field"],
+                    observations=req["observations"],
+                    config=req.get("config"),
+                )
+                results.append(result)
+            except Exception as e:
+                results.append(e)
 
         # 统计结果
         completed = len([r for r in results if not isinstance(r, Exception)])

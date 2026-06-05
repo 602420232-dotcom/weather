@@ -59,7 +59,10 @@ setup(
     version='1.0.0',
     author='Dithiothreitol',
     description='UAV Edge SDK with C++/Python hybrid implementation',
-    long_description='High-performance UAV edge computing SDK with offline path planning and weather risk assessment',
+    long_description=(
+        'High-performance UAV edge computing SDK with offline '
+        'path planning and weather risk assessment'
+    ),
     url='https://github.com/yourusername/uav-edge-sdk',
     license='Apache 2.0',
     packages=['edge_sdk'],

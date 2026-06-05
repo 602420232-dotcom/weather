@@ -16,12 +16,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'data-assimilation-platform', 'algorithm_core'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'path-planning-service', 'src', 'main', 'python'))
 
-from src.bayesian_assimilation.models.three_dimensional_var import ThreeDimensionalVAR
-from src.bayesian_assimilation.models.four_dimensional_var import FourDimensionalVar
-from src.bayesian_assimilation.models.enkf import EnKF
-from src.bayesian_assimilation.models.hybrid import HybridAssimilation
-from three_layer_planner import VRPTWPlanner, AStarPlanner, DWAPlanner, Drone, Task, Obstacle, NoFlyZone
-from advanced_planners import RRTStarPlanner, DijkstraPlanner, GeneticAlgorithmPlanner, ParticleSwarmOptimizationPlanner
+from src.bayesian_assimilation.models.three_dimensional_var import ThreeDimensionalVAR  # type: ignore[import-not-found]
+from src.bayesian_assimilation.models.four_dimensional_var import FourDimensionalVar  # type: ignore[import-not-found]
+from src.bayesian_assimilation.models.enkf import EnKF  # type: ignore[import-not-found]
+from src.bayesian_assimilation.models.hybrid import HybridAssimilation  # type: ignore[import-not-found]
+from three_layer_planner import VRPTWPlanner, AStarPlanner, DWAPlanner, Drone, Task, Obstacle, NoFlyZone  # type: ignore[import-not-found]
+from advanced_planners import RRTStarPlanner, DijkstraPlanner, GeneticAlgorithmPlanner, ParticleSwarmOptimizationPlanner  # type: ignore[import-not-found]
 
 
 class TestAlgorithm(unittest.TestCase):

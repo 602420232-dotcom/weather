@@ -3,11 +3,12 @@
 """
 UAV Edge SDK - Flight Controller Python Fallback
 """
-import logging
-logger = logging.getLogger(__name__)
 
 import time
 from typing import Dict, Any, List
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class FlightControllerFallback:

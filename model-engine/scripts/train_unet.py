@@ -16,12 +16,13 @@ from unet_downscaler.model import UNetDownscaler, UNetConfig
 import sys
 import logging
 from pathlib import Path
+from typing import Optional
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
+from torch.utils.tensorboard.writer import SummaryWriter
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -34,7 +35,7 @@ logger = logging.getLogger(__name__)
 class UNetTrainer:
     """U-Net 降尺度训练器"""
 
-    def __init__(self, config: UNetConfig = None, device: str = "cuda"):
+    def __init__(self, config: Optional[UNetConfig] = None, device: str = "cuda"):
         self.device = device if torch.cuda.is_available() else "cpu"
         logger.info(f"设备: {self.device}")
 

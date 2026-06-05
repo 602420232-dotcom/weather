@@ -28,7 +28,8 @@ class JwtTokenProviderTest {
 
     @BeforeEach
     void setUp() {
-        when(jwtProperties.getSecret()).thenReturn("dGVzdFNlY3JldEtleUZvckpXVDI1NkJpdHM=");
+        when(jwtProperties.getSecret()).thenReturn(
+                "ThisIsATestSecretKeyForJwtTokenProviderHS512AlgorithmMustBeAtLeast64BytesLong2024");
         when(jwtProperties.getExpirationMs()).thenReturn(7200000L);
         when(jwtProperties.getRefreshExpirationMs()).thenReturn(2592000000L);
         when(jwtProperties.getIssuer()).thenReturn("uav-platform");
