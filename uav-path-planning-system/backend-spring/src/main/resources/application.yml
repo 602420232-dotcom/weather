@@ -2,66 +2,60 @@ spring:
   application:
     name: uav-path-planning
 
+  # 閺佺増宓佹惔鎾诲帳缂?
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:uav_path_planning}?useSSL=true&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:uav_path_planning}?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ${DB_USER:root}
-    password: ${DB_PASSWORD:}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:20}
+      minimum-idle: ${DB_POOL_MIN_IDLE:5}
+      connection-timeout: ${DB_CONNECTION_TIMEOUT:30000}
+      idle-timeout: ${DB_IDLE_TIMEOUT:600000}
+      max-lifetime: ${DB_MAX_LIFETIME:1800000}
+      leak-detection-threshold: ${DB_LEAK_DETECTION_THRESHOLD:60000}
 
+  # JPA闁板秶鐤?
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
 
+  # 閺傚洣娆㈡稉濠佺炊闂勬劕鍩?
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 1GB
+
+  # Redis闁板秶鐤?
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
+      password: ${REDIS_PASSWORD}
       database: 0
 
+  # 缂傛挸鐡ㄩ柊宥囩枂
   cache:
     type: redis
 
-  # Kafka配置
-  kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    consumer:
-      group-id: uav-path-planning-group
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      auto-offset-reset: earliest
-
-  # Flyway 数据库迁移
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-    baseline-on-migrate: true
-    baseline-version: 0
-
-springdoc:
-  api-docs:
-    path: /api-docs
-  swagger-ui:
-    path: /swagger-ui.html
-    operations-sorter: method
-    tags-sorter: alpha
-
+# 閺堝秴濮熼崳銊╁帳缂?
 server:
   port: ${SERVER_PORT:8089}
   ssl:
     enabled: ${SSL_ENABLED:false}
     key-store: ${SSL_KEY_STORE:}
-    key-store-password: ${SSL_KEY_STORE_PASSWORD:}
+    key-store-password: ${SSL_KEY_STORE_PASSWORD}
     key-alias: ${SSL_KEY_ALIAS:}
 
+# JWT闁板秶鐤?
 jwt:
-  secret: ${JWT_SECRET:}
+  secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:86400000}
+  enabled: ${JWT_ENABLED:true}
 
+# 閼奉亜鐣炬稊澶愬帳缂?
 uav:
   python:
     script-path: ${user.dir}/algorithm-core
@@ -80,22 +74,14 @@ uav:
     host: ${GRPC_HOST:localhost}
     port: ${GRPC_PORT:50051}
 
-utm:
-  enabled: ${UTM_ENABLED:false}
-  provider: ${UTM_PROVIDER:simulation}
-  api:
-    base-url: ${UTM_API_BASE_URL:https://api.utm-platform.com/v1}
-    key: ${UTM_API_KEY:}
-    timeout: 5000
-
 logging:
   level:
     root: info
-    "[com.uav]": info
+    '[com.uav]': info
 
 mybatis-plus:
   mapper-locations: classpath:mapper/**/*.xml
-  type-aliases-package: com.uav.model
+  'type-aliases-package': com.uav.model
   configuration:
     map-underscore-to-camel-case: true
 
@@ -103,7 +89,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
   endpoint:
     health:
       show-details: when-authorized

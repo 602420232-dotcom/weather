@@ -27,7 +27,7 @@ class TestEdgeCloudIntegration:
     def test_api_health_endpoint(self):
         """测试API健康检查端点"""
         try:
-            from api import app  # pyright: ignore[reportAttributeAccessIssue]
+            from api import app
             from fastapi.testclient import TestClient
 
             client = TestClient(app)
@@ -39,19 +39,18 @@ class TestEdgeCloudIntegration:
     def test_circuit_breaker_integration(self):
         """测试熔断器集成"""
         try:
-            from circuit_breaker import CircuitBreakerService, CircuitBreakerConfig
+            from circuit_breaker import CircuitBreaker, CircuitState
 
-            service = CircuitBreakerService()
-            assert service is not None
+            cb = CircuitBreaker(
+                failure_threshold=3,
+                recovery_timeout=30
+            )
 
-            # 验证熔断器配置
-            assert CircuitBreakerConfig.HTTP_SERVICE_CB['fail_max'] > 0
-            assert CircuitBreakerConfig.HTTP_SERVICE_CB['reset_timeout'] > 0
+            # 模拟失败
+            for _ in range(3):
+                cb.record_failure()
 
-            # 验证可以获取熔断器状态
-            status = service.get_status()
-            assert 'http' in status
-            assert 'state' in status['http']
+            assert cb.state == CircuitState.OPEN
         except ImportError:
             pytest.skip("CircuitBreaker module not available")
 
@@ -167,9 +166,9 @@ class TestDetectionDroneIntegration:
     def test_offline_data_collection(self):
         """测试离线数据收集"""
         try:
-            from detection_drone_offline_complete import OfflineSampleBuffer
+            from detection_drone_offline_complete import OfflineDataBuffer
 
-            buffer = OfflineSampleBuffer(mission_id=1, drone_id='test-drone')
+            buffer = OfflineDataBuffer(mission_id=1, drone_id='test-drone')
 
             # 模拟传感器数据
             sensor_data = {

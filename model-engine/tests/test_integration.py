@@ -17,29 +17,26 @@ class TestGPRPathPlanningIntegration:
 
     def test_gpr_to_planner_data_flow(self):
         """测试GPR风险场输出到路径规划器的数据流"""
-        from gpr_risk.model import GPRiskEstimator, GPRConfig
+        from gpr_risk.model import GPRRiskModel, GPRConfig
         from path_planning.cost_function import RiskCostFunction, CostConfig
 
         # 创建GPR模型配置
         gpr_config = GPRConfig(
             kernel_type='rbf',
+            noise_level=1e-4,
             n_iter=10
         )
 
         # 创建代价函数配置
         cost_config = CostConfig(
-            w_meteorological=0.4,
-            w_distance=0.3,
-            w_energy=0.3
+            risk_weight=0.6,
+            distance_weight=0.3,
+            energy_weight=0.1
         )
 
         # 验证配置可以协同工作
         assert gpr_config.kernel_type == 'rbf'
-        assert (
-            cost_config.w_meteorological
-            + cost_config.w_distance
-            + cost_config.w_energy == 1.0
-        )
+        assert cost_config.risk_weight + cost_config.distance_weight + cost_config.energy_weight == 1.0
 
     def test_risk_field_to_cost_conversion(self):
         """测试风险场到代价的转换"""
@@ -66,7 +63,7 @@ class TestEnKFGPRIntegration:
 
         # 创建EnKF配置
         enkf_config = EnKFConfig(
-            n_ensemble=20,
+            ensemble_size=20,
             inflation_factor=1.05,
             observation_noise=0.1
         )
@@ -98,13 +95,13 @@ class TestMultiUAVPathPlanningIntegration:
 
     def test_conflict_resolution_with_planner(self):
         """测试冲突消解与路径规划的协作"""
-        from multi_uav.conflict_resolver import MultiUAVConflictResolver, ConflictConfig
+        from multi_uav.conflict_resolver import ConflictResolver, ConflictConfig
 
         config = ConflictConfig(
-            horizontal_threshold_m=50.0,
-            altitude_separation_m=30.0
+            safety_distance=50.0,
+            priority_strategy='distance'
         )
-        resolver = MultiUAVConflictResolver(config)
+        resolver = ConflictResolver(config)
 
         # 模拟多条路径
         paths = [
@@ -142,11 +139,11 @@ class TestFusionIntegration:
 
     def test_ensemble_fusion_with_uncertainty(self):
         """测试集合融合与不确定性量化"""
-        from fusion.ensemble import DynamicWeightFusion, FusionConfig
+        from fusion.ensemble import EnsembleFuser, FusionConfig
 
         config = FusionConfig(
-            adapt_interval=5,
-            window_size=12
+            method='weighted_average',
+            uncertainty_quantification=True
         )
 
         # 模拟多个模型的预测
@@ -165,11 +162,11 @@ class TestActiveObservationIntegration:
 
     def test_bayesian_observer_with_risk_field(self):
         """测试贝叶斯观测器与风险场的协作"""
-        from active_obs.bayesian_observer import BayesianActiveObserver, ActiveObsConfig
+        from active_obs.bayesian_observer import BayesianObserver, ObserverConfig
 
-        config = ActiveObsConfig(
-            n_observations_per_round=7,
-            max_flight_range_km=30.0
+        config = ObserverConfig(
+            exploration_rate=0.1,
+            exploitation_rate=0.9
         )
 
         # 模拟风险场和不确定性
@@ -177,8 +174,7 @@ class TestActiveObservationIntegration:
         uncertainty = np.random.rand(100, 100)
 
         # 验证配置
-        assert config.n_observations_per_round > 0
-        assert config.max_flight_range_km > 0
+        assert config.exploration_rate + config.exploitation_rate == 1.0
 
 
 class TestMPCIntegration:
@@ -186,18 +182,18 @@ class TestMPCIntegration:
 
     def test_mpc_with_path_planner(self):
         """测试MPC与路径规划器的协作"""
-        from control.mpc import ModelPredictiveController, MPCConfig
+        from control.mpc import MPCController, MPCConfig
 
         config = MPCConfig(
-            horizon_steps=10,
-            step_interval_s=1,
-            max_speed=20.0
+            horizon=10,
+            dt=1.0,
+            max_velocity=20.0
         )
 
         # 验证配置
-        assert config.horizon_steps > 0
-        assert config.step_interval_s > 0
-        assert config.max_speed > 0
+        assert config.horizon > 0
+        assert config.dt > 0
+        assert config.max_velocity > 0
 
 
 if __name__ == '__main__':

@@ -85,13 +85,13 @@ class TestDataAssimilationE2E:
 
         # 3. 创建同化配置
         config = EnKFConfig(
-            n_ensemble=20,
+            ensemble_size=20,
             inflation_factor=1.05,
             observation_noise=0.1
         )
 
         # 4. 验证配置
-        assert config.n_ensemble == 20
+        assert config.ensemble_size == 20
 
     def test_3dvar_assimilation_e2e(self):
         """测试3DVAR同化端到端流程"""
@@ -177,6 +177,7 @@ class TestGPRRiskFieldE2E:
         # 2. 创建GPR配置
         config = GPRConfig(
             kernel_type='rbf',
+            noise_level=1e-4,
             n_iter=50
         )
 
@@ -230,15 +231,15 @@ class TestActiveObservationE2E:
 
     def test_observation_selection_e2e(self):
         """测试观测点选择端到端流程"""
-        from active_obs.bayesian_observer import ActiveObsConfig
+        from active_obs.bayesian_observer import ObserverConfig
 
         # 1. 模拟不确定性场
         uncertainty_field = np.random.rand(100, 100) * 0.5
 
         # 2. 创建观测配置
-        config = ActiveObsConfig(
-            n_observations_per_round=5,
-            max_flight_range_km=50.0
+        config = ObserverConfig(
+            exploration_rate=0.2,
+            exploitation_rate=0.8
         )
 
         # 3. 选择观测点（选择不确定性最高的点）
@@ -254,8 +255,7 @@ class TestActiveObservationE2E:
 
         # 5. 验证
         assert len(observation_points) == n_observations
-        assert config.n_observations_per_round > 0
-        assert config.max_flight_range_km > 0
+        assert config.exploration_rate + config.exploitation_rate == 1.0
 
 
 class TestMPCE2E:
@@ -272,9 +272,9 @@ class TestMPCE2E:
 
         # 2. 创建MPC配置
         config = MPCConfig(
-            horizon_steps=10,
-            step_interval_s=1,
-            max_speed=15.0
+            horizon=10,
+            dt=0.1,
+            max_velocity=15.0
         )
 
         # 3. 模拟无人机状态
@@ -286,8 +286,8 @@ class TestMPCE2E:
         }
 
         # 4. 验证配置
-        assert config.horizon_steps == 10
-        assert config.max_speed == 15.0
+        assert config.horizon == 10
+        assert config.max_velocity == 15.0
 
 
 class TestSystemIntegrationE2E:
