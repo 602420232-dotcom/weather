@@ -40,8 +40,6 @@ uav:
   jwt:
     secret: test-secret-key-for-unit-testing-only-do-not-use-in-production
     enabled: true
-
-uav:
   python:
     script-path: ./python
     timeout: 30000
