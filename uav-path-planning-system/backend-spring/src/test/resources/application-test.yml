@@ -66,6 +66,34 @@ uav:
 utm:
   enabled: false
 
+resilience4j:
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 500ms
+        retry-exceptions:
+          - java.lang.Exception
+    instances:
+      meteorForecastRetry:
+        base-config: default
+      pathPlanningRetry:
+        base-config: default
+      dataAssimilationRetry:
+        base-config: default
+  circuitbreaker:
+    configs:
+      default:
+        register-health-indicator: false
+        sliding-window-size: 5
+    instances:
+      meteorForecastCircuitBreaker:
+        base-config: default
+      pathPlanningCircuitBreaker:
+        base-config: default
+      dataAssimilationCircuitBreaker:
+        base-config: default
+
 logging:
   level:
     root: info
