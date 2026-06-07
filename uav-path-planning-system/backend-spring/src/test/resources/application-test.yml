@@ -28,6 +28,8 @@ spring:
 
   cache:
     type: none
+  main:
+    allow-bean-definition-overriding: true
 
 server:
   port: 0

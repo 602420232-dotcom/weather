@@ -1,11 +1,13 @@
 package com.uav.config;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.retry.Retry;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.client.RestTemplate;
 
 import static org.mockito.Mockito.mock;
 
@@ -23,10 +25,6 @@ public class TestRedisConfig {
         return mock(RedisTemplate.class);
     }
 
-    /**
-     * CircuitBreakerService 需要命名 Retry 实例，
-     * Resilience4jConfig 只提供了 RetryRegistry 未提供命名 Retry Bean
-     */
     @Bean("meteorForecastRetry")
     @Primary
     public Retry meteorForecastRetry() {
@@ -43,5 +41,29 @@ public class TestRedisConfig {
     @Primary
     public Retry dataAssimilationRetry() {
         return mock(Retry.class);
+    }
+
+    @Bean("meteorForecastCircuitBreaker")
+    @Primary
+    public CircuitBreaker meteorForecastCircuitBreaker() {
+        return mock(CircuitBreaker.class);
+    }
+
+    @Bean("pathPlanningCircuitBreaker")
+    @Primary
+    public CircuitBreaker pathPlanningCircuitBreaker() {
+        return mock(CircuitBreaker.class);
+    }
+
+    @Bean("dataAssimilationCircuitBreaker")
+    @Primary
+    public CircuitBreaker dataAssimilationCircuitBreaker() {
+        return mock(CircuitBreaker.class);
+    }
+
+    @Bean("resilientRestTemplate")
+    @Primary
+    public RestTemplate resilientRestTemplate() {
+        return mock(RestTemplate.class);
     }
 }
