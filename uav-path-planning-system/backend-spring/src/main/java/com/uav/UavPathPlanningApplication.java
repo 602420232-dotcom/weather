@@ -11,7 +11,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan(basePackages = "com.uav", excludeFilters = {
     @ComponentScan.Filter(type = FilterType.REGEX, pattern = "com\\.uav\\.common\\.exception\\.GlobalExceptionHandler"),
     @ComponentScan.Filter(type = FilterType.REGEX, pattern = "com\\.uav\\.common\\.config\\.RedisConfig"),
-    @ComponentScan.Filter(type = FilterType.REGEX, pattern = "com\\.uav\\.common\\.resilience\\.ResilienceConfig")
+    @ComponentScan.Filter(type = FilterType.REGEX, pattern = "com\\.uav\\.common\\.resilience\\.ResilienceConfig"),
+    @ComponentScan.Filter(type = FilterType.REGEX, pattern = "com\\.uav\\.config\\.Resilience4jConfig")
 })
 @EnableCaching
 @EnableScheduling
