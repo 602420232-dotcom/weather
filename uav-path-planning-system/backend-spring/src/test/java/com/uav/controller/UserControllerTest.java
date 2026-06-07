@@ -2,6 +2,7 @@ package com.uav.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uav.model.User;
+import com.uav.service.CustomUserDetailsService;
 import com.uav.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,6 +38,9 @@ class UserControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private CustomUserDetailsService customUserDetailsService;
 
     private User adminUser;
     private User operatorUser;
