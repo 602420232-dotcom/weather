@@ -22,6 +22,12 @@
             <groupId>com.uav</groupId>
             <artifactId>common-utils</artifactId>
             <version>1.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.github.resilience4j</groupId>
+                    <artifactId>resilience4j-spring-boot3</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -62,7 +68,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.resilience4j</groupId>
-            <artifactId>resilience4j-spring-boot3</artifactId>
+            <artifactId>resilience4j-spring-boot2</artifactId>
         </dependency>
 
         <dependency>
