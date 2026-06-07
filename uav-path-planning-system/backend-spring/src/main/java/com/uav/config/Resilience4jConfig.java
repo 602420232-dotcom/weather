@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
@@ -22,6 +23,7 @@ import java.time.Duration;
  * 使用Resilience4j 2.x API
  */
 @Configuration
+@Profile("!test")
 public class Resilience4jConfig {
 
     private static final Logger log = LoggerFactory.getLogger(Resilience4jConfig.class);
