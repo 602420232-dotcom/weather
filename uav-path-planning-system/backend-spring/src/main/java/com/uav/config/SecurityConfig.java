@@ -63,18 +63,20 @@ public class SecurityConfig {
                 if (csrfEnabled) {
                     csrf.csrfTokenRepository(cookieCsrfTokenRepository())
                        .csrfTokenRequestHandler(attributeHandler)
-                       .ignoringRequestMatchers(
-                           "/api/public/**",
-                           "/api/auth/**",
-                           "/actuator/**",
-                           "/path-planning/history"
-                       );
+                   .ignoringRequestMatchers(
+                       "/api/public/**",
+                       "/api/v1/auth/**",
+                       "/api/auth/**",
+                       "/actuator/**",
+                       "/path-planning/history"
+                   );
                 } else {
                     csrf.disable();
                 }
             })
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
