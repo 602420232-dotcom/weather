@@ -92,6 +92,12 @@
         <dependency>
             <groupId>io.github.resilience4j</groupId>
             <artifactId>resilience4j-spring-boot3</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.github.resilience4j</groupId>
+                    <artifactId>resilience4j-spring-boot2</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>jakarta.annotation</groupId>

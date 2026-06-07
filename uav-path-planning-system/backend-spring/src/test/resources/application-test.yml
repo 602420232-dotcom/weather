@@ -37,6 +37,9 @@ jwt:
   expiration: 3600000
 
 uav:
+  jwt:
+    secret: test-secret-key-for-unit-testing-only-do-not-use-in-production
+    enabled: true
   python:
     script-path: ./python
     timeout: 30000
