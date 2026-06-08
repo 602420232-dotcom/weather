@@ -32,13 +32,10 @@ spring:
 server:
   port: 0
 
-jwt:
-  secret: test-secret-key-for-unit-testing-only-do-not-use-in-production
-  expiration: 3600000
-
 uav:
   jwt:
     secret: test-secret-key-for-unit-testing-only-do-not-use-in-production
+    expiration: 3600000
     enabled: true
   python:
     script-path: ./python
