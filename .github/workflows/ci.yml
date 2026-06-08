@@ -133,7 +133,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/api-gateway:${{ github.sha }},ghcr.io/${{ github.repository }}/api-gateway:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build & Push UAV Platform
         uses: docker/build-push-action@v6
@@ -143,7 +142,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/uav-platform:${{ github.sha }},ghcr.io/${{ github.repository }}/uav-platform:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build & Push WRF Processor
         uses: docker/build-push-action@v6
@@ -153,7 +151,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/wrf-processor:${{ github.sha }},ghcr.io/${{ github.repository }}/wrf-processor:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build & Push Data Assimilation
         uses: docker/build-push-action@v6
@@ -163,7 +160,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/data-assimilation:${{ github.sha }},ghcr.io/${{ github.repository }}/data-assimilation:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build & Push Meteor Forecast
         uses: docker/build-push-action@v6
@@ -173,7 +169,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/meteor-forecast:${{ github.sha }},ghcr.io/${{ github.repository }}/meteor-forecast:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build & Push Path Planning
         uses: docker/build-push-action@v6
@@ -183,7 +178,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/path-planning:${{ github.sha }},ghcr.io/${{ github.repository }}/path-planning:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build & Push Weather Collector
         uses: docker/build-push-action@v6
@@ -193,7 +187,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/weather-collector:${{ github.sha }},ghcr.io/${{ github.repository }}/weather-collector:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build & Push Frontend
         uses: docker/build-push-action@v6
@@ -203,7 +196,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/frontend:${{ github.sha }},ghcr.io/${{ github.repository }}/frontend:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       # ----- Python / AI 服务 -----
       - name: Build & Push FengWu Service
@@ -214,7 +206,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/fengwu:${{ github.sha }},ghcr.io/${{ github.repository }}/fengwu:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build & Push Edge-Cloud Coordinator
         uses: docker/build-push-action@v6
@@ -224,7 +215,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/edge-cloud:${{ github.sha }},ghcr.io/${{ github.repository }}/edge-cloud:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build & Push Model Engine
         uses: docker/build-push-action@v6
@@ -234,4 +224,3 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/model-engine:${{ github.sha }},ghcr.io/${{ github.repository }}/model-engine:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max
