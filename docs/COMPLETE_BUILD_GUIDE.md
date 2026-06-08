@@ -117,7 +117,7 @@
 | **Dart SDK** | 3.2.0+（随 Flutter 自带） | Flutter 开发语言 | 随 Flutter 自动安装 |
 | **Git** | 2.40+ | 源码版本管理 | 建议最新版 |
 | **MySQL** | 8.0 | 主数据库，存储所有业务数据 | ✅ 5.x 不兼容 |
-| **Redis** | 6.2 | 缓存数据库，加速数据读取 | 7.x 也可以 |
+| **Redis** | 7.2 | 缓存数据库，加速数据读取 | 7.x 主流版本 |
 | **Nacos** | 2.3.0 | 服务注册发现 + 配置中心 | ✅ 必须 2.x |
 | **Kafka** | 3.6+ | 消息队列，微服务间异步通信 | 3.x 系列都可以 |
 | **CMake** | 3.10+ | C++ 边缘 SDK 编译 | 仅边缘端需要 |
@@ -958,9 +958,9 @@ trae/
 | 中间件 | 端口 | 用途 |
 |--------|:----:|------|
 | **MySQL 8.0** | 3306 | 关系型数据库，存储所有业务数据 |
-| **Redis 6.2** | 6379 | 高性能缓存，加速数据读取、存储会话 |
+| **Redis 7.2** | 6379 | 高性能缓存，加速数据读取、存储会话 |
 | **Nacos 2.3.0** | 8848 | 服务注册发现（让服务互相找到）+ 配置中心（统一管理配置） |
-| **Kafka 3.6** | 9092 | 消息队列，实现服务间异步通信和解耦 |
+| **Kafka 7.5** | 9092 | 消息队列，实现服务间异步通信和解耦 |
 
 #### 前端 & 移动端
 
@@ -2368,7 +2368,7 @@ services:
       retries: 5
 
   redis:
-    image: redis:6.2-alpine
+    image: redis:7.2-alpine
     container_name: uav-redis
     ports:
       - "6379:6379"
@@ -2388,12 +2388,22 @@ services:
     ports:
       - "8848:8848"
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.3
+    container_name: uav-zookeeper
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+    ports:
+      - "2181:2181"
+
   kafka:
-    image: bitnami/kafka:3.6
+    image: confluentinc/cp-kafka:7.5.3
     container_name: uav-kafka
     environment:
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
     ports:
       - "9092:9092"
 

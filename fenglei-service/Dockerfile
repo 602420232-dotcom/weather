@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc g++ \
+    gcc g++ curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -18,10 +18,10 @@ USER appuser
 
 EXPOSE 8091
 
-ENV FENGLEI_API_KEY="" \
+ENV FENGLEI_API_KEY="dev-key-not-for-production" \
     FENGLEI_CACHE_DIR="/app/cache" \
     FENGLEI_UPDATE_INTERVAL=30 \
-    FENGLEI_ENV="production" \
+    FENGLEI_ENV="development" \
     CORS_ORIGINS="*"
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \

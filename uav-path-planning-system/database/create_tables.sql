@@ -1,3 +1,16 @@
+-- 创建业务数据库并授权
+CREATE DATABASE IF NOT EXISTS `wrf_processor`;
+CREATE DATABASE IF NOT EXISTS `data_assimilation`;
+CREATE DATABASE IF NOT EXISTS `meteor_forecast`;
+CREATE DATABASE IF NOT EXISTS `path_planning`;
+CREATE DATABASE IF NOT EXISTS `uav_weather`;
+GRANT ALL PRIVILEGES ON `wrf_processor`.* TO 'uav'@'%';
+GRANT ALL PRIVILEGES ON `data_assimilation`.* TO 'uav'@'%';
+GRANT ALL PRIVILEGES ON `meteor_forecast`.* TO 'uav'@'%';
+GRANT ALL PRIVILEGES ON `path_planning`.* TO 'uav'@'%';
+GRANT ALL PRIVILEGES ON `uav_weather`.* TO 'uav'@'%';
+FLUSH PRIVILEGES;
+
 -- 创建用户表
 CREATE TABLE `user` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,

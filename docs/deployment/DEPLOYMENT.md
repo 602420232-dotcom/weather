@@ -142,7 +142,7 @@
 - Java 17+
 - Python 3.8+
 - MySQL 8.0+
-- Redis 6.2+
+- Redis 7.2+
 - Maven 3.6+
 - Node.js 16+
 
