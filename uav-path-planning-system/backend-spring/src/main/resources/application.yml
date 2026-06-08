@@ -2,7 +2,7 @@ spring:
   application:
     name: uav-path-planning
 
-  # 閺佺増宓佹惔鎾诲帳缂?
+  # 数据库配置
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:uav_path_planning}?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ${DB_USER:root}
@@ -16,19 +16,19 @@ spring:
       max-lifetime: ${DB_MAX_LIFETIME:1800000}
       leak-detection-threshold: ${DB_LEAK_DETECTION_THRESHOLD:60000}
 
-  # JPA闁板秶鐤?
+  # JPA配置
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
 
-  # 閺傚洣娆㈡稉濠佺炊闂勬劕鍩?
+  # 文件上传配置
   servlet:
     multipart:
       max-file-size: 500MB
       max-request-size: 1GB
 
-  # Redis闁板秶鐤?
+  # Redis配置
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -36,11 +36,11 @@ spring:
       password: ${REDIS_PASSWORD}
       database: 0
 
-  # 缂傛挸鐡ㄩ柊宥囩枂
+  # 缓存配置
   cache:
     type: redis
 
-# 閺堝秴濮熼崳銊╁帳缂?
+# 服务器配置
 server:
   port: ${SERVER_PORT:8089}
   ssl:
@@ -49,7 +49,7 @@ server:
     key-store-password: ${SSL_KEY_STORE_PASSWORD}
     key-alias: ${SSL_KEY_ALIAS:}
 
-# 閼奉亜鐣炬稊澶愬帳缂?
+# UAV配置
 uav:
   jwt:
     secret: ${JWT_SECRET}
