@@ -17,6 +17,8 @@ public class UavProperties {
     private Wrf wrf = new Wrf();
     private PathPlanning pathPlanning = new PathPlanning();
     private Grpc grpc = new Grpc();
+    private Cors cors = new Cors();
+    private Csrf csrf = new Csrf();
     private Demo demo = new Demo();
 
     public Jwt getJwt() {
@@ -57,6 +59,22 @@ public class UavProperties {
 
     public void setGrpc(Grpc grpc) {
         this.grpc = grpc;
+    }
+
+    public Cors getCors() {
+        return cors;
+    }
+
+    public void setCors(Cors cors) {
+        this.cors = cors;
+    }
+
+    public Csrf getCsrf() {
+        return csrf;
+    }
+
+    public void setCsrf(Csrf csrf) {
+        this.csrf = csrf;
     }
 
     public Demo getDemo() {
@@ -235,6 +253,30 @@ public class UavProperties {
 
         public void setDataIsolation(boolean dataIsolation) {
             this.dataIsolation = dataIsolation;
+        }
+    }
+
+    public static class Cors {
+        private String allowedOrigins;
+
+        public String getAllowedOrigins() {
+            return allowedOrigins;
+        }
+
+        public void setAllowedOrigins(String allowedOrigins) {
+            this.allowedOrigins = allowedOrigins;
+        }
+    }
+
+    public static class Csrf {
+        private boolean enabled = true;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
         }
     }
 }
