@@ -270,6 +270,7 @@ data/
 # 测试输出
 # -----------------
 test-output/
+test-output*
 htmlcov/
 .coverage/
 .pytest_cache/
