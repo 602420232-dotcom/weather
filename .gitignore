@@ -204,6 +204,7 @@ $RECYCLE.BIN/
 !.env.template
 !.env.*.example
 !.env.*.template
+!.env.ci
 
 # 密钥管理工具生成的备份文件
 *.bak
