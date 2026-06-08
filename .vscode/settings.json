@@ -3,5 +3,7 @@
         "**/uav-mobile-app/**"
     ],
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.maven.notCoveredPluginExecutionSeverity": "ignore"
+    "java.configuration.maven.notCoveredPluginExecutionSeverity": "ignore",
+    "cmake.sourceDirectory": "D:/Developer/workplace/py/iteam/trae/uav-edge-sdk",
+    "java.configuration.updateBuildConfiguration": "automatic"
 }
