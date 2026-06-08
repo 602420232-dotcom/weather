@@ -38,12 +38,11 @@ server:
   ssl:
     enabled: false
 
-jwt:
-  secret: test-jwt-secret-key-for-ci-testing-only
-  expiration: 86400000
-  enabled: true
-
 uav:
+  jwt:
+    secret: test-jwt-secret-key-for-ci-testing-only
+    expiration: 86400000
+    enabled: true
   python:
     script-path: ${user.dir}
     timeout: 30000

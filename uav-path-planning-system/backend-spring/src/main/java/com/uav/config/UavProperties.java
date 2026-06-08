@@ -12,11 +12,20 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "uav")
 public class UavProperties {
 
+    private Jwt jwt = new Jwt();
     private Python python = new Python();
     private Wrf wrf = new Wrf();
     private PathPlanning pathPlanning = new PathPlanning();
     private Grpc grpc = new Grpc();
     private Demo demo = new Demo();
+
+    public Jwt getJwt() {
+        return jwt;
+    }
+
+    public void setJwt(Jwt jwt) {
+        this.jwt = jwt;
+    }
 
     public Python getPython() {
         return python;
@@ -56,6 +65,36 @@ public class UavProperties {
 
     public void setDemo(Demo demo) {
         this.demo = demo;
+    }
+
+    public static class Jwt {
+        private String secret;
+        private long expiration = 86400000L;
+        private boolean enabled = true;
+
+        public String getSecret() {
+            return secret;
+        }
+
+        public void setSecret(String secret) {
+            this.secret = secret;
+        }
+
+        public long getExpiration() {
+            return expiration;
+        }
+
+        public void setExpiration(long expiration) {
+            this.expiration = expiration;
+        }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
     }
 
     public static class Python {
