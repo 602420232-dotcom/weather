@@ -6,7 +6,7 @@ FengLei Weather Service API
 import os
 import logging
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, List
 from pathlib import Path
 
 import numpy as np

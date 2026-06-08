@@ -3,15 +3,15 @@ E2E (端到端) 测试框架
 测试整个系统的端到端流程
 """
 
-import logging
-logger = logging.getLogger(__name__)
-
 import sys
 import os
 import pytest
 import numpy as np
+import logging
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+logger = logging.getLogger(__name__)
 
 
 class TestWeatherDataCollectionE2E:
