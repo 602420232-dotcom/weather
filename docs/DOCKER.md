@@ -76,7 +76,7 @@ docker run -p 8081:8081 wrf-processor:latest
 | 服务 | 端口 | 目录 | 说明 |
 |------|------|------|------|
 | mysql | 3306 | - | MySQL 8.0 数据库 |
-| redis | 6379 | - | Redis 6.2 缓存 |
+| redis | 6379 | - | Redis 7.2 缓存 |
 | nacos | 8848 | - | Nacos 服务注册发现 |
 | kafka | 9092 | - | Kafka 消息队列 |
 | api-gateway | 8088 | api-gateway/ | API 网关（限流/熔断/路由） |

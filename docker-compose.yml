@@ -120,6 +120,8 @@ services:
         condition: service_healthy
       nacos:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       LOG_PATH: /logs
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
@@ -128,10 +130,12 @@ services:
       UAV_SECURITY_ACTUATOR_PUBLIC: "true"
       SPRING_DATA_REDIS_HOST: redis
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/wrf_processor?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: uav
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       NACOS_SERVER: nacos:8848
+      JAVA_TOOL_OPTIONS: "-Xmx384m"
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
@@ -142,9 +146,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 1G
         reservations:
-          memory: 256M
+          memory: 512M
     networks:
       - uav-net
 
@@ -353,8 +357,13 @@ services:
       UAV_JWT_SECRET: ${JWT_SECRET}
       UAV_SECURITY_ACTUATOR_PUBLIC: "true"
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_DATA_REDIS_HOST: redis
       NACOS_SERVER: nacos:8848
+      JAVA_TOOL_OPTIONS: "-Xmx384m"
+      CMA_API_KEY: ${CMA_API_KEY:-}
+      OWM_API_KEY: ${OWM_API_KEY:-}
+      ECMWF_API_KEY: ${ECMWF_API_KEY:-}
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8086/actuator/health"]
@@ -365,9 +374,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 768M
         reservations:
-          memory: 256M
+          memory: 384M
     networks:
       - uav-net
 
@@ -488,9 +497,9 @@ services:
     ports:
       - "8090:8090"
     environment:
-      TIANZI_API_KEY: ${TIANZI_API_KEY}
+      TIANZI_API_KEY: ${TIANZI_API_KEY:-dev-key-not-for-production}
       TIANZI_MODEL_PATH: /app/model/tianzi.onnx
-      TIANZI_ENV: ${TIANZI_ENV:-production}
+      TIANZI_ENV: ${TIANZI_ENV:-development}
       CORS_ORIGINS: ${CORS_ORIGINS:-*}
     volumes:
       - ${TIANZI_MODEL_DIR:-./models/tianzi}:/app/model
@@ -519,10 +528,10 @@ services:
     ports:
       - "8091:8091"
     environment:
-      FENGLEI_API_KEY: ${FENGLEI_API_KEY}
+      FENGLEI_API_KEY: ${FENGLEI_API_KEY:-dev-key-not-for-production}
       FENGLEI_CACHE_DIR: /app/cache
       FENGLEI_UPDATE_INTERVAL: ${FENGLEI_UPDATE_INTERVAL:-30}
-      FENGLEI_ENV: ${FENGLEI_ENV:-production}
+      FENGLEI_ENV: ${FENGLEI_ENV:-development}
       CORS_ORIGINS: ${CORS_ORIGINS:-*}
     volumes:
       - fenglei-cache:/app/cache

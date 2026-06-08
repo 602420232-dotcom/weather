@@ -106,7 +106,7 @@ done
 | 服务 | 端口 | 类型 | 说明 |
 |------|------|------|------|
 | uav-mysql | 3306 | 基础设施 | MySQL 8.0 |
-| uav-redis | 6379 | 基础设施 | Redis 6.2 |
+| uav-redis | 6379 | 基础设施 | Redis 7.2 |
 | uav-nacos | 8848 | 基础设施 | Nacos 注册中心 |
 | uav-kafka | 9092 | 基础设施 | Kafka 消息队列 |
 | uav-zookeeper | 2181 | 基础设施 | ZK 协调服务 |
