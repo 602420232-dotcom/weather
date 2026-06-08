@@ -12,8 +12,9 @@ jobs:
         with:
           python-version: '3.11'
       - run: |
+          sudo apt-get update && sudo apt-get install -y libnetcdf-dev libhdf5-dev
           cd algorithm_core
-          pip install -e ".[test]"
+          pip install -e ".[dev]"
           pytest tests/ --cov --cov-report=xml
       - uses: codecov/codecov-action@v3
 

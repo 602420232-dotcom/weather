@@ -44,6 +44,7 @@ setup(
         'scikit-learn>=1.3.0',
         'matplotlib>=3.7.0',
         'seaborn>=0.12.0',
+        'psutil>=5.9.0',
     ],
     extras_require={
         'api': [
