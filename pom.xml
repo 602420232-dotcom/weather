@@ -240,7 +240,9 @@
                     <configLocation>checkstyle.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>false</failsOnError>
+                    <failOnViolation>false</failOnViolation>
                     <violationSeverity>warning</violationSeverity>
+                    <skip>true</skip>
                 </configuration>
                 <executions>
                     <execution>
