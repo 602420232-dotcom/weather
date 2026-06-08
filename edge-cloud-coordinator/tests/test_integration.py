@@ -3,16 +3,16 @@ Edge-Cloud-Coordinator 集成测试
 测试边缘云协调器的各组件协作
 """
 
-import logging
-logger = logging.getLogger(__name__)
-
 import sys
 import os
 import pytest
 from unittest.mock import patch, MagicMock
 import json
+import logging
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+logger = logging.getLogger(__name__)
 
 
 class TestEdgeCloudIntegration:

@@ -2,15 +2,15 @@
 E2E测试配置文件
 """
 
-import logging
-logger = logging.getLogger(__name__)
-
 import pytest
 import sys
 import os
+import logging
 
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+
+logger = logging.getLogger(__name__)
 
 
 def pytest_configure(config):
