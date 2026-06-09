@@ -449,6 +449,11 @@ onMounted(() => {
     notificationStore.startHealthCheck(120000)
   }
 
+  // 连接 WebSocket 通知服务
+  if (authStore.userId) {
+    notificationStore.connect(authStore.userId)
+  }
+
   // 初始化时间
   updateTime()
   timeInterval = setInterval(updateTime, 1000)
@@ -468,6 +473,9 @@ onBeforeUnmount(() => {
   if (timeInterval) {
     clearInterval(timeInterval)
   }
+  
+  // 断开 WebSocket 连接
+  notificationStore.disconnect()
 })
 
 function onDemoToastClose() {
@@ -507,6 +515,7 @@ const menuItems = computed(() => {
     { key: 'dashboard', title: t('menu.dashboard'), icon: 'HomeFilled', path: '/dashboard' },
     { key: 'weather', title: t('menu.weather'), icon: 'PartlyCloudy', path: '/weather' },
     { key: 'weather-station', title: t('menu.weatherStation'), icon: 'Position', path: '/weather-station' },
+    { key: 'weather-source', title: t('menu.weatherSource'), icon: 'Connection', path: '/weather-source' },
     { key: 'orders', title: t('menu.orders'), icon: 'Goods', path: '/orders' },
     { key: 'cockpit', title: t('menu.cockpit'), icon: 'Monitor', path: '/cockpit' },
     { key: 'tasks', title: t('menu.tasks'), icon: 'List', path: '/tasks' },
@@ -523,6 +532,8 @@ const menuItems = computed(() => {
     { key: 'database', title: t('menu.database'), icon: 'Coin', path: '/database' },
     { key: 'docker', title: t('menu.docker'), icon: 'Box', path: '/docker' },
     { key: 'api-config', title: t('menu.apiConfig'), icon: 'Cpu', path: '/api-config' },
+    { key: 'forum', title: t('menu.forum'), icon: 'MessageSquare', path: '/forum' },
+    { key: 'user-stats', title: t('menu.userStats'), icon: 'DataAnalysis', path: '/user-stats', roles: ['admin'] },
     { key: 'permission-templates', title: t('menu.permissionTemplates'), icon: 'Setting', path: '/permission-templates' }
   ]
 
@@ -630,6 +641,21 @@ function onUserCommand(cmd) {
 .uav-menu {
   border-right: none;
   height: calc(100% - 52px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.uav-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.uav-menu::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.uav-menu::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.4);
 }
 .uav-menu:not(.el-menu--collapse) {
   width: 220px;
