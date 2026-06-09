@@ -20,7 +20,7 @@
 
     <!-- 2. 服务模块入口 -->
     <h2 class="section-title">服务模块</h2>
-    <el-row :gutter="16" class="modules-grid">
+    <el-row :gutter="12" class="modules-grid">
       <el-col
         v-for="mod in visibleModules"
         :key="mod.key"
@@ -28,6 +28,7 @@
         :sm="12"
         :md="8"
         :lg="6"
+        :xl="4"
       >
         <el-card
           class="module-card"
@@ -158,15 +159,26 @@ const authStore = useAuthStore()
 const modules = [
   { key: 'dashboard', name: '首页', desc: '项目简介与模块入口', icon: '🏠' },
   { key: 'weather', name: '气象数据', desc: '多模型气象查询与对比', icon: '⛅' },
+  { key: 'weather-station', name: '气象站点', desc: '气象站点数据管理', icon: '🌡️' },
+  { key: 'weather-source', name: '气象数据源', desc: '多源气象数据接入', icon: '📡' },
   { key: 'orders', name: '下单服务', desc: '选择起点 / 终点下单', icon: '📦' },
   { key: 'cockpit', name: '智能驾驶舱', desc: '无人机飞行状态可视化', icon: '🚁' },
   { key: 'tasks', name: '任务管理', desc: '运输任务全生命周期', icon: '📋' },
   { key: 'path-planning', name: '路径规划', desc: 'WRF 气象驱动 VRP 求解', icon: '🗺️' },
+  { key: 'parameter-tuning', name: '算法参数调优', desc: '多种算法参数配置', icon: '⚙️' },
+  { key: 'airworthiness', name: '适航性评估', desc: '飞行适航性分析', icon: '✈️' },
+  { key: 'experiment-compare', name: '实验对比', desc: '多方案对比分析', icon: '🔬' },
+  { key: 'model-evaluation', name: '模型评估', desc: '预测模型性能评估', icon: '📈' },
+  { key: 'sensitivity-analysis', name: '敏感性分析', desc: '参数敏感性分析', icon: '📊' },
   { key: 'assimilation', name: '数据同化', desc: '多源观测数据融合', icon: '🔄' },
+  { key: 'forum', name: '团队论坛', desc: '团队协作交流中心', icon: '💬' },
+  { key: 'user-stats', name: '用户统计', desc: '使用情况统计（仅管理员）', icon: '👥' },
   { key: 'monitoring', name: '系统监控', desc: '服务运行状态实时监控', icon: '📊' },
   { key: 'database', name: '数据库管理', desc: '数据管理与维护', icon: '🗄️' },
   { key: 'docker', name: 'Docker 状态', desc: '容器与服务器运行状态', icon: '🐳' },
-  { key: 'api-config', name: 'API 配置', desc: '气象模型 API 接入配置', icon: '⚙️' }
+  { key: 'api-config', name: 'API 配置', desc: '气象模型 API 接入配置', icon: '⚙️' },
+  { key: 'utm-integration', name: 'UTM 对接', desc: 'UTM 系统集成', icon: '🔗' },
+  { key: 'task-report', name: '任务报告', desc: '任务数据分析报告', icon: '📝' }
 ]
 
 const visibleModules = computed(() =>
@@ -420,6 +432,7 @@ const weatherModels = [
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   text-align: center;
   height: 100%;
+  min-height: 160px;
 }
 
 .module-card:not(.disabled):hover {
@@ -432,22 +445,23 @@ const weatherModels = [
 }
 
 .module-icon {
-  font-size: 44px;
-  margin-bottom: 10px;
+  font-size: 36px;
+  margin-bottom: 8px;
 }
 
 .module-name {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #1f2937;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .module-desc {
-  font-size: 13px;
+  font-size: 12px;
   color: #6b7280;
-  min-height: 34px;
-  margin-bottom: 12px;
+  min-height: 28px;
+  margin-bottom: 8px;
+  line-height: 1.3;
 }
 
 .module-btn {
@@ -649,5 +663,149 @@ const weatherModels = [
 .meta-value {
   color: #1f2937;
   font-weight: 500;
+}
+
+/* ===== 暗色模式适配 ===== */
+.is-dark .dashboard {
+  background: var(--color-bg);
+}
+
+/* Hero 暗色模式 */
+.is-dark .hero-card {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.1) 0%, rgba(30, 41, 59, 0.8) 50%, rgba(251, 191, 36, 0.1) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.is-dark .hero-title {
+  color: var(--color-text);
+}
+
+.is-dark .hero-subtitle {
+  color: var(--color-text-muted);
+}
+
+/* 标题暗色模式 */
+.is-dark .section-title {
+  color: var(--color-text);
+  border-left-color: var(--color-primary);
+}
+
+/* 模块卡片暗色模式 */
+.is-dark .module-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.is-dark .module-card:not(.disabled):hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.2);
+}
+
+.is-dark .module-card.disabled {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.is-dark .module-name {
+  color: var(--color-text);
+}
+
+.is-dark .module-desc {
+  color: var(--color-text-muted);
+}
+
+/* 公告卡片暗色模式 */
+.is-dark .notice-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.is-dark .card-header {
+  color: var(--color-text);
+}
+
+.is-dark .notice-title {
+  color: var(--color-text);
+}
+
+.is-dark .notice-desc {
+  color: var(--color-text-muted);
+}
+
+/* 链接卡片暗色模式 */
+.is-dark .link-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.is-dark .link-card-title {
+  color: var(--color-text);
+}
+
+.is-dark .link-card-subtitle {
+  color: var(--color-text-muted);
+}
+
+/* 链接卡片顶部高亮色（暗色模式增强） */
+.is-dark .link-card-source {
+  border-top-color: #60a5fa;
+}
+
+.is-dark .link-card-tech {
+  border-top-color: #4ade80;
+}
+
+.is-dark .link-card-compliance {
+  border-top-color: #fbbf24;
+}
+
+.is-dark .link-card-license {
+  border-top-color: #f87171;
+}
+
+/* 链接行暗色模式 */
+.is-dark .link-row {
+  color: var(--color-text);
+}
+
+.is-dark .link-row:hover {
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
+.is-dark .link-row-name {
+  color: var(--color-text);
+}
+
+.is-dark .link-row-desc {
+  color: var(--color-text-muted);
+}
+
+.is-dark .link-row-arrow {
+  color: var(--color-text-muted);
+}
+
+.is-dark .link-row:hover .link-row-name {
+  color: var(--color-primary);
+}
+
+.is-dark .link-row:hover .link-row-arrow {
+  color: var(--color-primary);
+}
+
+/* 模型卡片暗色模式 */
+.is-dark .model-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.is-dark .model-name {
+  color: var(--color-text);
+}
+
+.is-dark .meta-label {
+  color: var(--color-text-muted);
+}
+
+.is-dark .meta-value {
+  color: var(--color-text);
 }
 </style>

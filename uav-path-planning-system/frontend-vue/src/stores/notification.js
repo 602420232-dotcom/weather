@@ -1,232 +1,186 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
-
-const STORAGE_KEY = 'uav_notifications_v1'
-const MAX_NOTIFICATIONS = 200
-
-const VALID_TYPES = ['info', 'success', 'warning', 'danger']
-const VALID_SOURCES = ['task', 'weather', 'uav', 'planning', 'apiConfig', 'utm', 'system']
-
-function genId() {
-  return 'n_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8)
-}
-
-function normalizeType(type) {
-  return VALID_TYPES.includes(type) ? type : 'info'
-}
-
-function normalizeSource(source) {
-  return VALID_SOURCES.includes(source) ? source : 'system'
-}
-
-const DEFAULT_PREFS = {
-  task: true,
-  weather: true,
-  uav: true,
-  planning: true,
-  apiConfig: true,
-  utm: true,
-  system: true,
-  desktop: false
-}
-
-function loadFromStorage() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    return JSON.parse(raw)
-  } catch (_) {
-    return null
-  }
-}
+import { ref, computed } from 'vue'
+import wsService from '@/utils/websocket'
+import { ElNotification } from 'element-plus'
 
 export const useNotificationStore = defineStore('notification', () => {
+  // 状态
   const notifications = ref([])
-  const subscriptionPrefs = ref({ ...DEFAULT_PREFS })
+  const unreadCount = ref(0)
+  const isConnected = ref(false)
+  const showNotificationDialog = ref(false)
+  const currentNotification = ref(null)
 
-  const unreadCount = computed(() => {
-    return notifications.value.reduce((sum, n) => sum + (n.read ? 0 : 1), 0)
+  // 计算属性
+  const unreadNotifications = computed(() => {
+    return notifications.value.filter(n => !n.read)
   })
 
-  function init() {
-    const data = loadFromStorage()
-    if (data) {
-      if (Array.isArray(data.notifications)) {
-        notifications.value = data.notifications.slice(0, MAX_NOTIFICATIONS)
-      }
-      if (data.subscriptionPrefs && typeof data.subscriptionPrefs === 'object') {
-        subscriptionPrefs.value = { ...DEFAULT_PREFS, ...data.subscriptionPrefs }
-      }
-    }
+  const hasUnread = computed(() => unreadCount.value > 0)
+
+  // 方法
+  function connect(userId) {
+    // 监听WebSocket事件
+    wsService.on('connect', handleConnect)
+    wsService.on('disconnect', handleDisconnect)
+    wsService.on('message', handleMessage)
+    
+    // 连接WebSocket
+    wsService.connect(userId)
   }
 
-  function persist() {
-    try {
-      const payload = {
-        notifications: notifications.value.slice(0, MAX_NOTIFICATIONS),
-        subscriptionPrefs: { ...subscriptionPrefs.value }
-      }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
-    } catch (_) {}
+  function disconnect() {
+    wsService.disconnect()
+    wsService.off('connect', handleConnect)
+    wsService.off('disconnect', handleDisconnect)
+    wsService.off('message', handleMessage)
   }
 
-  function isSourceEnabled(source) {
-    return subscriptionPrefs.value[source] !== false
+  function handleConnect(data) {
+    isConnected.value = true
+    console.log('[NotificationStore] WebSocket connected')
   }
 
-  function addNotification({ type, title, message, source }) {
-    const normalizedSource = normalizeSource(source)
-    if (!isSourceEnabled(normalizedSource)) return null
-    const item = {
-      id: genId(),
-      type: normalizeType(type),
-      title: title || '通知',
-      message: message || '',
-      source: normalizedSource,
+  function handleDisconnect() {
+    isConnected.value = false
+    console.log('[NotificationStore] WebSocket disconnected')
+  }
+
+  function handleMessage(data) {
+    console.log('[NotificationStore] Received notification:', data)
+    
+    // 添加到通知列表
+    addNotification({
+      id: data.id || `n_${Date.now()}`,
+      type: data.type || 'info',
+      title: data.title || getNotificationTitle(data.type),
+      message: data.message || data.content || '',
+      postId: data.postId || null,
+      postTitle: data.postTitle || '',
+      from: data.from || '系统',
       read: false,
-      createdAt: new Date().toISOString()
-    }
-    notifications.value.unshift(item)
-    if (notifications.value.length > MAX_NOTIFICATIONS) {
-      notifications.value = notifications.value.slice(0, MAX_NOTIFICATIONS)
-    }
-    persist()
-    return item
+      timestamp: data.timestamp || new Date().toISOString()
+    })
   }
 
-  function markAllRead() {
-    if (notifications.value.length === 0) return
-    let changed = false
-    notifications.value.forEach((n) => {
-      if (!n.read) {
-        n.read = true
-        changed = true
+  function getNotificationTitle(type) {
+    const titles = {
+      reply: '新回复',
+      mention: '@提及',
+      system: '系统通知',
+      like: '点赞',
+      confirmation: '操作确认'
+    }
+    return titles[type] || '新通知'
+  }
+
+  function addNotification(notification) {
+    // 添加到列表头部
+    notifications.value.unshift(notification)
+    
+    // 更新未读计数
+    unreadCount.value++
+    
+    // 显示桌面通知
+    showDesktopNotification(notification)
+  }
+
+  function showDesktopNotification(notification) {
+    ElNotification({
+      title: `${notification.title}`,
+      message: notification.message,
+      duration: 5000,
+      type: notification.type === 'system' ? 'success' : 'info',
+      position: 'top-right',
+      onClick: () => {
+        // 点击跳转到相关帖子
+        if (notification.postId) {
+          window.location.hash = `/forum?post=${notification.postId}`
+        }
       }
     })
-    if (changed) persist()
   }
 
-  function markAsRead(id) {
-    const item = notifications.value.find((n) => n.id === id)
-    if (item && !item.read) {
-      item.read = true
-      persist()
+  function markAsRead(notificationId) {
+    const notification = notifications.value.find(n => n.id === notificationId)
+    if (notification && !notification.read) {
+      notification.read = true
+      unreadCount.value = Math.max(0, unreadCount.value - 1)
     }
   }
 
-  function removeNotification(id) {
-    const before = notifications.value.length
-    notifications.value = notifications.value.filter((n) => n.id !== id)
-    if (notifications.value.length !== before) persist()
+  function markAllAsRead() {
+    notifications.value.forEach(n => {
+      n.read = true
+    })
+    unreadCount.value = 0
+  }
+
+  function removeNotification(notificationId) {
+    const index = notifications.value.findIndex(n => n.id === notificationId)
+    if (index !== -1) {
+      const notification = notifications.value[index]
+      if (!notification.read) {
+        unreadCount.value = Math.max(0, unreadCount.value - 1)
+      }
+      notifications.value.splice(index, 1)
+    }
   }
 
   function clearAll() {
-    if (notifications.value.length > 0) {
-      notifications.value = []
-      persist()
+    notifications.value = []
+    unreadCount.value = 0
+  }
+
+  function openNotificationDialog() {
+    showNotificationDialog.value = true
+    // 打开对话框时标记所有为已读
+    markAllAsRead()
+  }
+
+  function closeNotificationDialog() {
+    showNotificationDialog.value = false
+    currentNotification.value = null
+  }
+
+  // 手动触发通知（用于测试）
+  function triggerTestNotification() {
+    const testNotification = {
+      id: `test_${Date.now()}`,
+      type: 'reply',
+      title: '新回复',
+      message: '这是一条测试通知',
+      postId: '2',
+      postTitle: '关于DE-RRT*算法参数调优的讨论',
+      from: '测试用户',
+      read: false,
+      timestamp: new Date().toISOString()
     }
+    addNotification(testNotification)
   }
-
-  function filterBySource(source) {
-    if (!source || source === 'all') return notifications.value
-    return notifications.value.filter((n) => n.source === source)
-  }
-
-  function updateSubscriptionPrefs(prefs) {
-    subscriptionPrefs.value = { ...subscriptionPrefs.value, ...prefs }
-    persist()
-  }
-
-  function requestDesktopPermission() {
-    if (typeof window === 'undefined' || typeof Notification === 'undefined') {
-      return Promise.resolve('unsupported')
-    }
-    if (Notification.permission === 'granted') return Promise.resolve('granted')
-    if (Notification.permission === 'denied') return Promise.resolve('denied')
-    try {
-      return Notification.requestPermission()
-    } catch (_) {
-      return Promise.resolve('unsupported')
-    }
-  }
-
-  function sendDesktop(notification) {
-    if (!notification) return
-    if (typeof window === 'undefined' || typeof Notification === 'undefined') return
-    if (Notification.permission !== 'granted') return
-    try {
-      const body = notification.message || ''
-      const title = notification.title || '系统通知'
-      const icon = '/favicon.svg'
-      new Notification(title, { body, icon })
-    } catch (_) {}
-  }
-
-  function pushWithDesktop({ type, title, message, source }) {
-    const item = addNotification({ type, title, message, source })
-    if (!item) return null
-    if (subscriptionPrefs.value.desktop) {
-      sendDesktop(item)
-    }
-    return item
-  }
-
-  // 演示模式健康检查定时器：每 2 分钟随机推送一条
-  let healthTimer = null
-  function startHealthCheck(intervalMs = 120000) {
-    stopHealthCheck()
-    if (typeof window === 'undefined') return
-    const sampleMessages = [
-      { title: '系统健康检查', message: '当前系统运行正常，无异常告警。', type: 'success' },
-      { title: '气象数据同步', message: '已拉取最新气象数据（演示模式）。', type: 'info' },
-      { title: '任务调度', message: '调度器已处理 5 条任务队列。', type: 'info' },
-      { title: '路径规划引擎', message: '规划引擎空闲，等待新任务。', type: 'info' },
-      { title: '无人机状态', message: '全部无人机通讯正常。', type: 'success' },
-      { title: '存储状态', message: '本地缓存占用约 2MB。', type: 'info' }
-    ]
-    healthTimer = window.setInterval(() => {
-      const sample = sampleMessages[Math.floor(Math.random() * sampleMessages.length)]
-      pushWithDesktop({
-        type: sample.type,
-        title: sample.title,
-        message: sample.message,
-        source: 'system'
-      })
-    }, intervalMs)
-  }
-
-  function stopHealthCheck() {
-    if (healthTimer !== null) {
-      try {
-        window.clearInterval(healthTimer)
-      } catch (_) {}
-      healthTimer = null
-    }
-  }
-
-  // 偏好变化时持久化
-  watch(subscriptionPrefs, () => persist(), { deep: true })
-
-  // 初始化
-  init()
 
   return {
+    // 状态
     notifications,
     unreadCount,
-    subscriptionPrefs,
+    isConnected,
+    showNotificationDialog,
+    currentNotification,
+    
+    // 计算属性
+    unreadNotifications,
+    hasUnread,
+    
+    // 方法
+    connect,
+    disconnect,
     addNotification,
-    markAllRead,
     markAsRead,
+    markAllAsRead,
     removeNotification,
     clearAll,
-    filterBySource,
-    updateSubscriptionPrefs,
-    requestDesktopPermission,
-    sendDesktop,
-    pushWithDesktop,
-    persist,
-    init,
-    startHealthCheck,
-    stopHealthCheck
+    openNotificationDialog,
+    closeNotificationDialog,
+    triggerTestNotification
   }
 })

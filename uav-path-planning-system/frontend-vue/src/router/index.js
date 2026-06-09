@@ -182,6 +182,18 @@ const routes = [
           roles: ['tester', 'deployment', 'admin']
         }
       },
+      // 气象数据源管理
+      {
+        path: 'weather-source',
+        name: 'weather-source',
+        component: () => import('../views/weather/WeatherSourceView.vue'),
+        meta: {
+          title: '气象数据源',
+          icon: 'Connection',
+          key: 'weather-source',
+          roles: ['tester', 'deployment', 'admin']
+        }
+      },
       // 适航性评估
       {
         path: 'airworthiness',
@@ -204,6 +216,25 @@ const routes = [
           icon: 'DataLine',
           key: 'sensitivity-analysis',
           roles: ['flight', 'tester', 'admin']
+        }
+      },
+      // 团队论坛
+      {
+        path: 'forum',
+        name: 'forum',
+        component: () => import('../views/forum/ForumView.vue'),
+        meta: { title: '团队论坛', icon: 'MessageSquare', key: 'forum' }
+      },
+      // 用户统计（仅管理员）
+      {
+        path: 'user-stats',
+        name: 'user-stats',
+        component: () => import('../views/stats/UserStatsView.vue'),
+        meta: { 
+          title: '用户统计', 
+          icon: 'DataAnalysis', 
+          key: 'user-stats',
+          roles: ['admin']
         }
       },
       // 设置

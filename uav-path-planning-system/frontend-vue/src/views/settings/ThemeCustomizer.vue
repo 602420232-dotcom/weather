@@ -489,18 +489,19 @@ watch(currentTheme, (newVal) => {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  background: var(--color-bg);
 }
 
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--color-surface, #fff);
+  background: var(--color-surface);
   padding: 16px 20px;
-  border-radius: var(--radius-md, 8px);
-  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-lg, 12px);
+  border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.08));
-  color: var(--color-text, #1f2937);
+  color: var(--color-text);
   flex-wrap: wrap;
   gap: 12px;
 }

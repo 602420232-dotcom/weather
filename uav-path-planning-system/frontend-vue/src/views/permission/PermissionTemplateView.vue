@@ -2,25 +2,23 @@
   <div class="permission-template-view">
     <div class="page-header">
       <h2 class="page-title">权限模板与临时授权</h2>
-      <el-tag size="default" effect="dark" type="warning">管理员专属</el-tag>
+      <div class="header-actions">
+        <el-tag size="default" effect="dark" type="warning">管理员专属</el-tag>
+        <el-button type="primary" size="small" @click="onCreateBlank">
+          <el-icon><Plus /></el-icon>新建模板
+        </el-button>
+      </div>
     </div>
 
-    <el-row :gutter="16" class="main-row">
+    <!-- 响应式布局：桌面三列，移动端堆叠 -->
+    <div class="main-content">
       <!-- 左列：模板列表 -->
-      <el-col :span="6" class="col col-left">
+      <div class="template-list-section">
         <el-card shadow="hover" class="panel">
           <template #header>
             <div class="panel-head">
               <span class="panel-title">权限模板</span>
-              <el-button type="primary" size="small" @click="onCreateBlank">
-                <el-icon><Plus /></el-icon>&nbsp;新建
-              </el-button>
-            </div>
-          </template>
-
-          <el-form :inline="true" size="small" class="filter-form">
-            <el-form-item label="角色过滤">
-              <el-select v-model="roleFilter" placeholder="全部" clearable style="width: 100%">
+              <el-select v-model="roleFilter" placeholder="角色过滤" clearable size="small" style="width: 120px">
                 <el-option
                   v-for="opt in tplStore.roleOptions"
                   :key="opt.value"
@@ -28,13 +26,12 @@
                   :value="opt.value"
                 />
               </el-select>
-            </el-form-item>
-          </el-form>
+            </div>
+          </template>
 
           <el-table
             :data="filteredTemplates"
             size="small"
-            height="520"
             highlight-current-row
             @current-change="onSelectTemplate"
             class="template-table"
@@ -51,53 +48,42 @@
             <el-table-column label="角色" width="88" align="center">
               <template #default="{ row }">{{ roleLabel(row.role) }}</template>
             </el-table-column>
-            <el-table-column label="路由" width="64" align="center">
+            <el-table-column label="路由" width="60" align="center">
               <template #default="{ row }">{{ row.routes?.length || 0 }}</template>
             </el-table-column>
-            <el-table-column label="动作" width="64" align="center">
+            <el-table-column label="动作" width="60" align="center">
               <template #default="{ row }">{{ row.actions?.length || 0 }}</template>
             </el-table-column>
-            <el-table-column label="操作" width="128" align="center" fixed="right">
+            <el-table-column label="操作" width="100" align="center" fixed="right">
               <template #default="{ row }">
-                <el-button
-                  link
-                  type="primary"
-                  size="small"
-                  @click.stop="onDuplicate(row)"
-                >复制</el-button>
-                <el-popconfirm
-                  :disabled="row.isSystem"
-                  title="确认删除该模板？"
-                  @confirm="onDelete(row)"
-                >
+                <el-button link type="primary" size="small" @click.stop="onDuplicate(row)">复制</el-button>
+                <el-popconfirm :disabled="row.isSystem" title="确认删除该模板？" @confirm="onDelete(row)">
                   <template #reference>
-                    <el-button
-                      link
-                      type="danger"
-                      size="small"
-                      :disabled="row.isSystem"
-                    >删除</el-button>
+                    <el-button link type="danger" size="small" :disabled="row.isSystem">删除</el-button>
                   </template>
                 </el-popconfirm>
               </template>
             </el-table-column>
           </el-table>
         </el-card>
-      </el-col>
+      </div>
 
       <!-- 中列：模板编辑区 -->
-      <el-col :span="11" class="col col-middle">
+      <div class="template-edit-section">
         <el-card shadow="hover" class="panel">
           <template #header>
             <div class="panel-head">
               <span class="panel-title">
                 {{ currentId ? '编辑模板' : '未选中模板' }}
+                <el-tag v-if="isDirty" type="warning" size="small" effect="plain">已修改</el-tag>
               </span>
               <div class="panel-actions">
-                <el-button size="small" :disabled="!currentId" @click="onDuplicateCurrent">复制模板</el-button>
-                <el-button type="primary" size="small" :disabled="!currentId || !isDirty" @click="onSave">保存</el-button>
+                <el-button size="small" :disabled="!currentId" @click="onDuplicateCurrent">复制</el-button>
+                <el-button type="primary" size="small" :disabled="!currentId || !isDirty" @click="onSave">
+                  <el-icon><Check /></el-icon>保存
+                </el-button>
                 <el-button type="success" size="small" :disabled="!currentId" @click="openCreateUserDialog">
-                  <el-icon><UserFilled /></el-icon>&nbsp;新建用户
+                  <el-icon><UserFilled /></el-icon>新建用户
                 </el-button>
               </div>
             </div>
@@ -125,53 +111,63 @@
               </el-select>
             </el-form-item>
 
+            <!-- 路由权限（折叠面板）-->
             <el-form-item label="路由权限">
-              <div class="checkbox-group-wrap">
-                <el-checkbox
-                  :model-value="allRoutesChecked"
-                  :indeterminate="partialRoutesChecked"
-                  @change="onToggleAllRoutes"
-                >全选</el-checkbox>
-                <el-divider direction="vertical" />
-                <el-checkbox-group v-model="draft.routes">
-                  <el-checkbox
-                    v-for="r in tplStore.availableRoutes"
-                    :key="r.key"
-                    :label="r.key"
-                  >{{ r.label }}</el-checkbox>
-                </el-checkbox-group>
-              </div>
+              <el-collapse>
+                <el-collapse-item title="路由权限配置" name="routes">
+                  <div class="permission-panel">
+                    <el-checkbox
+                      :model-value="allRoutesChecked"
+                      :indeterminate="partialRoutesChecked"
+                      @change="onToggleAllRoutes"
+                    >全选</el-checkbox>
+                    <el-divider />
+                    <el-checkbox-group v-model="draft.routes">
+                      <el-checkbox
+                        v-for="r in tplStore.availableRoutes"
+                        :key="r.key"
+                        :label="r.key"
+                      >{{ r.label }}</el-checkbox>
+                    </el-checkbox-group>
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
             </el-form-item>
 
+            <!-- 动作权限（折叠面板）-->
             <el-form-item label="动作权限">
-              <div class="checkbox-group-wrap">
-                <el-checkbox
-                  :model-value="allActionsChecked"
-                  :indeterminate="partialActionsChecked"
-                  @change="onToggleAllActions"
-                >全选</el-checkbox>
-                <el-divider direction="vertical" />
-                <el-checkbox-group v-model="draft.actions">
-                  <el-checkbox
-                    v-for="a in tplStore.availableActions"
-                    :key="a.key"
-                    :label="a.key"
-                  >{{ a.label }}</el-checkbox>
-                </el-checkbox-group>
-              </div>
+              <el-collapse>
+                <el-collapse-item title="动作权限配置" name="actions">
+                  <div class="permission-panel">
+                    <el-checkbox
+                      :model-value="allActionsChecked"
+                      :indeterminate="partialActionsChecked"
+                      @change="onToggleAllActions"
+                    >全选</el-checkbox>
+                    <el-divider />
+                    <el-checkbox-group v-model="draft.actions">
+                      <el-checkbox
+                        v-for="a in tplStore.availableActions"
+                        :key="a.key"
+                        :label="a.key"
+                      >{{ a.label }}</el-checkbox>
+                    </el-checkbox-group>
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
             </el-form-item>
           </el-form>
         </el-card>
-      </el-col>
+      </div>
 
       <!-- 右列：临时授权区 -->
-      <el-col :span="7" class="col col-right">
+      <div class="grant-section">
         <el-card shadow="hover" class="panel">
           <template #header>
             <div class="panel-head">
               <span class="panel-title">临时授权</span>
               <el-button type="primary" size="small" @click="openGrantDialog">
-                <el-icon><Plus /></el-icon>&nbsp;新增授权
+                <el-icon><Plus /></el-icon>新增授权
               </el-button>
             </div>
           </template>
@@ -212,8 +208,8 @@
             </el-table-column>
           </el-table>
         </el-card>
-      </el-col>
-    </el-row>
+      </div>
+    </div>
 
     <!-- 新建用户对话框 -->
     <el-dialog v-model="createUserVisible" title="基于模板创建用户" width="480px">
@@ -533,9 +529,11 @@ watch(
 
 .page-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 .page-title {
   margin: 0;
@@ -543,14 +541,21 @@ watch(
   font-weight: 600;
   color: #303133;
 }
-
-.main-row {
+.header-actions {
   display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.col-left .panel,
-.col-middle .panel,
-.col-right .panel {
+.main-content {
+  display: grid;
+  grid-template-columns: 320px 1fr 300px;
+  gap: 16px;
+}
+
+.template-list-section .panel,
+.template-edit-section .panel,
+.grant-section .panel {
   margin-bottom: 12px;
 }
 .panel {
@@ -589,7 +594,7 @@ watch(
   padding: 40px 0;
 }
 
-.edit-form .checkbox-group-wrap {
+.edit-form .permission-panel {
   display: flex;
   align-items: flex-start;
   flex-wrap: wrap;
@@ -599,6 +604,26 @@ watch(
   border-radius: 6px;
   border: 1px solid #ebeef5;
   min-height: 44px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* 折叠面板样式 */
+.edit-form :deep(.el-collapse) {
+  border: none;
+}
+.edit-form :deep(.el-collapse-item__header) {
+  background: #f5f7fa;
+  border-radius: 6px;
+  padding: 0 12px;
+  font-weight: 500;
+}
+.edit-form :deep(.el-collapse-item__wrap) {
+  border: none;
+  border-top: none;
+}
+.edit-form :deep(.el-collapse-item__content) {
+  padding: 12px 0 0 0;
 }
 
 .strikethrough {
@@ -609,5 +634,67 @@ watch(
 .grant-table,
 .template-table {
   width: 100%;
+}
+
+/* 响应式布局 */
+@media (max-width: 1200px) {
+  .main-content {
+    grid-template-columns: 280px 1fr 260px;
+  }
+}
+
+@media (max-width: 992px) {
+  .main-content {
+    grid-template-columns: 1fr 1fr;
+  }
+  .template-list-section {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* ===== 暗色模式适配 ===== */
+.is-dark .permission-template-view {
+  background: var(--color-bg);
+}
+
+.is-dark .page-title {
+  color: var(--color-text);
+}
+
+.is-dark .panel {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.is-dark .panel-title {
+  color: var(--color-text);
+}
+
+.is-dark .edit-form .permission-panel {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.is-dark .edit-form :deep(.el-collapse-item__header) {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text);
+}
+
+.is-dark .strikethrough {
+  color: var(--color-text-muted);
 }
 </style>

@@ -341,7 +341,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   User, Lock, Setting, Document, Collection, SwitchButton, Bell,
   Key, Sunny, Moon, Check, HomeFilled, PartlyCloudy, Goods,
-  Monitor, List, Position, Connection, DataAnalysis, Coin, Box, Tools
+  Monitor, List, Position, Connection, DataAnalysis, DataLine, Coin, Box, Tools,
+  Location, Checked, ChatDotRound, MagicStick, Cpu
 } from '@element-plus/icons-vue'
 import { useAuthStore, PERMISSION_MATRIX } from '../../stores/auth'
 import { useAppStore } from '../../stores/app'
@@ -494,23 +495,37 @@ function submitPwd() {
 const MODULE_META = {
   dashboard: { title: '项目简介 / 首页', icon: 'HomeFilled' },
   weather: { title: '气象数据', icon: 'PartlyCloudy' },
+  'weather-station': { title: '气象站点管理', icon: 'Location' },
   orders: { title: '下单 / 选择运输地点', icon: 'Goods' },
   cockpit: { title: '智能驾驶舱', icon: 'Monitor' },
   tasks: { title: '运输任务管理', icon: 'List' },
+  'task-report': { title: '任务报告中心', icon: 'Document' },
   'path-planning': { title: '路径规划', icon: 'Position' },
+  airworthiness: { title: '适航性评估', icon: 'Checked' },
+  'model-evaluation': { title: '模型评估', icon: 'DataAnalysis' },
+  'parameter-tuning': { title: '算法参数调优', icon: 'Tools' },
+  'sensitivity-analysis': { title: '参数敏感性分析', icon: 'DataLine' },
+  'experiment-compare': { title: '实验对比工具', icon: 'DataAnalysis' },
   assimilation: { title: '数据同化', icon: 'Connection' },
   monitoring: { title: '系统监控面板', icon: 'DataAnalysis' },
   database: { title: '数据库管理', icon: 'Coin' },
   docker: { title: 'Docker / 服务器状态', icon: 'Box' },
-  'api-config': { title: '气象模型 API 配置', icon: 'Setting' },
+  'docker-build': { title: 'Docker 构建', icon: 'Box' },
+  'api-config': { title: '气象模型 API 配置', icon: 'Cpu' },
+  'permission-templates': { title: '权限模板管理', icon: 'Key' },
+  'utm-integration': { title: '低空 UTM 对接', icon: 'Connection' },
+  forum: { title: '团队论坛', icon: 'ChatDotRound' },
+  'user-stats': { title: '用户统计', icon: 'DataAnalysis' },
   settings: { title: '设置', icon: 'Tools' },
-  docs: { title: '使用文档', icon: 'Document' }
+  'theme-customizer': { title: '主题定制', icon: 'MagicStick' },
+  docs: { title: '使用文档', icon: 'Document' },
+  'permission-debug': { title: '权限调试', icon: 'MagicStick' }
 }
 
 const ICON_MAP = {
-  HomeFilled, PartlyCloudy, Goods, Monitor, List,
-  Position, Connection, DataAnalysis, Coin, Box,
-  Setting, Tools, Document
+  HomeFilled, PartlyCloudy, Goods, Monitor, List, Position, Connection,
+  DataAnalysis, DataLine, Coin, Box, Setting, Tools, Document,
+  Location, Checked, Key, ChatDotRound, MagicStick, Cpu
 }
 
 const accessibleModules = computed(() => {
@@ -542,7 +557,12 @@ const prefForm = reactive({
 })
 
 const defaultRouteOptions = computed(() => {
-  const keys = ['dashboard', 'weather', 'path-planning', 'cockpit', 'monitoring', 'tasks', 'orders', 'assimilation']
+  const keys = [
+    'dashboard', 'weather', 'weather-station', 'orders', 'cockpit', 'tasks', 'task-report',
+    'path-planning', 'airworthiness', 'model-evaluation', 'parameter-tuning', 'sensitivity-analysis',
+    'experiment-compare', 'assimilation', 'monitoring', 'database', 'docker', 'docker-build',
+    'api-config', 'forum', 'user-stats', 'settings', 'docs'
+  ]
   return keys
     .filter((k) => authStore.hasRouteAccess(k) && MODULE_META[k])
     .map((k) => ({ key: k, title: MODULE_META[k].title }))

@@ -83,33 +83,36 @@ export const ROLE_LABELS_EN = {
 // 其他页面按矩阵控制
 export const PERMISSION_MATRIX = {
   [ROLES.USER]: [
-    'dashboard', 'weather', 'orders', 'settings', 'docs'
+    'dashboard', 'weather', 'orders', 'forum', 'settings', 'docs', 'theme-customizer'
   ],
   [ROLES.PRODUCTION]: [
     'dashboard', 'weather', 'orders', 'cockpit', 'tasks',
-    'utm-integration', 'task-report', 'settings', 'docs'
+    'forum', 'utm-integration', 'task-report', 'settings', 'docs', 'theme-customizer'
   ],
   [ROLES.FLIGHT]: [
     'dashboard', 'weather', 'cockpit', 'tasks', 'path-planning',
     'airworthiness', 'model-evaluation', 'parameter-tuning', 'sensitivity-analysis',
     'experiment-compare', 'assimilation',
-    'utm-integration', 'task-report', 'settings', 'docs'
+    'forum', 'utm-integration', 'task-report', 'settings', 'docs', 'theme-customizer'
   ],
   [ROLES.TESTER]: [
-    'dashboard', 'weather', 'weather-station', 'path-planning', 'airworthiness',
+    'dashboard', 'weather', 'weather-station', 'weather-source', 'path-planning', 'airworthiness',
     'model-evaluation', 'parameter-tuning', 'sensitivity-analysis', 'experiment-compare',
-    'assimilation', 'monitoring', 'settings', 'docs'
+    'assimilation', 'monitoring',
+    'forum', 'settings', 'docs', 'theme-customizer'
   ],
   [ROLES.DEPLOYMENT]: [
-    'dashboard', 'weather', 'weather-station', 'monitoring', 'docker', 'docker-build',
-    'api-config', 'settings', 'docs'
+    'dashboard', 'weather', 'weather-station', 'weather-source', 'monitoring', 'docker', 'docker-build',
+    'api-config',
+    'forum', 'settings', 'docs', 'theme-customizer'
   ],
   [ROLES.ADMIN]: [
     'dashboard', 'weather', 'weather-station', 'orders', 'cockpit', 'tasks',
     'path-planning', 'airworthiness', 'model-evaluation', 'parameter-tuning', 'sensitivity-analysis',
     'experiment-compare', 'assimilation', 'monitoring', 'database',
     'docker', 'docker-build', 'api-config', 'permission-templates', 'utm-integration', 'task-report',
-    'settings', 'docs', 'permission-debug'
+    'forum', 'user-stats',
+    'settings', 'docs', 'theme-customizer', 'permission-debug'
   ]
 }
 
