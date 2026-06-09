@@ -414,7 +414,7 @@ services:
     build:
       context: ./fengwu-service
       dockerfile: Dockerfile
-    image: ghcr.io/602420232-dotcom/weather/fengwu:latest
+    image: ghcr.io/602420232-dotcom/weather/fengwu-service:latest
     container_name: uav-fengwu
     entrypoint: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8085"]
     ports:

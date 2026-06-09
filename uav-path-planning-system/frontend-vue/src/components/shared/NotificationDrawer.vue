@@ -164,12 +164,15 @@
 
 <script setup>
 import { computed, ref, watch, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   Search, Check, Delete, Setting, Bell, Close,
   InfoFilled, SuccessFilled, Warning, CircleClose, Download
 } from '@element-plus/icons-vue'
 import { useNotificationStore } from '../../stores/notification'
+
+const router = useRouter()
 
 const props = defineProps({
   visible: {
@@ -345,21 +348,18 @@ function handleCardClick(item) {
   }
 
   // 根据通知类型跳转到相关页面
-  const router = window.__router__
-  if (router) {
-    const pathMap = {
-      task: '/tasks',
-      weather: '/weather-station',
-      uav: '/path-planning',
-      planning: '/path-planning',
-      apiConfig: '/api-config',
-      utm: '/utm-integration',
-      system: '/dashboard'
-    }
-    const path = pathMap[item.source]
-    if (path) {
-      router.push(path)
-    }
+  const pathMap = {
+    task: '/tasks',
+    weather: '/weather-station',
+    uav: '/path-planning',
+    planning: '/path-planning',
+    apiConfig: '/api-config',
+    utm: '/utm-integration',
+    system: '/dashboard'
+  }
+  const path = pathMap[item.source]
+  if (path) {
+    router.push(path)
   }
 
   // 关闭抽屉

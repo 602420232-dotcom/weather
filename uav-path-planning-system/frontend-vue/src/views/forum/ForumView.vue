@@ -27,7 +27,7 @@
             :class="{ active: activeSection === section.key }"
             @click="selectSection(section.key)"
           >
-            <el-icon class="section-icon">{{ getSectionIcon(section.key) }}</el-icon>
+            <el-icon class="section-icon"><component :is="icons[getSectionIcon(section.key)]" /></el-icon>
             <span>{{ getSectionLabel(section.key) }}</span>
             <span class="section-count">{{ getSectionCount(section.key) }}</span>
           </div>
@@ -125,9 +125,10 @@
     </div>
 
     <PostDetailModal 
-      v-if="showPostDetail" 
+      v-model="showPostDetail"
       :post="selectedPost"
-      @close="showPostDetail = false"
+      v-if="selectedPost"
+      @update="handlePostUpdate"
     />
 
     <CreatePostModal 
@@ -142,10 +143,14 @@
 <script setup>import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/auth';
-import { EditPen, Search, User, Star, Message, Check, Bell } from '@element-plus/icons-vue';
+import { EditPen, Search, User, Star, Check, ChatDotRound, Collection, Message } from '@element-plus/icons-vue';
+import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import forumApi, { SECTIONS } from '@/api/forum';
 import PostDetailModal from './components/PostDetailModal.vue';
 import CreatePostModal from './components/CreatePostModal.vue';
+
+// 将所有 Element Plus 图标注册到全局，使动态组件渲染生效
+const icons = ElementPlusIconsVue;
 const { t } = useI18n();
 const authStore = useAuthStore();
 const sections = ref([]);
@@ -169,12 +174,12 @@ const canReply = computed(() => {
 });
 const getSectionIcon = (section) => {
  const icons = {
- [SECTIONS.ANNOUNCEMENT]: Bell,
- [SECTIONS.TECH_DISCUSS]: Message,
- [SECTIONS.TASK_COLLAB]: User,
- [SECTIONS.KNOWLEDGE]: Star
+  [SECTIONS.ANNOUNCEMENT]: 'Bell',
+  [SECTIONS.TECH_DISCUSS]: 'ChatDotRound',
+  [SECTIONS.TASK_COLLAB]: 'User',
+  [SECTIONS.KNOWLEDGE]: 'Collection'
  };
- return icons[section] || Message;
+ return icons[section] || 'Message';
 };
 
 const getSectionLabel = (section) => {
@@ -232,8 +237,22 @@ const loadPosts = async () => {
  total.value = result.total;
 };
 const viewPost = async (post) => {
- selectedPost.value = post;
- showPostDetail.value = true;
+  selectedPost.value = post;
+  showPostDetail.value = true;
+};
+
+// 处理帖子更新（点赞、评论后更新列表）
+const handlePostUpdate = ({ id, likeCount, commentCount }) => {
+  const postIndex = posts.value.findIndex(p => p.id === id);
+  if (postIndex !== -1) {
+    posts.value[postIndex].likeCount = likeCount;
+    posts.value[postIndex].commentCount = commentCount;
+  }
+  // 同时更新 selectedPost 以确保弹窗内数据一致
+  if (selectedPost.value && selectedPost.value.id === id) {
+    selectedPost.value.likeCount = likeCount;
+    selectedPost.value.commentCount = commentCount;
+  }
 };
 const handlePostCreated = () => {
   showCreatePostModal.value = false;

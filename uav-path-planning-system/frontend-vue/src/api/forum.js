@@ -18,12 +18,12 @@ const SECTION_LABELS = {
 // 这里保留结构但不再使用硬编码的角色列表
 
 const MOCK_USERS = [
-  { id: 'admin', username: 'admin01', displayName: '系统管理员', role: ROLES.ADMIN, avatar: 'https://neeko-copilot.bytedance.net/api/text_to_image?prompt=professional%20system%20administrator%20avatar%20portrait&image_size=square' },
-  { id: 'dev', username: 'dev01', displayName: '张三', role: ROLES.DEVELOPER, avatar: 'https://neeko-copilot.bytedance.net/api/text_to_image?prompt=professional%20software%20developer%20avatar%20portrait&image_size=square' },
-  { id: 'test', username: 'test01', displayName: '李四', role: ROLES.TESTER, avatar: 'https://neeko-copilot.bytedance.net/api/text_to_image?prompt=professional%20software%20tester%20avatar%20portrait&image_size=square' },
-  { id: 'deploy', username: 'deploy01', displayName: '王五', role: ROLES.DEPLOYMENT, avatar: 'https://neeko-copilot.bytedance.net/api/text_to_image?prompt=professional%20devops%20engineer%20avatar%20portrait&image_size=square' },
-  { id: 'flight', username: 'flight01', displayName: '赵六', role: ROLES.FLIGHT, avatar: 'https://neeko-copilot.bytedance.net/api/text_to_image?prompt=professional%20drone%20pilot%20avatar%20portrait&image_size=square' },
-  { id: 'prod', username: 'prod01', displayName: '孙七', role: ROLES.PRODUCTION, avatar: 'https://neeko-copilot.bytedance.net/api/text_to_image?prompt=professional%20production%20manager%20avatar%20portrait&image_size=square' }
+  { id: 'admin', username: 'admin01', displayName: '系统管理员', role: ROLES.ADMIN, avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=admin01' },
+  { id: 'dev', username: 'dev01', displayName: '张三', role: ROLES.DEVELOPER, avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=dev01' },
+  { id: 'test', username: 'test01', displayName: '李四', role: ROLES.TESTER, avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=test01' },
+  { id: 'deploy', username: 'deploy01', displayName: '王五', role: ROLES.DEPLOYMENT, avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=deploy01' },
+  { id: 'flight', username: 'flight01', displayName: '赵六', role: ROLES.FLIGHT, avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=flight01' },
+  { id: 'prod', username: 'prod01', displayName: '孙七', role: ROLES.PRODUCTION, avatar: 'https://api.dicebear.com/7.x/avataaars/png?seed=prod01' }
 ]
 
 const MOCK_POSTS = [
