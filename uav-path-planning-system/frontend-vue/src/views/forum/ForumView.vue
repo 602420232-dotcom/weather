@@ -75,7 +75,7 @@
           >
             <div class="post-header">
               <div class="author-info">
-                <img :src="post.author.avatar" :alt="post.author.displayName" class="author-avatar" />
+                <img :src="post.author.avatar" :alt="post.author.displayName" width="40" height="40" loading="lazy" class="author-avatar" />
                 <span class="author-name">{{ post.author.displayName }}</span>
                 <span class="post-time">{{ formatTime(post.createdAt) }}</span>
               </div>
@@ -144,7 +144,7 @@
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import { EditPen, Search, User, Star, Check, ChatDotRound, Collection, Message } from '@element-plus/icons-vue';
+import { EditPen, Search, User, Star, Check, Message } from '@element-plus/icons-vue';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import forumApi, { SECTIONS } from '@/api/forum';
 import PostDetailModal from './components/PostDetailModal.vue';
@@ -172,9 +172,6 @@ const canPost = computed(() => {
   return authStore.hasAction('forum:post');
 });
 
-const canReply = computed(() => {
-  return authStore.hasAction('forum:comment');
-});
 const getSectionIcon = (section) => {
  const icons = {
   [SECTIONS.ANNOUNCEMENT]: 'Bell',
@@ -311,8 +308,8 @@ const formatTime = (dateStr) => {
 };
 const stripHtml = (html) => {
  const tmp = document.createElement('DIV');
- tmp.innerHTML = html;
- const text = tmp.textContent || tmp.innerText || '';
+ tmp.textContent = html;
+ const text = tmp.innerHTML || '';
  return text.length > 100 ? text.substring(0, 100) + '...' : text;
 };
 onMounted(async () => {

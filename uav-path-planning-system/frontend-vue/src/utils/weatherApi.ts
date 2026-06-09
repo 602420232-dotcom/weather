@@ -6,19 +6,66 @@
 // 天气API配置存储key
 const WEATHER_CONFIG_KEY = 'uav_weather_api_config'
 
+export interface WeatherApiKeyConfig {
+  apiKey: string
+  baseUrl: string
+}
+
+export interface OpenWeatherMapConfig extends WeatherApiKeyConfig {
+  units: 'metric' | 'imperial' | 'standard'
+  lang: string
+}
+
+export interface QWeatherConfig extends WeatherApiKeyConfig {
+  lang: string
+}
+
+export interface WeatherConfig {
+  provider: 'demo' | 'openweathermap' | 'qweather'
+  openweathermap: OpenWeatherMapConfig
+  qweather: QWeatherConfig
+}
+
+export interface WeatherDataItem {
+  icon: string
+  description: string
+  temp: string
+  feelsLike: string
+  humidity: string
+  windSpeed: string
+  windDir?: string
+  windDeg?: number
+  windScale?: string
+  raw?: any
+  region?: string
+}
+
+export interface WeatherResult {
+  success: boolean
+  provider: string
+  data?: WeatherDataItem
+  error?: string
+  fallback?: WeatherResult
+}
+
+export interface ValidationResult {
+  valid: boolean
+  provider: string
+  message: string
+}
+
 // 默认配置
-const defaultConfig = {
-  provider: 'demo', // 'demo' | 'openweathermap' | 'qweather'
+const defaultConfig: WeatherConfig = {
+  provider: 'demo',
   openweathermap: {
     apiKey: '',
     baseUrl: 'https://api.openweathermap.org/data/2.5',
-    units: 'metric', // metric | imperial | standard
+    units: 'metric',
     lang: 'zh_cn'
   },
   qweather: {
     apiKey: '',
-    baseUrl: 'https://devapi.qweather.com/v7', // 免费订阅
-    // 付费订阅: https://api.qweather.com/v7
+    baseUrl: 'https://devapi.qweather.com/v7',
     lang: 'zh'
   }
 }
@@ -26,7 +73,7 @@ const defaultConfig = {
 /**
  * 获取天气API配置
  */
-export function getWeatherConfig() {
+export function getWeatherConfig(): WeatherConfig {
   try {
     const raw = localStorage.getItem(WEATHER_CONFIG_KEY)
     if (raw) {
@@ -42,7 +89,7 @@ export function getWeatherConfig() {
 /**
  * 保存天气API配置
  */
-export function saveWeatherConfig(config) {
+export function saveWeatherConfig(config: WeatherConfig): boolean {
   try {
     localStorage.setItem(WEATHER_CONFIG_KEY, JSON.stringify(config))
     return true
@@ -55,8 +102,7 @@ export function saveWeatherConfig(config) {
 /**
  * 天气图标映射
  */
-const weatherIconMap = {
-  // OpenWeatherMap icon mapping
+const weatherIconMap: Record<string, Record<string, string>> = {
   openweathermap: {
     '01d': '☀️', '01n': '🌙',
     '02d': '⛅', '02n': '☁️',
@@ -68,7 +114,6 @@ const weatherIconMap = {
     '13d': '❄️', '13n': '❄️',
     '50d': '🌫️', '50n': '🌫️'
   },
-  // 和风天气 icon mapping (使用天气代码)
   qweather: {
     '100': '☀️', '101': '☁️', '102': '⛅', '103': '⛅', '104': '☁️',
     '150': '☀️', '151': '☁️', '152': '⛅', '153': '⛅',
@@ -87,10 +132,7 @@ const weatherIconMap = {
   }
 }
 
-/**
- * 天气状态描述映射
- */
-const weatherDescMap = {
+const weatherDescMap: Record<string, Record<string, string>> = {
   openweathermap: {
     'clear sky': '晴朗',
     'few clouds': '少云',
@@ -137,40 +179,35 @@ const weatherDescMap = {
   }
 }
 
-/**
- * 调用 OpenWeatherMap API 获取天气
- */
-async function fetchOpenWeatherMap(lat, lng, config) {
+async function fetchOpenWeatherMap(lat: number, lng: number, config: WeatherConfig): Promise<WeatherResult> {
   const { apiKey, baseUrl, units, lang } = config.openweathermap
-  
+
   if (!apiKey) {
     throw new Error('OpenWeatherMap API Key 未配置')
   }
 
   const url = `${baseUrl}/weather?lat=${lat}&lon=${lng}&appid=${apiKey}&units=${units}&lang=${lang}`
-  
+
   const response = await fetch(url)
-  
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({}))
     throw new Error(error.message || `HTTP ${response.status}`)
   }
-  
+
   const data = await response.json()
-  
-  // 解析响应数据
-  const iconCode = data.weather?.[0]?.icon || '01d'
-  const description = data.weather?.[0]?.description || '未知'
+
+  const iconCode: string = data.weather?.[0]?.icon || '01d'
+  const description: string = data.weather?.[0]?.description || '未知'
   const temp = Math.round(data.main?.temp || 0)
   const feelsLike = Math.round(data.main?.feels_like || temp)
   const humidity = data.main?.humidity || 0
   const windSpeed = data.wind?.speed || 0
   const windDeg = data.wind?.deg || 0
-  
-  // 获取图标和中文描述
+
   const icon = weatherIconMap.openweathermap[iconCode] || '🌡️'
   const desc = weatherDescMap.openweathermap[description.toLowerCase()] || description
-  
+
   return {
     success: true,
     provider: 'openweathermap',
@@ -187,33 +224,27 @@ async function fetchOpenWeatherMap(lat, lng, config) {
   }
 }
 
-/**
- * 调用和风天气 API 获取天气
- */
-async function fetchQWeather(lat, lng, config) {
+async function fetchQWeather(lat: number, lng: number, config: WeatherConfig): Promise<WeatherResult> {
   const { apiKey, baseUrl, lang } = config.qweather
-  
+
   if (!apiKey) {
     throw new Error('和风天气 API Key 未配置')
   }
 
-  // 和风天气需要先获取城市ID (Location ID)
-  // 使用经纬度直接查询
   const location = `${lng},${lat}`
   const url = `${baseUrl}/weather/now?location=${location}&key=${apiKey}&lang=${lang}`
-  
+
   const response = await fetch(url)
-  
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({}))
     throw new Error(error.message || `HTTP ${response.status}`)
   }
-  
+
   const result = await response.json()
-  
-  // 检查响应状态
+
   if (result.code !== '200') {
-    const errorMessages = {
+    const errorMessages: Record<string, string> = {
       '400': '请求错误',
       '401': 'API Key 无效',
       '402': '超过访问次数',
@@ -223,23 +254,21 @@ async function fetchQWeather(lat, lng, config) {
     }
     throw new Error(errorMessages[result.code] || `错误代码: ${result.code}`)
   }
-  
+
   const data = result.now
-  
-  // 解析响应数据
-  const iconCode = data.icon || '100'
-  const description = data.text || '未知'
+
+  const iconCode: string = data.icon || '100'
+  const description: string = data.text || '未知'
   const temp = data.temp || '0'
   const feelsLike = data.feelsLike || temp
   const humidity = data.humidity || '0'
   const windSpeed = data.windSpeed || '0'
   const windDir = data.windDir || '未知'
   const windScale = data.windScale || '0'
-  
-  // 获取图标
+
   const icon = weatherIconMap.qweather[iconCode] || '🌡️'
   const desc = weatherDescMap.qweather[description] || description
-  
+
   return {
     success: true,
     provider: 'qweather',
@@ -257,11 +286,7 @@ async function fetchQWeather(lat, lng, config) {
   }
 }
 
-/**
- * 生成模拟天气数据
- */
-function generateDemoWeather(lat, lng) {
-  // 根据纬度判断区域
+function generateDemoWeather(lat: number, lng: number): WeatherResult {
   let region = 'unknown'
   if (lat >= 35 && lat <= 55 && lng >= 100 && lng <= 135) {
     region = 'north'
@@ -270,8 +295,8 @@ function generateDemoWeather(lat, lng) {
   } else if (lat >= 18 && lat < 30 && lng >= 105 && lng <= 120) {
     region = 'south'
   }
-  
-  const weatherData = {
+
+  const weatherData: Record<string, Array<{ icon: string; description: string; temp: string }>> = {
     north: [
       { icon: '🌤️', description: '晴转多云', temp: '20°C' },
       { icon: '☁️', description: '阴天', temp: '18°C' },
@@ -292,11 +317,11 @@ function generateDemoWeather(lat, lng) {
       { icon: '⛅', description: '多云', temp: '23°C' }
     ]
   }
-  
+
   const weathers = weatherData[region]
   const randomIndex = Math.floor(Math.random() * weathers.length)
   const weather = weathers[randomIndex]
-  
+
   return {
     success: true,
     provider: 'demo',
@@ -316,29 +341,25 @@ function generateDemoWeather(lat, lng) {
 
 /**
  * 获取当前天气
- * @param {number} lat 纬度
- * @param {number} lng 经度
- * @returns {Promise<Object>} 天气数据
  */
-export async function getCurrentWeather(lat, lng) {
+export async function getCurrentWeather(lat: number, lng: number): Promise<WeatherResult> {
   const config = getWeatherConfig()
-  
+
   try {
     switch (config.provider) {
       case 'openweathermap':
         return await fetchOpenWeatherMap(lat, lng, config)
-      
+
       case 'qweather':
         return await fetchQWeather(lat, lng, config)
-      
+
       case 'demo':
       default:
         return generateDemoWeather(lat, lng)
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn('[WeatherApi] Failed to fetch weather:', error.message)
-    
-    // 如果真实API失败，降级到模拟数据
+
     return {
       success: false,
       provider: config.provider,
@@ -351,13 +372,13 @@ export async function getCurrentWeather(lat, lng) {
 /**
  * 检查API配置是否有效
  */
-export function validateWeatherConfig(config) {
-  const result = {
+export function validateWeatherConfig(config: WeatherConfig): ValidationResult {
+  const result: ValidationResult = {
     valid: false,
     provider: config.provider,
     message: ''
   }
-  
+
   switch (config.provider) {
     case 'openweathermap':
       if (!config.openweathermap?.apiKey) {
@@ -367,7 +388,7 @@ export function validateWeatherConfig(config) {
         result.message = '配置有效'
       }
       break
-    
+
     case 'qweather':
       if (!config.qweather?.apiKey) {
         result.message = '请输入和风天气 API Key'
@@ -376,16 +397,16 @@ export function validateWeatherConfig(config) {
         result.message = '配置有效'
       }
       break
-    
+
     case 'demo':
       result.valid = true
       result.message = '使用模拟天气数据'
       break
-    
+
     default:
       result.message = '请选择天气数据源'
   }
-  
+
   return result
 }
 

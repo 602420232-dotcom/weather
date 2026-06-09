@@ -76,7 +76,24 @@ function tryLoadPwa() {
 }
 
 export default defineConfig({
-  plugins: [vue(), vueJsx(), tryLoadPwa()].filter(Boolean),
+  plugins: [
+    vue(),
+    vueJsx(),
+    tryLoadPwa(),
+    // CSP meta 标签注入（生产/开发均启用，确保安全策略一致）
+    {
+      name: 'html-csp',
+      transformIndexHtml(html) {
+        return html.replace(
+          '<head>',
+          `<head>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' ws: wss: https:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">`
+        )
+      }
+    }
+  ].filter(Boolean),
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

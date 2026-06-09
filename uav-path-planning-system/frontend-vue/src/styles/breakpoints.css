@@ -1,0 +1,67 @@
+/**
+ * 响应式断点增强
+ * 在现有 768px（手机）和 480px（小屏手机）基础上，
+ * 增加 1024px 平板断点。
+ *
+ * 用于 DefaultLayout.vue 的模板 class 绑定：
+ *   :class="{ 'is-tablet': isTablet }"
+ */
+
+/* ===== 平板断点：768px - 1024px ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* 侧边栏：平板端自动折叠 */
+  .uav-layout.is-tablet .uav-aside {
+    width: var(--sidebar-collapsed, 64px) !important;
+    overflow: hidden;
+  }
+
+  .uav-layout.is-tablet .uav-aside .logo-text {
+    display: none;
+  }
+
+  .uav-layout.is-tablet .uav-aside .el-menu {
+    border-right: none;
+  }
+
+  .uav-layout.is-tablet .uav-aside .el-menu .el-menu-item span,
+  .uav-layout.is-tablet .uav-aside .el-menu .el-sub-menu__title span {
+    display: none;
+  }
+
+  /* 平板端隐藏标记类 */
+  .uav-layout.is-tablet .hide-on-tablet {
+    display: none !important;
+  }
+
+  /* 主内容区留白调整 */
+  .uav-layout.is-tablet .uav-main {
+    padding: 16px;
+  }
+
+  /* 顶部栏标题大小调整 */
+  .uav-layout.is-tablet .breadcrumb-title {
+    font-size: 15px;
+    max-width: 180px;
+  }
+
+  /* 信息组间距调整 */
+  .uav-layout.is-tablet .info-group {
+    gap: 6px;
+  }
+
+  .uav-layout.is-tablet .info-group .location-info,
+  .uav-layout.is-tablet .info-group .time-info,
+  .uav-layout.is-tablet .info-group .weather-info {
+    padding: 2px 8px;
+    font-size: 12px;
+  }
+
+  /* 用户下拉文字隐藏 */
+  .uav-layout.is-tablet .user-display-name {
+    display: none;
+  }
+}
+
+/* ===== 已有断点保持不变 ===== */
+/* 手机端（768px 以下）：已由 DefaultLayout.vue 的 isMobie 处理 */
+/* 小屏手机（480px 以下）：保持现有规则 */

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, Ref, ComputedRef } from 'vue'
 import { ROLES } from './auth'
 import { isNightTime as computeIsNightTime, nextTransitionSeconds } from '../composables/useSunTime'
 import i18n from '../locales'
@@ -8,11 +8,13 @@ const APP_STORAGE_KEY = 'uav_app_config'
 const THEME_STORAGE_KEY = 'uav_theme_v1'
 const THEME_MODE_STORAGE_KEY = 'uav_theme_mode_v1'
 
-const DARK_THEMES = ['dark', 'brand', 'highContrast']
-const LIGHT_THEMES = ['light']
+type ThemeMode = 'light' | 'dark' | 'brand' | 'highContrast' | 'auto'
+
+const DARK_THEMES: ThemeMode[] = ['dark', 'brand', 'highContrast']
+const LIGHT_THEMES: ThemeMode[] = ['light']
 
 // 不同角色的默认首页
-const DEFAULT_HOME_BY_ROLE = {
+const DEFAULT_HOME_BY_ROLE: Record<string, string> = {
   [ROLES.USER]: 'dashboard',
   [ROLES.PRODUCTION]: 'dashboard',
   [ROLES.FLIGHT]: 'dashboard',
@@ -21,34 +23,34 @@ const DEFAULT_HOME_BY_ROLE = {
   [ROLES.ADMIN]: 'dashboard'
 }
 
-function applyDataThemeToDocument(val) {
+function applyDataThemeToDocument(val: string): void {
   if (typeof document === 'undefined') return
   document.documentElement.setAttribute('data-theme', val)
-  const isDarkMode = DARK_THEMES.includes(val)
+  const isDarkMode = DARK_THEMES.includes(val as ThemeMode)
   document.documentElement.style.setProperty('--color-blue-filter', isDarkMode ? '0.85' : '1')
 }
 
 export const useAppStore = defineStore('app', () => {
-  const collapsed = ref(true)
-  const sidebarManual = ref(false)
-  const theme = ref('light')
-  const themeMode = ref('auto') // 'light' | 'dark' | 'brand' | 'highContrast' | 'auto'
-  const language = ref('zh')
-  const defaultRoute = ref('')
-  const envMode = ref('demo')
-  const isNight = ref(false)
-  let autoThemeTimer = null
+  const collapsed: Ref<boolean> = ref(true)
+  const sidebarManual: Ref<boolean> = ref(false)
+  const theme: Ref<string> = ref('light')
+  const themeMode: Ref<ThemeMode> = ref('auto')
+  const language: Ref<string> = ref('zh')
+  const defaultRoute: Ref<string> = ref('')
+  const envMode: Ref<string> = ref('demo')
+  const isNight: Ref<boolean> = ref(false)
+  let autoThemeTimer: ReturnType<typeof setTimeout> | null = null
 
-  const effectiveTheme = computed(() => {
+  const effectiveTheme: ComputedRef<ThemeMode> = computed(() => {
     if (themeMode.value === 'auto') {
       return isNight.value ? 'dark' : 'light'
     }
     return themeMode.value
   })
 
-  const isDark = computed(() => DARK_THEMES.includes(effectiveTheme.value))
+  const isDark: ComputedRef<boolean> = computed(() => DARK_THEMES.includes(effectiveTheme.value))
 
-  function applyCurrentTheme() {
+  function applyCurrentTheme(): void {
     theme.value = effectiveTheme.value
     applyDataThemeToDocument(theme.value)
     if (typeof localStorage !== 'undefined') {
@@ -56,7 +58,7 @@ export const useAppStore = defineStore('app', () => {
     }
   }
 
-  function scheduleAutoThemeCheck() {
+  function scheduleAutoThemeCheck(): void {
     if (autoThemeTimer) {
       clearTimeout(autoThemeTimer)
       autoThemeTimer = null
@@ -72,7 +74,7 @@ export const useAppStore = defineStore('app', () => {
     }, seconds * 1000)
   }
 
-  function init() {
+  function init(): void {
     try {
       const raw = localStorage.getItem(APP_STORAGE_KEY)
       if (raw) {
@@ -94,7 +96,7 @@ export const useAppStore = defineStore('app', () => {
     } catch (_) {}
     try {
       const modeRaw = localStorage.getItem(THEME_MODE_STORAGE_KEY)
-      if (modeRaw) themeMode.value = modeRaw
+      if (modeRaw) themeMode.value = modeRaw as ThemeMode
     } catch (_) {}
 
     isNight.value = computeIsNightTime()
@@ -104,17 +106,16 @@ export const useAppStore = defineStore('app', () => {
     }
     applyDataThemeToDocument(theme.value)
 
-    // 读取独立的 envMode key（与 SystemMonitor 共享持久化）
+    // 读取独立的 envMode key
     try {
       const envRaw = localStorage.getItem('uav_app_env_mode_v1')
       if (envRaw) envMode.value = envRaw
     } catch (e) {}
 
-    // 启动自动主题调度
     scheduleAutoThemeCheck()
   }
 
-  function persist() {
+  function persist(): void {
     try {
       localStorage.setItem(
         APP_STORAGE_KEY,
@@ -133,7 +134,7 @@ export const useAppStore = defineStore('app', () => {
     } catch (e) {}
   }
 
-  function setEnvMode(val) {
+  function setEnvMode(val: string): void {
     envMode.value = val
     persist()
     try {
@@ -141,22 +142,21 @@ export const useAppStore = defineStore('app', () => {
     } catch (e) {}
   }
 
-  function toggleSidebar() {
+  function toggleSidebar(): void {
     collapsed.value = !collapsed.value
     persist()
   }
 
-  function setCollapsed(val) {
+  function setCollapsed(val: boolean): void {
     collapsed.value = val
     persist()
   }
 
-  function toggleTheme() {
-    // 当处于 auto 模式时，先切到 light；否则按固定顺序
+  function toggleTheme(): void {
     if (themeMode.value === 'auto') {
       themeMode.value = 'light'
     } else {
-      const order = ['light', 'dark', 'brand', 'highContrast', 'auto']
+      const order: ThemeMode[] = ['light', 'dark', 'brand', 'highContrast', 'auto']
       const idx = order.indexOf(themeMode.value)
       themeMode.value = order[(idx + 1) % order.length]
     }
@@ -165,42 +165,42 @@ export const useAppStore = defineStore('app', () => {
     persist()
   }
 
-  function setTheme(val) {
-    const valid = ['light', 'dark', 'brand', 'highContrast', 'auto']
-    themeMode.value = valid.includes(val) ? val : 'light'
+  function setTheme(val: string): void {
+    const valid: ThemeMode[] = ['light', 'dark', 'brand', 'highContrast', 'auto']
+    themeMode.value = valid.includes(val as ThemeMode) ? (val as ThemeMode) : 'light'
     isNight.value = computeIsNightTime()
     applyCurrentTheme()
     persist()
   }
 
-  function setThemeMode(val) {
-    const valid = ['light', 'dark', 'brand', 'highContrast', 'auto']
-    themeMode.value = valid.includes(val) ? val : 'auto'
+  function setThemeMode(val: string): void {
+    const valid: ThemeMode[] = ['light', 'dark', 'brand', 'highContrast', 'auto']
+    themeMode.value = valid.includes(val as ThemeMode) ? (val as ThemeMode) : 'auto'
     isNight.value = computeIsNightTime()
     applyCurrentTheme()
     persist()
   }
 
-  function refreshNightStatus() {
+  function refreshNightStatus(): void {
     isNight.value = computeIsNightTime()
     if (themeMode.value === 'auto') applyCurrentTheme()
   }
 
-  function setLanguage(val) {
+  function setLanguage(val: string): void {
     language.value = val
-    const localeMap = { 'zh': 'zh-CN', 'en': 'en-US', 'ja': 'ja-JP' }
+    const localeMap: Record<string, string> = { 'zh': 'zh-CN', 'en': 'en-US', 'ja': 'ja-JP' }
     const locale = localeMap[val] || val
     i18n.global.locale.value = locale
     localStorage.setItem('locale', locale)
     persist()
   }
 
-  function setDefaultRoute(routeKey) {
+  function setDefaultRoute(routeKey: string): void {
     defaultRoute.value = routeKey
     persist()
   }
 
-  function getDefaultRoute(role) {
+  function getDefaultRoute(role: string): string {
     if (defaultRoute.value) return defaultRoute.value
     return DEFAULT_HOME_BY_ROLE[role] || 'dashboard'
   }
@@ -237,4 +237,3 @@ export const useAppStore = defineStore('app', () => {
     init
   }
 })
-

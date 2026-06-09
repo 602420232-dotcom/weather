@@ -13,15 +13,15 @@
           </p>
           <div class="banner-features">
             <div class="feature-item">
-              <span class="feature-icon">✦</span>
+              <span class="feature-icon"><el-icon><UserFilled /></el-icon></span>
               <span>快速注册，即刻体验</span>
             </div>
             <div class="feature-item">
-              <span class="feature-icon">✦</span>
+              <span class="feature-icon"><el-icon><Setting /></el-icon></span>
               <span>多角色权限体系</span>
             </div>
             <div class="feature-item">
-              <span class="feature-icon">✦</span>
+              <span class="feature-icon"><el-icon><DataAnalysis /></el-icon></span>
               <span>全流程可视化管理</span>
             </div>
           </div>
@@ -65,6 +65,7 @@
                 v-model="form.username"
                 placeholder="请输入用户名（至少 3 个字符）"
                 :prefix-icon="User"
+                autocomplete="username"
                 clearable
                 size="large"
               />
@@ -76,6 +77,7 @@
                 type="password"
                 placeholder="请输入密码（至少 6 个字符）"
                 :prefix-icon="Lock"
+                autocomplete="new-password"
                 show-password
                 size="large"
               />
@@ -87,6 +89,7 @@
                 type="password"
                 placeholder="请再次输入密码"
                 :prefix-icon="Lock"
+                autocomplete="new-password"
                 show-password
                 size="large"
               />
@@ -163,7 +166,7 @@
 import { reactive, ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { User, Lock, Message, Key } from '@element-plus/icons-vue'
+import { User, Lock, Message, Key, UserFilled, Setting, DataAnalysis } from '@element-plus/icons-vue'
 import { useAuthStore, ROLES, ROLE_LABELS } from '../../stores/auth'
 
 const router = useRouter()
@@ -228,7 +231,7 @@ const validateEmail = (_rule, value, callback) => {
     callback(new Error('请输入邮箱'))
     return
   }
-  const emailReg = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+  const emailReg = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/
   if (!emailReg.test(value)) {
     callback(new Error('邮箱格式不正确'))
   } else {
@@ -241,11 +244,28 @@ const rules = computed(() => {
     selectedRole: [{ required: true, message: '请选择用户类型', trigger: 'change' }],
     username: [
       { required: true, message: '请输入用户名', trigger: 'blur' },
-      { min: 3, message: '用户名至少 3 个字符', trigger: 'blur' }
+      { min: 3, max: 50, message: '用户名长度 3-50 个字符', trigger: 'blur' },
+      { pattern: /^[a-zA-Z0-9_\-\u4e00-\u9fa5]+$/, message: '用户名只能包含字母、数字、下划线、中划线', trigger: 'blur' }
     ],
     password: [
       { required: true, message: '请输入密码', trigger: 'blur' },
-      { min: 6, message: '密码至少 6 个字符', trigger: 'blur' }
+      { min: 8, message: '密码至少 8 个字符', trigger: 'blur' },
+      {
+        validator: (_rule: any, value: string, callback: (err?: Error) => void) => {
+          if (!value) { callback(); return }
+          const hasUpper = /[A-Z]/.test(value)
+          const hasLower = /[a-z]/.test(value)
+          const hasNumber = /[0-9]/.test(value)
+          const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(value)
+          const strength = [hasUpper, hasLower, hasNumber, hasSpecial].filter(Boolean).length
+          if (strength < 2) {
+            callback(new Error('密码需包含大写字母、小写字母、数字、特殊字符中至少两类'))
+          } else {
+            callback()
+          }
+        },
+        trigger: 'blur'
+      }
     ],
     confirmPassword: [{ required: true, validator: validateConfirm, trigger: 'blur' }]
   }

@@ -1,6 +1,7 @@
 <template>
+  <el-skeleton v-if="loading" animated style="display: inline-block; width: 90px; height: 22px" />
   <el-tag
-    v-if="scope === 'personal'"
+    v-else-if="scope === 'personal'"
     type="info"
     size="small"
     effect="light"
@@ -40,6 +41,10 @@ const props = defineProps({
   team: {
     type: String,
     default: ''
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 

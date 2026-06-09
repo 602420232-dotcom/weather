@@ -554,7 +554,7 @@ const { data } = await axios.get('/mock-api/tasks/1001')
 | UTM | GET | `/mock-api/utm/status` | 低空 UTM 对接状态 |
 | UTM | POST | `/mock-api/utm/submit` | 任务报备提交 |
 
-> 提示：开发环境启动后，在浏览器控制台执行 `window.__MOCK_ENABLED__` 可确认 mock 是否生效；`axios.get('/mock-api/metrics')` 可直接验证响应。
+> 提示：开发环境启动后，`axios.get('/mock-api/metrics')` 可验证 mock 响应是否正常。
 
 ### 11. IndexedDB 离线大文件缓存（第 1 批新增）
 

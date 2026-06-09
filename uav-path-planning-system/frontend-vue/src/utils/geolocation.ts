@@ -1,4 +1,60 @@
+export interface GeolocationPosition {
+  coords: {
+    latitude: number
+    longitude: number
+    accuracy: number
+    altitude: number | null
+    altitudeAccuracy: number | null
+    heading: number | null
+    speed: number | null
+  }
+  timestamp: number
+}
+
+export interface FormattedPosition {
+  latitude: number
+  longitude: number
+  accuracy: number
+  altitude: number | null
+  altitudeAccuracy: number | null
+  heading: number | null
+  speed: number | null
+  timestamp: number
+}
+
+export interface AddressResult {
+  displayName: string
+  address: Record<string, string>
+  formatted: string
+}
+
+export interface RegionResult {
+  name: string
+  key: string
+}
+
+export interface LocationResult {
+  success: boolean
+  error?: string
+  position?: FormattedPosition
+  address?: AddressResult | null
+  region?: RegionResult
+}
+
+export interface GeolocationOptions {
+  enableHighAccuracy?: boolean
+  timeout?: number
+  maximumAge?: number
+}
+
+type PositionCallback = (position: GeolocationPosition | null, error?: Error) => void
+
 export class GeolocationService {
+  supported: boolean
+  currentPosition: GeolocationPosition | null
+  watchId: number | null
+  callbacks: PositionCallback[]
+
   constructor() {
     this.supported = 'geolocation' in navigator
     this.currentPosition = null
@@ -6,24 +62,24 @@ export class GeolocationService {
     this.callbacks = []
   }
 
-  async getCurrentPosition(options = {}) {
+  async getCurrentPosition(options: GeolocationOptions = {}): Promise<GeolocationPosition> {
     if (!this.supported) {
       throw new Error('Geolocation is not supported by this browser')
     }
 
-    const defaultOptions = {
+    const defaultOptions: GeolocationOptions = {
       enableHighAccuracy: true,
       timeout: 10000,
       maximumAge: 0
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise<GeolocationPosition>((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        (position: GeolocationPosition) => {
           this.currentPosition = position
           resolve(position)
         },
-        (error) => {
+        (error: GeolocationPositionError) => {
           reject(this._handleError(error))
         },
         { ...defaultOptions, ...options }
@@ -31,12 +87,12 @@ export class GeolocationService {
     })
   }
 
-  watchPosition(callback, options = {}) {
+  watchPosition(callback: PositionCallback, options: GeolocationOptions = {}): number | null {
     if (!this.supported) {
       throw new Error('Geolocation is not supported by this browser')
     }
 
-    const defaultOptions = {
+    const defaultOptions: GeolocationOptions = {
       enableHighAccuracy: true,
       timeout: 10000,
       maximumAge: 30000
@@ -48,11 +104,11 @@ export class GeolocationService {
 
     if (!this.watchId) {
       this.watchId = navigator.geolocation.watchPosition(
-        (position) => {
+        (position: GeolocationPosition) => {
           this.currentPosition = position
           this.callbacks.forEach(cb => cb(position))
         },
-        (error) => {
+        (error: GeolocationPositionError) => {
           const err = this._handleError(error)
           this.callbacks.forEach(cb => cb(null, err))
         },
@@ -63,14 +119,14 @@ export class GeolocationService {
     return this.watchId
   }
 
-  clearWatch(watchId) {
+  clearWatch(watchId?: number | null): void {
     if (this.watchId && (!watchId || watchId === this.watchId)) {
       navigator.geolocation.clearWatch(this.watchId)
       this.watchId = null
     }
   }
 
-  removeCallback(callback) {
+  removeCallback(callback: PositionCallback): void {
     const index = this.callbacks.indexOf(callback)
     if (index > -1) {
       this.callbacks.splice(index, 1)
@@ -80,8 +136,8 @@ export class GeolocationService {
     }
   }
 
-  _handleError(error) {
-    const errorMessages = {
+  _handleError(error: GeolocationPositionError): Error {
+    const errorMessages: Record<number, string> = {
       1: 'User denied Geolocation permission',
       2: 'Position unavailable',
       3: 'Timeout'
@@ -89,7 +145,7 @@ export class GeolocationService {
     return new Error(errorMessages[error.code] || 'Unknown error')
   }
 
-  formatPosition(position) {
+  formatPosition(position: GeolocationPosition | null): FormattedPosition | null {
     if (!position) return null
     return {
       latitude: position.coords.latitude,
@@ -103,7 +159,7 @@ export class GeolocationService {
     }
   }
 
-  async getAddress(latitude, longitude) {
+  async getAddress(latitude: number, longitude: number): Promise<AddressResult | null> {
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`
@@ -112,12 +168,11 @@ export class GeolocationService {
         throw new Error('Failed to fetch address')
       }
       const data = await response.json()
-      
-      // 检查返回数据是否有效
+
       if (!data || !data.address) {
         return null
       }
-      
+
       return {
         displayName: data.display_name || '',
         address: data.address,
@@ -129,28 +184,25 @@ export class GeolocationService {
     }
   }
 
-  _formatAddress(address) {
+  _formatAddress(address: Record<string, string> | undefined): string {
     if (!address) return ''
-    
-    const parts = []
-    // 优先使用市辖区
+
+    const parts: string[] = []
     if (address.city) parts.push(address.city)
     else if (address.county) parts.push(address.county)
     else if (address.town) parts.push(address.town)
     else if (address.village) parts.push(address.village)
     else if (address.municipality) parts.push(address.municipality)
-    
-    // 省份
+
     if (address.state) parts.push(address.state)
     else if (address.province) parts.push(address.province)
-    
-    // 国家
+
     if (address.country) parts.push(address.country)
-    
+
     return parts.join(', ')
   }
 
-  distanceBetween(lat1, lon1, lat2, lon2) {
+  distanceBetween(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const R = 6371000
     const dLat = this._toRad(lat2 - lat1)
     const dLon = this._toRad(lon2 - lon1)
@@ -162,11 +214,11 @@ export class GeolocationService {
     return R * c
   }
 
-  _toRad(deg) {
+  _toRad(deg: number): number {
     return deg * (Math.PI / 180)
   }
 
-  getRegionByPosition(latitude, longitude) {
+  getRegionByPosition(latitude: number, longitude: number): RegionResult {
     if (latitude > 34 && latitude < 42 && longitude > 110 && longitude < 120) {
       return { name: '华北', key: 'north' }
     }
@@ -179,8 +231,8 @@ export class GeolocationService {
     return { name: '未知区域', key: 'unknown' }
   }
 
-  getPositionBounds(region) {
-    const bounds = {
+  getPositionBounds(region: string): Array<[number, number]> {
+    const bounds: Record<string, Array<[number, number]>> = {
       east: [[23, 114], [32, 123]],
       north: [[34, 110], [42, 120]],
       south: [[18, 108], [26, 118]]
@@ -191,7 +243,7 @@ export class GeolocationService {
 
 export const geolocationService = new GeolocationService()
 
-export async function getCurrentLocation() {
+export async function getCurrentLocation(): Promise<LocationResult> {
   if (!('geolocation' in navigator)) {
     return { success: false, error: 'Geolocation not supported' }
   }
@@ -199,6 +251,9 @@ export async function getCurrentLocation() {
   try {
     const position = await geolocationService.getCurrentPosition()
     const formatted = geolocationService.formatPosition(position)
+    if (!formatted) {
+      return { success: false, error: 'Position format failed' }
+    }
     const address = await geolocationService.getAddress(
       formatted.latitude,
       formatted.longitude
@@ -214,24 +269,27 @@ export async function getCurrentLocation() {
       address,
       region
     }
-  } catch (error) {
+  } catch (error: any) {
     return { success: false, error: error.message }
   }
 }
 
-export function watchLocation(callback) {
+export function watchLocation(callback: (result: LocationResult) => void): number | null {
   if (!('geolocation' in navigator)) {
     callback({ success: false, error: 'Geolocation not supported' })
     return null
   }
 
-  return geolocationService.watchPosition(async (position, error) => {
+  return geolocationService.watchPosition(async (position: GeolocationPosition | null, error?: Error) => {
     if (error) {
       callback({ success: false, error: error.message })
       return
     }
 
+    if (!position) return
+
     const formatted = geolocationService.formatPosition(position)
+    if (!formatted) return
     const address = await geolocationService.getAddress(
       formatted.latitude,
       formatted.longitude

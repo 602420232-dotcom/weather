@@ -519,7 +519,6 @@ let enabled = false
 function enableMockInterceptor() {
   if (enabled) return
   enabled = true
-  if (typeof window !== 'undefined') window.__MOCK_ENABLED__ = true
 
   mockInterceptorId = axios.interceptors.request.use(
     (config) => {
@@ -551,7 +550,6 @@ function disableMockInterceptor() {
     mockInterceptorId = null
   }
   enabled = false
-  if (typeof window !== 'undefined') window.__MOCK_ENABLED__ = false
 }
 
 function setupMock() {

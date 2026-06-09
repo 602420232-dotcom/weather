@@ -6,6 +6,8 @@ import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import './styles/theme-vars.css'
+import './styles/variables.css'
+import './styles/breakpoints.css'
 import './styles/index.css'
 
 const savedTheme = localStorage.getItem('uav_theme_v1') || 'light'

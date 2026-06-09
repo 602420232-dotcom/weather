@@ -168,7 +168,49 @@ export default {
     demoMode: '演示模式',
     productionMode: '生产模式',
     environment: '环境',
-    version: '版本'
+    version: '版本',
+    brand: 'WRF 无人机路径规划',
+    skipToContent: '跳到主要内容'
+  },
+  layout: {
+    openNav: '打开导航菜单',
+    expandSidebar: '展开侧边栏',
+    collapseSidebar: '折叠侧边栏',
+    switchToLight: '切换到亮色模式',
+    switchToDark: '切换到暗色模式',
+    notificationCenter: '通知中心',
+    openDocs: '使用文档',
+    settings: '设置',
+    systemSettings: '系统设置',
+    themeCustomizer: '主题定制',
+    permissionDebug: '权限调试工具',
+    breadcrumbHome: '首页'
+  },
+  demo: {
+    banner: '当前为<strong>演示模式</strong>，部分数据为模拟数据。配置真实 API 后可切换为生产模式。',
+    goToApiConfig: '前往 API 配置 →',
+    welcomeTitle: '欢迎使用演示模式',
+    welcomeDescription: '您正在使用演示模式体验系统功能。所有数据均为模拟数据。',
+    tag: '演示模式',
+    defaultWeather: '晴朗 26°C'
+  },
+  production: {
+    tag: '生产模式'
+  },
+  userDisplay: {
+    profile: '个人信息',
+    logout: '退出登录',
+    loggedOut: '已退出登录'
+  },
+  location: {
+    clickToFetch: '点击获取位置',
+    fetching: '定位中...',
+    invalid: '位置信息无效',
+    failed: '定位失败'
+  },
+  notification: {
+    systemOnline: '系统已上线',
+    systemOnlineMsg: '欢迎使用无人机路径规划系统，当前为演示模式。'
   },
   menu: {
     dashboard: '首页概览',
@@ -538,6 +580,11 @@ export default {
     clearNotifications: '清空所有通知（{count} 条）',
     docsRedirect: '点击下方按钮跳转到完整使用文档页面',
     openDocs: '打开使用文档'
+  },
+  errorBoundary: {
+    title: '页面出现错误',
+    retry: '重试',
+    goHome: '返回首页'
   },
   title: '无人机低空作业管理系统'
 }

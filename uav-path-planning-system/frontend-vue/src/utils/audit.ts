@@ -1,6 +1,6 @@
 import { useAuditStore } from '../stores/audit'
 
-export const AUDIT_ACTIONS = {
+export const AUDIT_ACTIONS: Record<string, string> = {
   LOGIN: 'LOGIN',
   LOGIN_FAILED: 'LOGIN_FAILED',
   LOGOUT: 'LOGOUT',
@@ -20,10 +20,37 @@ export const AUDIT_ACTIONS = {
   OTHER: 'OTHER'
 }
 
-export function logAction({ user = null, role = null, action = AUDIT_ACTIONS.OTHER, target = null, detail = null, level = 'info' } = {}) {
+export interface AuditLogOptions {
+  user?: string | null
+  role?: string | null
+  action?: string
+  target?: string | null
+  detail?: string | null
+  level?: 'info' | 'warning' | 'error' | 'critical'
+}
+
+export interface AuditLogEntry {
+  user: string
+  role: string
+  action: string
+  target: string
+  detail: string
+  level: 'info' | 'warning' | 'error' | 'critical'
+  timestamp: string
+  ip: string
+}
+
+export function logAction({
+  user = null,
+  role = null,
+  action = AUDIT_ACTIONS.OTHER,
+  target = null,
+  detail = null,
+  level = 'info'
+}: AuditLogOptions = {}): AuditLogEntry | null {
   try {
     const auditStore = useAuditStore()
-    const entry = {
+    const entry: AuditLogEntry = {
       user: user || (auditStore.currentUser || 'anonymous'),
       role: role || (auditStore.currentRole || 'anonymous'),
       action,

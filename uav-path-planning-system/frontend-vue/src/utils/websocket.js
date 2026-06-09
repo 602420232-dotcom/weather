@@ -1,3 +1,8 @@
+/**
+ * @deprecated 自 v3.4 起已废弃，请使用 src/services/notificationService.js 替代。
+ * 基于 useWebSocket 封装，统一 STOMP 与本地模拟逻辑。
+ * 本文件保留以确保向后兼容，将在后续大版本中移除。
+ */
 import { ElNotification } from 'element-plus'
 
 let ws = null

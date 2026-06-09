@@ -12,7 +12,7 @@
       <!-- 作者信息区 -->
       <div class="post-meta">
         <div class="author-section">
-          <img :src="post.author.avatar" :alt="post.author.displayName" class="author-avatar" />
+          <img :src="post.author.avatar" :alt="post.author.displayName" width="48" height="48" loading="lazy" class="author-avatar" />
           <div class="author-info">
             <div class="author-name-row">
               <span class="author-name">{{ post.author.displayName }}</span>
@@ -36,7 +36,7 @@
       </div>
 
       <!-- 帖子内容 -->
-      <div class="post-content" v-html="post.content"></div>
+      <div class="post-content" v-html="sanitizedContent"></div>
 
       <!-- 操作栏 -->
       <div class="post-actions">
@@ -70,7 +70,7 @@
             :key="comment.id"
             class="comment-item"
           >
-            <img :src="comment.author.avatar" :alt="comment.author.displayName" class="comment-avatar" />
+            <img :src="comment.author.avatar" :alt="comment.author.displayName" width="36" height="36" loading="lazy" class="comment-avatar" />
             <div class="comment-content">
               <div class="comment-header">
                 <div class="comment-author-row">
@@ -122,6 +122,7 @@ import { ElMessage } from 'element-plus';
 import forumApi from '@/api/forum';
 import { useAuthStore } from '@/stores/auth';
 import { ROLES } from '@/stores/auth';
+import { sanitizeHtml } from '@/utils/sanitize';
 
 const { t } = useI18n();
 
@@ -159,6 +160,9 @@ const handleClose = () => {
 
 // 管理员可见IP（脱敏处理）
 const isAdmin = computed(() => authStore.role === ROLES.ADMIN);
+
+// 帖子内容安全消毒
+const sanitizedContent = computed(() => sanitizeHtml(props.post?.content || ''));
 
 const loadComments = async () => {
   loadingComments.value = true;

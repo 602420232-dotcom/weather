@@ -30,8 +30,13 @@
       </el-upload>
 
       <div v-if="parseError" class="error-msg">
-        <el-icon color="#F56C6C"><CircleClose /></el-icon>
-        {{ parseError }}
+        <div class="error-row">
+          <el-icon color="#F56C6C"><CircleClose /></el-icon>
+          <span>{{ parseError }}</span>
+        </div>
+        <el-button size="small" type="primary" plain style="margin-top: 8px" @click="retryParse">
+          重新尝试
+        </el-button>
       </div>
     </div>
 
@@ -171,7 +176,7 @@ const canProceed = computed(() =>
   fieldMap.value.lat && fieldMap.value.lng
 )
 
-async function handleFileChange(file) {
+function handleFileChange(file) {
   selectedFile.value = file.raw
   parseError.value = ''
   step.value = 1
@@ -205,8 +210,8 @@ async function parseFile() {
     sheetColumns.value = headers
     // 自动尝试匹配
     const lower = headers.map(h => h.toLowerCase())
-    fieldMap.value.lat = headers[lower.findIndex(h => /lat|latitude|latitude|纬度/.test(h))] || ''
-    fieldMap.value.lng = headers[lower.findIndex(h => /lng|lon|lonitude|lng|经度|经度/.test(h))] || ''
+    fieldMap.value.lat = headers[lower.findIndex(h => /lat|latitude|纬度/.test(h))] || ''
+    fieldMap.value.lng = headers[lower.findIndex(h => /lng|lon|longitude|经度/.test(h))] || ''
     fieldMap.value.name = headers[lower.findIndex(h => /name|label|point|名称|点名/.test(h))] || ''
     fieldMap.value.alt = headers[lower.findIndex(h => /alt|height|elevation|高度/.test(h))] || ''
     fieldMap.value.desc = headers[lower.findIndex(h => /desc|remark|note|备注/.test(h))] || ''
@@ -215,6 +220,13 @@ async function parseFile() {
     parseError.value = `解析失败：${e.message || '文件格式不正确'}`
   } finally {
     parsing.value = false
+  }
+}
+
+// 失败恢复：保留当前文件重新解析
+function retryParse() {
+  if (selectedFile.value) {
+    parseFile()
   }
 }
 
@@ -253,11 +265,16 @@ function reset() {
 .upload-area { width: 100%; }
 .error-msg {
   margin-top: 12px;
-  color: #F56C6C;
-  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.error-row {
   display: flex;
   align-items: center;
   gap: 6px;
+  color: #F56C6C;
+  font-size: 13px;
 }
 .preview-table { margin-top: 16px; }
 .preview-title {

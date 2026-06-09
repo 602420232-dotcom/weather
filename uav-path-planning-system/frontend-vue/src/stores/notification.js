@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import wsService from '@/utils/websocket'
+import { notificationService } from '@/services/notificationService'
 import { ElNotification } from 'element-plus'
 
 export const useNotificationStore = defineStore('notification', () => {
@@ -55,20 +55,20 @@ export const useNotificationStore = defineStore('notification', () => {
 
   // 方法
   function connect(userId) {
-    // 监听WebSocket事件
-    wsService.on('connect', handleConnect)
-    wsService.on('disconnect', handleDisconnect)
-    wsService.on('message', handleMessage)
-    
-    // 连接WebSocket
-    wsService.connect(userId)
+    // 监听通知服务事件
+    notificationService.on('connect', handleConnect)
+    notificationService.on('disconnect', handleDisconnect)
+    notificationService.on('message', handleMessage)
+
+    // 连接通知服务（演示模式由 authStore.demoMode 控制）
+    notificationService.connect(userId, { demoMode: true })
   }
 
   function disconnect() {
-    wsService.disconnect()
-    wsService.off('connect', handleConnect)
-    wsService.off('disconnect', handleDisconnect)
-    wsService.off('message', handleMessage)
+    notificationService.disconnect()
+    notificationService.off('connect', handleConnect)
+    notificationService.off('disconnect', handleDisconnect)
+    notificationService.off('message', handleMessage)
   }
 
   function handleConnect(data) {
