@@ -18,6 +18,55 @@ export default {
     warning: '警告',
     info: '情報'
   },
+  app: {
+    title: 'UAV低空作業管理システム',
+    demoMode: 'デモモード',
+    productionMode: '本番モード',
+    environment: '環境',
+    version: 'バージョン',
+    brand: 'WRF UAV経路計画',
+    skipToContent: 'メインコンテンツにスキップ'
+  },
+  layout: {
+    openNav: 'ナビゲーションメニューを開く',
+    expandSidebar: 'サイドバーを展開',
+    collapseSidebar: 'サイドバーを折りたたむ',
+    switchToLight: 'ライトモードに切り替え',
+    switchToDark: 'ダークモードに切り替え',
+    notificationCenter: '通知センター',
+    openDocs: 'ドキュメント',
+    settings: '設定',
+    systemSettings: 'システム設定',
+    themeCustomizer: 'テーマカスタマイザー',
+    permissionDebug: '権限デバッグ',
+    breadcrumbHome: 'ホーム'
+  },
+  demo: {
+    banner: '現在<strong>デモモード</strong>です。一部のデータはシミュレーションです。実際のAPI設定後、本番モードに切り替えてください。',
+    goToApiConfig: 'API設定へ →',
+    welcomeTitle: 'デモモードへようこそ',
+    welcomeDescription: 'デモモードでシステム機能を体験しています。すべてのデータはシミュレーションです。',
+    tag: 'デモモード',
+    defaultWeather: '晴れ 26°C'
+  },
+  production: {
+    tag: '本番モード'
+  },
+  userDisplay: {
+    profile: 'プロフィール',
+    logout: 'ログアウト',
+    loggedOut: 'ログアウトしました'
+  },
+  location: {
+    clickToFetch: 'クリックして位置情報を取得',
+    fetching: '位置情報を取得中...',
+    invalid: '位置情報が無効です',
+    failed: '位置情報の取得に失敗しました'
+  },
+  notification: {
+    systemOnline: 'システム起動',
+    systemOnlineMsg: 'UAV経路計画システムへようこそ。現在デモモードです。'
+  },
   login: {
     title: 'ログイン',
     username: 'ユーザー名',
@@ -350,6 +399,11 @@ export default {
     pdfExport: 'PDFエクスポート',
     xlsxExport: 'Excelエクスポート',
     preview: 'プレビュー'
+  },
+  errorBoundary: {
+    title: 'エラーが発生しました',
+    retry: '再試行',
+    goHome: 'ホームに戻る'
   },
   title: 'ドローン低空作業管理システム'
 }

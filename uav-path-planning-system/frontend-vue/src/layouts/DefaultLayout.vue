@@ -1,11 +1,14 @@
 <template>
-  <div class="uav-layout" :class="{ 'is-collapsed': appStore.collapsed, 'is-dark': appStore.isDark, 'is-mobile': isMobile }">
+  <div class="uav-layout" :class="{ 'is-collapsed': appStore.collapsed, 'is-dark': appStore.isDark, 'is-mobile': isMobile, 'is-tablet': isTablet }">
+    <!-- 无障碍跳转链接 -->
+    <a href="#main-content" class="skip-link">{{ $t('app.skipToContent') }}</a>
+
     <!-- 演示模式顶部提示条 -->
     <div v-if="authStore.demoMode" class="demo-banner">
       <el-icon class="demo-icon"><InfoFilled /></el-icon>
-      <span>当前为<strong>演示模式</strong>，部分数据为模拟数据。配置真实 API 后可切换为生产模式。</span>
+      <span v-html="$t('demo.banner')"></span>
       <el-button type="primary" link @click="goToApiConfig" v-if="canAccessApiConfig">
-        前往 API 配置 →
+        {{ $t('demo.goToApiConfig') }}
       </el-button>
     </div>
 
@@ -13,292 +16,98 @@
     <el-alert
       v-if="showDemoToast"
       class="demo-toast"
-      :title="'欢迎使用演示模式'"
+      :title="$t('demo.welcomeTitle')"
       type="info"
-      description="您正在使用演示模式体验系统功能。所有数据均为模拟数据。"
+      :description="$t('demo.welcomeDescription')"
       show-icon
       :closable="true"
       @close="onDemoToastClose"
     />
 
     <el-container class="uav-container">
-      <!-- 左侧边栏（桌面端） -->
-      <el-aside
-        v-show="!isMobile"
-        :width="appStore.collapsed ? '64px' : '220px'"
-        class="uav-aside"
-        :class="{ collapsed: appStore.collapsed }"
-      >
-        <div class="logo-area" @click="goHome">
-          <div class="logo-icon">
-            <el-icon :size="22"><PartlyCloudy /></el-icon>
-          </div>
-          <span v-if="!appStore.collapsed" class="logo-text">
-            WRF 无人机路径规划
-          </span>
-        </div>
-
-        <el-menu
-          :default-active="currentRoute"
-          :collapse="appStore.collapsed"
-          :collapse-transition="false"
-          class="uav-menu"
-          background-color="#001529"
-          text-color="#c9d1d9"
-          active-text-color="#52c41a"
-          router
-        >
-          <template v-for="item in menuItems" :key="item.key">
-            <el-menu-item v-if="!item.children" :index="item.path" :disabled="item.disabled">
-              <el-icon><component :is="ICON_MAP[item.icon]" /></el-icon>
-              <template #title>{{ item.title }}</template>
-            </el-menu-item>
-
-            <el-sub-menu v-else :index="'sub-' + item.key">
-              <template #title>
-                <el-icon><component :is="ICON_MAP[item.icon]" /></el-icon>
-                <span>{{ item.title }}</span>
-              </template>
-              <el-menu-item
-                v-for="child in item.children"
-                :key="child.key"
-                :index="child.path"
-                :disabled="child.disabled"
-              >
-                <el-icon><component :is="ICON_MAP[child.icon]" /></el-icon>
-                <template #title>{{ child.title }}</template>
-              </el-menu-item>
-            </el-sub-menu>
-          </template>
-
-          <el-divider style="margin: 8px 0; border-color: rgba(255,255,255,0.1);" />
-          <el-menu-item index="/docs">
-            <el-icon><Document /></el-icon>
-            <template #title>使用文档</template>
-          </el-menu-item>
-          <el-sub-menu index="sub-settings">
-            <template #title>
-              <el-icon><Tools /></el-icon>
-              <span>设置</span>
-            </template>
-            <el-menu-item index="/settings">
-              <el-icon><Setting /></el-icon>
-              <template #title>系统设置</template>
-            </el-menu-item>
-            <el-menu-item index="/theme-customizer">
-              <el-icon><MagicStick /></el-icon>
-              <template #title>主题定制</template>
-            </el-menu-item>
-            <el-menu-item
-              v-if="authStore.hasRouteAccess('permission-debug')"
-              index="/permission-debug"
-            >
-              <el-icon><MagicStick /></el-icon>
-              <template #title>权限调试工具</template>
-            </el-menu-item>
-          </el-sub-menu>
-        </el-menu>
-      </el-aside>
+      <!-- 桌面端侧边栏 -->
+      <LayoutSidebar
+        v-if="!isMobile"
+        :collapsed="appStore.collapsed"
+        :current-route="currentRoute"
+        :menu-items="menuItems"
+        :brand-text="$t('app.brand')"
+        :docs-label="$t('layout.openDocs')"
+        :settings-label="$t('layout.settings')"
+        :system-settings-label="$t('layout.systemSettings')"
+        :theme-label="$t('layout.themeCustomizer')"
+        :permission-debug-label="$t('layout.permissionDebug')"
+        :show-permission-debug="authStore.hasRouteAccess('permission-debug')"
+        :icon-map="ICON_MAP"
+        @go-home="goHome"
+      />
 
       <!-- 移动端抽屉 -->
-      <el-drawer
+      <LayoutMobileDrawer
         v-model="drawerVisible"
-        direction="ltr"
-        size="280px"
-        :with-header="false"
-        class="uav-drawer"
-      >
-        <div class="drawer-logo" @click="goHomeDrawer">
-          <div class="logo-icon">
-            <el-icon :size="22"><PartlyCloudy /></el-icon>
-          </div>
-          <span class="logo-text">WRF 无人机路径规划</span>
-        </div>
-        <el-menu
-          :default-active="currentRoute"
-          class="uav-menu drawer-menu"
-          background-color="#001529"
-          text-color="#c9d1d9"
-          active-text-color="#52c41a"
-          router
-          @select="onDrawerSelect"
-        >
-          <template v-for="item in menuItems" :key="item.key">
-            <el-menu-item v-if="!item.children" :index="item.path" :disabled="item.disabled">
-              <el-icon><component :is="item.icon" /></el-icon>
-              <template #title>{{ item.title }}</template>
-            </el-menu-item>
-            <el-sub-menu v-else :index="'sub-' + item.key">
-              <template #title>
-                <el-icon><component :is="item.icon" /></el-icon>
-                <span>{{ item.title }}</span>
-              </template>
-              <el-menu-item
-                v-for="child in item.children"
-                :key="child.key"
-                :index="child.path"
-                :disabled="child.disabled"
-              >
-                <el-icon><component :is="child.icon" /></el-icon>
-                <template #title>{{ child.title }}</template>
-              </el-menu-item>
-            </el-sub-menu>
-          </template>
-          <el-divider style="margin: 8px 0; border-color: rgba(255,255,255,0.1);" />
-          <el-menu-item index="/docs">
-            <el-icon><Document /></el-icon>
-            <template #title>使用文档</template>
-          </el-menu-item>
-          <el-sub-menu index="sub-settings">
-            <template #title>
-              <el-icon><Tools /></el-icon>
-              <span>设置</span>
-            </template>
-            <el-menu-item index="/settings">
-              <el-icon><Setting /></el-icon>
-              <template #title>系统设置</template>
-            </el-menu-item>
-            <el-menu-item index="/theme-customizer">
-              <el-icon><MagicStick /></el-icon>
-              <template #title>主题定制</template>
-            </el-menu-item>
-            <el-menu-item
-              v-if="authStore.hasRouteAccess('permission-debug')"
-              index="/permission-debug"
-            >
-              <el-icon><MagicStick /></el-icon>
-              <template #title>权限调试工具</template>
-            </el-menu-item>
-          </el-sub-menu>
-        </el-menu>
-      </el-drawer>
+        :current-route="currentRoute"
+        :menu-items="menuItems"
+        :brand-text="$t('app.brand')"
+        :docs-label="$t('layout.openDocs')"
+        :settings-label="$t('layout.settings')"
+        :system-settings-label="$t('layout.systemSettings')"
+        :theme-label="$t('layout.themeCustomizer')"
+        :permission-debug-label="$t('layout.permissionDebug')"
+        :show-permission-debug="authStore.hasRouteAccess('permission-debug')"
+        :icon-map="ICON_MAP"
+        @go-home="goHome"
+        @select="drawerVisible = false"
+      />
 
       <!-- 通知中心抽屉 -->
-      <NotificationDrawer
-        v-model="notificationDrawerVisible"
-      />
+      <NotificationDrawer v-model="notificationDrawerVisible" />
 
       <!-- 右侧主区域 -->
       <el-container class="uav-main-container">
         <!-- 顶部栏 -->
-        <el-header class="uav-header" height="52px">
-          <div class="header-left">
-            <!-- 移动端汉堡按钮 -->
-            <el-button
-              v-if="isMobile"
-              text
-              class="hamburger-btn"
-              @click="drawerVisible = true"
-            >
-              <el-icon :size="20"><Menu /></el-icon>
-            </el-button>
-            <el-button
-              v-else
-              text
-              class="collapse-btn"
-              @click="appStore.toggleSidebar()"
-            >
-              <el-icon :size="18">
-                <Fold v-if="!appStore.collapsed" />
-                <Expand v-else />
-              </el-icon>
-            </el-button>
-            <span class="breadcrumb-title">{{ currentTitle }}</span>
-          </div>
-
-          <div class="header-right">
-            <!-- 演示模式标识 -->
-            <el-tag
-              v-if="authStore.demoMode"
-              type="info"
-              effect="plain"
-              size="default"
-              class="demo-tag"
-            >
-              <el-icon><MagicStick /></el-icon>&nbsp;<span class="hide-on-mobile">演示模式</span>
-            </el-tag>
-            <el-tag v-else type="success" effect="plain" size="default" class="demo-tag">
-              <el-icon><Sunny /></el-icon>&nbsp;<span class="hide-on-mobile">生产模式</span>
-            </el-tag>
-
-            <!-- 位置信息 -->
-            <div class="info-group hide-on-mobile">
-              <div class="location-info" @click="fetchCurrentLocation" :class="{ 'is-clickable': !isLocating }">
-                <el-icon :size="16" class="info-icon"><MapLocation /></el-icon>
-                <span class="info-text">{{ locationText }}</span>
-                <el-icon v-if="isLocating" :size="14" class="location-loading"><Loading /></el-icon>
-              </div>
-            </div>
-
-            <!-- 时间信息 -->
-            <div class="info-group hide-on-mobile">
-              <div class="time-info">
-                <el-icon :size="16" class="info-icon"><Clock /></el-icon>
-                <span class="info-text">{{ currentTime }}</span>
-              </div>
-            </div>
-
-            <!-- 天气信息 -->
-            <div class="info-group hide-on-mobile">
-              <div class="weather-info">
-                <span class="weather-icon">{{ weatherIcon }}</span>
-                <span class="info-text">{{ weatherText }}</span>
-              </div>
-            </div>
-
-            <!-- 主题切换 -->
-            <el-button text @click="appStore.toggleTheme()" class="theme-btn">
-              <el-icon :size="18"><Moon v-if="!appStore.isDark" /><Sunny v-else /></el-icon>
-            </el-button>
-
-            <!-- 通知铃铛 -->
-            <el-badge
-              :value="notificationStore.unreadCount"
-              :hidden="notificationStore.unreadCount === 0"
-              class="notification-badge"
-              :max="99"
-            >
-              <el-button text class="notification-btn" @click="notificationDrawerVisible = true">
-                <el-icon :size="18"><Bell /></el-icon>
-              </el-button>
-            </el-badge>
-
-            <!-- 用户下拉 -->
-            <el-dropdown @command="onUserCommand">
-              <span class="user-info">
-                <el-avatar :size="30" class="user-avatar">
-                  {{ (authStore.displayName || 'U').charAt(0).toUpperCase() }}
-                </el-avatar>
-                <span class="user-name hide-on-mobile">{{ authStore.displayName }}</span>
-                <el-tag size="small" class="role-tag hide-on-mobile" :type="roleTagType">
-                  {{ authStore.roleLabel }}
-                </el-tag>
-                <el-icon class="hide-on-mobile"><ArrowDown /></el-icon>
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="profile">
-                    <el-icon><User /></el-icon>个人信息
-                  </el-dropdown-item>
-                  <el-dropdown-item command="settings">
-                    <el-icon><Setting /></el-icon>系统设置
-                  </el-dropdown-item>
-                  <el-dropdown-item divided command="logout">
-                    <el-icon><SwitchButton /></el-icon>退出登录
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </div>
-        </el-header>
+        <LayoutHeader
+          :is-mobile="isMobile"
+          :collapsed="appStore.collapsed"
+          :is-dark="appStore.isDark"
+          :demo-mode="authStore.demoMode"
+          :current-title="currentTitle"
+          :display-name="authStore.displayName"
+          :role-label="authStore.roleLabel"
+          :role-tag-type="roleTagType"
+          :unread-count="notificationStore.unreadCount"
+          @toggle-drawer="drawerVisible = true"
+          @toggle-sidebar="appStore.toggleSidebar()"
+          @toggle-theme="appStore.toggleTheme()"
+          @open-notifications="notificationDrawerVisible = true"
+          @user-command="onUserCommand"
+        >
+          <template #location>
+            <HeaderLocation
+              :location-text="locationText"
+              :is-locating="isLocating"
+              @fetch="fetchCurrentLocation"
+            />
+          </template>
+          <template #clock>
+            <HeaderClock />
+          </template>
+          <template #weather>
+            <HeaderWeather
+              :weather-icon="weatherIcon"
+              :weather-text="weatherText"
+            />
+          </template>
+        </LayoutHeader>
 
         <!-- 内容区 -->
-        <el-main class="uav-main">
-          <router-view v-slot="{ Component }">
-            <transition name="fade" mode="out-in">
-              <component :is="Component" />
-            </transition>
-          </router-view>
+        <el-main id="main-content" class="uav-main" tabindex="-1">
+          <ErrorBoundary>
+            <router-view v-slot="{ Component }" :key="route.fullPath">
+              <transition name="fade" mode="out-in">
+                <component :is="Component" />
+              </transition>
+            </router-view>
+          </ErrorBoundary>
         </el-main>
 
         <!-- 底部 -->
@@ -318,14 +127,19 @@ import { ElMessage } from 'element-plus'
 import {
   HomeFilled, PartlyCloudy, Goods, Monitor, List, Position, Connection,
   DataAnalysis, Coin, Box, Setting, Tools, Document,
-  Fold, Expand, Moon, Sunny, ArrowDown, User, SwitchButton,
-  MagicStick, InfoFilled, Cpu, Menu, Bell, MapLocation, Clock, Loading,
-  ChatDotRound, Plus, UserFilled
+  MagicStick, InfoFilled, Cpu, ChatDotRound
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '../stores/auth'
 import { useAppStore } from '../stores/app'
 import { useNotificationStore } from '../stores/notification'
 import NotificationDrawer from '../components/shared/NotificationDrawer.vue'
+import ErrorBoundary from '../components/shared/ErrorBoundary.vue'
+import LayoutSidebar from './components/LayoutSidebar.vue'
+import LayoutMobileDrawer from './components/LayoutMobileDrawer.vue'
+import LayoutHeader from './components/LayoutHeader.vue'
+import HeaderClock from './components/HeaderClock.vue'
+import HeaderLocation from './components/HeaderLocation.vue'
+import HeaderWeather from './components/HeaderWeather.vue'
 import { getCurrentLocation } from '../utils/geolocation'
 import { getCurrentWeather } from '../utils/weatherApi'
 
@@ -340,45 +154,26 @@ const showDemoToast = ref(false)
 const drawerVisible = ref(false)
 const notificationDrawerVisible = ref(false)
 
-// 响应式：移动端判定
 const isMobile = ref(false)
+const isTablet = ref(false)
 let mqHandler = null
+let tabletMqHandler = null
 
-// 位置、时间、天气状态
-const locationText = ref('点击获取位置')
+const locationText = ref(t('location.clickToFetch'))
 const currentLocation = ref(null)
 const isLocating = ref(false)
-const currentTime = ref('')
-let timeInterval = null
 
-// 天气信息
 const weatherIcon = ref('☀️')
-const weatherText = ref('晴朗 26°C')
-
-function updateTime() {
-  const now = new Date()
-  const hours = now.getHours().toString().padStart(2, '0')
-  const minutes = now.getMinutes().toString().padStart(2, '0')
-  const seconds = now.getSeconds().toString().padStart(2, '0')
-  const year = now.getFullYear()
-  const month = (now.getMonth() + 1).toString().padStart(2, '0')
-  const day = now.getDate().toString().padStart(2, '0')
-  const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-  const weekday = weekdays[now.getDay()]
-  currentTime.value = `${year}-${month}-${day} ${weekday} ${hours}:${minutes}:${seconds}`
-}
+const weatherText = ref(t('demo.defaultWeather'))
 
 async function updateWeather() {
   if (!currentLocation.value?.position) return
-  
   const { latitude, longitude } = currentLocation.value.position
   const result = await getCurrentWeather(latitude, longitude)
-  
   if (result.success) {
     weatherIcon.value = result.data.icon
     weatherText.value = `${result.data.description} ${result.data.temp}`
   } else if (result.fallback) {
-    // API失败，使用降级数据
     weatherIcon.value = result.fallback.data.icon
     weatherText.value = `${result.fallback.data.description} ${result.fallback.data.temp}`
   }
@@ -386,41 +181,35 @@ async function updateWeather() {
 
 async function fetchCurrentLocation() {
   if (isLocating.value) return
-  
   isLocating.value = true
-  locationText.value = '定位中...'
-  
+  locationText.value = t('location.fetching')
+
   const result = await getCurrentLocation()
-  
+
   if (result.success) {
     currentLocation.value = result
-    
-    // 检查地址是否有效
     if (result.address && result.address.formatted) {
       const addr = result.address.formatted
       const regionName = result.region?.name || ''
       locationText.value = regionName ? `${regionName} · ${addr}` : addr
     } else if (result.position) {
-      // 没有有效地址时显示经纬度
       const { latitude, longitude } = result.position
       locationText.value = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
     } else {
-      locationText.value = '位置信息无效'
+      locationText.value = t('location.invalid')
     }
-    
     updateWeather()
   } else {
-    // 定位失败
-    locationText.value = '定位失败'
+    locationText.value = t('location.failed')
     console.warn('[Header] Failed to get location:', result.error)
   }
-  
   isLocating.value = false
 }
 
 function updateIsMobile() {
   if (typeof window === 'undefined' || !window.matchMedia) return
   isMobile.value = window.matchMedia('(max-width: 768px)').matches
+  isTablet.value = window.matchMedia('(min-width: 769px) and (max-width: 1024px)').matches
 }
 
 onMounted(() => {
@@ -440,85 +229,77 @@ onMounted(() => {
       mql.addListener(mqHandler)
     }
     isMobile.value = mql.matches
+
+    // 平板断点监听
+    const tabletMql = window.matchMedia('(min-width: 769px) and (max-width: 1024px)')
+    tabletMqHandler = (e) => {
+      isTablet.value = e.matches
+    }
+    if (typeof tabletMql.addEventListener === 'function') {
+      tabletMql.addEventListener('change', tabletMqHandler)
+    } else if (typeof tabletMql.addListener === 'function') {
+      tabletMql.addListener(tabletMqlHandler)
+    }
+    isTablet.value = tabletMql.matches
   }
 
-  // 系统上线通知（首次进入或每日一次）
+  // 系统上线通知
   try {
     const today = new Date().toISOString().slice(0, 10)
     const lastShown = localStorage.getItem('uav_system_notify_date_v1')
     if (lastShown !== today) {
       notificationStore.pushWithDesktop({
         type: 'info',
-        title: '系统已上线',
-        message: '欢迎使用无人机路径规划系统，当前为演示模式。',
+        title: t('notification.systemOnline'),
+        message: t('notification.systemOnlineMsg'),
         source: 'system'
       })
       localStorage.setItem('uav_system_notify_date_v1', today)
     }
   } catch (_) {}
 
-  // 连接 WebSocket 通知服务
   if (authStore.userId) {
     notificationStore.connect(authStore.userId)
   }
-
-  // 初始化时间
-  updateTime()
-  timeInterval = setInterval(updateTime, 1000)
 })
 
 onBeforeUnmount(() => {
-  if (typeof window !== 'undefined' && window.matchMedia && mqHandler) {
-    const mql = window.matchMedia('(max-width: 768px)')
-    if (typeof mql.removeEventListener === 'function') {
-      mql.removeEventListener('change', mqHandler)
-    } else if (typeof mql.removeListener === 'function') {
-      mql.removeListener(mqHandler)
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    if (mqHandler) {
+      const mql = window.matchMedia('(max-width: 768px)')
+      if (typeof mql.removeEventListener === 'function') {
+        mql.removeEventListener('change', mqHandler)
+      } else if (typeof mql.removeListener === 'function') {
+        mql.removeListener(mqHandler)
+      }
+    }
+    if (tabletMqHandler) {
+      const tabletMql = window.matchMedia('(min-width: 769px) and (max-width: 1024px)')
+      if (typeof tabletMql.removeEventListener === 'function') {
+        tabletMql.removeEventListener('change', tabletMqHandler)
+      } else if (typeof tabletMql.removeListener === 'function') {
+        tabletMql.removeListener(tabletMqHandler)
+      }
     }
   }
-  
-  // 清理时间定时器
-  if (timeInterval) {
-    clearInterval(timeInterval)
-  }
-  
-  // 断开 WebSocket 连接
   notificationStore.disconnect()
 })
 
-function onDemoToastClose() {
-  showDemoToast.value = false
-}
-
-function onDrawerSelect() {
-  drawerVisible.value = false
-}
-
-function goHomeDrawer() {
-  drawerVisible.value = false
-  goHome()
-}
+function onDemoToastClose() { showDemoToast.value = false }
 
 const currentRoute = computed(() => route.path)
-const currentTitle = computed(() => route.meta?.title || '首页')
+const currentTitle = computed(() => route.meta?.title || t('layout.breadcrumbHome'))
 
-const canAccessApiConfig = computed(() =>
-  authStore.hasRouteAccess('api-config')
-)
+const canAccessApiConfig = computed(() => authStore.hasRouteAccess('api-config'))
 
 const roleTagType = computed(() => {
   const map = {
-    admin: 'danger',
-    deployment: 'warning',
-    flight: 'success',
-    production: '',
-    tester: 'info',
-    user: 'info'
+    admin: 'danger', deployment: 'warning', flight: 'success',
+    production: '', tester: 'info', user: 'info'
   }
   return map[authStore.role] || 'info'
 })
 
-// 图标映射表：将字符串名称映射到实际组件
 const ICON_MAP = {
   HomeFilled, PartlyCloudy, Goods, Monitor, List, Position, Connection,
   DataAnalysis, Coin, Box, Setting, Tools, Document,
@@ -551,7 +332,6 @@ const menuItems = computed(() => {
     { key: 'user-stats', title: t('menu.userStats'), icon: 'DataAnalysis', path: '/user-stats', roles: ['admin'] },
     { key: 'permission-templates', title: t('menu.permissionTemplates'), icon: 'Setting', path: '/permission-templates' }
   ]
-
   return all.filter(item => authStore.hasRouteAccess(item.key))
 })
 
@@ -560,20 +340,14 @@ function goHome() {
   router.push('/' + defaultRoute)
 }
 
-function goToApiConfig() {
-  router.push('/api-config')
-}
+function goToApiConfig() { router.push('/api-config') }
 
 function onUserCommand(cmd) {
   switch (cmd) {
-    case 'profile':
-      router.push('/settings')
-      break
-    case 'settings':
-      router.push('/settings')
-      break
+    case 'profile': router.push('/settings'); break
+    case 'settings': router.push('/settings'); break
     case 'logout':
-      ElMessage.success('已退出登录')
+      ElMessage.success(t('userDisplay.loggedOut'))
       authStore.logout()
       router.push('/login')
       break
@@ -589,9 +363,23 @@ function onUserCommand(cmd) {
 .uav-layout.is-dark {
   background: #0d1117;
   color: #c9d1d9;
+  color-scheme: dark;
 }
 
-/* 演示模式顶部提示条 */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 8px;
+  z-index: 9999;
+  padding: 8px 16px;
+  background: #1890ff;
+  color: #fff;
+  font-size: 14px;
+  border-radius: 0 4px 4px 0;
+  text-decoration: none;
+}
+.skip-link:focus { left: 0; }
+
 .demo-banner {
   display: flex;
   align-items: center;
@@ -605,205 +393,16 @@ function onUserCommand(cmd) {
 .demo-banner .demo-icon { font-size: 16px; }
 .demo-banner strong { color: var(--color-warning); margin: 0 2px; }
 
-.demo-toast {
-  margin: 8px 16px;
-}
+.demo-toast { margin: 8px 16px; }
 
 .uav-container {
   height: calc(100vh - (var(--banner-height, 0px)));
 }
 
-/* 侧边栏 */
-.uav-aside {
-  background: #001529;
-  transition: width 0.2s;
-  overflow: hidden;
-}
-.uav-aside.collapsed {
-  overflow: hidden;
-}
-
-.logo-area {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 16px;
-  height: 52px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 15px;
-  border-bottom: 1px solid #1f2a3d;
-  cursor: pointer;
-  user-select: none;
-}
-.logo-area:hover { background: #0a1a2e; }
-.logo-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, #1890ff, #52c41a);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  flex-shrink: 0;
-}
-.logo-text {
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.uav-menu {
-  border-right: none;
-  height: calc(100% - 52px);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.uav-menu::-webkit-scrollbar {
-  width: 6px;
-}
-
-.uav-menu::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-}
-
-.uav-menu::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.4);
-}
-.uav-menu:not(.el-menu--collapse) {
-  width: 220px;
-}
-
-/* 主容器 */
 .uav-main-container {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.uav-header {
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-}
-.is-dark .uav-header {
-  background: #161b22;
-  border-bottom-color: #30363d;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.collapse-btn { color: #333 !important; padding: 0 8px !important; }
-.is-dark .collapse-btn { color: #c9d1d9 !important; }
-.breadcrumb-title {
-  font-size: 15px;
-  font-weight: 500;
-  color: #24292f;
-}
-.is-dark .breadcrumb-title { color: #c9d1d9; }
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.demo-tag { margin-right: 8px; }
-.theme-btn { color: #666 !important; padding: 0 8px !important; }
-.notification-btn { color: #666 !important; padding: 0 8px !important; }
-.notification-badge { margin-right: 4px; }
-.is-dark .theme-btn { color: #e5c07b !important; }
-.is-dark .notification-btn { color: #c9d1d9 !important; }
-
-/* 信息组样式 */
-.info-group {
-  display: flex;
-  align-items: center;
-}
-
-.location-info,
-.time-info,
-.weather-info {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: rgba(0, 0, 0, 0.05);
-  font-size: 13px;
-  color: #666;
-}
-
-.is-dark .location-info,
-.is-dark .time-info,
-.is-dark .weather-info {
-  background: rgba(255, 255, 255, 0.08);
-  color: #c9d1d9;
-}
-
-.location-info.is-clickable {
-  cursor: pointer;
-}
-
-.location-info.is-clickable:hover {
-  background: rgba(0, 0, 0, 0.08);
-}
-
-.is-dark .location-info.is-clickable:hover {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.info-icon {
-  color: #409eff;
-}
-
-.is-dark .info-icon {
-  color: #79c0ff;
-}
-
-.location-loading {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.weather-icon {
-  font-size: 16px;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  padding: 0 8px;
-  color: #24292f;
-}
-.is-dark .user-info { color: #c9d1d9; }
-.user-avatar {
-  background: linear-gradient(135deg, #1890ff, #52c41a);
-  color: #fff;
-  font-weight: 600;
-}
-.user-name {
-  font-size: 14px;
-  max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.role-tag {
-  margin-left: 4px;
 }
 
 .uav-main {
@@ -822,97 +421,44 @@ function onUserCommand(cmd) {
   justify-content: center;
   padding: 0;
 }
-.is-dark .uav-footer {
-  border-top-color: #30363d;
-  color: #6e7681;
-}
 
 /* 页面切换动画 */
-.fade-enter-active,
-.fade-leave-active {
+.fade-enter-active, .fade-leave-active {
   transition: opacity 0.2s ease;
 }
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-enter-active, .fade-leave-active { transition: none; }
 }
 
-/* 移动端抽屉与抽屉专用 */
-.uav-layout.is-mobile .uav-main {
-  padding: 12px;
+/* 暗色主题 */
+.is-dark .uav-header { background: #161b22; border-bottom-color: #30363d; }
+.is-dark .collapse-btn { color: #c9d1d9 !important; }
+.is-dark .breadcrumb-title { color: #c9d1d9; }
+.is-dark .theme-btn { color: #e5c07b !important; }
+.is-dark .notification-btn { color: #c9d1d9 !important; }
+.is-dark .user-info { color: #c9d1d9; }
+.is-dark .uav-footer { border-top-color: #30363d; color: #6e7681; }
+.is-dark .hamburger-btn { color: #c9d1d9 !important; }
+.is-dark .info-group .location-info,
+.is-dark .info-group .time-info,
+.is-dark .info-group .weather-info {
+  background: rgba(255, 255, 255, 0.08);
+  color: #c9d1d9;
+}
+.is-dark .info-group .info-icon { color: #79c0ff; }
+.is-dark .info-group .location-info.is-clickable:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 
-.uav-layout.is-mobile .breadcrumb-title {
-  font-size: 14px;
-}
-
-.hamburger-btn {
-  color: #333 !important;
-  padding: 0 8px !important;
-}
-.is-dark .hamburger-btn {
-  color: #c9d1d9 !important;
-}
-
-.uav-drawer :deep(.el-drawer) {
-  background: #001529;
-}
-.uav-drawer :deep(.el-drawer__body) {
-  padding: 0;
-  background: #001529;
-}
-
-.drawer-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 16px;
-  height: 52px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 15px;
-  border-bottom: 1px solid #1f2a3d;
-  cursor: pointer;
-}
-
-.drawer-menu {
-  border-right: none;
-  height: calc(100vh - 52px);
-  height: calc(100vh - 52px);
-  overflow-y: auto;
-}
-
-.hide-on-mobile {
-  display: inline;
-}
+/* 移动端 */
+.is-mobile .uav-main { padding: 12px; }
+.is-mobile .breadcrumb-title { font-size: 14px; }
 
 @media (max-width: 768px) {
-  .hide-on-mobile {
-    display: none !important;
-  }
-
-  .uav-footer {
-    font-size: 11px;
-    padding: 0 8px;
-  }
-
-  .header-right {
-    gap: 8px;
-  }
-
-  .demo-tag {
-    margin-right: 0;
-    font-size: 12px;
-  }
-
-  .demo-banner {
-    font-size: 12px;
-    padding: 6px 10px;
-  }
-
-  .uav-header {
-    padding: 0 10px;
-  }
+  .uav-footer { font-size: 11px; padding: 0 8px; }
+  .demo-banner { font-size: 12px; padding: 6px 10px; }
 }
 
 @media (max-width: 480px) {

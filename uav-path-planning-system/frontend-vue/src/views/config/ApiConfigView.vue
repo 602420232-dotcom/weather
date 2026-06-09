@@ -1427,7 +1427,6 @@ const configuredCount = computed(() => {
 
 // ===== 操作 =====
 function handleSave() {
-  console.log(config)
   ElMessage.success('配置已保存（演示模式：本地）')
   notificationStore.pushWithDesktop({
     type: 'info',

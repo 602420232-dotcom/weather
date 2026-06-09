@@ -450,7 +450,6 @@ async function submitOrder() {
     payload.advanced = { ...advancedConfig, payload: { ...advancedConfig.payload } }
   }
 
-  console.log('[演示模式] 订单提交:', payload)
   logAction({
     action: AUDIT_ACTIONS.SUBMIT_ORDER,
     target: 'orders/submit',

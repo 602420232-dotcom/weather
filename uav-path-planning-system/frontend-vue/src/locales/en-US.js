@@ -168,7 +168,49 @@ export default {
     demoMode: 'Demo Mode',
     productionMode: 'Production Mode',
     environment: 'Environment',
-    version: 'Version'
+    version: 'Version',
+    brand: 'WRF UAV Path Planning',
+    skipToContent: 'Skip to main content'
+  },
+  layout: {
+    openNav: 'Open navigation menu',
+    expandSidebar: 'Expand sidebar',
+    collapseSidebar: 'Collapse sidebar',
+    switchToLight: 'Switch to light mode',
+    switchToDark: 'Switch to dark mode',
+    notificationCenter: 'Notification center',
+    openDocs: 'Documentation',
+    settings: 'Settings',
+    systemSettings: 'System Settings',
+    themeCustomizer: 'Theme Customizer',
+    permissionDebug: 'Permission Debug',
+    breadcrumbHome: 'Home'
+  },
+  demo: {
+    banner: 'Currently in <strong>Demo Mode</strong>. Some data is simulated. Switch to production after configuring real APIs.',
+    goToApiConfig: 'Go to API Config →',
+    welcomeTitle: 'Welcome to Demo Mode',
+    welcomeDescription: 'You are using demo mode to explore system features. All data is simulated.',
+    tag: 'Demo Mode',
+    defaultWeather: 'Clear 26°C'
+  },
+  production: {
+    tag: 'Production Mode'
+  },
+  userDisplay: {
+    profile: 'Profile',
+    logout: 'Logout',
+    loggedOut: 'Logged out'
+  },
+  location: {
+    clickToFetch: 'Click to get location',
+    fetching: 'Locating...',
+    invalid: 'Location invalid',
+    failed: 'Location failed'
+  },
+  notification: {
+    systemOnline: 'System Online',
+    systemOnlineMsg: 'Welcome to the UAV path planning system. Currently in demo mode.'
   },
   menu: {
     dashboard: 'Dashboard',
@@ -538,6 +580,11 @@ export default {
     clearNotifications: 'Clear All Notifications ({count})',
     docsRedirect: 'Click the button below to go to the complete documentation page',
     openDocs: 'Open Documentation'
+  },
+  errorBoundary: {
+    title: 'Something went wrong',
+    retry: 'Retry',
+    goHome: 'Back to Home'
   },
   title: 'UAV Low-Altitude Operation Management System'
 }

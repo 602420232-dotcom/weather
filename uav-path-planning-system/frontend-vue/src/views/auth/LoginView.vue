@@ -13,15 +13,15 @@
           </p>
           <div class="banner-features">
             <div class="feature-item">
-              <span class="feature-icon">☁</span>
+              <span class="feature-icon"><el-icon><PartlyCloudy /></el-icon></span>
               <span>WRF 气象驱动</span>
             </div>
             <div class="feature-item">
-              <span class="feature-icon">✈</span>
+              <span class="feature-icon"><el-icon><Position /></el-icon></span>
               <span>VRP 智能规划</span>
             </div>
             <div class="feature-item">
-              <span class="feature-icon">◎</span>
+              <span class="feature-icon"><el-icon><Monitor /></el-icon></span>
               <span>实时监控调度</span>
             </div>
           </div>
@@ -66,6 +66,7 @@
                 v-model="form.username"
                 placeholder="请输入用户名"
                 :prefix-icon="User"
+                autocomplete="username"
                 clearable
                 size="large"
               />
@@ -77,6 +78,7 @@
                 type="password"
                 placeholder="请输入密码"
                 :prefix-icon="Lock"
+                autocomplete="current-password"
                 show-password
                 size="large"
               />
@@ -95,8 +97,10 @@
                 size="large"
                 class="submit-btn"
                 :loading="authStore.loading"
+                :aria-busy="authStore.loading"
                 @click="handleLogin"
               >
+                <span v-if="authStore.loading" class="sr-only">正在登录...</span>
                 登 录
               </el-button>
             </el-form-item>
@@ -110,10 +114,12 @@
           </el-form>
 
           <el-divider>
-            <span class="demo-tag">当前为演示模式 · 默认账号</span>
+            <span class="demo-tag" style="cursor: pointer;" @click="showDemoAccounts = !showDemoAccounts">
+              当前为演示模式 · 默认账号 {{ showDemoAccounts ? '▲' : '▼' }}
+            </span>
           </el-divider>
 
-          <div class="demo-accounts">
+          <div v-show="showDemoAccounts" class="demo-accounts">
             <div
               v-for="acc in demoAccounts"
               :key="acc.username"
@@ -141,7 +147,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { User, Lock, ArrowRight } from '@element-plus/icons-vue'
+import { User, Lock, ArrowRight, PartlyCloudy, Position, Monitor } from '@element-plus/icons-vue'
 import { useAuthStore, ROLES, ROLE_LABELS, DEFAULT_ACCOUNTS } from '../../stores/auth'
 import { logAction, AUDIT_ACTIONS } from '../../utils/audit'
 
@@ -155,6 +161,7 @@ const roleOptions = Object.keys(ROLES).map((key) => ({
 }))
 
 const demoAccounts = DEFAULT_ACCOUNTS
+const showDemoAccounts = ref(false)
 
 const form = reactive({
   username: '',
@@ -165,8 +172,15 @@ const form = reactive({
 
 const rules = {
   selectedRole: [{ required: true, message: '请选择用户类型', trigger: 'change' }],
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 3, max: 50, message: '用户名长度 3-50 个字符', trigger: 'blur' },
+    { pattern: /^[a-zA-Z0-9_\-\u4e00-\u9fa5]+$/, message: '用户名只能包含字母、数字、下划线、中划线', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, max: 128, message: '密码长度 6-128 个字符', trigger: 'blur' }
+  ]
 }
 
 function quickFill(acc) {
@@ -489,6 +503,19 @@ async function handleLogin() {
 .demo-arrow {
   color: #c0c4cc;
   font-size: 14px;
+}
+
+/* 屏幕阅读器专用 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (max-width: 960px) {

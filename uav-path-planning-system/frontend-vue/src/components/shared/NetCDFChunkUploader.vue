@@ -177,7 +177,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onUnmounted, watch, onMounted } from 'vue'
+import { ref, reactive, computed, onUnmounted, watch, onMounted, onBeforeUnmount } from 'vue'
 import { ElMessage } from 'element-plus'
 import { UploadFilled, Clock } from '@element-plus/icons-vue'
 import idb, { STORE_NETCDF } from '../../utils/indexedDB'
@@ -192,6 +192,61 @@ const NETCDF_TTL = 7 * 24 * 60 * 60 * 1000 // 7 天
 const file = ref(null)
 const state = ref('idle')
 const demoMode = ref(true)
+
+// SHA-256 Web Worker 实例（分片哈希计算在 Worker 线程执行）
+let hashWorker = null
+
+function initHashWorker() {
+  if (hashWorker) return
+  try {
+    hashWorker = new Worker(
+      new URL('../../workers/sha256.worker.js', import.meta.url),
+      { type: 'module' }
+    )
+    console.log('[NetCDF] SHA-256 Worker 已初始化')
+  } catch (e) {
+    console.warn('[NetCDF] Worker 初始化失败，回退到主线程:', e.message)
+  }
+}
+
+/**
+ * 使用 Web Worker 计算分片 SHA-256 哈希
+ * @param {Blob} chunk - 文件分片
+ * @param {number} index - 分片索引
+ * @returns {Promise<string>} 十六进制哈希字符串
+ */
+function computeChunkHash(chunk, index) {
+  return new Promise((resolve, reject) => {
+    if (!hashWorker) {
+      // Worker 不可用时回退到主线程
+      chunk.arrayBuffer().then((buf) => {
+        crypto.subtle.digest('SHA-256', buf).then((hashBuffer) => {
+          const hashArray = Array.from(new Uint8Array(hashBuffer))
+          resolve(hashArray.map((b) => b.toString(16).padStart(2, '0')).join(''))
+        }).catch(reject)
+      }).catch(reject)
+      return
+    }
+
+    const onMessage = (e) => {
+      hashWorker.removeEventListener('message', onMessage)
+      if (e.data.success) {
+        resolve(e.data.hash)
+      } else {
+        reject(new Error(e.data.error || '哈希计算失败'))
+      }
+    }
+
+    hashWorker.addEventListener('message', onMessage)
+
+    chunk.arrayBuffer().then((buf) => {
+      hashWorker.postMessage({ chunk: buf, index }, [buf])
+    }).catch((err) => {
+      hashWorker.removeEventListener('message', onMessage)
+      reject(err)
+    })
+  })
+}
 
 const params = reactive({
   variable: 'T2',
@@ -509,11 +564,23 @@ async function startUpload() {
 }
 
 async function realUploadChunk(index, blob) {
+  // 计算分片哈希（Worker 线程执行，不阻塞 UI）
+  let chunkHash = null
+  if (!hashWorker) initHashWorker()
+  try {
+    chunkHash = await computeChunkHash(blob, index)
+  } catch (e) {
+    console.warn('[NetCDF] 分片哈希计算失败:', e.message)
+  }
+
   const fd = new FormData()
   fd.append('chunkIndex', index)
   fd.append('totalChunks', totalChunks.value)
   fd.append('fileKey', fileKey)
   fd.append('fileName', file.value.name)
+  if (chunkHash) {
+    fd.append('chunkHash', chunkHash)
+  }
   fd.append('file', blob)
   for (let attempt = 1; attempt <= MAX_RETRY; attempt++) {
     try {
@@ -621,6 +688,13 @@ historyEntry.value = loadHistory()
 
 onMounted(() => {
   loadCachedFiles()
+})
+
+onBeforeUnmount(() => {
+  if (hashWorker) {
+    hashWorker.terminate()
+    hashWorker = null
+  }
 })
 
 onUnmounted(() => {

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import idb, { STORE_NETCDF, STORE_TILES, STORE_OFFLINE } from '../utils/indexedDB'
+import { createHttpError } from '../utils/errorTypes'
 
 // ============ 分层缓存系统（Cache Strategy）============
 // 策略：
@@ -217,7 +218,7 @@ const api = axios.create({
 // 请求计数器（用于生成唯一请求 ID）
 let requestCounter = 0
 
-// 错误分类（与 errorHandler.js 保持一致的轻量副本，避免循环依赖）
+// 错误分类（基于结构化错误类型）
 function classifyError(err) {
   if (!err || typeof err !== 'object') return 'UNKNOWN'
   if (
@@ -234,6 +235,19 @@ function classifyError(err) {
   if (status >= 400 && status < 500) return 'CLIENT_ERROR'
   if (status >= 500 && status < 600) return 'SERVER_ERROR'
   return 'UNKNOWN'
+}
+
+// 将 HTTP 错误转换为 AppError 子类，供调用方统一处理
+function toAppError(err) {
+  const status = err.response ? err.response.status : null
+  const serverMsg =
+    err.response && err.response.data
+      ? err.response.data.message || err.response.data.error
+      : null
+  if (status) {
+    return createHttpError(status, serverMsg || `请求失败 (${status})`)
+  }
+  return createHttpError(0, err.message || '网络连接失败')
 }
 
 // 指数退避：1s / 2s / 4s
@@ -448,16 +462,12 @@ api.interceptors.response.use(
       } catch (_) {}
     }
 
-    // 以带状态码的 Error reject，方便上游判断
-    const msg =
-      (response && response.data && (response.data.message || response.data.error)) ||
-      (error && error.message) ||
-      `请求失败 (${status || '-'})`
-    const finalErr = new Error(msg)
-    finalErr.status = status
-    finalErr.kind = kind
-    finalErr.url = config && config.url
-    return Promise.reject(finalErr)
+    // 转换为结构化 AppError 子类，方便上游判断
+    const appErr = toAppError(error)
+    appErr.status = status
+    appErr.kind = kind
+    appErr.url = config && config.url
+    return Promise.reject(appErr)
   }
 )
 

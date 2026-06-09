@@ -68,6 +68,7 @@
           title="文档同步失败，当前为内置内容"
         />
 
+        <!-- markdown rendered content -->
         <article class="docs-article" v-html="renderedHtml"></article>
       </main>
     </div>
