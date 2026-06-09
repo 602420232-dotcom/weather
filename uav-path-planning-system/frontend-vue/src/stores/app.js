@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 import { ROLES } from './auth'
 import { isNightTime as computeIsNightTime, nextTransitionSeconds } from '../composables/useSunTime'
+import i18n from '../locales'
 
 const APP_STORAGE_KEY = 'uav_app_config'
 const THEME_STORAGE_KEY = 'uav_theme_v1'
@@ -187,6 +188,10 @@ export const useAppStore = defineStore('app', () => {
 
   function setLanguage(val) {
     language.value = val
+    const localeMap = { 'zh': 'zh-CN', 'en': 'en-US', 'ja': 'ja-JP' }
+    const locale = localeMap[val] || val
+    i18n.global.locale.value = locale
+    localStorage.setItem('locale', locale)
     persist()
   }
 

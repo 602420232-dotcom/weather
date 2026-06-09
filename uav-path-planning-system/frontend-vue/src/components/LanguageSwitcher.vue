@@ -1,12 +1,13 @@
 <template>
   <el-select
     :model-value="currentLocale"
-    style="width: 100px"
+    style="width: 120px"
     size="small"
     @change="switchLanguage"
   >
     <el-option value="zh-CN" label="中文" />
     <el-option value="en-US" label="English" />
+    <el-option value="ja-JP" label="日本語" />
   </el-select>
 </template>
 
