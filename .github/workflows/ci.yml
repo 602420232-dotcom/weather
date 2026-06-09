@@ -212,7 +212,7 @@ jobs:
           context: ./fengwu-service
           file: ./fengwu-service/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}/fengwu:${{ github.sha }},ghcr.io/${{ github.repository }}/fengwu:latest
+          tags: ghcr.io/${{ github.repository }}/fengwu-service:${{ github.sha }},ghcr.io/${{ github.repository }}/fengwu-service:latest
           provenance: false
           cache-from: type=gha
 

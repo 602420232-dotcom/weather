@@ -134,10 +134,10 @@ const submitForm = async () => {
       authorId: authStore.userId
     });
 
-    ElMessage.success(t('common.operationSuccess') || '操作成功');
+    ElMessage.success((t('common.operationSuccess') || '操作成功'));
     emit('created');
   } catch (error) {
-    ElMessage.error(t('common.operationFailed') + ': ' + error.message);
+    ElMessage.error((t('common.operationFailed') || '操作失败') + ': ' + error.message);
   } finally {
     submitting.value = false;
   }

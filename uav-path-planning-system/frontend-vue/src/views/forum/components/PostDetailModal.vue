@@ -2,20 +2,25 @@
   <el-dialog
     :title="post?.title"
     v-model="dialogVisible"
-    width="800px"
-    :close-on-click-modal="false"
+    width="720px"
+    :close-on-click-modal="true"
     class="post-detail-modal"
+    destroy-on-close
+    @close="handleClose"
   >
     <div v-if="post" class="post-detail">
+      <!-- 作者信息区 -->
       <div class="post-meta">
         <div class="author-section">
           <img :src="post.author.avatar" :alt="post.author.displayName" class="author-avatar" />
           <div class="author-info">
-            <span class="author-name">{{ post.author.displayName }}</span>
+            <div class="author-name-row">
+              <span class="author-name">{{ post.author.displayName }}</span>
+              <span v-if="isAdmin && post.authorLocation" class="author-location">
+                <el-tag size="small" type="info" effect="plain">📍 {{ post.authorLocation }}</el-tag>
+              </span>
+            </div>
             <span class="post-time">{{ formatTime(post.createdAt) }}</span>
-            <span v-if="isAdmin && post.authorLocation" class="author-location">
-              <el-tag size="small" type="info">📍 {{ post.authorLocation }}</el-tag>
-            </span>
           </div>
         </div>
         <div class="post-tags">
@@ -30,8 +35,10 @@
         </div>
       </div>
 
+      <!-- 帖子内容 -->
       <div class="post-content" v-html="post.content"></div>
 
+      <!-- 操作栏 -->
       <div class="post-actions">
         <span
           class="action-btn"
@@ -42,22 +49,22 @@
           <span>{{ post.likeCount + (isLiked ? 1 : 0) }}</span>
         </span>
         <span class="action-btn">
-          <el-icon><ArrowRight /></el-icon>
-          <span>{{ t('forum.share') }}</span>
-        </span>
-        <span class="action-btn">
           <el-icon><Star /></el-icon>
           <span>{{ isFavorited ? t('forum.favorited') : t('forum.favorite') }}</span>
         </span>
       </div>
 
+      <!-- 评论区 -->
       <div class="comments-section">
-        <h3 class="comments-title">
-          <el-icon><Message /></el-icon>
-          {{ t('forum.submitComment') }} ({{ post.commentCount || 0 }})
-        </h3>
+        <div class="comments-header">
+          <h3 class="comments-title">
+            <el-icon><Message /></el-icon>
+            {{ t('forum.submitComment') }}
+          </h3>
+          <span class="comments-count">{{ post.commentCount || 0 }} 条评论</span>
+        </div>
 
-        <div class="comments-list">
+        <div v-if="comments.length > 0" class="comments-list">
           <div
             v-for="comment in comments"
             :key="comment.id"
@@ -66,18 +73,20 @@
             <img :src="comment.author.avatar" :alt="comment.author.displayName" class="comment-avatar" />
             <div class="comment-content">
               <div class="comment-header">
-                <span class="comment-author">{{ comment.author.displayName }}</span>
+                <div class="comment-author-row">
+                  <span class="comment-author">{{ comment.author.displayName }}</span>
+                  <span v-if="isAdmin && comment.authorLocation" class="comment-location">
+                    <el-tag size="small" type="info" effect="plain">📍 {{ comment.authorLocation }}</el-tag>
+                  </span>
+                </div>
                 <span class="comment-time">{{ formatTime(comment.createdAt) }}</span>
-                <span v-if="isAdmin && comment.authorLocation" class="comment-location">
-                  <el-tag size="small" type="info">📍 {{ comment.authorLocation }}</el-tag>
-                </span>
               </div>
               <p class="comment-text">{{ comment.content }}</p>
             </div>
           </div>
         </div>
 
-        <div v-if="comments.length === 0" class="empty-comments">
+        <div v-else class="empty-comments">
           <el-icon class="empty-icon"><Message /></el-icon>
           <p>{{ t('forum.noComments') }}</p>
         </div>
@@ -92,6 +101,7 @@
           <div class="comment-actions">
             <el-button
               type="primary"
+              size="small"
               @click="submitComment"
               :disabled="!newComment.trim()"
             >
@@ -105,9 +115,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Check, ArrowRight, Star, Message } from '@element-plus/icons-vue';
+import { Check, Star, Message } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import forumApi from '@/api/forum';
 import { useAuthStore } from '@/stores/auth';
@@ -119,10 +129,14 @@ const props = defineProps({
   post: {
     type: Object,
     required: true
+  },
+  modelValue: {
+    type: Boolean,
+    default: false
   }
 });
 
-defineEmits(['close']);
+const emit = defineEmits(['update:modelValue', 'close', 'update']);
 
 const authStore = useAuthStore();
 const comments = ref([]);
@@ -131,8 +145,17 @@ const isLiked = ref(false);
 const isFavorited = ref(false);
 const loadingComments = ref(false);
 
-// 对话框显示状态
-const dialogVisible = ref(true);
+// 对话框显示状态 - 与 v-model 同步
+const dialogVisible = computed({
+  get: () => props.modelValue,
+  set: (val) => emit('update:modelValue', val)
+});
+
+// 监听 dialog 关闭事件
+const handleClose = () => {
+  emit('update:modelValue', false);
+  emit('close');
+};
 
 // 管理员可见IP（脱敏处理）
 const isAdmin = computed(() => authStore.role === ROLES.ADMIN);
@@ -143,7 +166,7 @@ const loadComments = async () => {
     const data = await forumApi.getComments(props.post.id);
     comments.value = data;
   } catch (error) {
-    ElMessage.error(t('common.loadFailed') + ': ' + error.message);
+    ElMessage.error((t('common.loadFailed') || '加载失败') + ': ' + error.message);
   } finally {
     loadingComments.value = false;
   }
@@ -151,6 +174,12 @@ const loadComments = async () => {
 
 const handleLike = () => {
   isLiked.value = !isLiked.value;
+  // 通知父组件更新点赞数
+  emit('update', {
+    id: props.post.id,
+    likeCount: props.post.likeCount + (isLiked.value ? 1 : -1),
+    commentCount: props.post.commentCount
+  });
 };
 
 const submitComment = async () => {
@@ -164,9 +193,15 @@ const submitComment = async () => {
     );
     newComment.value = '';
     await loadComments();
-    ElMessage.success(t('common.operationSuccess'));
+    ElMessage.success((t('common.operationSuccess') || '操作成功'));
+    // 通知父组件更新评论数
+    emit('update', {
+      id: props.post.id,
+      likeCount: props.post.likeCount,
+      commentCount: comments.value.length
+    });
   } catch (error) {
-    ElMessage.error(t('common.operationFailed') + ': ' + error.message);
+    ElMessage.error((t('common.operationFailed') || '操作失败') + ': ' + error.message);
   }
 };
 
@@ -194,214 +229,263 @@ onMounted(async () => {
 /* ===== 基础样式 ===== */
 .post-detail-modal {
   :deep(.el-dialog__body) {
-    padding: 20px;
-    max-height: 70vh;
-    overflow-y: auto;
+    padding: 0;
+    max-height: 80vh;
+    overflow: hidden;
   }
 }
 
 .post-detail {
-  .post-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--el-border-color-lighter, #e4e7ed);
-  }
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+}
 
-  .author-section {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+.post-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--el-border-color-lighter, #e4e7ed);
+  background: var(--el-fill-color-lighter, #f5f7fa);
+  flex-shrink: 0;
+}
 
-  .author-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
+.author-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-  .author-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
+.author-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--el-border-color-light, #ebeef5);
+}
 
-  .author-name {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--el-text-color-primary, #303133);
-  }
+.author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
-  .post-time {
-    font-size: 12px;
-    color: var(--el-text-color-secondary, #909399);
-  }
+.author-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-  .author-location {
-    margin-left: 8px;
-  }
+.author-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--el-text-color-primary, #303133);
+}
 
-  .post-tags {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
+.post-time {
+  font-size: 12px;
+  color: var(--el-text-color-secondary, #909399);
+}
 
-  .post-content {
-    font-size: 15px;
-    line-height: 1.8;
-    color: var(--el-text-color-primary, #303133);
-    margin-bottom: 20px;
-  }
+.author-location {
+  margin-left: 4px;
+}
 
-  .post-actions {
-    display: flex;
-    gap: 24px;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--el-border-color-lighter, #e4e7ed);
-  }
+.post-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
 
-  .action-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    color: var(--el-text-color-secondary, #909399);
-    transition: all 0.2s;
-    padding: 8px 12px;
-    border-radius: 8px;
-    user-select: none;
-  }
+.post-content {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--el-text-color-primary, #303133);
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 100px;
+}
 
-  .action-btn:hover {
-    background: var(--el-color-primary-light-9, #ecf5ff);
-    color: var(--el-color-primary, #409eff);
-  }
+.post-actions {
+  display: flex;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--el-border-color-lighter, #e4e7ed);
+  flex-shrink: 0;
+}
 
-  .action-btn.liked {
-    color: var(--el-color-danger, #f56c6c);
-  }
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--el-text-color-secondary, #909399);
+  transition: all 0.2s;
+  padding: 6px 10px;
+  border-radius: 6px;
+  user-select: none;
+  font-size: 14px;
+}
+
+.action-btn:hover {
+  background: var(--el-color-primary-light-9, #ecf5ff);
+  color: var(--el-color-primary, #409eff);
+}
+
+.action-btn.liked {
+  color: var(--el-color-danger, #f56c6c);
 }
 
 .comments-section {
-  .comments-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0 0 16px 0;
-    color: var(--el-text-color-primary, #303133);
-  }
+  padding: 16px 20px;
+  background: var(--el-fill-color-lighter, #f5f7fa);
+  max-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
 
-  .comments-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
+.comments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
 
-  .comment-item {
-    display: flex;
-    gap: 12px;
-  }
+.comments-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--el-text-color-primary, #303133);
+}
 
-  .comment-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    flex-shrink: 0;
-  }
+.comments-count {
+  font-size: 12px;
+  color: var(--el-text-color-secondary, #909399);
+}
 
-  .comment-content {
-    flex: 1;
-    background: var(--el-fill-color-light, #f5f7fa);
-    border-radius: 8px;
-    padding: 12px;
-  }
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding-right: 4px;
+}
 
-  .comment-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+.comment-item {
+  display: flex;
+  gap: 10px;
+}
 
-  .comment-author {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--el-text-color-primary, #303133);
-  }
+.comment-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--el-border-color-light, #ebeef5);
+}
 
-  .comment-time {
-    font-size: 12px;
-    color: var(--el-text-color-secondary, #909399);
-  }
+.comment-content {
+  flex: 1;
+  background: var(--el-bg-color, #ffffff);
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
 
-  .comment-location {
-    margin-left: auto;
-  }
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 
-  .comment-text {
-    font-size: 14px;
-    color: var(--el-text-color-primary, #303133);
-    margin: 0;
-    line-height: 1.6;
-    word-break: break-word;
-  }
+.comment-author-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-  .empty-comments {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    color: var(--el-text-color-secondary, #909399);
-  }
+.comment-author {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--el-text-color-primary, #303133);
+}
 
-  .empty-icon {
-    font-size: 48px;
-    margin-bottom: 12px;
-  }
+.comment-location {
+  margin-left: 4px;
+}
 
-  .comment-input-section {
-    background: var(--el-fill-color-light, #f5f7fa);
-    border: 1px solid var(--el-border-color-lighter, #e4e7ed);
-    border-radius: 8px;
-    padding: 12px;
-  }
+.comment-time {
+  font-size: 11px;
+  color: var(--el-text-color-secondary, #909399);
+}
 
-  .comment-input {
-    width: 100%;
-    border: none;
-    background: transparent;
-    resize: none;
-    font-size: 14px;
-    line-height: 1.5;
-    outline: none;
-    box-sizing: border-box;
-    color: var(--el-text-color-primary, #303133);
-    min-height: 60px;
-  }
+.comment-text {
+  font-size: 13px;
+  color: var(--el-text-color-primary, #303133);
+  margin: 0;
+  line-height: 1.5;
+  word-break: break-word;
+}
 
-  .comment-input::placeholder {
-    color: var(--el-text-color-secondary, #909399);
-  }
+.empty-comments {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--el-text-color-secondary, #909399);
+  flex-shrink: 0;
+}
 
-  .comment-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--el-border-color-lighter, #e4e7ed);
-  }
+.empty-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.comment-input-section {
+  background: var(--el-bg-color, #ffffff);
+  border: 1px solid var(--el-border-color-lighter, #e4e7ed);
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 12px;
+  flex-shrink: 0;
+}
+
+.comment-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  resize: none;
+  font-size: 13px;
+  line-height: 1.5;
+  outline: none;
+  box-sizing: border-box;
+  color: var(--el-text-color-primary, #303133);
+  min-height: 50px;
+}
+
+.comment-input::placeholder {
+  color: var(--el-text-color-secondary, #909399);
+}
+
+.comment-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--el-border-color-lighter, #e4e7ed);
 }
 
 /* ===== 暗色模式全局覆盖 ===== */
