@@ -264,7 +264,7 @@ const linkGroups = [
       },
       {
         name: 'Nacos 官方文档',
-        url: 'https://nacos.io/zh-cn/docs/',
+        url: 'https://nacos.io/docs/v2/quickstart/quick-start/',
         desc: '服务配置中心'
       }
     ]
@@ -276,9 +276,14 @@ const linkGroups = [
     cls: 'link-card-compliance',
     links: [
       {
-        name: '中国民航局低空经济专栏',
-        url: 'http://www.caac.gov.cn/ztzl/kongdi/',
-        desc: '无人机行业合规参考'
+        name: '中国民航局',
+        url: 'https://www.caac.gov.cn/',
+        desc: '官方网站，含低空经济政策'
+      },
+      {
+        name: '无人机实名登记系统',
+        url: 'https://uas.caac.gov.cn/',
+        desc: '民用无人机实名登记'
       }
     ]
   },

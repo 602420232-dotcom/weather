@@ -10,6 +10,9 @@
 - ☁️ **数据同化**: 贝叶斯数据同化技术，融合多源气象观测
 - 📊 **实时监控**: 可视化监控无人机状态和任务进度
 - 🔄 **联邦学习**: Edge-Cloud 协同，支持端侧离线路径规划
+- 🌍 **多语言支持**: 支持中文、英文、日语三种语言界面
+- 📍 **地理位置服务**: 获取用户位置，显示当地时间和天气信息
+- 🌤️ **天气API集成**: 支持 OpenWeatherMap 和和风天气接入
 
 **技术栈**:
 - **前端**: Vue 3 + Vite + Element Plus
@@ -17,8 +20,111 @@
 - **数据库**: MySQL 8.0 + Redis
 - **算法**: Python 3.8+ (NumPy, SciPy, TensorFlow)
 - **容器**: Docker + Kubernetes
+
 ---
 
-> **最后更新**: 2026-05-08  
-> **版本**: 2.1  
+## ✅ 已完成功能
+
+### 国际化支持
+- ✅ 中文 (zh-CN)
+- ✅ 英文 (en-US)
+- ✅ 日语 (ja-JP)
+
+### 地理位置与天气
+- ✅ 浏览器 Geolocation API 获取用户位置
+- ✅ 基于位置的实时时间显示
+- ✅ 模拟天气数据（演示模式）
+- ✅ OpenWeatherMap API 集成
+- ✅ 和风天气（QWeather）API 集成
+- ✅ API配置页面支持切换天气数据源
+
+### 界面优化
+- ✅ 顶部导航栏显示位置、时间、天气信息
+- ✅ 修复左侧栏重复标签问题
+- ✅ 修复首页Nacos和中国民航局链接404问题
+
+---
+
+## 📁 项目结构
+
+```
+uav-path-planning-system/
+├── frontend-vue/          # Vue 3 前端应用
+│   ├── src/
+│   │   ├── components/    # 通用组件
+│   │   ├── views/         # 页面视图
+│   │   ├── stores/        # Pinia 状态管理
+│   │   ├── locales/       # 国际化语言文件
+│   │   └── utils/         # 工具函数
+│   └── public/            # 静态资源
+├── backend-spring/        # Spring Boot 后端
+├── algorithm-core/        # Python 算法核心
+├── database/              # 数据库初始化脚本
+└── docs/                  # 项目文档
+```
+
+---
+
+## 🚀 快速开始
+
+### 前置依赖
+- Node.js >= 18.0
+- JDK >= 17
+- Python >= 3.8
+- MySQL >= 8.0
+- Redis >= 7.0
+
+### 启动前端开发服务器
+
+```bash
+cd frontend-vue
+npm install
+npm run dev
+```
+
+### 启动后端服务
+
+```bash
+cd backend-spring
+mvn spring-boot:run
+```
+
+---
+
+## 🔧 配置说明
+
+### 天气API配置
+
+在系统设置的 **API配置** 页面中可以配置天气数据源：
+
+1. **演示模式**: 使用模拟天气数据（默认）
+2. **OpenWeatherMap**: 需申请 API Key
+   - 地址: https://openweathermap.org/api
+   - 免费版限制: 每天1000次调用
+3. **和风天气**: 需申请 API Key
+   - 地址: https://dev.qweather.com/
+   - 免费版限制: 每天1000次调用
+
+---
+
+## 📝 更新日志
+
+### v2.1.1 (2026-06-09)
+- 新增日语语言支持
+- 添加顶部导航栏位置、时间、天气显示
+- 修复首页404链接（Nacos、中国民航局）
+- 修复左侧栏重复标签问题
+- 集成 OpenWeatherMap 和和风天气 API
+- 添加天气API配置页面
+
+### v2.1 (2026-05-08)
+- 完成核心路径规划算法集成
+- 添加气象数据可视化
+- 实现任务管理系统
+- 支持多角色权限控制
+
+---
+
+> **最后更新**: 2026-06-09  
+> **版本**: 2.1.1  
 > **维护者**: DITHIOTHREITOL

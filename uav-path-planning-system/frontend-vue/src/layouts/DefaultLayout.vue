@@ -221,6 +221,31 @@
               <el-icon><Sunny /></el-icon>&nbsp;<span class="hide-on-mobile">生产模式</span>
             </el-tag>
 
+            <!-- 位置信息 -->
+            <div class="info-group hide-on-mobile">
+              <div class="location-info" @click="fetchCurrentLocation" :class="{ 'is-clickable': !isLocating }">
+                <el-icon :size="16" class="info-icon"><MapLocation /></el-icon>
+                <span class="info-text">{{ locationText }}</span>
+                <el-icon v-if="isLocating" :size="14" class="location-loading"><Loading /></el-icon>
+              </div>
+            </div>
+
+            <!-- 时间信息 -->
+            <div class="info-group hide-on-mobile">
+              <div class="time-info">
+                <el-icon :size="16" class="info-icon"><Clock /></el-icon>
+                <span class="info-text">{{ currentTime }}</span>
+              </div>
+            </div>
+
+            <!-- 天气信息 -->
+            <div class="info-group hide-on-mobile">
+              <div class="weather-info">
+                <span class="weather-icon">{{ weatherIcon }}</span>
+                <span class="info-text">{{ weatherText }}</span>
+              </div>
+            </div>
+
             <!-- 主题切换 -->
             <el-button text @click="appStore.toggleTheme()" class="theme-btn">
               <el-icon :size="18"><Moon v-if="!appStore.isDark" /><Sunny v-else /></el-icon>
@@ -294,12 +319,14 @@ import {
   HomeFilled, PartlyCloudy, Goods, Monitor, List, Position, Connection,
   DataAnalysis, Coin, Box, Setting, Tools, Document,
   Fold, Expand, Moon, Sunny, ArrowDown, User, SwitchButton,
-  MagicStick, InfoFilled, Cpu, Menu, Bell
+  MagicStick, InfoFilled, Cpu, Menu, Bell, MapLocation, Clock, Loading
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '../stores/auth'
 import { useAppStore } from '../stores/app'
 import { useNotificationStore } from '../stores/notification'
 import NotificationDrawer from '../components/shared/NotificationDrawer.vue'
+import { getCurrentLocation } from '../utils/geolocation'
+import { getCurrentWeather } from '../utils/weatherApi'
 
 const authStore = useAuthStore()
 const appStore = useAppStore()
@@ -315,6 +342,68 @@ const notificationDrawerVisible = ref(false)
 // 响应式：移动端判定
 const isMobile = ref(false)
 let mqHandler = null
+
+// 位置、时间、天气状态
+const locationText = ref('点击获取位置')
+const currentLocation = ref(null)
+const isLocating = ref(false)
+const currentTime = ref('')
+let timeInterval = null
+
+// 天气信息
+const weatherIcon = ref('☀️')
+const weatherText = ref('晴朗 26°C')
+
+function updateTime() {
+  const now = new Date()
+  const hours = now.getHours().toString().padStart(2, '0')
+  const minutes = now.getMinutes().toString().padStart(2, '0')
+  const seconds = now.getSeconds().toString().padStart(2, '0')
+  const year = now.getFullYear()
+  const month = (now.getMonth() + 1).toString().padStart(2, '0')
+  const day = now.getDate().toString().padStart(2, '0')
+  const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+  const weekday = weekdays[now.getDay()]
+  currentTime.value = `${year}-${month}-${day} ${weekday} ${hours}:${minutes}:${seconds}`
+}
+
+async function updateWeather() {
+  if (!currentLocation.value?.position) return
+  
+  const { latitude, longitude } = currentLocation.value.position
+  const result = await getCurrentWeather(latitude, longitude)
+  
+  if (result.success) {
+    weatherIcon.value = result.data.icon
+    weatherText.value = `${result.data.description} ${result.data.temp}`
+  } else if (result.fallback) {
+    // API失败，使用降级数据
+    weatherIcon.value = result.fallback.data.icon
+    weatherText.value = `${result.fallback.data.description} ${result.fallback.data.temp}`
+  }
+}
+
+async function fetchCurrentLocation() {
+  if (isLocating.value) return
+  
+  isLocating.value = true
+  locationText.value = '定位中...'
+  
+  const result = await getCurrentLocation()
+  
+  if (result.success) {
+    currentLocation.value = result
+    const addr = result.address?.formatted || `${result.position.latitude.toFixed(4)}, ${result.position.longitude.toFixed(4)}`
+    const regionName = result.region?.name || ''
+    locationText.value = regionName ? `${regionName} · ${addr}` : addr
+    updateWeather()
+  } else {
+    locationText.value = '定位失败'
+    console.warn('[Header] Failed to get location:', result.error)
+  }
+  
+  isLocating.value = false
+}
 
 function updateIsMobile() {
   if (typeof window === 'undefined' || !window.matchMedia) return
@@ -359,6 +448,10 @@ onMounted(() => {
   if (authStore.demoMode) {
     notificationStore.startHealthCheck(120000)
   }
+
+  // 初始化时间
+  updateTime()
+  timeInterval = setInterval(updateTime, 1000)
 })
 
 onBeforeUnmount(() => {
@@ -369,6 +462,11 @@ onBeforeUnmount(() => {
     } else if (typeof mql.removeListener === 'function') {
       mql.removeListener(mqHandler)
     }
+  }
+  
+  // 清理时间定时器
+  if (timeInterval) {
+    clearInterval(timeInterval)
   }
 })
 
@@ -408,18 +506,18 @@ const menuItems = computed(() => {
   const all = [
     { key: 'dashboard', title: t('menu.dashboard'), icon: 'HomeFilled', path: '/dashboard' },
     { key: 'weather', title: t('menu.weather'), icon: 'PartlyCloudy', path: '/weather' },
-    { key: 'weather-station', title: t('menu.weather'), icon: 'Position', path: '/weather-station' },
+    { key: 'weather-station', title: t('menu.weatherStation'), icon: 'Position', path: '/weather-station' },
     { key: 'orders', title: t('menu.orders'), icon: 'Goods', path: '/orders' },
     { key: 'cockpit', title: t('menu.cockpit'), icon: 'Monitor', path: '/cockpit' },
     { key: 'tasks', title: t('menu.tasks'), icon: 'List', path: '/tasks' },
     { key: 'task-report', title: t('menu.taskReport'), icon: 'Document', path: '/task-report' },
     { key: 'utm-integration', title: t('menu.utmIntegration'), icon: 'Connection', path: '/utm-integration' },
     { key: 'path-planning', title: t('menu.pathPlanning'), icon: 'Position', path: '/path-planning' },
-    { key: 'airworthiness', title: t('common.info'), icon: 'DataAnalysis', path: '/airworthiness' },
+    { key: 'airworthiness', title: t('menu.airworthiness'), icon: 'DataAnalysis', path: '/airworthiness' },
     { key: 'model-evaluation', title: t('menu.modelEvaluation'), icon: 'DataAnalysis', path: '/model-evaluation' },
     { key: 'parameter-tuning', title: t('menu.parameterTuning'), icon: 'Tools', path: '/parameter-tuning' },
     { key: 'sensitivity-analysis', title: t('paramsTuning.sensitivity'), icon: 'DataAnalysis', path: '/sensitivity-analysis' },
-    { key: 'experiment-compare', title: t('common.info'), icon: 'DataAnalysis', path: '/experiment-compare' },
+    { key: 'experiment-compare', title: t('menu.experimentCompare'), icon: 'DataAnalysis', path: '/experiment-compare' },
     { key: 'assimilation', title: t('menu.dataAssimilation'), icon: 'Connection', path: '/assimilation' },
     { key: 'monitoring', title: t('menu.monitoring'), icon: 'DataAnalysis', path: '/monitoring' },
     { key: 'database', title: t('menu.database'), icon: 'Coin', path: '/database' },
@@ -473,18 +571,13 @@ function onUserCommand(cmd) {
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: linear-gradient(90deg, #fff7e6, #fffbe6);
-  color: #d48806;
+  background: var(--color-surface);
+  color: var(--color-warning);
   font-size: 13px;
-  border-bottom: 1px solid #ffe58f;
+  border-bottom: 1px solid var(--color-border);
 }
 .demo-banner .demo-icon { font-size: 16px; }
-.demo-banner strong { color: #ad6800; margin: 0 2px; }
-.is-dark .demo-banner {
-  background: linear-gradient(90deg, #1a1200, #1a1400);
-  color: #d4a94c;
-  border-bottom-color: #3a2a00;
-}
+.demo-banner strong { color: var(--color-warning); margin: 0 2px; }
 
 .demo-toast {
   margin: 8px 16px;
@@ -587,6 +680,65 @@ function onUserCommand(cmd) {
 .notification-badge { margin-right: 4px; }
 .is-dark .theme-btn { color: #e5c07b !important; }
 .is-dark .notification-btn { color: #c9d1d9 !important; }
+
+/* 信息组样式 */
+.info-group {
+  display: flex;
+  align-items: center;
+}
+
+.location-info,
+.time-info,
+.weather-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.05);
+  font-size: 13px;
+  color: #666;
+}
+
+.is-dark .location-info,
+.is-dark .time-info,
+.is-dark .weather-info {
+  background: rgba(255, 255, 255, 0.08);
+  color: #c9d1d9;
+}
+
+.location-info.is-clickable {
+  cursor: pointer;
+}
+
+.location-info.is-clickable:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.is-dark .location-info.is-clickable:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.info-icon {
+  color: #409eff;
+}
+
+.is-dark .info-icon {
+  color: #79c0ff;
+}
+
+.location-loading {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.weather-icon {
+  font-size: 16px;
+}
 
 .user-info {
   display: flex;

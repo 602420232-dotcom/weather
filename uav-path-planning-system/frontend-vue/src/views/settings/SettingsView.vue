@@ -10,32 +10,32 @@
         >
           <el-menu-item index="profile">
             <el-icon><User /></el-icon>
-            <span>个人信息</span>
+            <span>{{ t('settings.profile') }}</span>
           </el-menu-item>
           <el-menu-item index="permission">
             <el-icon><Lock /></el-icon>
-            <span>权限与角色</span>
+            <span>{{ t('settings.permission') }}</span>
           </el-menu-item>
           <el-menu-item index="preference">
             <el-icon><Setting /></el-icon>
-            <span>偏好设置</span>
+            <span>{{ t('settings.preference') }}</span>
           </el-menu-item>
           <el-menu-item index="notification">
             <el-icon><Bell /></el-icon>
-            <span>通知订阅</span>
+            <span>{{ t('settings.notification') }}</span>
           </el-menu-item>
           <el-menu-item index="docs">
             <el-icon><Document /></el-icon>
-            <span>使用文档</span>
+            <span>{{ t('settings.docs') }}</span>
           </el-menu-item>
           <el-menu-item index="license">
             <el-icon><Collection /></el-icon>
-            <span>License 信息</span>
+            <span>{{ t('settings.license') }}</span>
           </el-menu-item>
           <el-menu-divider />
           <el-menu-item index="logout" class="logout-item">
             <el-icon><SwitchButton /></el-icon>
-            <span>退出登录</span>
+            <span>{{ t('settings.logout') }}</span>
           </el-menu-item>
         </el-menu>
       </aside>
@@ -46,8 +46,8 @@
         <el-card v-show="activeMenu === 'profile'" shadow="never" class="card-panel">
           <template #header>
             <div class="card-header">
-              <span>个人信息</span>
-              <el-tag type="success" size="small">已登录</el-tag>
+              <span>{{ t('settings.profile') }}</span>
+              <el-tag type="success" size="small">{{ t('settings.loggedIn') }}</el-tag>
             </div>
           </template>
           <div class="profile-inner">
@@ -63,23 +63,23 @@
             </div>
 
             <el-descriptions :column="1" border class="info-desc">
-              <el-descriptions-item label="用户名">{{ authStore.username }}</el-descriptions-item>
-              <el-descriptions-item label="显示名称">{{ authStore.displayName }}</el-descriptions-item>
-              <el-descriptions-item label="角色">
+              <el-descriptions-item :label="t('settings.username')">{{ authStore.username }}</el-descriptions-item>
+              <el-descriptions-item :label="t('settings.displayName')">{{ authStore.displayName }}</el-descriptions-item>
+              <el-descriptions-item :label="t('settings.role')">
                 <el-tag type="primary" size="small">{{ authStore.roleLabel }}</el-tag>
                 <span class="text-muted ml-8">({{ authStore.role }})</span>
               </el-descriptions-item>
-              <el-descriptions-item label="登录时间">{{ formattedLoginTime }}</el-descriptions-item>
-              <el-descriptions-item label="邮箱">
+              <el-descriptions-item :label="t('settings.loginTime')">{{ formattedLoginTime }}</el-descriptions-item>
+              <el-descriptions-item :label="t('settings.email')">
                 <span v-if="userEmail">{{ userEmail }}</span>
-                <span v-else class="text-muted">未绑定邮箱（演示账号）</span>
+                <span v-else class="text-muted">{{ t('settings.noEmail') }}</span>
               </el-descriptions-item>
             </el-descriptions>
 
             <div class="card-actions">
               <el-button type="primary" @click="openPwdDialog">
                 <el-icon><Key /></el-icon>
-                修改密码
+                {{ t('settings.changePassword') }}
               </el-button>
             </div>
           </div>
@@ -87,9 +87,9 @@
 
         <!-- 权限与角色 -->
         <el-card v-show="activeMenu === 'permission'" shadow="never" class="card-panel">
-          <template #header>权限与角色</template>
+          <template #header>{{ t('settings.permission') }}</template>
 
-          <h4 class="section-title">我的角色</h4>
+          <h4 class="section-title">{{ t('settings.myRole') }}</h4>
           <div class="role-tags">
             <el-tag
               size="large"
@@ -102,24 +102,24 @@
             <el-tag size="large" round>{{ authStore.roleLabelEn }}</el-tag>
           </div>
 
-          <h4 class="section-title">我的权限清单</h4>
+          <h4 class="section-title">{{ t('settings.permissionList') }}</h4>
           <el-table
             :data="permissionTableData"
             stripe
             border
             style="width: 100%"
           >
-            <el-table-column prop="module" label="模块" width="200" />
-            <el-table-column prop="key" label="权限 Key" width="220" />
-            <el-table-column prop="description" label="说明" />
-            <el-table-column label="状态" width="100">
+            <el-table-column prop="module" :label="t('settings.module')" width="200" />
+            <el-table-column prop="key" :label="t('settings.permissionKey')" width="220" />
+            <el-table-column prop="description" :label="t('settings.description')" />
+            <el-table-column :label="t('settings.status')" width="100">
               <template #default>
-                <el-tag type="success" size="small">已授权</el-tag>
+                <el-tag type="success" size="small">{{ t('settings.authorized') }}</el-tag>
               </template>
             </el-table-column>
           </el-table>
 
-          <h4 class="section-title">可访问模块</h4>
+          <h4 class="section-title">{{ t('settings.accessibleModules') }}</h4>
           <div class="accessible-modules">
             <div
               v-for="mod in accessibleModules"
@@ -134,31 +134,32 @@
 
         <!-- 偏好设置 -->
         <el-card v-show="activeMenu === 'preference'" shadow="never" class="card-panel">
-          <template #header>偏好设置</template>
+          <template #header>{{ t('settings.preference') }}</template>
 
           <el-form :model="prefForm" label-width="140px" class="preference-form">
-            <el-form-item label="主题">
+            <el-form-item :label="t('settings.theme')">
               <el-radio-group v-model="prefForm.theme">
                 <el-radio-button label="light">
-                  <el-icon><Sunny /></el-icon>&nbsp;浅色
+                  <el-icon><Sunny /></el-icon>&nbsp;{{ t('settings.light') }}
                 </el-radio-button>
                 <el-radio-button label="dark">
-                  <el-icon><Moon /></el-icon>&nbsp;深色
+                  <el-icon><Moon /></el-icon>&nbsp;{{ t('settings.dark') }}
                 </el-radio-button>
               </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="语言">
+            <el-form-item :label="t('settings.language')">
               <el-radio-group v-model="prefForm.language">
-                <el-radio-button label="zh">中文</el-radio-button>
-                <el-radio-button label="en">English</el-radio-button>
+                <el-radio-button label="zh">{{ t('settings.chinese') }}</el-radio-button>
+                <el-radio-button label="en">{{ t('settings.english') }}</el-radio-button>
+                <el-radio-button label="ja">{{ t('settings.japanese') }}</el-radio-button>
               </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="默认进入页面">
+            <el-form-item :label="t('settings.defaultPage')">
               <el-select
                 v-model="prefForm.defaultRoute"
-                placeholder="请选择默认进入页面"
+                :placeholder="t('settings.selectDefaultPage')"
                 style="width: 280px"
               >
                 <el-option
@@ -168,19 +169,19 @@
                   :value="opt.key"
                 />
               </el-select>
-              <div class="text-muted form-tip">根据您当前的角色动态过滤可选首页。</div>
+              <div class="text-muted form-tip">{{ t('settings.pageFilterTip') }}</div>
             </el-form-item>
 
-            <el-form-item label="侧边栏折叠">
-              <el-switch v-model="prefForm.collapsed" active-text="展开" inactive-text="折叠" />
+            <el-form-item :label="t('settings.sidebar')">
+              <el-switch v-model="prefForm.collapsed" :active-text="t('settings.expand')" :inactive-text="t('settings.collapse')" />
             </el-form-item>
 
             <el-form-item>
               <el-button type="primary" @click="savePreference">
                 <el-icon><Check /></el-icon>
-                保存偏好
+                {{ t('settings.savePreference') }}
               </el-button>
-              <el-button @click="resetPreference">恢复默认</el-button>
+              <el-button @click="resetPreference">{{ t('settings.reset') }}</el-button>
             </el-form-item>
           </el-form>
         </el-card>
@@ -189,78 +190,78 @@
         <el-card v-show="activeMenu === 'notification'" shadow="never" class="card-panel">
           <template #header>
             <div class="card-header">
-              <span>通知订阅设置</span>
-              <el-tag type="info" size="small">共 {{ enabledSubscriptionCount }} 项已启用</el-tag>
+              <span>{{ t('settings.notification') }}</span>
+              <el-tag type="info" size="small">{{ t('settings.enabledCount', { count: enabledSubscriptionCount }) }}</el-tag>
             </div>
           </template>
 
           <el-form :model="notificationStore.subscriptionPrefs" label-width="160px" class="preference-form">
-            <el-form-item label="任务通知">
+            <el-form-item :label="t('settings.taskNotification')">
               <el-switch v-model="notificationStore.subscriptionPrefs.task" @change="saveNotificationPrefs" />
-              <span class="text-muted form-tip">任务新增、完成、失败等相关通知</span>
+              <span class="text-muted form-tip">{{ t('settings.taskNotificationTip') }}</span>
             </el-form-item>
 
-            <el-form-item label="气象预警">
+            <el-form-item :label="t('settings.weatherAlert')">
               <el-switch v-model="notificationStore.subscriptionPrefs.weather" @change="saveNotificationPrefs" />
-              <span class="text-muted form-tip">风速过大、强降雨等气象预警</span>
+              <span class="text-muted form-tip">{{ t('settings.weatherAlertTip') }}</span>
             </el-form-item>
 
-            <el-form-item label="无人机状态">
+            <el-form-item :label="t('settings.droneStatus')">
               <el-switch v-model="notificationStore.subscriptionPrefs.uav" @change="saveNotificationPrefs" />
-              <span class="text-muted form-tip">低电量、信号丢失、禁飞区入侵</span>
+              <span class="text-muted form-tip">{{ t('settings.droneStatusTip') }}</span>
             </el-form-item>
 
-            <el-form-item label="路径规划">
+            <el-form-item :label="t('settings.planning')">
               <el-switch v-model="notificationStore.subscriptionPrefs.planning" @change="saveNotificationPrefs" />
-              <span class="text-muted form-tip">路径规划完成 / 失败结果</span>
+              <span class="text-muted form-tip">{{ t('settings.planningTip') }}</span>
             </el-form-item>
 
-            <el-form-item label="配置变更">
+            <el-form-item :label="t('settings.configChange')">
               <el-switch v-model="notificationStore.subscriptionPrefs.config" @change="saveNotificationPrefs" />
-              <span class="text-muted form-tip">API 配置保存、环境切换</span>
+              <span class="text-muted form-tip">{{ t('settings.configChangeTip') }}</span>
             </el-form-item>
 
-            <el-form-item label="UTM 报备">
+            <el-form-item :label="t('settings.utmReport')">
               <el-switch v-model="notificationStore.subscriptionPrefs.utm" @change="saveNotificationPrefs" />
-              <span class="text-muted form-tip">报备通过 / 驳回 / 人工审核</span>
+              <span class="text-muted form-tip">{{ t('settings.utmReportTip') }}</span>
             </el-form-item>
 
-            <el-form-item label="系统通知">
+            <el-form-item :label="t('settings.systemNotification')">
               <el-switch v-model="notificationStore.subscriptionPrefs.system" @change="saveNotificationPrefs" />
-              <span class="text-muted form-tip">系统健康检查、启动上线</span>
+              <span class="text-muted form-tip">{{ t('settings.systemNotificationTip') }}</span>
             </el-form-item>
 
-            <el-divider content-position="left">桌面通知</el-divider>
+            <el-divider :content-position="'left'">{{ t('settings.desktopNotification') }}</el-divider>
 
-            <el-form-item label="启用桌面通知">
+            <el-form-item :label="t('settings.enableDesktop')">
               <el-switch v-model="notificationStore.subscriptionPrefs.desktop" @change="saveNotificationPrefs" />
-              <span class="text-muted form-tip">通过浏览器推送桌面通知（需要授权后生效）</span>
+              <span class="text-muted form-tip">{{ t('settings.enableDesktopTip') }}</span>
             </el-form-item>
 
-            <el-form-item label="桌面通知权限">
+            <el-form-item :label="t('settings.desktopPermission')">
               <el-button type="primary" @click="requestDesktopPermission">
                 <el-icon><Bell /></el-icon>
-                请求桌面通知权限
+                {{ t('settings.requestPermission') }}
               </el-button>
-              <el-tag size="small" type="success" v-if="notificationPermission === 'granted'">已授权</el-tag>
-              <el-tag size="small" type="info" v-else-if="notificationPermission === 'denied'">已拒绝</el-tag>
-              <el-tag size="small" v-else>未授权</el-tag>
+              <el-tag size="small" type="success" v-if="notificationPermission === 'granted'">{{ t('settings.granted') }}</el-tag>
+              <el-tag size="small" type="info" v-else-if="notificationPermission === 'denied'">{{ t('settings.denied') }}</el-tag>
+              <el-tag size="small" v-else>{{ t('settings.notGranted') }}</el-tag>
             </el-form-item>
 
             <el-form-item>
-              <el-button @click="clearAllNotifications">清空所有通知（{{ notificationStore.notifications.length }} 条）</el-button>
+              <el-button @click="clearAllNotifications">{{ t('settings.clearNotifications', { count: notificationStore.notifications.length }) }}</el-button>
             </el-form-item>
           </el-form>
         </el-card>
 
         <!-- 使用文档跳转 -->
         <el-card v-show="activeMenu === 'docs'" shadow="never" class="card-panel">
-          <template #header>使用文档</template>
+          <template #header>{{ t('settings.docs') }}</template>
           <div class="docs-redirect">
-            <el-empty description="点击下方按钮跳转到完整使用文档页面">
+            <el-empty :description="t('settings.docsRedirect')">
               <el-button type="primary" @click="goDocs">
                 <el-icon><Document /></el-icon>
-                打开使用文档
+                {{ t('settings.openDocs') }}
               </el-button>
             </el-empty>
           </div>
@@ -268,7 +269,7 @@
 
         <!-- License 信息 -->
         <el-card v-show="activeMenu === 'license'" shadow="never" class="card-panel">
-          <template #header>License 信息</template>
+          <template #header>{{ t('settings.license') }}</template>
           <h4 class="section-title">MIT License</h4>
           <pre class="license-box"><code>MIT License
 
@@ -307,26 +308,26 @@ SOFTWARE.</code></pre>
     </div>
 
     <!-- 修改密码弹窗 -->
-    <el-dialog v-model="pwdDialogVisible" title="修改密码" width="480px">
+    <el-dialog v-model="pwdDialogVisible" :title="t('settings.changePassword')" width="480px">
       <el-form
         ref="pwdFormRef"
         :model="pwdForm"
         :rules="pwdRules"
         label-width="100px"
       >
-        <el-form-item label="原密码" prop="oldPwd">
+        <el-form-item :label="t('settings.oldPassword')" prop="oldPwd">
           <el-input v-model="pwdForm.oldPwd" type="password" show-password />
         </el-form-item>
-        <el-form-item label="新密码" prop="newPwd">
+        <el-form-item :label="t('settings.newPassword')" prop="newPwd">
           <el-input v-model="pwdForm.newPwd" type="password" show-password />
         </el-form-item>
-        <el-form-item label="确认密码" prop="confirmPwd">
+        <el-form-item :label="t('settings.confirmPassword')" prop="confirmPwd">
           <el-input v-model="pwdForm.confirmPwd" type="password" show-password />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="pwdDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitPwd">确认修改</el-button>
+        <el-button @click="pwdDialogVisible = false">{{ t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="submitPwd">{{ t('settings.confirmChange') }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -335,6 +336,7 @@ SOFTWARE.</code></pre>
 <script setup>
 import { computed, reactive, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   User, Lock, Setting, Document, Collection, SwitchButton, Bell,
@@ -346,6 +348,7 @@ import { useAppStore } from '../../stores/app'
 import { useNotificationStore } from '../../stores/notification'
 
 const router = useRouter()
+const { t } = useI18n()
 const authStore = useAuthStore()
 const appStore = useAppStore()
 const notificationStore = useNotificationStore()
@@ -586,7 +589,7 @@ function goDocs() {
 .settings-page {
   padding: 16px;
   min-height: 100%;
-  background: #f5f7fa;
+  background: var(--color-bg);
 }
 
 .settings-grid {
@@ -598,7 +601,7 @@ function goDocs() {
 }
 
 .settings-nav {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 10px;
   padding: 8px 0;
   height: fit-content;
@@ -652,7 +655,7 @@ function goDocs() {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #409eff 0%, #67c23a 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-success) 100%);
   color: #fff;
   display: flex;
   align-items: center;
@@ -666,7 +669,7 @@ function goDocs() {
 .avatar-name {
   font-size: 18px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
   margin-bottom: 6px;
 }
 
@@ -674,12 +677,12 @@ function goDocs() {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #606266;
+  color: var(--color-text-muted);
   font-size: 13px;
 }
 
 .text-muted {
-  color: #909399;
+  color: var(--color-text-muted);
   font-size: 13px;
 }
 
@@ -701,7 +704,7 @@ function goDocs() {
   margin: 18px 0 10px;
   font-size: 14px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
 }
 
 .role-tags {
@@ -721,9 +724,9 @@ function goDocs() {
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: #ecf5ff;
-  color: #409eff;
-  border: 1px solid #d9ecff;
+  background: rgba(64, 158, 255, 0.1);
+  color: var(--color-primary);
+  border: 1px solid rgba(64, 158, 255, 0.2);
   border-radius: 999px;
   font-size: 13px;
 }
@@ -747,8 +750,9 @@ function goDocs() {
 }
 
 .license-box {
-  background: #1e1e1e;
-  color: #dcdcdc;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
   padding: 16px 18px;
   border-radius: 8px;
   overflow-x: auto;
@@ -765,7 +769,7 @@ function goDocs() {
 .deps-list {
   margin: 0;
   padding-left: 20px;
-  color: #606266;
+  color: var(--color-text-muted);
   font-size: 13px;
   line-height: 1.9;
 }

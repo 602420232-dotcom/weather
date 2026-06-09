@@ -11,39 +11,57 @@
 
     <el-tabs v-model="activeTab" class="weather-tabs" @tab-change="handleTabChangeThrottled">
       <!-- Tab 1: 气象概览 -->
-      <el-tab-pane label="气象概览" name="overview">
+      <el-tab-pane :label="t('weather.overview')" name="overview">
         <div class="tab-container">
           <div class="left-panel">
             <el-card shadow="hover" class="control-card">
               <template #header>
-                <span class="panel-title">📌 当前区域参数</span>
+                <span class="panel-title">📌 {{ t('weather.region') }}</span>
               </template>
               <el-form label-position="top">
-                <el-form-item label="选择区域">
+                <el-form-item :label="t('weather.region')">
                   <el-radio-group v-model="overviewRegion" size="default">
                     <el-radio-button label="华东" />
                     <el-radio-button label="华北" />
                     <el-radio-button label="华南" />
                   </el-radio-group>
+                  <div class="location-btn-wrapper">
+                    <el-button
+                      type="primary"
+                      size="small"
+                      :loading="isLocating"
+                      @click="fetchCurrentLocation"
+                    >
+                      <el-icon><MapPin /></el-icon>
+                      {{ t('weather.locateMe') }}
+                    </el-button>
+                    <div v-if="currentLocation" class="location-info">
+                      <span class="location-label">{{ t('weather.currentLocation') }}:</span>
+                      <span class="location-value">{{ currentLocation.address?.formatted || `${currentLocation.position.latitude.toFixed(4)}, ${currentLocation.position.longitude.toFixed(4)}` }}</span>
+                    </div>
+                    <div v-if="locationError" class="location-error">
+                      <el-alert type="error" :message="locationError" show-icon :closable="false" />
+                    </div>
+                  </div>
                 </el-form-item>
-                <el-form-item label="预报时效">
+                <el-form-item :label="t('weather.forecastHour')">
                   <el-slider v-model="overviewHour" :min="0" :max="24" :step="6" :marks="{0: '0h', 6: '6h', 12: '12h', 18: '18h', 24: '24h'}" show-stops />
                 </el-form-item>
-                <el-form-item label="高度层 (m)">
+                <el-form-item :label="t('weather.altitude')">
                   <el-select v-model="overviewAltitude" style="width: 100%">
-                    <el-option :value="10" label="近地面 10m" />
-                    <el-option :value="100" label="低空 100m" />
-                    <el-option :value="500" label="中空 500m" />
+                    <el-option :value="10" :label="t('weather.altitude10m')" />
+                    <el-option :value="100" :label="t('weather.altitude100m')" />
+                    <el-option :value="500" :label="t('weather.altitude500m')" />
                   </el-select>
                 </el-form-item>
               </el-form>
             </el-card>
             <el-card shadow="hover" class="info-card">
               <template #header>
-                <span class="panel-title">🪧 说明</span>
+                <span class="panel-title">🪧 {{ t('common.info') }}</span>
               </template>
               <div class="info-text">
-                展示 <b>{{ overviewRegion }}</b> 区域 {{ overviewHour }}h 预报值。趋势箭头基于过去 3 小时均值计算。
+                {{ t('weather.infoText', { region: overviewRegion, hour: overviewHour }) }}
               </div>
             </el-card>
           </div>
@@ -54,7 +72,7 @@
                 <el-card shadow="hover" class="metric-card" :class="'metric-' + m.key">
                   <div class="metric-header">
                     <span class="metric-icon">{{ m.icon }}</span>
-                    <span class="metric-label">{{ m.label }}</span>
+                    <span class="metric-label">{{ t(`weather.${m.key}`) || m.label }}</span>
                   </div>
                   <div class="metric-body">
                     <span class="metric-value">{{ m.value }}</span>
@@ -78,22 +96,22 @@
       </el-tab-pane>
 
       <!-- Tab 2: 风场矢量图 -->
-      <el-tab-pane label="风场矢量图" name="wind">
+      <el-tab-pane :label="t('weather.windField')" name="wind">
         <div class="tab-container">
           <div class="left-panel">
             <el-card shadow="hover" class="control-card">
               <template #header>
-                <span class="panel-title">🎛️ 风场参数</span>
+                <span class="panel-title">🎛️ {{ t('weather.windField') }}</span>
               </template>
               <el-form label-position="top">
-                <el-form-item label="区域">
+                <el-form-item :label="t('weather.region')">
                   <el-radio-group v-model="windRegion" @change="redrawWindThrottled">
                     <el-radio-button label="华东" />
                     <el-radio-button label="华北" />
                     <el-radio-button label="华南" />
                   </el-radio-group>
                 </el-form-item>
-                <el-form-item label="时间步长">
+                <el-form-item :label="t('weather.timeStep')">
                   <el-radio-group v-model="windStep" @change="redrawWindThrottled">
                     <el-radio-button :label="0">0h</el-radio-button>
                     <el-radio-button :label="6">6h</el-radio-button>
@@ -101,8 +119,8 @@
                     <el-radio-button :label="24">24h</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
-                <el-form-item label="箭头密度">
-                  <el-slider v-model="windDensity" :min="1" :max="4" :step="1" show-stops :marks="{1:'稀疏',2:'正常',3:'密集',4:'非常密'}" @change="redrawWindThrottled" />
+                <el-form-item :label="t('weather.arrowDensity')">
+                  <el-slider v-model="windDensity" :min="1" :max="4" :step="1" show-stops :marks="{1:t('weather.sparse'),2:t('weather.normal'),3:t('weather.dense'),4:t('weather.veryDense')}" @change="redrawWindThrottled" />
                 </el-form-item>
               </el-form>
             </el-card>
@@ -111,13 +129,13 @@
             <div class="map-wrapper">
               <div ref="windMapRef" class="leaflet-map"></div>
               <el-card shadow="always" class="map-legend">
-                <div class="legend-title">🚩 风速等级 (m/s)</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#9ca3af"></span> 0 - 2  微风</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#409EFF"></span> 3 - 5  轻风</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#E6A23C"></span> 6 - 8  和风</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#F56C6C"></span> 9+    强风</div>
+                <div class="legend-title">🚩 {{ t('weather.windSpeedLevel') }} (m/s)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#9ca3af"></span> 0 - 2  {{ t('weather.lightBreeze') }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#409EFF"></span> 3 - 5  {{ t('weather.gentleWind') }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#E6A23C"></span> 6 - 8  {{ t('weather.moderateWind') }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#F56C6C"></span> 9+    {{ t('weather.strongWind') }}</div>
                 <el-divider style="margin: 6px 0" />
-                <div class="legend-tip">箭头方向 = 风去向<br/>箭头长度 = 风速级别</div>
+                <div class="legend-tip">{{ t('weather.windArrowTip') }}</div>
               </el-card>
             </div>
           </div>
@@ -125,29 +143,29 @@
       </el-tab-pane>
 
       <!-- Tab 3: 气象热力图 -->
-      <el-tab-pane label="气象热力图" name="heat">
+      <el-tab-pane :label="t('weather.heatMap')" name="heat">
         <div class="tab-container">
           <div class="left-panel">
             <el-card shadow="hover" class="control-card">
               <template #header>
-                <span class="panel-title">🔥 热力参数</span>
+                <span class="panel-title">🔥 {{ t('weather.heatParams') }}</span>
               </template>
               <el-form label-position="top">
-                <el-form-item label="变量">
+                <el-form-item :label="t('weather.variable')">
                   <el-radio-group v-model="heatVar" @change="redrawHeatThrottled">
-                    <el-radio-button label="temperature">温度</el-radio-button>
-                    <el-radio-button label="pressure">气压</el-radio-button>
-                    <el-radio-button label="precipitation">降水</el-radio-button>
-                    <el-radio-button label="turbulence">湍流强度</el-radio-button>
+                    <el-radio-button label="temperature">{{ t('weather.temperature') }}</el-radio-button>
+                    <el-radio-button label="pressure">{{ t('weather.pressure') }}</el-radio-button>
+                    <el-radio-button label="precipitation">{{ t('weather.precipitation') }}</el-radio-button>
+                    <el-radio-button label="turbulence">{{ t('weather.turbulence') }}</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
-                <el-form-item label="图层透明度">
+                <el-form-item :label="t('weather.layerOpacity')">
                   <el-slider v-model="heatOpacity" :min="0.3" :max="1.0" :step="0.05" @input="redrawHeatThrottled" />
                 </el-form-item>
-                <el-form-item label="热点半径">
+                <el-form-item :label="t('weather.hotspotRadius')">
                   <el-slider v-model="heatRadius" :min="10" :max="60" :step="5" @input="redrawHeatThrottled" />
                 </el-form-item>
-                <el-form-item label="模糊半径">
+                <el-form-item :label="t('weather.blurRadius')">
                   <el-slider v-model="heatBlur" :min="10" :max="80" :step="5" @input="redrawHeatThrottled" />
                 </el-form-item>
               </el-form>
@@ -157,14 +175,14 @@
             <div class="map-wrapper">
               <div ref="heatMapRef" class="leaflet-map"></div>
               <el-card shadow="always" class="map-legend">
-                <div class="legend-title">🎨 变量强度</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#00f"></span> 低</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#0ff"></span> 较低</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> 中等</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#f80"></span> 较高</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#f00"></span> 高</div>
+                <div class="legend-title">🎨 {{ t('weather.variableIntensity') }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#00f"></span> {{ t('weather.low') }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#0ff"></span> {{ t('weather.lower') }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#ff0"></span> {{ t('weather.medium') }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#f80"></span> {{ t('weather.higher') }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#f00"></span> {{ t('weather.high') }}</div>
                 <el-divider style="margin: 6px 0" />
-                <div class="legend-tip">当前变量：<b>{{ heatVarLabel }}</b></div>
+                <div class="legend-tip">{{ t('weather.currentVariable') }}: <b>{{ heatVarLabel }}</b></div>
               </el-card>
             </div>
           </div>
@@ -172,21 +190,21 @@
       </el-tab-pane>
 
       <!-- Tab 4: 贝叶斯方差场 -->
-      <el-tab-pane label="贝叶斯方差场" name="variance">
+      <el-tab-pane :label="t('weather.variance')" name="variance">
         <div class="tab-container">
           <div class="left-panel">
             <el-card shadow="hover" class="control-card">
               <template #header>
-                <span class="panel-title">📊 不确定性参数</span>
+                <span class="panel-title">📊 {{ t('weather.uncertaintyParams') }}</span>
               </template>
               <el-form label-position="top">
-                <el-form-item label="变量">
+                <el-form-item :label="t('weather.variable')">
                   <el-radio-group v-model="varianceVar" @change="redrawVarianceThrottled">
-                    <el-radio-button label="temp">温度方差</el-radio-button>
-                    <el-radio-button label="wind">风速方差</el-radio-button>
+                    <el-radio-button label="temp">{{ t('weather.tempVariance') }}</el-radio-button>
+                    <el-radio-button label="wind">{{ t('weather.windVariance') }}</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
-                <el-form-item label="时间步长">
+                <el-form-item :label="t('weather.timeStep')">
                   <el-radio-group v-model="varianceStep" @change="redrawVarianceThrottled">
                     <el-radio-button :label="0">0h</el-radio-button>
                     <el-radio-button :label="6">6h</el-radio-button>
@@ -199,7 +217,7 @@
           </div>
           <div class="right-panel">
             <el-alert
-              :title="'预报可信度 ' + varianceConfidence + '%（1 - 方差/最大方差）'"
+              :title="t('weather.forecastConfidence', { confidence: varianceConfidence })"
               type="info"
               show-icon
               :closable="false"
@@ -208,11 +226,11 @@
             <div class="map-wrapper">
               <div ref="varianceMapRef" class="leaflet-map"></div>
               <el-card shadow="always" class="map-legend">
-                <div class="legend-title">🎨 方差等级</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#67C23A"></span> 低</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#E6A23C"></span> 中</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#F56C6C"></span> 高</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#9254DE"></span> 极高</div>
+                <div class="legend-title">🎨 {{ t('weather.varianceLevel') }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#67C23A"></span> {{ t('weather.low') }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#E6A23C"></span> {{ t('weather.medium') }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#F56C6C"></span> {{ t('weather.high') }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#9254DE"></span> {{ t('weather.veryHigh') }}</div>
               </el-card>
             </div>
           </div>
@@ -220,22 +238,22 @@
       </el-tab-pane>
 
       <!-- Tab 5: 多模型误差对比 -->
-      <el-tab-pane label="多模型误差对比" name="compare">
+      <el-tab-pane :label="t('weather.comparison')" name="compare">
         <div class="tab-container">
           <div class="left-panel">
             <el-card shadow="hover" class="control-card">
               <template #header>
-                <span class="panel-title">⚖️ 观测变量</span>
+                <span class="panel-title">⚖️ {{ t('weather.observationVariable') }}</span>
               </template>
               <el-form label-position="top">
-                <el-form-item label="选择变量">
+                <el-form-item :label="t('weather.selectVariable')">
                   <el-radio-group v-model="compareVar" @change="redrawCompareThrottled">
-                    <el-radio-button label="temperature">温度</el-radio-button>
-                    <el-radio-button label="wind">风速</el-radio-button>
-                    <el-radio-button label="pressure">气压</el-radio-button>
+                    <el-radio-button label="temperature">{{ t('weather.temperature') }}</el-radio-button>
+                    <el-radio-button label="wind">{{ t('weather.windSpeed') }}</el-radio-button>
+                    <el-radio-button label="pressure">{{ t('weather.pressure') }}</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
-                <el-form-item label="评估区域">
+                <el-form-item :label="t('weather.evaluationRegion')">
                   <el-select v-model="compareRegion" style="width:100%" @change="redrawCompareThrottled">
                     <el-option label="华东" value="华东" />
                     <el-option label="华北" value="华北" />
@@ -249,7 +267,7 @@
             <el-card shadow="hover" class="chart-card">
               <template #header>
                 <div class="card-header">
-                  <span>📉 4 模型 RMSE 对比（{{ compareVarLabel }} · {{ compareRegion }}）</span>
+                  <span>📉 {{ t('weather.modelComparison', { varLabel: compareVarLabel, region: compareRegion }) }}</span>
                 </div>
               </template>
               <div ref="compareChartRef" class="echarts-box tall"></div>
@@ -278,6 +296,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { createThrottledStream, throttled } from '@/utils/performance.js'
 import * as echarts from 'echarts'
 import L from 'leaflet'
@@ -285,9 +304,15 @@ import 'leaflet/dist/leaflet.css'
 import 'leaflet.heat'
 import idb, { STORE_TILES } from '../../utils/indexedDB'
 import { useNotificationStore } from '../../stores/notification'
+import { getCurrentLocation } from '../../utils/geolocation'
 
+const { t } = useI18n()
 const notificationStore = useNotificationStore()
 let weatherAlertSent = { wind: false, rain: false }
+
+const currentLocation = ref(null)
+const locationError = ref(null)
+const isLocating = ref(false)
 
 const TILE_TTL = 30 * 24 * 60 * 60 * 1000 // 30 天
 
@@ -768,6 +793,34 @@ function redrawCompare() {
 }
 const redrawCompareThrottled = throttled(redrawCompare, 150)
 
+// ========== 位置服务 ==========
+async function fetchCurrentLocation() {
+  isLocating.value = true
+  locationError.value = null
+  
+  const result = await getCurrentLocation()
+  
+  if (result.success) {
+    currentLocation.value = result
+    if (result.region && result.region.key !== 'unknown') {
+      overviewRegion.value = result.region.name
+      windRegion.value = result.region.name
+      compareRegion.value = result.region.name
+    }
+    notificationStore.push({
+      type: 'success',
+      title: t('weather.currentLocation'),
+      message: result.address?.formatted || `${result.position.latitude.toFixed(4)}, ${result.position.longitude.toFixed(4)}`,
+      source: 'weather'
+    })
+  } else {
+    locationError.value = result.error
+    console.warn('[WeatherView] Failed to get location:', result.error)
+  }
+  
+  isLocating.value = false
+}
+
 // ========== 工具函数 ==========
 function destroyMap(instance) {
   if (instance) {
@@ -1075,6 +1128,38 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
 .card-header {
   font-weight: 600;
   color: #1f2937;
+}
+
+.location-btn-wrapper {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.location-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #f0f9eb;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.location-label {
+  color: #67c23a;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.location-value {
+  color: #303133;
+  word-break: break-all;
+}
+
+.location-error {
+  margin-top: 4px;
 }
 
 @media (max-width: 1100px) {

@@ -715,6 +715,158 @@
       </el-row>
     </el-card>
 
+    <!-- 天气API配置 -->
+    <el-card class="section-card" shadow="never">
+      <template #header>
+        <div class="card-header">
+          <span class="header-icon">🌤️</span>
+          <span>天气服务 API</span>
+          <el-tag :type="weatherProviderTag.type" size="small" effect="light">{{ weatherProviderTag.text }}</el-tag>
+        </div>
+      </template>
+
+      <el-alert
+        type="info"
+        :closable="false"
+        show-icon
+        class="weather-alert"
+      >
+        <template #title>
+          <span>天气API用于顶部导航栏的实时天气显示。推荐使用 <strong>和风天气</strong>（国内服务稳定）或 <strong>OpenWeatherMap</strong>（国际服务）。</span>
+        </template>
+      </el-alert>
+
+      <el-form :model="weatherConfig" label-width="140px" label-position="right" size="default" class="weather-form">
+        <el-row :gutter="24">
+          <el-col :xs="24" :sm="12">
+            <el-form-item label="数据源">
+              <el-select v-model="weatherConfig.provider" :disabled="!editable" style="width: 100%" @change="onWeatherProviderChange">
+                <el-option label="演示模式（模拟数据）" value="demo" />
+                <el-option label="OpenWeatherMap" value="openweathermap" />
+                <el-option label="和风天气（QWeather）" value="qweather" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12">
+            <el-form-item label="状态">
+              <el-tag :type="weatherProviderTag.type" effect="dark">{{ weatherProviderTag.text }}</el-tag>
+              <el-button
+                v-if="weatherConfig.provider !== 'demo'"
+                type="primary"
+                link
+                @click="testWeatherApi"
+                :loading="testingWeather"
+                style="margin-left: 12px"
+              >
+                测试连接
+              </el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <!-- OpenWeatherMap 配置 -->
+        <template v-if="weatherConfig.provider === 'openweathermap'">
+          <el-divider content-position="left">OpenWeatherMap 配置</el-divider>
+          <el-row :gutter="24">
+            <el-col :xs="24" :sm="12">
+              <el-form-item label="API Key">
+                <el-input
+                  v-model="weatherConfig.openweathermap.apiKey"
+                  :disabled="!editable"
+                  show-password
+                  placeholder="请输入 OpenWeatherMap API Key"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12">
+              <el-form-item label="温度单位">
+                <el-select v-model="weatherConfig.openweathermap.units" :disabled="!editable" style="width: 100%">
+                  <el-option label="摄氏度 (°C)" value="metric" />
+                  <el-option label="华氏度 (°F)" value="imperial" />
+                  <el-option label="开尔文 (K)" value="standard" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12">
+              <el-form-item label="语言">
+                <el-select v-model="weatherConfig.openweathermap.lang" :disabled="!editable" style="width: 100%">
+                  <el-option label="简体中文" value="zh_cn" />
+                  <el-option label="English" value="en" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12">
+              <el-form-item label="API 地址">
+                <el-input
+                  v-model="weatherConfig.openweathermap.baseUrl"
+                  :disabled="!editable"
+                  placeholder="https://api.openweathermap.org/data/2.5"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-alert type="info" :closable="false" class="weather-tip">
+            <template #title>
+              <span>获取 API Key: <a href="https://openweathermap.org/api" target="_blank" rel="noopener">https://openweathermap.org/api</a> （免费版每天1000次调用）</span>
+            </template>
+          </el-alert>
+        </template>
+
+        <!-- 和风天气 配置 -->
+        <template v-if="weatherConfig.provider === 'qweather'">
+          <el-divider content-position="left">和风天气配置</el-divider>
+          <el-row :gutter="24">
+            <el-col :xs="24" :sm="12">
+              <el-form-item label="API Key">
+                <el-input
+                  v-model="weatherConfig.qweather.apiKey"
+                  :disabled="!editable"
+                  show-password
+                  placeholder="请输入和风天气 API Key"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12">
+              <el-form-item label="语言">
+                <el-select v-model="weatherConfig.qweather.lang" :disabled="!editable" style="width: 100%">
+                  <el-option label="简体中文" value="zh" />
+                  <el-option label="English" value="en" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12">
+              <el-form-item label="API 地址">
+                <el-select v-model="weatherConfig.qweather.baseUrl" :disabled="!editable" style="width: 100%">
+                  <el-option label="免费订阅 (devapi)" value="https://devapi.qweather.com/v7" />
+                  <el-option label="付费订阅 (api)" value="https://api.qweather.com/v7" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12">
+              <el-form-item label="订阅类型">
+                <el-tag type="info">免费版每天1000次，付费版无限制</el-tag>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-alert type="info" :closable="false" class="weather-tip">
+            <template #title>
+              <span>获取 API Key: <a href="https://dev.qweather.com/" target="_blank" rel="noopener">https://dev.qweather.com/</a> （免费版每天1000次调用）</span>
+            </template>
+          </el-alert>
+        </template>
+
+        <!-- 保存按钮 -->
+        <el-row :gutter="24" style="margin-top: 16px">
+          <el-col :xs="24" :sm="12">
+            <el-form-item>
+              <el-button type="primary" @click="saveWeatherConfigHandler" :disabled="!editable">保存天气配置</el-button>
+              <el-button @click="resetWeatherConfig" :disabled="!editable">重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-card>
+
     <!-- 九、配置备份 / 环境切换 -->
     <el-card class="section-card snapshot-card" shadow="never">
       <template #header>
@@ -834,12 +986,100 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { useAuthStore } from '../../stores/auth'
 import { useAppStore } from '../../stores/app'
 import { useNotificationStore } from '../../stores/notification'
+import { getWeatherConfig, saveWeatherConfig as saveWeatherConfigToStorage, getCurrentWeather, validateWeatherConfig } from '../../utils/weatherApi'
 
 const notificationStore = useNotificationStore()
 
 const authStore = useAuthStore()
 const appStore = useAppStore()
 const editable = computed(() => authStore.hasAction('api-config:edit'))
+
+// ===== 天气API配置 =====
+const weatherConfig = reactive(getWeatherConfig())
+const testingWeather = ref(false)
+
+const weatherProviderTag = computed(() => {
+  const provider = weatherConfig.provider
+  const map = {
+    demo: { type: 'warning', text: '演示模式' },
+    openweathermap: { type: 'success', text: 'OpenWeatherMap' },
+    qweather: { type: 'primary', text: '和风天气' }
+  }
+  return map[provider] || { type: 'info', text: '未配置' }
+})
+
+function onWeatherProviderChange() {
+  // 切换数据源时清空对应的API Key
+  if (weatherConfig.provider === 'demo') {
+    weatherConfig.openweathermap.apiKey = ''
+    weatherConfig.qweather.apiKey = ''
+  }
+}
+
+async function testWeatherApi() {
+  const validation = validateWeatherConfig(weatherConfig)
+  if (!validation.valid) {
+    ElMessage.warning(validation.message)
+    return
+  }
+  
+  testingWeather.value = true
+  try {
+    // 使用北京坐标测试
+    const result = await getCurrentWeather(39.9, 116.4)
+    if (result.success) {
+      ElMessage.success(`天气API连接成功！当前天气: ${result.data.description} ${result.data.temp}`)
+    } else if (result.fallback) {
+      ElMessage.warning(`API连接失败，已降级到模拟数据。错误: ${result.error}`)
+    } else {
+      ElMessage.error(`连接失败: ${result.error || '未知错误'}`)
+    }
+  } catch (e) {
+    ElMessage.error('测试失败: ' + e.message)
+  } finally {
+    testingWeather.value = false
+  }
+}
+
+function saveWeatherConfigHandler() {
+  const validation = validateWeatherConfig(weatherConfig)
+  if (!validation.valid) {
+    ElMessage.warning(validation.message)
+    return
+  }
+  
+  const success = saveWeatherConfigToStorage(weatherConfig)
+  if (success) {
+    ElMessage.success('天气配置已保存')
+    notificationStore.pushWithDesktop({
+      type: 'info',
+      title: '天气配置已更新',
+      message: `天气数据源已切换为: ${weatherProviderTag.value.text}`,
+      source: 'apiConfig'
+    })
+  } else {
+    ElMessage.error('保存失败')
+  }
+}
+
+function resetWeatherConfig() {
+  const defaultConfig = {
+    provider: 'demo',
+    openweathermap: {
+      apiKey: '',
+      baseUrl: 'https://api.openweathermap.org/data/2.5',
+      units: 'metric',
+      lang: 'zh_cn'
+    },
+    qweather: {
+      apiKey: '',
+      baseUrl: 'https://devapi.qweather.com/v7',
+      lang: 'zh'
+    }
+  }
+  Object.assign(weatherConfig, defaultConfig)
+  ElMessage.info('已重置为默认配置')
+}
 
 // ===== 配置备份 / 环境切换 =====
 const SNAPSHOT_KEY = 'uav_api_snapshots_v1'
@@ -1454,5 +1694,27 @@ async function handleSwitchMode() {
   color: #909399;
   padding: 20px 0;
   font-size: 13px;
+}
+
+/* 天气API配置 */
+.weather-alert {
+  margin-bottom: 16px;
+}
+
+.weather-form {
+  margin-top: 8px;
+}
+
+.weather-tip {
+  margin-top: 12px;
+}
+
+.weather-tip a {
+  color: #409EFF;
+  text-decoration: none;
+}
+
+.weather-tip a:hover {
+  text-decoration: underline;
 }
 </style>
