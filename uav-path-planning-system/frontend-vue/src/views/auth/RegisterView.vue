@@ -251,7 +251,7 @@ const rules = computed(() => {
       { required: true, message: '请输入密码', trigger: 'blur' },
       { min: 8, message: '密码至少 8 个字符', trigger: 'blur' },
       {
-        validator: (_rule: any, value: string, callback: (err?: Error) => void) => {
+        validator: (_rule, value, callback) => {
           if (!value) { callback(); return }
           const hasUpper = /[A-Z]/.test(value)
           const hasLower = /[a-z]/.test(value)
