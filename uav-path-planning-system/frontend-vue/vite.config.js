@@ -122,6 +122,9 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14'],
     rollupOptions: {
+      // STOMP/SockJS 为可选依赖：仅在生产 WebSocket 模式下需要
+      // 动态 import() 已有 try-catch 容错，标记 external 避免构建时解析失败
+      external: ['@stomp/stompjs', 'sockjs-client'],
       output: {
         manualChunks: {
           vendor: ['vue', 'vue-router', 'pinia', 'axios'],
