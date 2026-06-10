@@ -89,6 +89,14 @@
 
     <build>
         <plugins>
+            <!-- JaCoCo agent 与模块 classpath 冲突导致 JVM fork 崩溃，跳过本模块插桩 -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
