@@ -334,7 +334,7 @@ class TestPerformance:
         # Simulate data processing
         for _ in range(1000):
             data = [[i + j for j in range(100)] for i in range(100)]
-            sum(sum(row) for row in data) / len(data)
+            _ = sum(sum(row) for row in data) / len(data)
 
         end_time = time.time()
         processing_time = end_time - start_time

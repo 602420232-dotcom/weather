@@ -32,8 +32,8 @@ class TestJWTProvider(unittest.TestCase):
         token = self.provider.generate_token("drone_001", "uav")
         payload = self.provider.verify_token(token)
         self.assertIsNotNone(payload)
-        self.assertEqual(payload["sub"], "drone_001")
-        self.assertEqual(payload["role"], "uav")
+        self.assertEqual(payload["sub"], "drone_001")  # type: ignore[reportOptionalSubscript]
+        self.assertEqual(payload["role"], "uav")  # type: ignore[reportOptionalSubscript]
 
     def test_verify_invalid_token(self):
         payload = self.provider.verify_token("invalid.token.here")
@@ -86,7 +86,7 @@ class TestSecureMessage(unittest.TestCase):
 
         unpacked = self.messenger.unpack(packed)
         self.assertIsNotNone(unpacked)
-        self.assertEqual(unpacked["temperature"], 22.0)
+        self.assertEqual(unpacked["temperature"], 22.0)  # type: ignore[reportOptionalSubscript]
 
     def test_unpack_invalid_token(self):
         packed = {"token": "bad", "payload": "bad"}

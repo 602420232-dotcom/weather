@@ -187,7 +187,8 @@
       <hashTree/>
       <AggregateReport guiclass="AggregateReport" testclass="AggregateReport" testname="Aggregate Report" enabled="true">
         <stringProp name="filename">results/aggregate_${__time(yyyyMMdd_HHmmss)}.csv</stringProp>
-      </hashTree>
+      </AggregateReport>
+      <hashTree/>
       <hashTree/>
       <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="InfluxDB Backend Listener" enabled="false">
         <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="Backend Listener Arguments" enabled="true">
