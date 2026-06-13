@@ -1033,4 +1033,70 @@ watch(
     max-height: 400px;
   }
 }
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .template-card,
+[data-theme='dark'] .template-detail-panel {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .template-name {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .template-desc {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .template-meta {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .section-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .permission-item {
+  color: var(--color-text);
+}
+
+/* 覆盖所有带亮色回退值的组件 */
+[data-theme='dark'] .edit-panel {
+  background: var(--color-surface);
+}
+
+[data-theme='dark'] .main-tabs :deep(.el-tabs__header) {
+  background: var(--color-bg-secondary);
+}
+
+[data-theme='dark'] .template-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='dark'] .template-card.is-active {
+  background: rgba(64, 158, 255, 0.15);
+}
+
+[data-theme='dark'] .route-list {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme='dark'] .perm-key {
+  color: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='dark'] .card-meta,
+[data-theme='dark'] .text-muted,
+[data-theme='dark'] .form-tip,
+[data-theme='dark'] .count-badge {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .card-actions,
+[data-theme='dark'] .action-buttons {
+  border-top-color: var(--color-border);
+}
+
 </style>

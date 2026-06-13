@@ -40,7 +40,7 @@ function updateTime() {
 
 onMounted(() => {
   updateTime()
-  timeInterval = setInterval(updateTime, 30000)
+  timeInterval = setInterval(updateTime, 60000)
 })
 
 onBeforeUnmount(() => {
@@ -61,7 +61,7 @@ onBeforeUnmount(() => {
   border-radius: 20px;
   background: rgba(0, 0, 0, 0.05);
   font-size: 13px;
-  color: #666;
+  color: var(--color-text-muted);
 }
 .info-icon {
   color: #409eff;

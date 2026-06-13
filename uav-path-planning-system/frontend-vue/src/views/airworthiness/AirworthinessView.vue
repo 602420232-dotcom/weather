@@ -287,10 +287,10 @@ onMounted(() => {
 <style scoped>
 .airworthiness-view {
   padding: 16px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   min-height: 100%;
   font-size: 13px;
-  color: #303133;
+  color: var(--color-text);
 }
 .page-header {
   margin-bottom: 16px;
@@ -302,7 +302,7 @@ onMounted(() => {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
 }
 .step-content {
   max-width: 1000px;
@@ -313,10 +313,10 @@ onMounted(() => {
 .panel-title {
   font-weight: 600;
   font-size: 14px;
-  color: #303133;
+  color: var(--color-text);
 }
 .plan-card {
-  border: 2px solid #e4e7ed;
+  border: 2px solid var(--color-border);
   border-radius: 8px;
   padding: 16px;
   cursor: pointer;
@@ -328,7 +328,7 @@ onMounted(() => {
 }
 .plan-card.active {
   border-color: #409eff;
-  background: #ecf5ff;
+  background: var(--color-hover);
 }
 .plan-header {
   display: flex;
@@ -342,7 +342,7 @@ onMounted(() => {
 }
 .plan-desc {
   font-size: 12px;
-  color: #606266;
+  color: var(--color-text-muted);
   margin-bottom: 12px;
 }
 .plan-metrics {
@@ -356,12 +356,12 @@ onMounted(() => {
 }
 .metric-label {
   font-size: 11px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 .metric-val {
   font-size: 13px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
 }
 .step-actions {
   margin-top: 20px;
@@ -382,7 +382,7 @@ onMounted(() => {
 .check-label {
   width: 140px;
   font-size: 13px;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 .weather-summary {
   margin-top: 20px;
@@ -395,7 +395,7 @@ onMounted(() => {
   margin-top: 10px;
 }
 .risk-card {
-  background: #f5f7fa;
+  background: var(--color-bg);
   border-radius: 6px;
   padding: 16px;
   border-left: 4px solid;
@@ -406,26 +406,26 @@ onMounted(() => {
 }
 .risk-label {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
   margin-top: 4px;
 }
 .report-preview {
-  background: #fafafa;
-  border: 1px solid #e4e7ed;
+  background: var(--color-input);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 24px;
 }
 .report-header-section h3 {
   text-align: center;
   margin: 0 0 16px 0;
-  color: #303133;
+  color: var(--color-text);
 }
 .report-meta {
   display: flex;
   gap: 20px;
   justify-content: center;
   font-size: 12px;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 .report-section {
   margin-top: 20px;
@@ -433,11 +433,37 @@ onMounted(() => {
 .report-section h4 {
   margin: 0 0 8px 0;
   font-size: 14px;
-  color: #303133;
+  color: var(--color-text);
 }
 .report-section p {
   margin: 0;
   font-size: 13px;
-  color: #606266;
+  color: var(--color-text-muted);
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .airworthiness-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .airworthiness-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .airworthiness-desc {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .report-section h4 {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .report-section p {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .check-item {
+  color: var(--color-text);
 }
 </style>

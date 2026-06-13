@@ -490,7 +490,7 @@ async function submitOrder() {
 .order-header {
   margin-bottom: 16px;
   border-radius: 8px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--color-border);
 }
 
 .header-row {
@@ -508,7 +508,7 @@ async function submitOrder() {
 
 .scope-label {
   font-size: 13px;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 
 .layout {
@@ -522,7 +522,7 @@ async function submitOrder() {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .header-icon {
@@ -542,7 +542,7 @@ async function submitOrder() {
   padding: 12px;
   border: 1px solid #f0f2f5;
   border-radius: 8px;
-  background: #fafbfc;
+  background: var(--color-bg);
 }
 
 .point-icon {
@@ -580,7 +580,7 @@ async function submitOrder() {
 .point-divider {
   text-align: center;
   padding: 8px 0;
-  color: #c0c4cc;
+  color: var(--color-text-muted);
   font-size: 18px;
 }
 
@@ -630,7 +630,7 @@ async function submitOrder() {
 .marker-label {
   font-size: 11px;
   color: #374151;
-  background: #fff;
+  background: var(--color-surface);
   padding: 2px 6px;
   border-radius: 4px;
   margin-top: 4px;
@@ -668,7 +668,7 @@ async function submitOrder() {
 }
 
 .advanced-card {
-  background: #f5f7fa;
+  background: var(--color-bg);
 }
 
 .advanced-tag {
@@ -688,7 +688,7 @@ async function submitOrder() {
 }
 
 .size-sep {
-  color: #909399;
+  color: var(--color-text-muted);
   font-weight: 500;
 }
 
@@ -702,7 +702,7 @@ async function submitOrder() {
   justify-content: center;
   gap: 6px;
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
   padding: 4px 0;
 }
 
@@ -726,4 +726,57 @@ async function submitOrder() {
     height: 260px;
   }
 }
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .form-section-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .coord-label {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .coord-value {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .size-sep {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .footer-tip {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .history-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .owner-cell {
+  color: var(--color-text);
+}
+
+/* 地图预览区暗色适配 —— 原亮色渐变替换为深色 */
+[data-theme='dark'] .map-area {
+  background: linear-gradient(135deg, #0f2240 0%, #111d33 50%, #0f2a20 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 地图图例暗色 */
+[data-theme='dark'] .map-legend {
+  background: rgba(15, 23, 42, 0.92);
+  color: #94a3b8;
+}
+
+/* 地图标记标签暗色 */
+[data-theme='dark'] .marker-label {
+  color: #e2e8f0;
+}
+
+/* 起终点输入框图例暗色 */
+[data-theme='dark'] .point-block {
+  border-color: var(--color-border);
+}
+
 </style>

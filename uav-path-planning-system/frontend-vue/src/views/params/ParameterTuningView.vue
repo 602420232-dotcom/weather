@@ -1318,13 +1318,13 @@ watch(activeAlgo, () => {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 10px;
   padding: 14px 20px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 .top-bar-left { display: flex; align-items: center; gap: 12px; }
-.page-title { margin: 0; font-size: 18px; font-weight: 600; color: #24292f; }
+.page-title { margin: 0; font-size: 18px; font-weight: 600; color: var(--color-text); }
 .top-bar-controls { display: flex; gap: 8px; flex-wrap: wrap; }
 .demo-tag { font-size: 12px; }
 
@@ -1333,7 +1333,7 @@ watch(activeAlgo, () => {
   display: flex;
   align-items: center;
   gap: 16px;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 10px;
   padding: 16px 20px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -1344,7 +1344,7 @@ watch(activeAlgo, () => {
   gap: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: #24292f;
+  color: var(--color-text);
 }
 .algo-select {
   width: 400px;
@@ -1377,7 +1377,7 @@ watch(activeAlgo, () => {
   gap: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: #24292f;
+  color: var(--color-text);
 }
 .panel-sub {
   font-size: 12px;
@@ -1412,7 +1412,7 @@ watch(activeAlgo, () => {
 }
 .summary-card, .chart-card, .history-card { border-radius: 10px; }
 .json-preview {
-  background: #f6f8fa;
+  background: var(--color-input);
   padding: 12px 14px;
   border-radius: 8px;
   font-size: 12px;
@@ -1420,7 +1420,7 @@ watch(activeAlgo, () => {
   max-height: 240px;
   overflow: auto;
   margin: 0;
-  color: #24292f;
+  color: var(--color-text);
 }
 .chart-box { width: 100%; }
 .empty-hint {
@@ -1428,5 +1428,35 @@ watch(activeAlgo, () => {
   color: #8a8f98;
   font-size: 12px;
   padding: 16px 0 4px;
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .param-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .param-section-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .param-label {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .param-value {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .param-desc {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .chart-box {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+[data-theme='dark'] .empty-hint {
+  color: var(--color-text-muted);
 }
 </style>

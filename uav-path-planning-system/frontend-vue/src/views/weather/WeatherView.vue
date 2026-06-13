@@ -21,9 +21,9 @@
               <el-form label-position="top">
                 <el-form-item :label="t('weather.region')">
                   <el-radio-group v-model="overviewRegion" size="default">
-                    <el-radio-button label="华东" />
-                    <el-radio-button label="华北" />
-                    <el-radio-button label="华南" />
+                    <el-radio-button value="华东" />
+                    <el-radio-button value="华北" />
+                    <el-radio-button value="华南" />
                   </el-radio-group>
                   <div class="location-btn-wrapper">
                     <el-button
@@ -32,7 +32,7 @@
                       :loading="isLocating"
                       @click="fetchCurrentLocation"
                     >
-                      <el-icon><MapPin /></el-icon>
+                      <el-icon><MapLocation /></el-icon>
                       {{ t('weather.locateMe') }}
                     </el-button>
                     <div v-if="currentLocation" class="location-info">
@@ -106,17 +106,17 @@
               <el-form label-position="top">
                 <el-form-item :label="t('weather.region')">
                   <el-radio-group v-model="windRegion" @change="redrawWindThrottled">
-                    <el-radio-button label="华东" />
-                    <el-radio-button label="华北" />
-                    <el-radio-button label="华南" />
+                    <el-radio-button value="华东" />
+                    <el-radio-button value="华北" />
+                    <el-radio-button value="华南" />
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item :label="t('weather.timeStep')">
                   <el-radio-group v-model="windStep" @change="redrawWindThrottled">
-                    <el-radio-button :label="0">0h</el-radio-button>
-                    <el-radio-button :label="6">6h</el-radio-button>
-                    <el-radio-button :label="12">12h</el-radio-button>
-                    <el-radio-button :label="24">24h</el-radio-button>
+                    <el-radio-button :value="0">0h</el-radio-button>
+                    <el-radio-button :value="6">6h</el-radio-button>
+                    <el-radio-button :value="12">12h</el-radio-button>
+                    <el-radio-button :value="24">24h</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item :label="t('weather.arrowDensity')">
@@ -153,10 +153,10 @@
               <el-form label-position="top">
                 <el-form-item :label="t('weather.variable')">
                   <el-radio-group v-model="heatVar" @change="redrawHeatThrottled">
-                    <el-radio-button label="temperature">{{ t('weather.temperature') }}</el-radio-button>
-                    <el-radio-button label="pressure">{{ t('weather.pressure') }}</el-radio-button>
-                    <el-radio-button label="precipitation">{{ t('weather.precipitation') }}</el-radio-button>
-                    <el-radio-button label="turbulence">{{ t('weather.turbulence') }}</el-radio-button>
+                    <el-radio-button value="temperature">{{ t('weather.temperature') }}</el-radio-button>
+                    <el-radio-button value="pressure">{{ t('weather.pressure') }}</el-radio-button>
+                    <el-radio-button value="precipitation">{{ t('weather.precipitation') }}</el-radio-button>
+                    <el-radio-button value="turbulence">{{ t('weather.turbulence') }}</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item :label="t('weather.layerOpacity')">
@@ -200,16 +200,16 @@
               <el-form label-position="top">
                 <el-form-item :label="t('weather.variable')">
                   <el-radio-group v-model="varianceVar" @change="redrawVarianceThrottled">
-                    <el-radio-button label="temp">{{ t('weather.tempVariance') }}</el-radio-button>
-                    <el-radio-button label="wind">{{ t('weather.windVariance') }}</el-radio-button>
+                    <el-radio-button value="temp">{{ t('weather.tempVariance') }}</el-radio-button>
+                    <el-radio-button value="wind">{{ t('weather.windVariance') }}</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item :label="t('weather.timeStep')">
                   <el-radio-group v-model="varianceStep" @change="redrawVarianceThrottled">
-                    <el-radio-button :label="0">0h</el-radio-button>
-                    <el-radio-button :label="6">6h</el-radio-button>
-                    <el-radio-button :label="12">12h</el-radio-button>
-                    <el-radio-button :label="24">24h</el-radio-button>
+                    <el-radio-button :value="0">0h</el-radio-button>
+                    <el-radio-button :value="6">6h</el-radio-button>
+                    <el-radio-button :value="12">12h</el-radio-button>
+                    <el-radio-button :value="24">24h</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
               </el-form>
@@ -248,9 +248,9 @@
               <el-form label-position="top">
                 <el-form-item :label="t('weather.selectVariable')">
                   <el-radio-group v-model="compareVar" @change="redrawCompareThrottled">
-                    <el-radio-button label="temperature">{{ t('weather.temperature') }}</el-radio-button>
-                    <el-radio-button label="wind">{{ t('weather.windSpeed') }}</el-radio-button>
-                    <el-radio-button label="pressure">{{ t('weather.pressure') }}</el-radio-button>
+                    <el-radio-button value="temperature">{{ t('weather.temperature') }}</el-radio-button>
+                    <el-radio-button value="wind">{{ t('weather.windSpeed') }}</el-radio-button>
+                    <el-radio-button value="pressure">{{ t('weather.pressure') }}</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item :label="t('weather.evaluationRegion')">
@@ -304,6 +304,8 @@ import 'leaflet/dist/leaflet.css'
 import 'leaflet.heat'
 import idb, { STORE_TILES } from '../../utils/indexedDB'
 import { useNotificationStore } from '../../stores/notification'
+import { createThemeTileLayer, observeMapTheme, switchMapTheme } from '../../utils/mapTheme'
+import { MapLocation } from '@element-plus/icons-vue'
 import { getCurrentLocation } from '../../utils/geolocation'
 
 const { t } = useI18n()
@@ -507,6 +509,7 @@ const windDensity = ref(2)
 let windMapInstance = null
 let windCanvasLayer = null
 let windResizeHandler = null
+let windTileLayer = null
 
 function regionBounds(region) {
   if (region === '华东') return [[23, 114], [32, 123]]
@@ -535,11 +538,23 @@ function genWindGrid(region, step) {
 
 function initWindMap() {
   if (!windMapRef.value) return
-  destroyMap(windMapInstance)
-  windMapInstance = L.map(windMapRef.value, { zoomControl: true })
-  new CachedTileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
-    maxZoom: 18
+  const container = windMapRef.value
+  if (!container.offsetWidth || !container.offsetHeight) {
+    console.warn('[WeatherView] Wind map container not ready, retrying...')
+    setTimeout(initWindMap, 100)
+    return
+  }
+  if (windMapInstance) {
+    try {
+      windMapInstance.remove()
+    } catch (e) {
+      console.warn('[WeatherView] Error removing wind map:', e.message)
+    }
+    windMapInstance = null
+  }
+  windMapInstance = L.map(container, { zoomControl: true })
+  windTileLayer = createThemeTileLayer({
+    errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAhElEQVRYR+2WwQnAIBBDU5f8uOgfAKI4N+M+hN5AKP8iJ7gEFh4Mf9rGxN3ADYpPpK38Q8AGj2d29sbGxsbC4AKL9vb09PT09PT0AK7m5ubm5uLi4uLgCu7u7u7u7u7u7uLj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+PjwAAAABJRU5ErkJggg=='
   }).addTo(windMapInstance)
   const bounds = regionBounds(windRegion.value)
   windMapInstance.fitBounds(bounds)
@@ -625,6 +640,7 @@ const heatRadius = ref(30)
 const heatBlur = ref(20)
 let heatMapInstance = null
 let heatLayerInstance = null
+let heatTileLayer = null
 
 const heatVarLabel = computed(() => {
   const map = { temperature: '温度', pressure: '气压', precipitation: '降水', turbulence: '湍流强度' }
@@ -647,11 +663,23 @@ function genHeatPoints(variable) {
 
 function initHeatMap() {
   if (!heatMapRef.value) return
-  destroyMap(heatMapInstance)
-  heatMapInstance = L.map(heatMapRef.value)
-  new CachedTileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
-    maxZoom: 18
+  const container = heatMapRef.value
+  if (!container.offsetWidth || !container.offsetHeight) {
+    console.warn('[WeatherView] Heat map container not ready, retrying...')
+    setTimeout(initHeatMap, 100)
+    return
+  }
+  if (heatMapInstance) {
+    try {
+      heatMapInstance.remove()
+    } catch (e) {
+      console.warn('[WeatherView] Error removing heat map:', e.message)
+    }
+    heatMapInstance = null
+  }
+  heatMapInstance = L.map(container)
+  heatTileLayer = createThemeTileLayer({
+    errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAhElEQVRYR+2WwQnAIBBDU5f8uOgfAKI4N+M+hN5AKP8iJ7gEFh4Mf9rGxN3ADYpPpK38Q8AGj2d29sbGxsbC4AKL9vb09PT09PT0AK7m5ubm5uLi4uLgCu7u7u7u7u7u7uLj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+PjwAAAABJRU5ErkJggg=='
   }).addTo(heatMapInstance)
   heatMapInstance.fitBounds([[20, 105], [40, 125]])
   redrawHeat()
@@ -659,6 +687,11 @@ function initHeatMap() {
 
 function redrawHeat() {
   if (!heatMapInstance) return
+  const container = heatMapInstance.getContainer()
+  if (!container || !container.offsetWidth || !container.offsetHeight) {
+    console.warn('[WeatherView] Heat map container has no size, skipping redraw')
+    return
+  }
   if (heatLayerInstance) {
     heatMapInstance.removeLayer(heatLayerInstance)
     heatLayerInstance = null
@@ -681,6 +714,7 @@ const varianceVar = ref('temp')
 const varianceStep = ref(0)
 let varianceMapInstance = null
 let varianceLayerInstance = null
+let varianceTileLayer = null
 
 const varianceConfidence = computed(() => {
   const seed = hashSeed(varianceVar.value + '|' + varianceStep.value)
@@ -701,11 +735,23 @@ function genVariancePoints(variable, step) {
 
 function initVarianceMap() {
   if (!varianceMapRef.value) return
-  destroyMap(varianceMapInstance)
-  varianceMapInstance = L.map(varianceMapRef.value)
-  new CachedTileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
-    maxZoom: 18
+  const container = varianceMapRef.value
+  if (!container.offsetWidth || !container.offsetHeight) {
+    console.warn('[WeatherView] Variance map container not ready, retrying...')
+    setTimeout(initVarianceMap, 100)
+    return
+  }
+  if (varianceMapInstance) {
+    try {
+      varianceMapInstance.remove()
+    } catch (e) {
+      console.warn('[WeatherView] Error removing variance map:', e.message)
+    }
+    varianceMapInstance = null
+  }
+  varianceMapInstance = L.map(container)
+  varianceTileLayer = createThemeTileLayer({
+    errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAhElEQVRYR+2WwQnAIBBDU5f8uOgfAKI4N+M+hN5AKP8iJ7gEFh4Mf9rGxN3ADYpPpK38Q8AGj2d29sbGxsbC4AKL9vb09PT09PT0AK7m5ubm5uLi4uLgCu7u7u7u7u7u7uLj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+PjwAAAABJRU5ErkJggg=='
   }).addTo(varianceMapInstance)
   varianceMapInstance.fitBounds([[20, 105], [40, 125]])
   redrawVariance()
@@ -833,7 +879,7 @@ async function fetchCurrentLocation() {
 function destroyMap(instance) {
   if (instance) {
     try { instance.off('moveend zoomend resize') } catch (e) {}
-    instance.remove()
+    try { instance.remove() } catch (e) {}
   }
 }
 
@@ -869,8 +915,17 @@ const handleTabChangeThrottled = throttled(handleTabChange, 150)
 const initOverviewChartThrottled = throttled(initOverviewChart, 150)
 
 // ========== 生命周期 ==========
+let cleanupMapThemeObserver = null
+
 onMounted(() => {
   initTileCache()
+  // Observe theme changes and switch map tiles accordingly
+  cleanupMapThemeObserver = observeMapTheme(null, null, (newTile) => {
+    // When theme changes, all active maps need their tiles switched
+    if (windMapInstance) { windTileLayer = switchMapTheme(windMapInstance, windTileLayer) }
+    if (heatMapInstance) { heatTileLayer = switchMapTheme(heatMapInstance, heatTileLayer) }
+    if (varianceMapInstance) { varianceTileLayer = switchMapTheme(varianceMapInstance, varianceTileLayer) }
+  })
   nextTick(() => {
     initOverviewChart()
     checkWeatherAlerts()
@@ -878,13 +933,17 @@ onMounted(() => {
   window.addEventListener('resize', () => {
     if (overviewChartInstance) overviewChartInstance.resize()
     if (compareChartInstance) compareChartInstance.resize()
-    if (windMapInstance) windMapInstance.invalidateSize()
-    if (heatMapInstance) heatMapInstance.invalidateSize()
-    if (varianceMapInstance) varianceMapInstance.invalidateSize()
+    try { if (windMapInstance) windMapInstance.invalidateSize() } catch (_) {}
+    try { if (heatMapInstance) heatMapInstance.invalidateSize() } catch (_) {}
+    try { if (varianceMapInstance) varianceMapInstance.invalidateSize() } catch (_) {}
   })
 })
 
 onUnmounted(() => {
+  if (cleanupMapThemeObserver) {
+    cleanupMapThemeObserver()
+    cleanupMapThemeObserver = null
+  }
   if (overviewChartInstance) overviewChartInstance.dispose()
   if (compareChartInstance) compareChartInstance.dispose()
   if (windMapInstance && windResizeHandler) {
@@ -906,7 +965,7 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
 <style scoped>
 .weather {
   padding: 20px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   min-height: 100%;
 }
 
@@ -916,7 +975,7 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
 
 .weather-tabs :deep(.el-tabs__header) {
   margin-bottom: 16px;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 8px;
   padding: 0 16px;
 }
@@ -951,7 +1010,7 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
 
 .panel-title {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .info-text {
@@ -998,7 +1057,7 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
 .metric-value {
   font-size: 26px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .metric-unit {
@@ -1015,12 +1074,12 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
 
 .trend-up {
   color: #f56c6c;
-  background: #fef0f0;
+  background: var(--color-danger-bg);
 }
 
 .trend-down {
   color: #67c23a;
-  background: #f0f9eb;
+  background: var(--color-success-bg);
 }
 
 /* echarts box */
@@ -1036,7 +1095,7 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
 /* leaflet map */
 .map-wrapper {
   position: relative;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -1061,7 +1120,7 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
 
 .legend-title {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
   margin-bottom: 8px;
 }
 
@@ -1069,7 +1128,7 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #4b5563;
+  color: var(--color-text-muted);
   margin-bottom: 4px;
 }
 
@@ -1081,7 +1140,7 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
 }
 
 .legend-tip {
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-size: 12px;
   line-height: 1.5;
 }
@@ -1107,7 +1166,7 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
 
 .stat-title {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -1130,12 +1189,12 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
 }
 
 .stat-row b {
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .card-header {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .location-btn-wrapper {
@@ -1150,7 +1209,7 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
   align-items: flex-start;
   gap: 6px;
   padding: 8px 12px;
-  background: #f0f9eb;
+  background: var(--color-success-bg);
   border-radius: 6px;
   font-size: 13px;
 }
@@ -1162,7 +1221,7 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
 }
 
 .location-value {
-  color: #303133;
+  color: var(--color-text);
   word-break: break-all;
 }
 
@@ -1211,5 +1270,67 @@ watch([overviewRegion, overviewHour, overviewAltitude], () => {
   :deep(.el-table-wrapper) {
     overflow-x: auto;
   }
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .weather-tabs :deep(.el-tabs__header) {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme='dark'] .weather-tabs :deep(.el-tabs__item) {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .weather-tabs :deep(.el-tabs__item.is-active) {
+  color: var(--color-primary);
+}
+
+[data-theme='dark'] .weather-tabs :deep(.el-tabs__nav-wrap::after) {
+  background-color: var(--color-border);
+}
+
+[data-theme='dark'] .stat-card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme='dark'] .stat-label {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .stat-value {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .info-card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme='dark'] .control-card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme='dark'] .map-legend {
+  background: rgba(0, 0, 0, 0.7);
+  border-color: var(--color-border);
+}
+
+[data-theme='dark'] .map-legend-item span:first-child {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .location-label {
+  color: var(--color-success);
+}
+
+[data-theme='dark'] .location-value {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .location-error {
+  color: var(--color-danger);
 }
 </style>

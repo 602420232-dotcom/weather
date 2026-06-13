@@ -91,7 +91,7 @@
                   >
                     <div class="metric-label">{{ metricLabels[metric] }}</div>
                     <div class="metric-value" :class="metricValueClass(metric, m)">
-                      {{ formatMetric(metric, metricsByModel[m.key][metric]) }}
+                      {{ formatMetric(metric, metricsByModel[m.key]?.[metric]) }}
                     </div>
                     <div
                       v-if="compareMode && m.key !== bestModelKey"
@@ -357,7 +357,7 @@ const bestModelKey = computed(() => {
 })
 
 function computeScore(key) {
-  const v = metricsByModel[key]
+  const v = metricsByModel[key] || {}
   // 归一化得分（越小越好）
   const penaltyLow = v.rmse + v.mae + v.crps + Math.abs(v.bias)
   const penaltyHigh = (1 - v.r) + (1 - v.hitRate / 100)
@@ -378,8 +378,8 @@ function metricValueClass(metric, m) {
 
 function isWorse(metric, m) {
   if (m.key === bestModelKey.value) return false
-  const best = metricsByModel[bestModelKey.value][metric]
-  const cur = metricsByModel[m.key][metric]
+  const best = metricsByModel[bestModelKey.value]?.[metric] ?? 0
+  const cur = metricsByModel[m.key]?.[metric] ?? 0
   if (lowerIsBetter.has(metric)) return cur > best
   if (upperIsBetter.has(metric)) return cur < best
   return false
@@ -387,8 +387,8 @@ function isWorse(metric, m) {
 
 function diffText(metric, m) {
   if (m.key === bestModelKey.value) return '—'
-  const best = metricsByModel[bestModelKey.value][metric]
-  const cur = metricsByModel[m.key][metric]
+  const best = metricsByModel[bestModelKey.value]?.[metric]
+  const cur = metricsByModel[m.key]?.[metric] ?? 0
   if (!best) return '—'
   const diffPct = ((cur - best) / Math.abs(best || 1)) * 100
   const sign = diffPct >= 0 ? '+' : ''
@@ -506,7 +506,7 @@ function renderROC() {
   // 生成 ROC 类似曲线（False Alarm Rate vs Hit Rate）
   const points = 20
   const makeCurve = (m) => {
-    const auc = metricsByModel[m.key].auc || 0.75
+    const auc = metricsByModel[m.key]?.auc || 0.75
     // 根据 AUC 生成一条单调递增的曲线
     const data = []
     for (let i = 0; i <= points; i++) {
@@ -597,7 +597,7 @@ function exportCSV() {
   const rows = []
   rows.push(['模型', 'RMSE', 'MAE', 'CRPS', 'R', 'Bias', 'HitRate'])
   models.forEach((m) => {
-    const v = metricsByModel[m.key]
+    const v = metricsByModel[m.key] || {}
     rows.push([
       m.name,
       v.rmse.toFixed(3),
@@ -640,7 +640,7 @@ function exportCSV() {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 10px;
   padding: 14px 20px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -654,7 +654,7 @@ function exportCSV() {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #24292f;
+  color: var(--color-text);
 }
 .demo-tag {
   font-size: 12px;
@@ -693,7 +693,7 @@ function exportCSV() {
 }
 
 .model-card {
-  background: #fff;
+  background: var(--color-surface);
   border: 1px solid #eaecef;
   border-radius: 10px;
   overflow: hidden;
@@ -717,7 +717,7 @@ function exportCSV() {
   justify-content: space-between;
   padding: 12px 16px;
   border-top: 3px solid #409EFF;
-  background: #fafbfc;
+  background: var(--color-bg);
 }
 .card-title {
   font-size: 15px;
@@ -731,10 +731,10 @@ function exportCSV() {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
-  background: #eaecef;
+  background: var(--color-bg);
 }
 .metric-cell {
-  background: #fff;
+  background: var(--color-surface);
   padding: 12px 10px;
   text-align: center;
 }
@@ -746,7 +746,7 @@ function exportCSV() {
 .metric-value {
   font-size: 18px;
   font-weight: 600;
-  color: #24292f;
+  color: var(--color-text);
   font-variant-numeric: tabular-nums;
 }
 .metric-value.is-best {
@@ -790,13 +790,13 @@ function exportCSV() {
   align-items: flex-start;
   gap: 4px;
   padding: 12px 14px;
-  background: #fafbfc;
+  background: var(--color-bg);
   border: 1px solid #eaecef;
   border-radius: 8px;
 }
 .auc-card.best-model {
   border-color: #52c41a;
-  background: #f4fff1;
+  background: var(--color-success-bg);
 }
 .auc-card.hidden {
   opacity: 0.35;
@@ -808,7 +808,7 @@ function exportCSV() {
 .auc-value {
   font-size: 16px;
   font-weight: 600;
-  color: #24292f;
+  color: var(--color-text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -819,7 +819,7 @@ function exportCSV() {
 .panel-title {
   font-size: 14px;
   font-weight: 600;
-  color: #24292f;
+  color: var(--color-text);
 }
 .control-section {
   margin: 4px 0;
@@ -854,5 +854,31 @@ function exportCSV() {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .eval-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .eval-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .eval-desc {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .metric-label {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .metric-value {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .hint-text {
+  color: var(--color-text-muted);
 }
 </style>

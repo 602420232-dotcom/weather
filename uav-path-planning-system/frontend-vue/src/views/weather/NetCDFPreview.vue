@@ -382,7 +382,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .netcdf-preview {
   padding: 16px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   min-height: 100vh;
 }
 .header-card {
@@ -397,7 +397,7 @@ onBeforeUnmount(() => {
 .page-title {
   font-size: 18px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
 }
 .demo-alert {
   width: 100%;
@@ -410,7 +410,7 @@ onBeforeUnmount(() => {
 }
 .preview-card {
   border-radius: 10px;
-  background: #fff;
+  background: var(--color-surface);
 }
 .empty-wrap {
   min-height: 360px;
@@ -429,7 +429,7 @@ onBeforeUnmount(() => {
 }
 .tool-label {
   font-size: 13px;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 .level-slider {
   flex: 1;
@@ -443,7 +443,7 @@ onBeforeUnmount(() => {
 }
 .raw-info code {
   font-family: monospace;
-  background: #f4f4f5;
+  background: var(--color-info-bg);
   padding: 2px 6px;
   border-radius: 4px;
 }

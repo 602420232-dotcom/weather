@@ -1,14 +1,14 @@
 FROM maven:3.9.9-eclipse-temurin-17 AS builder
 WORKDIR /build
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
-COPY src ./src
-RUN mvn clean package -DskipTests -B
+COPY backend-spring/pom.xml backend-spring/
+COPY backend-spring/src backend-spring/src
+RUN mvn clean package -DskipTests -B -pl backend-spring -Dmaven.wagon.http.retryHandler.count=5 -Dmaven.wagon.http.connectionTimeout=60000 -Dmaven.wagon.http.socketTimeout=60000
 
 FROM eclipse-temurin:17-jre
 RUN groupadd -r appuser && useradd -r -g appuser -m -s /sbin/nologin appuser
 WORKDIR /app
-COPY --from=builder /build/target/*.jar app.jar
+COPY --from=builder /build/backend-spring/target/*.jar app.jar
 RUN chown appuser:appuser app.jar
 EXPOSE 8080
 USER appuser

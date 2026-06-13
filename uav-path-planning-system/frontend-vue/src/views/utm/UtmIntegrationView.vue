@@ -308,7 +308,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeUnmount, markRaw } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   Refresh, Switch, Close, Document, List, Monitor, Search,
@@ -321,8 +321,12 @@ import { useNotificationStore } from '../../stores/notification'
 const authStore = useAuthStore()
 const notificationStore = useNotificationStore()
 
-// 对接状态
-const connectionStatus = ref({ class: 'connected', icon: CircleCheck, label: '已连接' })
+// 对接状态 - 使用 markRaw 标记图标组件避免响应式警告
+const connectionStatus = ref({
+  class: 'connected',
+  icon: markRaw(CircleCheck),
+  label: '已连接'
+})
 const heartbeatCount = ref(0)
 const lastHeartbeatTime = ref(new Date())
 const lastSyncTime = ref(new Date())
@@ -528,7 +532,7 @@ function disconnect() {
     { confirmButtonText: '断开', cancelButtonText: '取消', type: 'warning' }
   )
     .then(() => {
-      connectionStatus.value = { class: 'disconnected', icon: CircleClose, label: '未连接' }
+      connectionStatus.value = { class: 'disconnected', icon: markRaw(CircleClose), label: '未连接' }
       addLog('warning', '[连接] 已主动断开 UTM 连接')
       ElMessage.info('已断开连接')
     })
@@ -541,11 +545,11 @@ function simulatePush() {
 }
 
 function simulateLost() {
-  connectionStatus.value = { class: 'pending', icon: Warning, label: '对接中' }
+  connectionStatus.value = { class: 'pending', icon: markRaw(Warning), label: '对接中' }
   addLog('error', '[心跳] 检测到心跳丢失，尝试重连 ...')
   errorCount.value += 1
   setTimeout(() => {
-    connectionStatus.value = { class: 'connected', icon: CircleCheck, label: '已连接' }
+    connectionStatus.value = { class: 'connected', icon: markRaw(CircleCheck), label: '已连接' }
     addLog('success', '[心跳] 已恢复心跳')
   }, 2400)
 }
@@ -726,7 +730,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .utm-integration-view {
   padding: 16px 20px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   min-height: 100%;
 }
 
@@ -736,7 +740,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 16px;
   padding: 14px 18px;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 10px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   margin-bottom: 14px;
@@ -752,7 +756,7 @@ onBeforeUnmount(() => {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .mode-tag {
@@ -765,15 +769,15 @@ onBeforeUnmount(() => {
 }
 
 .status-card {
-  border: 1px solid #e4e7ed;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
   padding: 6px 14px;
   min-width: 480px;
 }
 
-.status-card.connected { border-color: #95d475; background: #f6ffed; }
-.status-card.disconnected { border-color: #f0a0a0; background: #fff1f0; }
-.status-card.pending { border-color: #e6c47a; background: #fdf6ec; }
+.status-card.connected { border-color: #95d475; background: var(--color-success-bg); }
+.status-card.disconnected { border-color: #f0a0a0; background: var(--color-danger-bg); }
+.status-card.pending { border-color: #e6c47a; background: var(--color-warning-bg); }
 
 .status-row {
   display: flex;
@@ -793,7 +797,7 @@ onBeforeUnmount(() => {
 .status-value {
   font-size: 16px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .status-meta {
@@ -805,7 +809,7 @@ onBeforeUnmount(() => {
 }
 
 .status-meta b {
-  color: #1f2937;
+  color: var(--color-text);
   font-weight: 500;
 }
 
@@ -830,7 +834,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .panel-head .el-tag { margin-left: auto; font-weight: 400; }
@@ -871,7 +875,7 @@ onBeforeUnmount(() => {
 
 .monitor-block {
   padding: 10px;
-  background: #f7f9fc;
+  background: var(--color-bg);
   border-radius: 8px;
   text-align: center;
 }
@@ -884,7 +888,7 @@ onBeforeUnmount(() => {
 .mon-value {
   font-size: 18px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
   margin-top: 4px;
 }
 
@@ -940,5 +944,35 @@ onBeforeUnmount(() => {
   .top-center, .top-right { justify-content: flex-start; }
   .status-card { min-width: auto; width: 100%; }
   .main-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .utm-page {
+  background: var(--bg-primary);
+}
+
+[data-theme='dark'] .utm-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .utm-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .utm-desc {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .status-value {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .log-content {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .log-timestamp {
+  color: var(--color-text-muted);
 }
 </style>

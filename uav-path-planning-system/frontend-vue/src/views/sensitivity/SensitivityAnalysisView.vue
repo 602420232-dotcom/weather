@@ -292,10 +292,10 @@ onBeforeUnmount(() => {
 <style scoped>
 .sensitivity-view {
   padding: 16px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   min-height: 100%;
   font-size: 13px;
-  color: #303133;
+  color: var(--color-text);
 }
 .page-header {
   display: flex;
@@ -315,7 +315,7 @@ onBeforeUnmount(() => {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
 }
 .main-row {
   align-items: stretch;
@@ -331,7 +331,7 @@ onBeforeUnmount(() => {
 .panel-title {
   font-weight: 600;
   font-size: 14px;
-  color: #303133;
+  color: var(--color-text);
 }
 .mt-12 {
   margin-top: 12px;
@@ -351,10 +351,10 @@ onBeforeUnmount(() => {
   transition: background 0.2s;
 }
 .param-item:hover {
-  background: #f5f7fa;
+  background: var(--color-bg);
 }
 .param-item.active {
-  background: #ecf5ff;
+  background: var(--color-hover);
 }
 .param-info {
   display: flex;
@@ -367,7 +367,7 @@ onBeforeUnmount(() => {
 }
 .param-range {
   font-size: 11px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 .sensitivity-chart {
   height: 300px;
@@ -412,7 +412,7 @@ onBeforeUnmount(() => {
 }
 .rank-value {
   font-size: 11px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 .conclusion {
   display: flex;
@@ -434,6 +434,36 @@ onBeforeUnmount(() => {
 }
 .rec-desc {
   font-size: 12px;
-  color: #606266;
+  color: var(--color-text-muted);
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .sensitivity-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .sensitivity-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .sensitivity-desc {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .param-name {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .sensitivity-value {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .rec-item {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .rec-desc {
+  color: var(--color-text-muted);
 }
 </style>

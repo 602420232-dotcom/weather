@@ -1490,7 +1490,7 @@ async function handleSwitchMode() {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 16px;
-  color: #1f2937;
+  color: var(--color-text);
   padding-left: 10px;
   border-left: 4px solid #409EFF;
 }
@@ -1522,7 +1522,7 @@ async function handleSwitchMode() {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .header-icon {
@@ -1540,7 +1540,7 @@ async function handleSwitchMode() {
 
 .overview-title {
   font-size: 15px;
-  color: #1f2937;
+  color: var(--color-text);
   margin-bottom: 6px;
 }
 
@@ -1569,7 +1569,7 @@ async function handleSwitchMode() {
 }
 
 .model-card {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 16px;
   background: linear-gradient(to bottom, #fafbfc, #ffffff);
@@ -1601,7 +1601,7 @@ async function handleSwitchMode() {
 .model-title {
   font-size: 15px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .model-subtitle {
@@ -1616,10 +1616,10 @@ async function handleSwitchMode() {
 
 /* 数据库卡片 */
 .db-card {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 16px;
-  background: #fafbfc;
+  background: var(--color-bg);
   height: 100%;
 }
 
@@ -1638,7 +1638,7 @@ async function handleSwitchMode() {
 .db-title {
   font-size: 15px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text);
   margin-bottom: 12px;
 }
 
@@ -1665,17 +1665,17 @@ async function handleSwitchMode() {
 }
 
 .snapshot-block {
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
   padding: 16px;
-  background: #fafbfc;
+  background: var(--color-bg);
   height: 100%;
 }
 
 .snapshot-block-title {
   font-size: 14px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text);
   margin-bottom: 12px;
   display: flex;
   align-items: center;
@@ -1690,7 +1690,7 @@ async function handleSwitchMode() {
 
 .snapshot-empty {
   text-align: center;
-  color: #909399;
+  color: var(--color-text-muted);
   padding: 20px 0;
   font-size: 13px;
 }
@@ -1715,5 +1715,23 @@ async function handleSwitchMode() {
 
 .weather-tip a:hover {
   text-decoration: underline;
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .model-card {
+  background: linear-gradient(to bottom, #161b22, #111827);
+}
+
+[data-theme='dark'] .model-card:hover {
+  box-shadow: 0 8px 24px rgba(64, 158, 255, 0.12);
+}
+
+[data-theme='dark'] .model-subtitle,
+[data-theme='dark'] .overview-desc {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .weather-tip a {
+  color: #409eff;
 }
 </style>

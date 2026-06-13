@@ -133,8 +133,8 @@ defineEmits([
 
 <style scoped>
 .uav-header {
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--color-header-bg);
+  border-bottom: 1px solid var(--color-header-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -145,11 +145,11 @@ defineEmits([
   align-items: center;
   gap: 12px;
 }
-.collapse-btn { color: #333 !important; padding: 0 8px !important; }
+.collapse-btn { color: var(--color-text) !important; padding: 0 8px !important; }
 .breadcrumb-title {
   font-size: 15px;
   font-weight: 500;
-  color: #24292f;
+  color: var(--color-text);
 }
 .header-right {
   display: flex;
@@ -157,17 +157,17 @@ defineEmits([
   gap: 16px;
 }
 .demo-tag { margin-right: 8px; }
-.theme-btn { color: #666 !important; padding: 0 8px !important; }
-.notification-btn { color: #666 !important; padding: 0 8px !important; }
+.theme-btn { color: var(--color-text-muted) !important; padding: 0 8px !important; }
+.notification-btn { color: var(--color-text-muted) !important; padding: 0 8px !important; }
 .notification-badge { margin-right: 4px; }
-.hamburger-btn { color: #333 !important; padding: 0 8px !important; }
+.hamburger-btn { color: var(--color-text) !important; padding: 0 8px !important; }
 .user-info {
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
   padding: 0 8px;
-  color: #24292f;
+  color: var(--color-text);
 }
 .user-avatar {
   background: linear-gradient(135deg, #1890ff, #52c41a);

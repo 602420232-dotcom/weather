@@ -1,3 +1,24 @@
+// ===== Monkey-patch addEventListener: scroll-blocking events default to passive =====
+// Must run BEFORE any library that registers wheel/mousewheel listeners (e.g. ECharts/ZRender)
+// Otherwise Chrome throws [Violation] warnings on every chart init
+;(function () {
+  var _add = EventTarget.prototype.addEventListener
+  var passiveEvents = ['mousewheel', 'wheel', 'touchstart', 'touchmove', 'scroll']
+  EventTarget.prototype.addEventListener = function (type, listener, options) {
+    var opts = options
+    if (passiveEvents.indexOf(type) !== -1) {
+      if (opts === undefined || opts === null) {
+        opts = { passive: true }
+      } else if (typeof opts === 'boolean') {
+        opts = { capture: opts, passive: true }
+      } else if (typeof opts === 'object' && opts.passive === undefined) {
+        opts = { capture: opts.capture, passive: true, once: opts.once, signal: opts.signal }
+      }
+    }
+    return _add.call(this, type, listener, opts)
+  }
+})()
+
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
@@ -9,15 +30,53 @@ import './styles/theme-vars.css'
 import './styles/variables.css'
 import './styles/breakpoints.css'
 import './styles/index.css'
+import './styles/theme-dark.css'
 
-const savedTheme = localStorage.getItem('uav_theme_v1') || 'light'
-document.documentElement.setAttribute('data-theme', savedTheme)
-if (savedTheme === 'custom') {
-  try {
-    const vars = JSON.parse(localStorage.getItem('uav_theme_custom_vars_v1') || '{}')
-    Object.entries(vars).forEach(([k, v]) => document.documentElement.style.setProperty(k, v))
-  } catch (_) {}
+// 主题初始化：优先使用 localStorage，否则检测系统主题
+let savedTheme = null
+try {
+  savedTheme = localStorage.getItem('uav_theme_v1')
+} catch (e) {
+  // localStorage 被浏览器阻止，使用系统主题
 }
+
+let theme = 'light'
+if (savedTheme) {
+  theme = savedTheme
+} else {
+  // 自动检测系统主题
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  theme = prefersDark ? 'dark' : 'light'
+  try {
+    localStorage.setItem('uav_theme_v1', theme)
+  } catch (e) {
+    // localStorage 被阻止，忽略
+  }
+}
+
+// 应用主题到 document
+document.documentElement.setAttribute('data-theme', theme)
+const isDarkMode = theme === 'dark' || theme === 'brand' || theme === 'highContrast'
+if (isDarkMode) {
+  document.documentElement.classList.add('dark')
+  // 设置深色模式背景变量
+  document.documentElement.style.setProperty('--bg-primary', '#0a0e1a')
+  document.documentElement.style.setProperty('--bg-secondary', '#111827')
+  document.documentElement.style.setProperty('--bg-tertiary', '#1a2234')
+  document.documentElement.style.setProperty('--text-primary', '#c9d1d9')
+  document.documentElement.style.setProperty('--text-secondary', '#8b949e')
+  document.documentElement.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.08)')
+} else {
+  document.documentElement.classList.remove('dark')
+  // 设置浅色模式背景变量
+  document.documentElement.style.setProperty('--bg-primary', '#f0f2f5')
+  document.documentElement.style.setProperty('--bg-secondary', '#ffffff')
+  document.documentElement.style.setProperty('--bg-tertiary', '#f5f7fa')
+  document.documentElement.style.setProperty('--text-primary', 'rgba(0, 0, 0, 0.88)')
+  document.documentElement.style.setProperty('--text-secondary', 'rgba(0, 0, 0, 0.65)')
+  document.documentElement.style.setProperty('--border-color', '#dcdfe6')
+}
+
 import { setElMessage, handleGenericError } from './utils/errorHandler'
 import i18n from './locales'
 import { setupMock } from './mock'
@@ -36,9 +95,26 @@ app.use(router)
 app.use(ElementPlus)
 app.use(i18n)
 
+// 自定义主题变量恢复：在 Pinia 初始化之后执行，避免 app.init() 的 applyDataThemeToDocument 覆盖
+// applyCustom() 保存的主题键是 'dark'/'light' 而非 'custom'，所以改用 uav_theme_custom_active 判断
+try {
+  const isCustomActive = localStorage.getItem('uav_theme_custom_active') === 'true'
+  if (isCustomActive) {
+    const raw = localStorage.getItem('uav_theme_custom_vars_v1')
+    if (raw) {
+      const vars = JSON.parse(raw)
+      Object.entries(vars).forEach(([k, v]) => {
+        document.documentElement.style.setProperty(k, v)
+      })
+      document.documentElement.setAttribute('data-theme-custom', 'true')
+    }
+  }
+} catch (_) {}
+
 // 从 Element Plus 取到 ElMessage 后注入到 errorHandler，
 // 使 API 拦截器与全局错误处理器共用同一份提示组件
-setElMessage(ElementPlus.ElMessage || (typeof ElMessage !== 'undefined' ? ElMessage : null))
+import { ElMessage } from 'element-plus'
+setElMessage(ElMessage)
 
 // ===== 全局 Vue 错误处理：捕获组件渲染 / 生命周期 / 事件处理异常 =====
 app.config.errorHandler = (err, instance, info) => {

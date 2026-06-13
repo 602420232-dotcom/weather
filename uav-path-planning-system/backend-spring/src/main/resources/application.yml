@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:uav_path_planning}?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ${DB_USER:root}
-    password: ${DB_PASSWORD}
+    password: ${DB_PASSWORD:password}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: ${DB_POOL_MAX_SIZE:20}
@@ -52,7 +52,7 @@ server:
 # UAV配置
 uav:
   jwt:
-    secret: ${JWT_SECRET}
+    secret: ${JWT_SECRET:uav_path_planning_jwt_secret_key_2024}
     expiration: ${JWT_EXPIRATION:86400000}
     enabled: ${JWT_ENABLED:true}
   python:

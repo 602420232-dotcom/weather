@@ -279,12 +279,12 @@ function reset() {
 .preview-table { margin-top: 16px; }
 .preview-title {
   font-size: 13px;
-  color: #909399;
+  color: var(--color-text-muted);
   margin-bottom: 8px;
 }
 .form-tip {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
   margin-top: 4px;
 }
 </style>

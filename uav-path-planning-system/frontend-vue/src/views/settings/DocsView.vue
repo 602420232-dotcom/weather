@@ -78,6 +78,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { marked } from 'marked'
+import { Lightning, UserFilled, PartlyCloudy, Position, Connection, Cpu, QuestionFilled, Loading, CircleCheck, Warning } from '@element-plus/icons-vue'
+import { sanitizeHtml } from '@/utils/sanitize'
 
 const defaultRemoteUrl =
   'https://raw.githubusercontent.com/602420232-dotcom/weather/main/docs/usage.md'
@@ -262,7 +264,8 @@ appStore.setLanguage('en')  // English
 
 const renderedHtml = computed(() => {
   if (!mdText.value) return ''
-  return marked.parse(mdText.value)
+  const html = marked.parse(mdText.value)
+  return sanitizeHtml(html)
 })
 
 async function fetchRemoteDoc() {
@@ -328,7 +331,7 @@ onMounted(() => {
 .docs-page {
   padding: 16px;
   min-height: 100%;
-  background: #f5f7fa;
+  background: var(--color-bg);
 }
 
 .docs-grid {
@@ -340,7 +343,7 @@ onMounted(() => {
 }
 
 .docs-toc {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 10px;
   padding: 12px 0;
   height: fit-content;
@@ -353,7 +356,7 @@ onMounted(() => {
   padding: 4px 20px 10px;
   font-size: 13px;
   font-weight: 600;
-  color: #909399;
+  color: var(--color-text-muted);
   letter-spacing: 0.5px;
 }
 
@@ -362,11 +365,11 @@ onMounted(() => {
 }
 
 .docs-main {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 10px;
   padding: 32px 40px;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.04);
-  color: #303133;
+  color: var(--color-text);
   line-height: 1.8;
 }
 
@@ -376,7 +379,7 @@ onMounted(() => {
   gap: 8px;
   padding-bottom: 16px;
   margin-bottom: 16px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid var(--color-border);
   font-size: 13px;
 }
 
@@ -401,7 +404,7 @@ onMounted(() => {
 }
 
 .sync-text {
-  color: #606266;
+  color: var(--color-text-muted);
 }
 
 @keyframes spin {
@@ -414,7 +417,7 @@ onMounted(() => {
 }
 
 .docs-article {
-  color: #303133;
+  color: var(--color-text);
   font-size: 14px;
   line-height: 1.8;
 }
@@ -423,7 +426,7 @@ onMounted(() => {
   font-size: 24px;
   font-weight: 700;
   margin: 0 0 12px;
-  color: #1f2937;
+  color: var(--color-text);
   padding-top: 16px;
   scroll-margin-top: 16px;
 }
@@ -436,7 +439,7 @@ onMounted(() => {
   font-size: 18px;
   font-weight: 600;
   margin: 24px 0 10px;
-  color: #1f2937;
+  color: var(--color-text);
   scroll-margin-top: 16px;
 }
 
@@ -444,7 +447,7 @@ onMounted(() => {
   font-size: 15px;
   font-weight: 600;
   margin: 20px 0 10px;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .docs-article :deep(p) {
@@ -483,7 +486,7 @@ onMounted(() => {
 
 .docs-article :deep(p code),
 .docs-article :deep(li code) {
-  background: #f4f4f5;
+  background: var(--color-info-bg);
   color: #c7254e;
   padding: 2px 6px;
   border-radius: 4px;
@@ -500,24 +503,24 @@ onMounted(() => {
 
 .docs-article :deep(th),
 .docs-article :deep(td) {
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--color-border);
   padding: 8px 12px;
   text-align: left;
 }
 
 .docs-article :deep(th) {
-  background: #f5f7fa;
+  background: var(--color-bg);
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .docs-article :deep(tr:nth-child(even)) {
-  background: #fafafa;
+  background: var(--color-input);
 }
 
 .docs-article :deep(hr) {
   border: none;
-  border-top: 1px solid #ebeef5;
+  border-top: 1px solid var(--color-border);
   margin: 36px 0;
 }
 
@@ -544,5 +547,110 @@ onMounted(() => {
   .docs-main {
     padding: 20px 16px;
   }
+}
+
+[data-theme='dark'] .docs-page {
+  background: #141414;
+}
+
+[data-theme='dark'] .docs-toc {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .toc-title {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .toc-menu {
+  background: transparent;
+}
+
+[data-theme='dark'] .toc-menu :deep(.el-menu-item) {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .toc-menu :deep(.el-menu-item:hover),
+[data-theme='dark'] .toc-menu :deep(.el-menu-item.is-active) {
+  background: rgba(255, 255, 255, 0.08);
+  color: #409eff;
+}
+
+[data-theme='dark'] .docs-main {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .docs-sync-bar {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .sync-text {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .docs-fallback-alert {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .docs-article {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .docs-article :deep(h1) {
+  color: #e2e8f0;
+}
+
+[data-theme='dark'] .docs-article :deep(h2) {
+  color: #e2e8f0;
+}
+
+[data-theme='dark'] .docs-article :deep(h3) {
+  color: #e2e8f0;
+}
+
+[data-theme='dark'] .docs-article :deep(p) {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .docs-article :deep(ul),
+[data-theme='dark'] .docs-article :deep(ol) {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .docs-article :deep(pre) {
+  background: #0d1117;
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .docs-article :deep(p code),
+[data-theme='dark'] .docs-article :deep(li code) {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f97583;
+}
+
+[data-theme='dark'] .docs-article :deep(th),
+[data-theme='dark'] .docs-article :deep(td) {
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .docs-article :deep(th) {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+}
+
+[data-theme='dark'] .docs-article :deep(tr:nth-child(even)) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme='dark'] .docs-article :deep(hr) {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .docs-article :deep(a) {
+  color: #58a6ff;
 }
 </style>

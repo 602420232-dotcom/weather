@@ -373,7 +373,7 @@ void modelColors
 <style scoped>
 .data-assimilation {
   padding: 16px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   min-height: 100%;
   font-size: 13px;
 }
@@ -385,7 +385,7 @@ void modelColors
 }
 .panel-title {
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
   font-size: 14px;
 }
 .panel-title-inline {
@@ -393,7 +393,7 @@ void modelColors
   align-items: center;
   justify-content: space-between;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
   font-size: 14px;
 }
 .mt-12 {
@@ -415,7 +415,7 @@ void modelColors
 
 /* 权重滑块 */
 .weight-tip {
-  color: #606266;
+  color: var(--color-text-muted);
   font-size: 12px;
   margin-bottom: 6px;
 }
@@ -427,7 +427,7 @@ void modelColors
   align-items: center;
   justify-content: space-between;
   font-size: 13px;
-  color: #303133;
+  color: var(--color-text);
   margin-bottom: 2px;
 }
 .slider-val {
@@ -441,7 +441,7 @@ void modelColors
 }
 .m-title {
   font-size: 13px;
-  color: #909399;
+  color: var(--color-text-muted);
   margin-bottom: 8px;
 }
 .m-block {
@@ -452,7 +452,7 @@ void modelColors
 }
 .m-sub {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
   width: 38px;
 }
 .m-big {
@@ -475,7 +475,7 @@ void modelColors
   display: flex;
   gap: 12px;
   font-weight: 400;
-  color: #606266;
+  color: var(--color-text-muted);
   font-size: 12px;
 }
 .legend-item {
@@ -511,7 +511,7 @@ void modelColors
   gap: 4px;
   height: 220px;
   padding: 12px 6px 26px;
-  background: linear-gradient(180deg, #fafbfc 0%, #f4f6f9 100%);
+  background: var(--color-bg);
   border-radius: 6px;
   position: relative;
   overflow-x: auto;
@@ -551,13 +551,13 @@ void modelColors
 .bar-fusion { background: #909399; }
 .bar-label {
   font-size: 10px;
-  color: #909399;
+  color: var(--color-text-muted);
   margin-top: 4px;
 }
 .y-axis {
   display: flex;
   justify-content: space-between;
-  color: #c0c4cc;
+  color: var(--color-text-muted);
   font-size: 11px;
   padding: 0 8px;
   margin-top: -8px;
@@ -569,7 +569,7 @@ void modelColors
   grid-template-columns: repeat(10, 1fr);
   gap: 4px;
   padding: 8px;
-  background: #f4f6f9;
+  background: var(--color-bg);
   border-radius: 6px;
 }
 .heat-cell {
@@ -586,5 +586,43 @@ void modelColors
 /* 日志 */
 .log-panel {
   margin-top: 12px;
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .assimilation-page {
+  background: var(--bg-primary);
+}
+
+[data-theme='dark'] .assimilation-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .assimilation-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .assimilation-desc {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .data-point-info {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='dark'] .data-point-value {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .data-point-label {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .heat-cell {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .log-panel {
+  background: rgba(0, 0, 0, 0.2);
 }
 </style>

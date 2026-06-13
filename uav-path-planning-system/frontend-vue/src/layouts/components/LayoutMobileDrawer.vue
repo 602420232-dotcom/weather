@@ -17,7 +17,7 @@
     <el-menu
       :default-active="currentRoute"
       class="uav-menu drawer-menu"
-      background-color="#001529"
+      background-color="var(--color-sidebar-bg, #001529)"
       text-color="#c9d1d9"
       active-text-color="#52c41a"
       router
@@ -70,7 +70,7 @@
           v-if="showPermissionDebug"
           index="/permission-debug"
         >
-          <el-icon><MagicStick /></el-icon>
+          <el-icon><WarningFilled /></el-icon>
           <template #title>{{ permissionDebugLabel }}</template>
         </el-menu-item>
       </el-sub-menu>
@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import { PartlyCloudy, Document, Tools, Setting, MagicStick } from '@element-plus/icons-vue'
+import { PartlyCloudy, Document, Tools, Setting, MagicStick, WarningFilled } from '@element-plus/icons-vue'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -102,11 +102,11 @@ const ICON_MAP = props.iconMap
 
 <style scoped>
 .uav-drawer :deep(.el-drawer) {
-  background: #001529;
+  background: var(--color-sidebar-bg, #001529);
 }
 .uav-drawer :deep(.el-drawer__body) {
   padding: 0;
-  background: #001529;
+  background: var(--color-sidebar-bg, #001529);
 }
 .drawer-logo {
   display: flex;
@@ -117,7 +117,7 @@ const ICON_MAP = props.iconMap
   color: #fff;
   font-weight: 600;
   font-size: 15px;
-  border-bottom: 1px solid #1f2a3d;
+  border-bottom: 1px solid var(--color-sidebar-border, #1f2a3d);
   cursor: pointer;
 }
 .logo-icon {

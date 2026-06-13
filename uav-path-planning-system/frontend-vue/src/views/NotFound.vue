@@ -49,7 +49,7 @@ function goHome() {
 }
 
 .notfound-card {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(245, 158, 11, 0.12);
   padding: 48px;
@@ -66,7 +66,7 @@ function goHome() {
 .notfound-title {
   font-size: 80px;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 4px 0 8px;
   letter-spacing: 4px;
 }

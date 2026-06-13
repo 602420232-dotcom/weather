@@ -31,7 +31,7 @@
         <el-form-item :label="t('forum.content') || '内容'" required>
           <textarea
             v-model="form.content"
-            :placeholder="t('forum.contentPlaceholder') || '请输入帖子内容（支持HTML格式）'"
+            :placeholder="contentPlaceholder || '请输入帖子内容（支持HTML格式）'"
             class="content-textarea"
             rows="8"
           ></textarea>
@@ -69,11 +69,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ElMessage } from 'element-plus';
 import { useAuthStore } from '@/stores/auth';
-import forumApi from '@/api/forum';
+import forumApi, { SECTIONS } from '@/api/forum';
 
 const { t } = useI18n();
 const authStore = useAuthStore();
@@ -92,7 +92,6 @@ const tagInput = ref('');
 const formRef = ref(null);
 const submitting = ref(false);
 
-// 对话框显示状态
 const dialogVisible = ref(true);
 
 const form = reactive({
@@ -100,6 +99,17 @@ const form = reactive({
   title: '',
   content: '',
   tags: []
+});
+
+const contentPlaceholder = computed(() => {
+  if (form.section === SECTIONS.FEEDBACK) {
+    return t('forum.feedbackPlaceholder');
+  }
+  return t('forum.contentPlaceholder');
+});
+
+watch(() => props.section, (newSection) => {
+  form.section = newSection;
 });
 
 const addTag = () => {
@@ -209,5 +219,45 @@ onMounted(async () => {
 :deep(.el-dialog__body) {
   background: var(--el-bg-color, #ffffff) !important;
   color: var(--el-text-color-primary, #303133) !important;
+}
+
+/* ===== is-dark 深色模式补充 ===== */
+.is-dark :deep(.el-dialog) {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border);
+}
+
+.is-dark :deep(.el-dialog__header) {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.is-dark :deep(.el-dialog__title) {
+  color: var(--color-primary) !important;
+}
+
+.is-dark :deep(.el-dialog__body) {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+
+.is-dark .form-container .content-textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+.is-dark .form-container .content-textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.is-dark .form-container .el-form-item__label {
+  color: var(--color-text-muted);
+}
+
+.is-dark .form-container .tags-container .el-tag {
+  background: rgba(96, 165, 250, 0.15);
+  color: var(--color-primary);
+  border-color: rgba(96, 165, 250, 0.3);
 }
 </style>

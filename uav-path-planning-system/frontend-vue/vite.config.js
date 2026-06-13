@@ -23,6 +23,8 @@ const pwaOptions = {
   },
   workbox: {
     globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+    // 不缓存 API 请求，避免 403 错误被缓存
+    navigateFallbackDenylist: [/^\/api\//, /^\/mock-api\//],
     runtimeCaching: [
       {
         urlPattern: ({ request }) => ['style', 'script', 'worker', 'image'].includes(request.destination),
@@ -87,7 +89,7 @@ export default defineConfig({
         return html.replace(
           '<head>',
           `<head>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' ws: wss: https:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; img-src 'self' data: blob: https: https://*.basemaps.cartocdn.com https://*.openstreetmap.org https://*.cesium.com; font-src 'self' data:; connect-src 'self' ws: wss: https:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">`
         )
@@ -102,10 +104,27 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api': {
-        target: 'http://localhost:8088',
+      // ============================================
+      // 兼容网关配置（重构后使用）
+      // 将请求转发到 legacy-gateway (端口 8090)
+      // legacy-gateway 负责：路径映射 + 认证转换 + 响应解包
+      // 前端业务代码 100% 无需修改
+      // ============================================
+      '/v1': {
+        // target: 'http://localhost:8090',  // 兼容网关地址（重构后启用）
+        target: 'http://localhost:8089',     // 原后端地址（重构前使用）
+        changeOrigin: true
+      },
+      '/api/v1': {
+        // target: 'http://localhost:8090',  // 兼容网关地址（重构后启用）
+        target: 'http://localhost:8089',     // 原后端地址（重构前使用）
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
+      },
+      '/api': {
+        // target: 'http://localhost:8090',  // 兼容网关地址（重构后启用）
+        target: 'http://localhost:8089',     // 原后端地址（重构前使用）
+        changeOrigin: true
       },
       '/actuator': {
         target: 'http://localhost:8080',

@@ -204,10 +204,10 @@ function handleCancel() {
 <style scoped>
 .weather-station-view {
   padding: 16px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   min-height: 100%;
   font-size: 13px;
-  color: #303133;
+  color: var(--color-text);
 }
 .page-header {
   display: flex;
@@ -227,7 +227,7 @@ function handleCancel() {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
 }
 .main-row {
   align-items: stretch;
@@ -243,7 +243,7 @@ function handleCancel() {
 .panel-title {
   font-weight: 600;
   font-size: 14px;
-  color: #303133;
+  color: var(--color-text);
 }
 .mt-12 {
   margin-top: 12px;
@@ -254,7 +254,7 @@ function handleCancel() {
   gap: 10px;
 }
 .stat-cell {
-  background: #f5f7fa;
+  background: var(--color-bg);
   border-radius: 6px;
   padding: 16px 8px;
   text-align: center;
@@ -266,7 +266,29 @@ function handleCancel() {
 }
 .stat-label {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
   margin-top: 4px;
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .station-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .station-name {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .station-meta {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .stat-val {
+  color: #409eff;
+}
+
+[data-theme='dark'] .stat-label {
+  color: var(--color-text-muted);
 }
 </style>

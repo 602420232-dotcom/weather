@@ -194,7 +194,7 @@ async function handleReset() {
   min-height: 600px;
   display: grid;
   grid-template-columns: 1fr 1.1fr;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(30, 80, 180, 0.12);
@@ -303,7 +303,7 @@ async function handleReset() {
   align-items: center;
   justify-content: center;
   padding: 40px 48px;
-  background: #fafcff;
+  background: var(--color-surface);
 }
 
 .form-card {
@@ -314,7 +314,7 @@ async function handleReset() {
 .form-header h2 {
   margin: 0;
   font-size: 26px;
-  color: #1f2d3d;
+  color: var(--color-text);
   font-weight: 600;
 }
 

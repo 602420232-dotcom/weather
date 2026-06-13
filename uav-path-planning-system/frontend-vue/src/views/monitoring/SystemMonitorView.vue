@@ -41,6 +41,7 @@
           size="small"
           style="width: 90px; margin-left: 4px"
         >
+          <el-option label="2s" :value="2000" />
           <el-option label="5s" :value="5000" />
           <el-option label="10s" :value="10000" />
           <el-option label="30s" :value="30000" />
@@ -59,8 +60,9 @@
           <el-col :xs="12" :sm="8" v-for="g in gauges" :key="g.key">
             <el-card shadow="hover" class="gauge-card">
               <div class="gauge-title">{{ g.label }}</div>
-              <div ref="el => gaugeRefs[g.key] = el" class="gauge-chart"></div>
-              <div ref="el => sparkRefs[g.key] = el" class="sparkline-chart"></div>
+              <div class="gauge-big-num" :style="{color: g.color}">{{ typeof g.value === "number" ? g.value.toFixed(1) : g.value }}{{ g.unit }}</div>
+              <el-progress :percentage="Math.round(g.value / g.max * 100)" :color="g.color" :stroke-width="12" :show-text="false" style="margin: 4px 16px" />
+              <div class="gauge-spark" ref="el => sparkRefs[g.key] = el">&nbsp;</div>
             </el-card>
           </el-col>
         </el-row>
@@ -227,7 +229,7 @@ const appStore = useAppStore()
 const envMode = ref(appStore.envMode || 'demo')
 const timeRange = ref('5m')
 const autoRefresh = ref(true)
-const refreshInterval = ref(5000)
+const refreshInterval = ref(2000)
 
 // 仪表与 sparkline 引用
 const gaugeRefs = reactive({})
@@ -396,13 +398,13 @@ function tickMetrics() {
   gauges.value.forEach(g => {
     let delta
     if (g.unit === '%') {
-      delta = (Math.random() - 0.5) * 8
-      g.value = Math.max(3, Math.min(98, +(g.value + delta).toFixed(0)))
+      delta = (Math.random() - 0.5) * 15
+      g.value = Math.max(3, Math.min(98, +(g.value + delta).toFixed(1)))
     } else if (g.unit === 'MB/s') {
-      delta = (Math.random() - 0.5) * 2
+      delta = (Math.random() - 0.5) * 5
       g.value = Math.max(0.1, +(g.value + delta).toFixed(1))
     } else {
-      delta = (Math.random() - 0.5) * 150
+      delta = (Math.random() - 0.5) * 300
       g.value = Math.max(10, Math.round(g.value + delta))
     }
     gaugeHistory[g.key].push(g.value)
@@ -477,42 +479,7 @@ function onEnvChange(val) {
 
 // ===== ECharts 渲染 =====
 function renderGauge(g) {
-  const dom = gaugeRefs[g.key]
-  if (!dom) return
-  if (!gaugeInstances[g.key]) {
-    gaugeInstances[g.key] = echarts.init(dom)
-  }
-  const chart = gaugeInstances[g.key]
-  chart.setOption({
-    series: [
-      {
-        type: 'gauge',
-        startAngle: 210,
-        endAngle: -30,
-        min: 0,
-        max: g.max,
-        radius: '95%',
-        center: ['50%', '60%'],
-        progress: { show: true, width: 10, itemStyle: { color: g.color } },
-        axisLine: { lineStyle: { width: 10, color: [[1, '#f0f2f5']] } },
-        axisTick: { show: false },
-        splitLine: { length: 8, lineStyle: { color: '#dcdfe6', width: 1 } },
-        axisLabel: { distance: 12, color: '#909399', fontSize: 10 },
-        pointer: { show: false },
-        anchor: { show: false },
-        title: { show: false },
-        detail: {
-          valueAnimation: true,
-          fontSize: 22,
-          fontWeight: 700,
-          color: g.color,
-          offsetCenter: [0, '5%'],
-          formatter: v => `${v}${g.unit}`
-        },
-        data: [{ value: g.value }]
-      }
-    ]
-  })
+  // gauge display handled by el-progress template
 }
 
 function renderSpark(g) {
@@ -700,7 +667,7 @@ onBeforeUnmount(() => {
   margin: 0;
   font-size: 20px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text);
   padding-left: 10px;
   border-left: 4px solid #409EFF;
 }
@@ -727,14 +694,23 @@ onBeforeUnmount(() => {
 
 .gauge-title {
   font-size: 13px;
-  color: #606266;
+  color: var(--color-text-muted);
   font-weight: 600;
   text-align: center;
   margin-bottom: 4px;
 }
 
-.gauge-chart {
-  height: 140px;
+.gauge-big-num {
+  text-align: center;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 6px 0 2px;
+}
+
+.gauge-spark {
+  height: 40px;
+  margin-top: 4px;
 }
 
 .sparkline-chart {
@@ -752,7 +728,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .events-list {
@@ -765,15 +741,15 @@ onBeforeUnmount(() => {
   padding: 8px 10px;
   margin-bottom: 8px;
   border-left: 3px solid #909399;
-  background: #fafafa;
+  background: var(--color-input);
   border-radius: 4px;
   font-size: 12.5px;
   line-height: 1.5;
 }
 
-.event-item.event-info { border-left-color: #409EFF; background: #ecf5ff; }
-.event-item.event-warn { border-left-color: #E6A23C; background: #fdf6ec; }
-.event-item.event-error { border-left-color: #F56C6C; background: #fef0f0; }
+.event-item.event-info { border-left-color: #409EFF; background: var(--color-hover); }
+.event-item.event-warn { border-left-color: #E6A23C; background: var(--color-warning-bg); }
+.event-item.event-error { border-left-color: #F56C6C; background: var(--color-danger-bg); }
 
 .event-meta {
   display: flex;
@@ -784,7 +760,7 @@ onBeforeUnmount(() => {
 
 .event-time {
   font-size: 11.5px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 
 .event-source {
@@ -795,14 +771,14 @@ onBeforeUnmount(() => {
 }
 
 .event-content {
-  color: #606266;
+  color: var(--color-text-muted);
   display: inline;
 }
 
 .events-empty {
   padding: 30px 0;
   text-align: center;
-  color: #c0c4cc;
+  color: var(--color-text-muted);
   font-size: 13px;
 }
 
@@ -822,7 +798,7 @@ onBeforeUnmount(() => {
 .card-title {
   font-size: 15px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .card-filters {
@@ -838,7 +814,7 @@ onBeforeUnmount(() => {
 
 .svc-name {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .perf-row {
@@ -852,5 +828,41 @@ onBeforeUnmount(() => {
 
 .perf-chart {
   height: 240px;
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .card-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .svc-name {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .env-badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .services-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .perf-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .gauge-label {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .gauge-value {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .summary-tag {
+  color: var(--color-text-muted);
 }
 </style>

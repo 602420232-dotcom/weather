@@ -48,7 +48,7 @@ defineEmits<{
 .weather-card {
   padding: 16px;
   border-radius: 8px;
-  background: #fff;
+  background: var(--color-surface);
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   text-align: center;
 }
@@ -72,17 +72,17 @@ defineEmits<{
 }
 .weather-card-title {
   font-size: 14px;
-  color: #666;
+  color: var(--color-text-muted);
   margin-bottom: 8px;
 }
 .weather-card-value .value {
   font-size: 28px;
   font-weight: bold;
-  color: #333;
+  color: var(--color-text);
 }
 .weather-card-value .unit {
   font-size: 14px;
-  color: #999;
+  color: var(--color-text-muted);
   margin-left: 4px;
 }
 </style>

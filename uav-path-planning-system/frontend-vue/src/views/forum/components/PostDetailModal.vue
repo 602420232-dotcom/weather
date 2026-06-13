@@ -12,10 +12,10 @@
       <!-- 作者信息区 -->
       <div class="post-meta">
         <div class="author-section">
-          <img :src="post.author.avatar" :alt="post.author.displayName" width="48" height="48" loading="lazy" class="author-avatar" />
+          <img :src="post.author?.avatar || '/default-avatar.png'" :alt="post.author?.displayName || '用户'" width="48" height="48" loading="lazy" class="author-avatar" />
           <div class="author-info">
             <div class="author-name-row">
-              <span class="author-name">{{ post.author.displayName }}</span>
+              <span class="author-name">{{ post.author?.displayName || '匿名用户' }}</span>
               <span v-if="isAdmin && post.authorLocation" class="author-location">
                 <el-tag size="small" type="info" effect="plain">📍 {{ post.authorLocation }}</el-tag>
               </span>
@@ -39,7 +39,7 @@
       <div class="post-content" v-html="sanitizedContent"></div>
 
       <!-- 操作栏 -->
-      <div class="post-actions">
+      <div v-if="!isAnnouncement" class="post-actions">
         <span
           class="action-btn"
           :class="{ liked: isLiked }"
@@ -48,14 +48,18 @@
           <el-icon><Check /></el-icon>
           <span>{{ post.likeCount + (isLiked ? 1 : 0) }}</span>
         </span>
-        <span class="action-btn">
+        <span 
+          class="action-btn"
+          :class="{ favorited: isFavorited }"
+          @click="handleFavorite"
+        >
           <el-icon><Star /></el-icon>
           <span>{{ isFavorited ? t('forum.favorited') : t('forum.favorite') }}</span>
         </span>
       </div>
 
       <!-- 评论区 -->
-      <div class="comments-section">
+      <div v-if="!isAnnouncement" class="comments-section">
         <div class="comments-header">
           <h3 class="comments-title">
             <el-icon><Message /></el-icon>
@@ -70,11 +74,11 @@
             :key="comment.id"
             class="comment-item"
           >
-            <img :src="comment.author.avatar" :alt="comment.author.displayName" width="36" height="36" loading="lazy" class="comment-avatar" />
+            <img :src="comment.author?.avatar || '/default-avatar.png'" :alt="comment.author?.displayName || '用户'" width="36" height="36" loading="lazy" class="comment-avatar" />
             <div class="comment-content">
               <div class="comment-header">
                 <div class="comment-author-row">
-                  <span class="comment-author">{{ comment.author.displayName }}</span>
+                  <span class="comment-author">{{ comment.author?.displayName || '匿名用户' }}</span>
                   <span v-if="isAdmin && comment.authorLocation" class="comment-location">
                     <el-tag size="small" type="info" effect="plain">📍 {{ comment.authorLocation }}</el-tag>
                   </span>
@@ -119,7 +123,7 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Check, Star, Message } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
-import forumApi from '@/api/forum';
+import forumApi, { SECTIONS } from '@/api/forum';
 import { useAuthStore } from '@/stores/auth';
 import { ROLES } from '@/stores/auth';
 import { sanitizeHtml } from '@/utils/sanitize';
@@ -146,22 +150,20 @@ const isLiked = ref(false);
 const isFavorited = ref(false);
 const loadingComments = ref(false);
 
-// 对话框显示状态 - 与 v-model 同步
 const dialogVisible = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val)
 });
 
-// 监听 dialog 关闭事件
 const handleClose = () => {
   emit('update:modelValue', false);
   emit('close');
 };
 
-// 管理员可见IP（脱敏处理）
 const isAdmin = computed(() => authStore.role === ROLES.ADMIN);
 
-// 帖子内容安全消毒
+const isAnnouncement = computed(() => props.post?.section === SECTIONS.ANNOUNCEMENT);
+
 const sanitizedContent = computed(() => sanitizeHtml(props.post?.content || ''));
 
 const loadComments = async () => {
@@ -176,14 +178,32 @@ const loadComments = async () => {
   }
 };
 
-const handleLike = () => {
-  isLiked.value = !isLiked.value;
-  // 通知父组件更新点赞数
-  emit('update', {
-    id: props.post.id,
-    likeCount: props.post.likeCount + (isLiked.value ? 1 : -1),
-    commentCount: props.post.commentCount
-  });
+const handleLike = async () => {
+  try {
+    const updatedPost = await forumApi.toggleLike(props.post.id);
+    isLiked.value = updatedPost.isLiked;
+    props.post.likeCount = updatedPost.likeCount;
+    emit('update', {
+      id: props.post.id,
+      likeCount: updatedPost.likeCount,
+      commentCount: props.post.commentCount
+    });
+  } catch (error) {
+    ElMessage.error((t('common.operationFailed') || '操作失败') + ': ' + error.message);
+  }
+};
+
+const handleFavorite = async () => {
+  try {
+    const updatedPost = await forumApi.toggleFavorite(props.post.id);
+    isFavorited.value = updatedPost.isFavorited;
+    const message = isFavorited.value 
+      ? (t('common.operationSuccess') || '收藏成功')
+      : (t('common.operationSuccess') || '取消收藏成功');
+    ElMessage.success(message);
+  } catch (error) {
+    ElMessage.error((t('common.operationFailed') || '操作失败') + ': ' + error.message);
+  }
 };
 
 const submitComment = async () => {
@@ -210,19 +230,41 @@ const submitComment = async () => {
 };
 
 const formatTime = (dateStr) => {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diff = now - date;
-  const minutes = Math.floor(diff / 60000);
-  const hours = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
+  if (!dateStr) {
+    return t('forum.unknownTime');
+  }
+  
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      return t('forum.unknownTime');
+    }
+    
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
 
-  if (minutes < 1) return '刚刚';
-  if (minutes < 60) return `${minutes}分钟前`;
-  if (hours < 24) return `${hours}小时前`;
-  if (days < 7) return `${days}天前`;
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    if (minutes < 1) return t('forum.time.justNow');
+    if (minutes < 60) return t('forum.time.minutesAgo', { count: minutes });
+    if (hours < 24) return t('forum.time.hoursAgo', { count: hours });
+    if (days < 7) return t('forum.time.daysAgo', { count: days });
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  } catch (error) {
+    console.error('[PostDetailModal] formatTime error:', error);
+    return t('forum.unknownTime');
+  }
 };
+
+// 监听帖子变化，重新加载评论
+watch(() => props.post, async (newPost) => {
+  if (newPost) {
+    await loadComments();
+    isLiked.value = newPost.isLiked || false;
+    isFavorited.value = newPost.isFavorited || false;
+  }
+}, { immediate: true });
 
 onMounted(async () => {
   await loadComments();
@@ -340,6 +382,10 @@ onMounted(async () => {
 
 .action-btn.liked {
   color: var(--el-color-danger, #f56c6c);
+}
+
+.action-btn.favorited {
+  color: var(--el-color-warning, #e6a23c);
 }
 
 .comments-section {
@@ -601,6 +647,10 @@ onMounted(async () => {
   color: var(--el-color-danger, #f56c6c) !important;
 }
 
+:deep(.action-btn.favorited) {
+  color: var(--el-color-warning, #e6a23c) !important;
+}
+
 /* 元信息暗色模式 */
 :deep(.author-name),
 :deep(.comment-author) {
@@ -610,5 +660,135 @@ onMounted(async () => {
 :deep(.post-time),
 :deep(.comment-time) {
   color: var(--el-text-color-secondary, #909399) !important;
+}
+
+/* ===== is-dark 深色模式补充 ===== */
+.is-dark :deep(.el-dialog) {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border);
+}
+
+.is-dark :deep(.el-dialog__header) {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.is-dark :deep(.el-dialog__title) {
+  color: var(--color-primary) !important;
+}
+
+.is-dark :deep(.el-dialog__body) {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+
+.is-dark :deep(.el-dialog__footer) {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-top: 1px solid var(--color-border) !important;
+}
+
+.is-dark :deep(.author-avatar) {
+  border-color: var(--color-border);
+}
+
+.is-dark :deep(.author-name),
+.is-dark :deep(.comment-author) {
+  color: var(--color-text) !important;
+}
+
+.is-dark :deep(.post-time),
+.is-dark :deep(.comment-time) {
+  color: var(--color-text-muted) !important;
+}
+
+.is-dark :deep(.post-content),
+.is-dark :deep(.post-content p),
+.is-dark :deep(.post-content li),
+.is-dark :deep(.post-content strong),
+.is-dark :deep(.post-content em),
+.is-dark :deep(.post-content h1),
+.is-dark :deep(.post-content h2),
+.is-dark :deep(.post-content h3),
+.is-dark :deep(.post-content h4),
+.is-dark :deep(.post-content h5),
+.is-dark :deep(.post-content h6) {
+  color: var(--color-text) !important;
+}
+
+.is-dark :deep(.post-content code) {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-primary);
+}
+
+.is-dark :deep(.post-content pre) {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+.is-dark :deep(.post-content blockquote) {
+  border-left-color: var(--color-primary);
+  color: var(--color-text-muted);
+}
+
+.is-dark :deep(.comments-section) {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.is-dark :deep(.comments-title) {
+  color: var(--color-text);
+}
+
+.is-dark :deep(.comments-count) {
+  color: var(--color-text-muted);
+}
+
+.is-dark :deep(.comment-avatar) {
+  border-color: var(--color-border);
+}
+
+.is-dark :deep(.comment-content) {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.is-dark :deep(.comment-text) {
+  color: var(--color-text) !important;
+}
+
+.is-dark :deep(.empty-comments) {
+  color: var(--color-text-muted);
+}
+
+.is-dark :deep(.comment-input-section) {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--color-border);
+}
+
+.is-dark :deep(.comment-input) {
+  color: var(--color-text) !important;
+}
+
+.is-dark :deep(.comment-actions) {
+  border-top-color: var(--color-border);
+}
+
+.is-dark :deep(.action-btn) {
+  color: var(--color-text-muted) !important;
+}
+
+.is-dark :deep(.action-btn:hover) {
+  background: rgba(96, 165, 250, 0.15) !important;
+  color: var(--color-primary) !important;
+}
+
+.is-dark :deep(.action-btn.liked) {
+  color: var(--el-color-danger, #f56c6c) !important;
+}
+
+.is-dark :deep(.action-btn.favorited) {
+  color: var(--el-color-warning, #e6a23c) !important;
+}
+
+.is-dark :deep(.post-actions) {
+  border-bottom-color: var(--color-border);
 }
 </style>

@@ -717,10 +717,10 @@ onUnmounted(() => {
 .card-header .title {
   font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
 }
 .desc {
-  color: #606266;
+  color: var(--color-text-muted);
   font-size: 13px;
   margin: 0 0 12px;
 }
@@ -735,7 +735,7 @@ onUnmounted(() => {
   border: 2px dashed #e4e7ed;
   border-radius: 6px;
   transition: border-color 0.2s;
-  background: #fafbfc;
+  background: var(--color-bg);
 }
 .uploader :deep(.el-upload-dragger:hover) {
   border-color: var(--primary);
@@ -745,7 +745,7 @@ onUnmounted(() => {
 }
 .uploader-drag .drag-title {
   font-size: 15px;
-  color: #303133;
+  color: var(--color-text);
   margin: 12px 0 6px;
 }
 .uploader-drag .drag-title em {
@@ -754,28 +754,28 @@ onUnmounted(() => {
 }
 .uploader-drag .drag-hint {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 .uploader-drag .drag-hint .el-tag {
   margin-right: 4px;
 }
 .param-form {
   margin-top: 16px;
-  background: #f8fafc;
+  background: var(--color-bg);
   padding: 12px 12px 4px;
   border-radius: 6px;
 }
 .param-form .sep {
   text-align: center;
   line-height: 32px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 .progress-area {
   padding: 16px;
   margin-top: 16px;
-  background: #f5f9ff;
+  background: var(--color-hover);
   border-radius: 8px;
-  border: 1px solid #e4e7ed;
+  border: 1px solid var(--color-border);
 }
 .progress-head {
   display: flex;
@@ -783,21 +783,21 @@ onUnmounted(() => {
   align-items: center;
   margin-bottom: 10px;
   font-size: 13px;
-  color: #303133;
+  color: var(--color-text);
 }
 .progress-head .file-info .el-tag {
   margin-right: 8px;
 }
 .progress-head .file-info .file-name {
   font-family: monospace;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 .sub-progress {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
   font-size: 12px;
-  color: #606266;
+  color: var(--color-text-muted);
   font-family: monospace;
 }
 .btns {
@@ -814,7 +814,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: #606266;
+  color: var(--color-text-muted);
   font-family: monospace;
 }
 
@@ -825,12 +825,12 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   font-size: 13px;
-  color: #303133;
+  color: var(--color-text);
   font-weight: 500;
 }
 .cache-loading, .cache-empty {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
   padding: 6px 4px;
 }
 .cache-list {
@@ -843,22 +843,22 @@ onUnmounted(() => {
 }
 .cache-item {
   padding: 8px 12px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
-  background: #fafbfc;
+  background: var(--color-bg);
   cursor: pointer;
   transition: all 0.2s;
 }
 .cache-item:hover {
   border-color: #409EFF;
-  background: #ecf5ff;
+  background: var(--color-hover);
 }
 .cache-item-main {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 13px;
-  color: #303133;
+  color: var(--color-text);
 }
 .cache-name {
   font-family: monospace;
@@ -868,12 +868,12 @@ onUnmounted(() => {
   max-width: 60%;
 }
 .cache-size {
-  color: #606266;
+  color: var(--color-text-muted);
   font-family: monospace;
 }
 .cache-item-sub {
   margin-top: 4px;
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 </style>

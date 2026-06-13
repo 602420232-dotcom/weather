@@ -27,7 +27,7 @@ defineProps({
   border-radius: 20px;
   background: rgba(0, 0, 0, 0.05);
   font-size: 13px;
-  color: #666;
+  color: var(--color-text-muted);
 }
 .weather-icon {
   font-size: 16px;

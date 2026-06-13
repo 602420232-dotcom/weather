@@ -3,6 +3,7 @@
 云端全局规划 + 边缘实时避障的分布式智能框架
 支持增量学习和在线学习
 """
+import asyncio
 import logging
 from typing import Dict, List, Tuple
 
@@ -49,23 +50,48 @@ class EdgeTask:
 
 
 class EdgeCloudCoordinator:
-    """边云协同计算框架"""
+    """边云协同计算框架（支持并发安全）"""
 
-    def __init__(self, node_id: str = "edge_001") -> None:
+    def __init__(self, node_id: str = "edge_001", sync_interval: float = 5.0) -> None:
         self.node_id = node_id
+        self.sync_interval = sync_interval
         self.task_queue: List[EdgeTask] = []
         self.completed_tasks: List[dict] = []
-        self.sync_interval = 5.0
         self.cloud_models: Dict[str, object] = {}
         self.local_models: Dict[str, object] = {}
         self.offline_buffer: List[dict] = []
+        self._lock = asyncio.Lock()  # 异步锁，确保并发安全
 
-    def submit_task(self, task: EdgeTask) -> str:
-        """提交任务到队列"""
-        self.task_queue.append(task)
-        self.task_queue.sort(key=lambda t: t.priority, reverse=True)
-        logger.info(f"任务提交: {task.task_id} ({task.task_type})")
-        return task.task_id
+    async def submit_task(self, task: EdgeTask) -> str:
+        """提交任务到队列（线程安全）"""
+        async with self._lock:
+            self.task_queue.append(task)
+            self.task_queue.sort(key=lambda t: t.priority, reverse=True)
+            logger.info(f"任务提交: {task.task_id} ({task.task_type})")
+            return task.task_id
+
+    async def cancel_task(self, task_id: str) -> bool:
+        """取消任务（线程安全）"""
+        async with self._lock:
+            for i, task in enumerate(self.task_queue):
+                if task.task_id == task_id:
+                    self.task_queue.pop(i)
+                    logger.info(f"任务取消: {task_id}")
+                    return True
+            return False
+
+    async def get_task_by_id(self, task_id: str) -> EdgeTask:
+        """根据任务ID获取任务（线程安全）"""
+        async with self._lock:
+            for task in self.task_queue:
+                if task.task_id == task_id:
+                    return task
+        return None
+
+    async def get_queue_size(self) -> int:
+        """获取队列大小（线程安全）"""
+        async with self._lock:
+            return len(self.task_queue)
 
     def process_task(self, task: EdgeTask) -> dict:
         """处理任务，根据类型选择边缘或云端处理"""
@@ -140,6 +166,16 @@ class EdgeCloudCoordinator:
                 gps_pos[1] * gps_weight + imu_pos[1] * (1 - gps_weight)
             )
         return fused
+
+    async def sync_cloud_models(self) -> None:
+        """同步云端模型（线程安全）"""
+        async with self._lock:
+            logger.info(f"云端模型同步: {len(self.cloud_models)} 个模型")
+
+    async def upload_edge_data(self) -> None:
+        """上传边缘数据（线程安全）"""
+        async with self._lock:
+            logger.info(f"边缘数据上传: {len(self.offline_buffer)} 条记录")
 
     def sync_model(
         self,

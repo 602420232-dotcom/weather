@@ -124,7 +124,7 @@
           </template>
           <el-table
             :data="visibleDrones"
-            size="mini"
+            size="small"
             :row-class-name="tableRowClassName"
             class="drone-table"
             :highlight-current-row="true"
@@ -311,6 +311,7 @@ import idb, { STORE_TILES } from '../../utils/indexedDB'
 import { useNotificationStore } from '../../stores/notification'
 import { useAuthStore, TEAM_LABELS } from '../../stores/auth'
 import DataScopeBadge from '../../components/shared/DataScopeBadge.vue'
+import { createThemeTileLayer, observeMapTheme, switchMapTheme, isDarkTheme } from '../../utils/mapTheme'
 
 const authStore = useAuthStore()
 const notificationStore = useNotificationStore()
@@ -530,12 +531,12 @@ function getDroneStatusTag(status) {
 
 function getDroneStatusColor(status) {
   const map = {
-    '飞行中': Cesium ? Cesium.Color.LIME : '#67C23A',
-    '暂停': Cesium ? Cesium.Color.YELLOW : '#E6A23C',
-    '异常': Cesium ? Cesium.Color.RED : '#F56C6C',
-    '待命': Cesium ? Cesium.Color.CYAN : '#40E0FF'
+    '飞行中': typeof Cesium !== 'undefined' && Cesium ? Cesium.Color.LIME : '#67C23A',
+    '暂停': typeof Cesium !== 'undefined' && Cesium ? Cesium.Color.YELLOW : '#E6A23C',
+    '异常': typeof Cesium !== 'undefined' && Cesium ? Cesium.Color.RED : '#F56C6C',
+    '待命': typeof Cesium !== 'undefined' && Cesium ? Cesium.Color.CYAN : '#40E0FF'
   }
-  return map[status] || (Cesium ? Cesium.Color.CYAN : '#40E0FF')
+  return map[status] || (typeof Cesium !== 'undefined' && Cesium ? Cesium.Color.CYAN : '#40E0FF')
 }
 
 function tableRowClassName({ rowIndex }) {
@@ -555,6 +556,7 @@ const mapContainerRef = ref(null)
 const useCesium = ref(false)
 let viewer = null
 let leafletMap = null
+let leafletTileLayer = null
 let leafletDroneMarkers = []
 let leafletPathLayers = []
 let leafletNoFlyLayers = []
@@ -628,7 +630,7 @@ function initLeaflet() {
     attributionControl: false
   }).setView([CENTER_BJ.lat, CENTER_BJ.lng], 12)
 
-  new CachedTileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  leafletTileLayer = new CachedTileLayer(isDarkTheme() ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     subdomains: 'abc',
     maxZoom: 19
   }).addTo(leafletMap)
@@ -1056,6 +1058,8 @@ function toggleFollow() {
 }
 
 // ============ 生命周期 ============
+let cleanupMapThemeObserver = null
+
 onMounted(async () => {
   initTileCache()
   await nextTick()
@@ -1070,9 +1074,26 @@ onMounted(async () => {
     })
     resizeObserver.observe(mapContainerRef.value)
   }
+
+  // Observe theme changes for map tile switching
+  cleanupMapThemeObserver = observeMapTheme(null, null, () => {
+    if (leafletMap && leafletTileLayer) {
+      try { leafletMap.removeLayer(leafletTileLayer) } catch (_) {}
+      const dark = isDarkTheme()
+      leafletTileLayer = new CachedTileLayer(
+        dark ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        { subdomains: 'abc', maxZoom: 19 }
+      ).addTo(leafletMap)
+      leafletTileLayer.bringToBack()
+    }
+  })
 })
 
 onUnmounted(() => {
+  if (cleanupMapThemeObserver) {
+    cleanupMapThemeObserver()
+    cleanupMapThemeObserver = null
+  }
   stopPush()
   cockpitStream.cancel()
   if (playTimer) clearInterval(playTimer)
@@ -1601,7 +1622,7 @@ onUnmounted(() => {
 
 <style>
 .cockpit .leaflet-container {
-  background: #0a1929;
+  background: var(--bg-primary, #0a1929);
   width: 100%;
   height: 100%;
   font-family: inherit;

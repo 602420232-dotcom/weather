@@ -19,6 +19,14 @@
         <el-button type="primary" size="small" @click="handleExportKML">
           <span class="btn-icon">📤</span> 导出KML
         </el-button>
+        <el-button 
+          :type="simulateRunning ? 'danger' : 'success'" 
+          size="small" 
+          @click="toggleSimulate"
+        >
+          <span class="btn-icon">{{ simulateRunning ? '⏹' : '▶' }}</span>
+          {{ simulateRunning ? '停止' : '飞行模拟' }}
+        </el-button>
       </div>
     </div>
 
@@ -399,6 +407,7 @@ import { useNotificationStore } from '../../stores/notification'
 import ExcelBatchImporter from '@/components/shared/ExcelBatchImporter.vue'
 import { exportToKML } from '@/utils/kml.js'
 import * as echarts from 'echarts'
+import { createThemeTileLayer, observeMapTheme, switchMapTheme } from '../../utils/mapTheme'
 
 const notificationStore = useNotificationStore()
 const importDialogVisible = ref(false)
@@ -488,8 +497,15 @@ const formation = reactive({
 
 // ===== Leaflet =====
 let mapInstance = null
+let mapTileLayer = null
 const markerLayer = ref(null)
 const pathLayer = ref(null)
+// 飞行模拟
+const simulateRunning = ref(false)
+let simMarker = null
+let simTimer = null
+let simPathIndex = 0
+let simPath = []
 
 function createMarkerIcon(type) {
   const color =
@@ -514,10 +530,7 @@ function initMap() {
     attributionControl: true
   }).setView([35.5, 118.0], 5)
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
-    maxZoom: 18
-  }).addTo(mapInstance)
+  mapTileLayer = createThemeTileLayer().addTo(mapInstance)
 
   markerLayer.value = L.layerGroup().addTo(mapInstance)
   pathLayer.value = L.layerGroup().addTo(mapInstance)
@@ -526,6 +539,11 @@ function initMap() {
     const { lat, lng } = e.latlng
     addWaypointAt(lat, lng)
   })
+
+  // 飞行模拟初始化
+  simMarker = L.circleMarker([0, 0], {
+    radius: 8, color: '#F56C6C', fillColor: '#F56C6C', fillOpacity: 0.9, weight: 2
+  }).addTo(mapInstance).setLatLng([35.5, 118.0])
 
   mapInstance.on('contextmenu', (e) => {
     if (waypoints.value.length <= 2) return
@@ -881,6 +899,43 @@ function handleImportSuccess(importedWaypoints) {
   nextTick(() => recompute())
 }
 
+function toggleSimulate() {
+  if (simulateRunning.value) {
+    simulateRunning.value = false
+    if (simTimer) { clearInterval(simTimer); simTimer = null }
+    if (simMarker) simMarker.setLatLng([0, 0])
+    return
+  }
+  const active = activeAlgorithm.value
+  if (!active || !waypoints.value || waypoints.value.length < 2) {
+    ElMessage.warning('请先计算至少一条路径')
+    return
+  }
+  const pts = buildPathFor(active)
+  if (!pts || pts.length < 2) {
+    ElMessage.warning('路径数据不足')
+    return
+  }
+  simPath = pts
+  simPathIndex = 0
+  simulateRunning.value = true
+  simTimer = setInterval(() => {
+    if (simPathIndex >= simPath.length) {
+      clearInterval(simTimer)
+      simTimer = null
+      simulateRunning.value = false
+      ElMessage.success('飞行模拟完成')
+      return
+    }
+    const p = simPath[simPathIndex]
+    if (simMarker && mapInstance) {
+      simMarker.setLatLng(p)
+      mapInstance.setView(p, mapInstance.getZoom())
+    }
+    simPathIndex++
+  }, 100)
+}
+
 function handleExportKML() {
   if (waypoints.value.length < 2) {
     notificationStore.pushWithDesktop({
@@ -909,6 +964,8 @@ watch(
 // ===== 生命周期 =====
 let radarChart = null
 
+let cleanupMapThemeObserver = null
+
 onMounted(() => {
   nextTick(() => {
     initMap()
@@ -921,9 +978,18 @@ onMounted(() => {
       radarChart.setOption(radarOption.value)
     }
   })
+  // Observe theme changes for map tile switching
+  cleanupMapThemeObserver = observeMapTheme(null, null, () => {
+    if (mapInstance) { mapTileLayer = switchMapTheme(mapInstance, mapTileLayer) }
+  })
 })
 
 onBeforeUnmount(() => {
+  if (cleanupMapThemeObserver) {
+    cleanupMapThemeObserver()
+    cleanupMapThemeObserver = null
+  }
+  if (simTimer) clearInterval(simTimer)
   if (mapInstance) {
     mapInstance.remove()
     mapInstance = null
@@ -948,10 +1014,10 @@ watch(
 <style scoped>
 .path-planning-view {
   padding: 16px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   min-height: 100%;
   font-size: 13px;
-  color: #303133;
+  color: var(--color-text);
 }
 
 .demo-alert {
@@ -977,7 +1043,7 @@ watch(
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
   letter-spacing: 1px;
 }
 
@@ -1006,7 +1072,7 @@ watch(
 .panel-title {
   font-weight: 600;
   font-size: 14px;
-  color: #303133;
+  color: var(--color-text);
 }
 .mt-12 {
   margin-top: 12px;
@@ -1042,13 +1108,13 @@ watch(
   justify-content: space-between;
   margin-bottom: 4px;
   font-size: 12px;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 .slider-head .slider-label {
   font-weight: 500;
 }
 .slider-head .slider-value {
-  color: #303133;
+  color: var(--color-text);
   font-weight: 600;
 }
 
@@ -1057,7 +1123,7 @@ watch(
   align-items: center;
   justify-content: space-between;
   font-size: 12px;
-  color: #606266;
+  color: var(--color-text-muted);
   padding-top: 2px;
 }
 
@@ -1087,11 +1153,11 @@ watch(
   border-radius: 6px;
   overflow: hidden;
   background: #0f2a44;
-  border: 1px solid #dcdfe6;
+  border: 1px solid var(--color-border);
 }
 .map-tip {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
   font-weight: 400;
 }
 
@@ -1102,31 +1168,31 @@ watch(
   margin-top: 12px;
 }
 .info-cell {
-  background: #f4f6f9;
+  background: var(--color-bg);
   border-radius: 6px;
   padding: 10px 12px;
   border-left: 3px solid #409eff;
 }
 .info-label {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 .info-value {
   margin-top: 4px;
   font-size: 15px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
 }
 
 /* 算法卡片 */
 .algo-card {
-  border: 1px solid #e4e7ed;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 10px;
   cursor: pointer;
   transition: all 0.2s;
-  background: #fff;
+  background: var(--color-surface);
 }
 .algo-card:hover {
   border-color: #409eff;
@@ -1160,7 +1226,7 @@ watch(
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
 }
 .algo-dot {
   width: 10px;
@@ -1182,19 +1248,19 @@ watch(
   display: flex;
   flex-direction: column;
   gap: 2px;
-  background: #f4f6f9;
+  background: var(--color-bg);
   border-radius: 4px;
   padding: 6px 4px;
   text-align: center;
 }
 .metric-label {
   font-size: 11px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 .metric-val {
   font-size: 12px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
 }
 
 .algo-card-status {
@@ -1234,11 +1300,11 @@ watch(
 }
 .score-label {
   font-size: 12px;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 .score-val {
   font-size: 12px;
-  color: #303133;
+  color: var(--color-text);
   text-align: right;
   font-weight: 500;
 }
@@ -1258,12 +1324,12 @@ watch(
 }
 .formation-label {
   font-size: 12px;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 .formation-preview {
   margin-top: 12px;
   padding: 12px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   border-radius: 6px;
   display: flex;
   justify-content: center;
@@ -1298,7 +1364,7 @@ watch(
 }
 .formation-disabled {
   text-align: center;
-  color: #909399;
+  color: var(--color-text-muted);
   font-size: 12px;
   padding: 20px 0;
 }
@@ -1380,5 +1446,100 @@ watch(
   .pp-chart-wrapper {
     height: 280px !important;
   }
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .panel-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .waypoint-table :deep(.el-table) {
+  background: transparent;
+}
+
+[data-theme='dark'] .waypoint-table :deep(.el-table__header-wrapper th) {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .waypoint-table :deep(.el-table__body-wrapper tr) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme='dark'] .waypoint-table :deep(.el-table__body-wrapper td) {
+  background: transparent;
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .waypoint-table :deep(.el-table__body-wrapper tr:hover td) {
+  background: var(--color-hover);
+}
+
+[data-theme='dark'] .algo-card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme='dark'] .algo-card:hover {
+  border-color: var(--color-primary);
+  background: var(--color-hover);
+}
+
+[data-theme='dark'] .algo-card.active {
+  background: rgba(64, 158, 255, 0.15);
+}
+
+[data-theme='dark'] .algo-card.best {
+  border-color: rgba(103, 194, 58, 0.5);
+}
+
+[data-theme='dark'] .algo-card.best.active {
+  background: rgba(103, 194, 58, 0.15);
+}
+
+[data-theme='dark'] .algo-card-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .formation-preview {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='dark'] .formation-disabled {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .algo-desc {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .algo-badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .sim-btn,
+[data-theme='dark'] .export-btn,
+[data-theme='dark'] .run-btn,
+[data-theme='dark'] .clear-btn,
+[data-theme='dark'] .add-wp-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .sim-btn:hover,
+[data-theme='dark'] .export-btn:hover,
+[data-theme='dark'] .run-btn:hover,
+[data-theme='dark'] .clear-btn:hover,
+[data-theme='dark'] .add-wp-btn:hover {
+  background: rgba(64, 158, 255, 0.15);
+  border-color: rgba(64, 158, 255, 0.5);
+  color: #409eff;
+}
+
+[data-theme='dark'] .algo-tags span {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-muted);
 }
 </style>

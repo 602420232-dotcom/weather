@@ -16,47 +16,106 @@
     <description>UAV Platform API Gateway</description>
     <packaging>jar</packaging>
 
+    <properties>
+        <spring-cloud-gateway.version>4.1.0</spring-cloud-gateway.version>
+    </properties>
+
     <dependencies>
+        <!-- Common modules (only available when building from root POM with Boot 4.0) -->
         <dependency>
             <groupId>com.uav</groupId>
             <artifactId>common-core</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.uav</groupId>
             <artifactId>common-security</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.uav</groupId>
             <artifactId>common-resilience</artifactId>
+            <optional>true</optional>
         </dependency>
 
+        <!-- Spring Cloud Gateway -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
-            <version>4.1.0</version>
+            <version>${spring-cloud-gateway.version}</version>
         </dependency>
+
+        <!-- Redis Reactive -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
         </dependency>
+
+        <!-- Nacos Discovery (only needed in production with service registry) -->
+        <!--
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
+        -->
+
+        <!-- Load Balancer -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
+
+        <!-- Actuator -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <profiles>
+        <!--
+            Standalone profile: builds gateway independently with Spring Boot 3.4.x.
+            Usage: mvn clean package -Pstandalone -f gateway/standalone-pom.xml
+        -->
+        <profile>
+            <id>standalone</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <dependencies>
+                <!-- Remove common modules for standalone build -->
+                <dependency>
+                    <groupId>com.uav</groupId>
+                    <artifactId>common-core</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.uav</groupId>
+                    <artifactId>common-security</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.uav</groupId>
+                    <artifactId>common-resilience</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>

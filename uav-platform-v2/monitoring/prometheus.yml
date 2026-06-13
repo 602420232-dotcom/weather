@@ -1,0 +1,38 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - 'alert_rules.yml'
+
+scrape_configs:
+  - job_name: 'uav-platform'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'localhost:18081'  # platform-api
+          - 'localhost:18082'  # weather-api
+          - 'localhost:18083'  # assimilation-api
+          - 'localhost:18084'  # risk-api
+          - 'localhost:18085'  # observation-api
+          - 'localhost:18086'  # planning-api
+          - 'localhost:18087'  # utm-api
+          - 'localhost:18080'  # api-gateway
+    basic_auth:
+      username: ${PROMETHEUS_USER:-admin}
+      password: ${PROMETHEUS_PASSWORD:-admin}
+
+  - job_name: 'mysql'
+    static_configs:
+      - targets: ['localhost:19104']  # mysqld_exporter
+    scrape_interval: 30s
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['localhost:19103']  # redis_exporter
+    scrape_interval: 30s
+
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['localhost:19092']  # kafka jmx exporter
+    scrape_interval: 30s

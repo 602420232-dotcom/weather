@@ -115,7 +115,7 @@ function logout() {
 }
 
 .denied-card {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(64, 158, 255, 0.12);
   padding: 48px 48px 36px;
@@ -132,7 +132,7 @@ function logout() {
 .denied-title {
   font-size: 24px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 4px 0 12px;
 }
 
@@ -177,7 +177,7 @@ function logout() {
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: #ecf5ff;
+  background: var(--color-hover);
   color: #409eff;
   border: 1px solid #d9ecff;
   border-radius: 999px;

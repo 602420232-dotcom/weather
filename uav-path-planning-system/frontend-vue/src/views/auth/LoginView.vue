@@ -235,7 +235,7 @@ async function handleLogin() {
   min-height: 640px;
   display: grid;
   grid-template-columns: 1.1fr 1fr;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(30, 80, 180, 0.12);
@@ -359,7 +359,7 @@ async function handleLogin() {
   align-items: center;
   justify-content: center;
   padding: 40px 48px;
-  background: #fafcff;
+  background: var(--color-surface);
 }
 
 .form-card {
@@ -370,7 +370,7 @@ async function handleLogin() {
 .form-header h2 {
   margin: 0;
   font-size: 26px;
-  color: #1f2d3d;
+  color: var(--color-text);
   font-weight: 600;
 }
 
@@ -390,10 +390,10 @@ async function handleLogin() {
 .role-group :deep(.el-radio) {
   margin-right: 0;
   padding: 8px 10px;
-  border: 1px solid #e4e7ed;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   transition: all 0.2s;
-  background: #fff;
+  background: var(--color-surface);
 }
 
 .role-group :deep(.el-radio:hover) {
@@ -402,7 +402,7 @@ async function handleLogin() {
 
 .role-group :deep(.el-radio.is-checked) {
   border-color: #409eff;
-  background: #ecf5ff;
+  background: var(--color-hover);
 }
 
 .role-group :deep(.el-radio__label) {
@@ -461,22 +461,22 @@ async function handleLogin() {
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
-  border: 1px solid #e4e7ed;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--color-surface);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .demo-item:hover {
   border-color: #409eff;
-  background: #f5faff;
+  background: var(--color-hover);
   transform: translateY(-1px);
 }
 
 .demo-role {
   font-size: 13px;
-  color: #1f2d3d;
+  color: var(--color-text);
   font-weight: 500;
   min-width: 110px;
 }
@@ -501,7 +501,7 @@ async function handleLogin() {
 }
 
 .demo-arrow {
-  color: #c0c4cc;
+  color: var(--color-text-muted);
   font-size: 14px;
 }
 
@@ -545,5 +545,64 @@ async function handleLogin() {
   .demo-creds {
     width: 100%;
   }
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .form-side {
+  background: #0d1117;
+}
+
+[data-theme='dark'] .form-card {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme='dark'] .form-header h2 {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .form-header p {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .role-group :deep(.el-radio) {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .role-group :deep(.el-radio__label) {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .role-group :deep(.el-radio.is-checked) {
+  background: rgba(64, 158, 255, 0.1);
+}
+
+[data-theme='dark'] .login-form :deep(.el-form-item__label) {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .form-footer {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .demo-item {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .demo-item:hover {
+  background: rgba(64, 158, 255, 0.1);
+}
+
+[data-theme='dark'] .demo-role {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .demo-creds {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .demo-label {
+  color: var(--color-text-muted);
 }
 </style>

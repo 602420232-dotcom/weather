@@ -1,19 +1,19 @@
 """
-边云协同服务 API
-提供 REST 接口供其他服务调用
+Edge-Cloud Coordinator Service API
+Provides REST interfaces for other services to call
 """
 import logging
 import os
 from typing import Dict, List, Optional
 
+from fastapi import Depends, FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
+from pydantic import BaseModel, Field
+
 try:
-    from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect
-    from fastapi.middleware.cors import CORSMiddleware
-    from fastapi.responses import Response
-    from pydantic import BaseModel, Field
     import numpy as np
     HAS_FASTAPI = True
-
 except ImportError:
     HAS_FASTAPI = False
     logging.warning("FastAPI not installed. Running in demo mode.")
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 if HAS_FASTAPI:
     app = FastAPI(
         title="Edge-Cloud Coordinator API",
-        description="边云协同计算框架 API",
+        description="Edge-Cloud Coordination Framework API",
         version="1.0.0",
         docs_url="/docs",
         redoc_url="/redoc"
@@ -63,34 +63,67 @@ if HAS_FASTAPI:
         allow_headers=["Authorization", "Content-Type", "X-Requested-With"],
     )
 
-    coordinator = EdgeCloudCoordinator()
-    federated_learning = FederatedLearning(min_clients=2)
-    ws_sync = WebSocketSync(node_id="coordinator")
+
+# ============================================================================
+# Dependency Injection Provider Functions
+# ============================================================================
+
+def get_coordinator() -> EdgeCloudCoordinator:
+    """
+    Get coordinator instance
+
+    Environment variables:
+    - NODE_ID: Node identifier (default: edge_001)
+    - SYNC_INTERVAL: Sync interval in seconds (default: 5.0)
+    """
+    return EdgeCloudCoordinator(
+        node_id=os.environ.get("NODE_ID", "edge_001"),
+        sync_interval=float(os.environ.get("SYNC_INTERVAL", "5.0"))
+    )
+
+
+def get_federated_learning() -> FederatedLearning:
+    """
+    Get federated learning instance
+
+    Environment variables:
+    - FL_STRATEGY: Aggregation strategy (default: fedavg)
+    - FL_MIN_CLIENTS: Minimum client count (default: 2)
+    """
+    return FederatedLearning(
+        aggregation_strategy=os.environ.get("FL_STRATEGY", "fedavg"),
+        min_clients=int(os.environ.get("FL_MIN_CLIENTS", "2"))
+    )
+
+
+def get_websocket_sync() -> WebSocketSync:
+    """Get WebSocket sync instance"""
+    return WebSocketSync(node_id="coordinator")
 
 
 class TaskSubmitRequest(BaseModel):
-    """任务提交请求"""
+    """Task submission request"""
     task_type: str = Field(
         ...,
         description=(
-            "任务类型: global_path, local_avoidance, sensor_fusion, "
+            "Task type: global_path, local_avoidance, sensor_fusion, "
             "model_update, batch_processing"
         ),
     )
-    priority: int = Field(default=5, ge=1, le=10, description="优先级 1-10")
-    data: Dict = Field(default_factory=dict, description="任务数据")
-    deadline: float = Field(default=60.0, description="截止时间（秒）")
+    priority: int = Field(default=5, ge=1, le=10, description="Priority 1-10")
+    data: Dict = Field(default_factory=dict, description="Task data")
+    deadline: float = Field(default=60.0, description="Deadline in seconds")
 
 
 class TaskSubmitResponse(BaseModel):
-    """任务提交响应"""
+    """Task submission response"""
     task_id: str
     status: str
     message: str
 
 
 class TaskStatusResponse(BaseModel):
-    """任务状态查询响应"""
+    """Task status query response"""
     task_id: str
     task_type: str
     priority: int
@@ -99,7 +132,7 @@ class TaskStatusResponse(BaseModel):
 
 
 class SystemStatusResponse(BaseModel):
-    """系统状态响应"""
+    """System status response"""
     node_id: str
     queue_size: int
     completed_count: int
@@ -109,7 +142,7 @@ class SystemStatusResponse(BaseModel):
 
 
 class FLClientUpdateRequest(BaseModel):
-    """联邦学习客户端更新请求"""
+    """Federated learning client update request"""
     drone_id: str
     weights: Dict[str, List[List[float]]]
     n_samples: int
@@ -117,14 +150,14 @@ class FLClientUpdateRequest(BaseModel):
 
 
 class FLClientUpdateResponse(BaseModel):
-    """联邦学习客户端更新响应"""
+    """Federated learning client update response"""
     aggregated: bool
     round_id: int
     global_accuracy: Optional[float] = None
 
 
 class FLStatusResponse(BaseModel):
-    """联邦学习状态响应"""
+    """Federated learning status response"""
     strategy: str
     min_clients: int
     round_id: int
@@ -134,7 +167,7 @@ class FLStatusResponse(BaseModel):
 
 
 class FLTrainRequest(BaseModel):
-    """联邦学习训练请求"""
+    """Federated learning training request"""
     drone_id: str
     epochs: int = 5
     n_samples: int = 100
@@ -144,7 +177,7 @@ if HAS_FASTAPI:
 
     @app.get("/", tags=["Health"])
     async def root():
-        """API 根路径"""
+        """API root path"""
         return {
             "service": "Edge-Cloud Coordinator",
             "version": "1.0.0",
@@ -153,15 +186,19 @@ if HAS_FASTAPI:
 
     @app.get("/health", tags=["Health"])
     async def health_check():
-        """健康检查"""
+        """Health check"""
         return {"status": "healthy"}
 
     @app.post("/tasks", response_model=TaskSubmitResponse, tags=["Tasks"])
-    async def submit_task(request: TaskSubmitRequest):
+    async def submit_task(
+        request: TaskSubmitRequest,
+        coordinator: EdgeCloudCoordinator = Depends(get_coordinator)
+    ):
         """
-        提交任务
+        Submit task
 
-        根据任务类型自动分配到云端或边缘处理
+        Automatically assign to cloud or edge processing based on task type
+        Uses dependency injection to get coordinator instance, supports test replacement
         """
         try:
             task_type = request.task_type
@@ -174,24 +211,27 @@ if HAS_FASTAPI:
                 deadline=request.deadline
             )
 
-            task_id = coordinator.submit_task(task)
+            task_id = await coordinator.submit_task(task)
             coordinator.process_task(task)
 
             return TaskSubmitResponse(
                 task_id=task_id,
                 status="submitted",
-                message=f"任务已提交到{request.task_type}队列"
+                message=f"Task submitted to {request.task_type} queue"
             )
 
         except ValueError:
-            raise HTTPException(status_code=400, detail="无效的任务类型")
+            raise HTTPException(status_code=400, detail="Invalid task type")
         except Exception:
-            logger.error("任务提交失败", exc_info=True)
-            raise HTTPException(status_code=500, detail="服务器内部错误")
+            logger.error("Task submission failed", exc_info=True)
+            raise HTTPException(status_code=500, detail="Internal server error")
 
     @app.get("/tasks/{task_id}", response_model=TaskStatusResponse, tags=["Tasks"])
-    async def get_task_status(task_id: str):
-        """查询任务状态"""
+    async def get_task_status(
+        task_id: str,
+        coordinator: EdgeCloudCoordinator = Depends(get_coordinator)
+    ):
+        """Query task status"""
         for task in coordinator.task_queue:
             if task.task_id == task_id:
                 return TaskStatusResponse(
@@ -202,43 +242,45 @@ if HAS_FASTAPI:
                 )
 
         for task in coordinator.completed_tasks:
-            if task.get("task_id") == task_id:  # type: ignore[reportAttributeAccessIssue]
+            if task.get("task_id") == task_id:
                 return TaskStatusResponse(
-                    task_id=task["task_id"],  # type: ignore[reportAttributeAccessIssue]
-                    task_type=task["task_type"],  # type: ignore[reportAttributeAccessIssue]
-                    priority=task.get("priority", 5),  # type: ignore[reportAttributeAccessIssue]
-                    status=task.get(  # type: ignore[reportAttributeAccessIssue]
-                        "status", "unknown"),
-                    result=task.get(  # type: ignore[reportAttributeAccessIssue]
-                        "data", {}).get("result")
+                    task_id=task["task_id"],
+                    task_type=task["task_type"],
+                    priority=task.get("priority", 5),
+                    status=task.get("status", "unknown"),
+                    result=task.get("data", {}).get("result")
                 )
 
-        raise HTTPException(status_code=404, detail=f"任务 {task_id} 不存在")
+        raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
 
     @app.delete("/tasks/{task_id}", tags=["Tasks"])
-    async def cancel_task(task_id: str):
-        """取消任务"""
+    async def cancel_task(
+        task_id: str,
+        coordinator: EdgeCloudCoordinator = Depends(get_coordinator)
+    ):
+        """Cancel task"""
         for i, task in enumerate(coordinator.task_queue):
             if task.task_id == task_id:
                 coordinator.task_queue.pop(i)
-                return {"message": f"任务 {task_id} 已取消"}
+                return {"message": f"Task {task_id} cancelled"}
 
-        raise HTTPException(status_code=404, detail=f"任务 {task_id} 不存在")
+        raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
 
     @app.get("/tasks", response_model=List[TaskStatusResponse], tags=["Tasks"])
     async def list_tasks(
         status: Optional[str] = None,
-        limit: int = 10
+        limit: int = 10,
+        coordinator: EdgeCloudCoordinator = Depends(get_coordinator)
     ):
-        """获取任务列表"""
+        """Get task list"""
         if status == "completed":
             source = coordinator.completed_tasks[:limit]
             return [
                 TaskStatusResponse(
-                    task_id=t["task_id"],  # type: ignore[reportAttributeAccessIssue]
-                    task_type=t["task_type"],  # type: ignore[reportAttributeAccessIssue]
-                    priority=t.get("priority", 5),  # type: ignore[reportAttributeAccessIssue]
-                    status=t.get("status", "unknown"),  # type: ignore[reportAttributeAccessIssue]
+                    task_id=t["task_id"],
+                    task_type=t["task_type"],
+                    priority=t.get("priority", 5),
+                    status=t.get("status", "unknown"),
                 )
                 for t in source
             ]
@@ -255,8 +297,10 @@ if HAS_FASTAPI:
         ]
 
     @app.get("/status", response_model=SystemStatusResponse, tags=["Coordinator"])
-    async def get_system_status():
-        """获取系统状态"""
+    async def get_system_status(
+        coordinator: EdgeCloudCoordinator = Depends(get_coordinator)
+    ):
+        """Get system status"""
         return SystemStatusResponse(
             node_id=coordinator.node_id,
             queue_size=len(coordinator.task_queue),
@@ -267,41 +311,61 @@ if HAS_FASTAPI:
         )
 
     @app.post("/sync", tags=["Coordinator"])
-    async def sync_with_cloud():
-        """同步云端模型"""
+    async def sync_with_cloud(
+        coordinator: EdgeCloudCoordinator = Depends(get_coordinator)
+    ):
+        """Sync cloud models"""
         try:
-            coordinator.sync_cloud_models()  # type: ignore[reportAttributeAccessIssue]
+            await coordinator.sync_cloud_models()
             return {
-                "message": "云端同步完成",
+                "message": "Cloud sync completed",
                 "models": list(coordinator.cloud_models.keys())
             }
         except Exception:
-            logger.error("云端同步失败", exc_info=True)
-            raise HTTPException(status_code=500, detail="服务器内部错误")
+            logger.error("Cloud sync failed", exc_info=True)
+            raise HTTPException(status_code=500, detail="Internal server error")
 
     @app.post("/upload", tags=["Coordinator"])
-    async def upload_edge_data(background_tasks: BackgroundTasks):
-        """上传边缘数据到云端"""
+    async def upload_edge_data(
+        background_tasks: BackgroundTasks,
+        coordinator: EdgeCloudCoordinator = Depends(get_coordinator)
+    ):
+        """Upload edge data to cloud"""
 
         def _upload():
-            coordinator.upload_edge_data()  # type: ignore[reportAttributeAccessIssue]
+            # Use asyncio to run async method in background
+            import asyncio
+            try:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    asyncio.create_task(coordinator.upload_edge_data())
+                else:
+                    loop.run_until_complete(coordinator.upload_edge_data())
+            except RuntimeError:
+                # If no event loop, create a new one
+                asyncio.run(coordinator.upload_edge_data())
 
         background_tasks.add_task(_upload)
-        return {"message": "数据上传任务已提交"}
+        return {"message": "Data upload task submitted"}
 
     @app.get("/models", tags=["Coordinator"])
-    async def list_models():
-        """列出可用模型"""
+    async def list_models(
+        coordinator: EdgeCloudCoordinator = Depends(get_coordinator)
+    ):
+        """List available models"""
         return {
             "cloud_models": list(coordinator.cloud_models.keys()),
             "local_models": list(coordinator.local_models.keys())
         }
 
     @app.post("/tasks/batch", tags=["Batch"])
-    async def submit_batch_tasks(tasks: List[TaskSubmitRequest]):
-        """批量提交任务（上限100个）"""
+    async def submit_batch_tasks(
+        tasks: List[TaskSubmitRequest],
+        coordinator: EdgeCloudCoordinator = Depends(get_coordinator)
+    ):
+        """Batch submit tasks (max 100)"""
         if len(tasks) > 100:
-            raise HTTPException(status_code=400, detail="批量任务数量不能超过100")
+            raise HTTPException(status_code=400, detail="Batch task count cannot exceed 100")
         results = []
         for req in tasks:
             try:
@@ -313,11 +377,11 @@ if HAS_FASTAPI:
                     data=req.data,
                     deadline=req.deadline
                 )
-                task_id = coordinator.submit_task(task)
+                task_id = await coordinator.submit_task(task)
                 results.append({"task_id": task_id, "status": "submitted"})
             except Exception:
-                logger.error("批量任务提交失败", exc_info=True)
-                results.append({"error": "任务提交失败"})
+                logger.error("Batch task submission failed", exc_info=True)
+                results.append({"error": "Task submission failed"})
 
         return {"results": results}
 
@@ -326,8 +390,11 @@ if HAS_FASTAPI:
         response_model=FLClientUpdateResponse,
         tags=["Federated Learning"],
     )
-    async def fl_client_update(request: FLClientUpdateRequest):
-        """接收联邦学习客户端更新"""
+    async def fl_client_update(
+        request: FLClientUpdateRequest,
+        federated_learning: FederatedLearning = Depends(get_federated_learning)
+    ):
+        """Receive federated learning client update"""
         np_weights = {k: np.array(v) for k, v in request.weights.items()}
         aggregated = federated_learning.receive_update(
             drone_id=request.drone_id,
@@ -343,8 +410,10 @@ if HAS_FASTAPI:
         )
 
     @app.get("/fl/status", response_model=FLStatusResponse, tags=["Federated Learning"])
-    async def fl_status():
-        """获取联邦学习状态"""
+    async def fl_status(
+        federated_learning: FederatedLearning = Depends(get_federated_learning)
+    ):
+        """Get federated learning status"""
         global_model = federated_learning.get_global_model()
         return FLStatusResponse(
             strategy=federated_learning.strategy,
@@ -356,13 +425,18 @@ if HAS_FASTAPI:
         )
 
     @app.get("/fl/history", tags=["Federated Learning"])
-    async def fl_history():
-        """获取联邦学习历史"""
+    async def fl_history(
+        federated_learning: FederatedLearning = Depends(get_federated_learning)
+    ):
+        """Get federated learning history"""
         return {"rounds": federated_learning.round_history}
 
     @app.post("/fl/train", tags=["Federated Learning"])
-    async def fl_local_train(request: FLTrainRequest):
-        """模拟无人机本地训练"""
+    async def fl_local_train(
+        request: FLTrainRequest,
+        federated_learning: FederatedLearning = Depends(get_federated_learning)
+    ):
+        """Simulate drone local training"""
         global_model = federated_learning.get_global_model()
         if global_model is None:
             client = DroneClient(request.drone_id)
@@ -389,15 +463,19 @@ if HAS_FASTAPI:
         }
 
     @app.websocket("/ws/{drone_id}")
-    async def websocket_endpoint(websocket: WebSocket, drone_id: str):
+    async def websocket_endpoint(
+        websocket: WebSocket,
+        drone_id: str,
+        ws_sync: WebSocketSync = Depends(get_websocket_sync)
+    ):
         """
-        WebSocket 实时通信端点
+        WebSocket real-time communication endpoint
 
-        特性：
-        - 服务端每 30s 发送 ping，客户端需回复 pong
-        - 60s 无心跳判定为过期连接，自动断开
-        - 支持自动重连（按 drone_id 识别）
-        - 可通过 /ws/status 查看连接健康状态
+        Features:
+        - Server sends ping every 30s, client must reply with pong
+        - No heartbeat for 60s marks connection as expired, auto disconnect
+        - Supports auto reconnect (identified by drone_id)
+        - Check connection health via /ws/status
         """
         await websocket.accept()
         await ws_sync.connect(drone_id, websocket)
@@ -408,36 +486,36 @@ if HAS_FASTAPI:
                 await ws_sync.handle_message(drone_id, data)
 
         except WebSocketDisconnect:
-            logger.info(f"WebSocket 客户端断开: {drone_id}")
+            logger.info(f"WebSocket client disconnected: {drone_id}")
             await ws_sync.disconnect(drone_id, reason="client_disconnect")
 
         except Exception as e:
-            logger.error(f"WebSocket 异常 ({drone_id}): {e}")
+            logger.error(f"WebSocket exception ({drone_id}): {e}")
             await ws_sync.disconnect(drone_id, reason="error")
 
     @app.get("/metrics", tags=["Monitoring"])
     async def prometheus_metrics():
-        """Prometheus 指标暴露端点"""
+        """Prometheus metrics exposure endpoint"""
         try:
-            from prometheus_client import (  # type: ignore[reportMissingImports]
-                generate_latest, CONTENT_TYPE_LATEST
-            )
+            from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
             data = generate_latest()
             return Response(content=data, media_type=CONTENT_TYPE_LATEST)
         except ImportError:
-            return {"error": "prometheus_client 未安装，指标不可用"}
+            return {"error": "prometheus_client not installed, metrics unavailable"}
         except Exception as e:
-            logger.error("Prometheus 指标生成失败: %s", e)
-            return {"error": "指标生成失败"}
+            logger.error("Prometheus metrics generation failed: %s", e)
+            return {"error": "Metrics generation failed"}
 
     @app.get("/ws/status", tags=["WebSocket"])
-    async def websocket_status():
-        """WebSocket 连接健康状态"""
+    async def websocket_status(
+        ws_sync: WebSocketSync = Depends(get_websocket_sync)
+    ):
+        """WebSocket connection health status"""
         return await ws_sync.get_health_status()
 
 
 def run_server(host: str = "0.0.0.0", port: int = 8000):
-    """启动 API 服务"""
+    """Start API server"""
     if not HAS_FASTAPI:
         logger.info("[Error] FastAPI is required. Install with: pip install fastapi uvicorn")
         return
