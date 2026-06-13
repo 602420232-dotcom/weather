@@ -19,7 +19,11 @@ class HybridAssimilation:
     Supports weighted combination of 3D-VAR, EnKF, 4D-VAR, and Enhanced Bayesian.
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None, algorithm_types: Optional[list[str]] = None):
+    def __init__(
+        self,
+        config: Optional[dict[str, Any]] = None,
+        algorithm_types: Optional[list[str]] = None,
+    ):
         self.config = config or {}
         self.algorithm_types = algorithm_types or ["3dvar", "enkf"]
         self.weights: dict[str, float] = {}
@@ -76,7 +80,7 @@ class HybridAssimilation:
             combined = background
 
         return {
-            "analysis_field": combined.tolist(),
+            "analysis_field": np.asarray(combined).tolist(),
             "individual_results": results,
             "weights_used": self.weights,
             "algorithms_used": self.algorithm_types,
