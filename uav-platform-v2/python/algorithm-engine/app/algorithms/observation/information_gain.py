@@ -30,4 +30,8 @@ class InformationGainOptimizer:
             pos = np.unravel_index(idx, shape)
             selected_positions.append([int(p) for p in pos])
         expected_gain = float(np.sum(flat[top_indices]))
-        return {"selected_positions": selected_positions, "expected_gain": expected_gain, "budget_used": len(selected_positions)}
+        return {
+            "selected_positions": selected_positions,
+            "expected_gain": expected_gain,
+            "budget_used": len(selected_positions),
+        }

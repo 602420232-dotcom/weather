@@ -52,4 +52,9 @@ class BayesianNN:
         samples = np.array(predictions)
         mean = samples.mean(axis=0)
         std = samples.std(axis=0)
-        return {"mean": mean.tolist(), "std": std.tolist(), "n_samples": n_samples, "samples_shape": list(samples.shape)}
+        return {
+            "mean": mean.tolist(),
+            "std": std.tolist(),
+            "n_samples": n_samples,
+            "samples_shape": list(samples.shape),
+        }

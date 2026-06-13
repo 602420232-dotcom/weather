@@ -44,4 +44,11 @@ class AdaptiveObservationPlanner:
                         if len(filtered) >= n_sensors:
                             break
                 positions = filtered[:n_sensors]
-        return {"strategy": {"method": "adaptive_uncertainty", "history_weight": 0.3, "n_positions": len(positions)}, "positions": positions}
+        return {
+            "strategy": {
+                "method": "adaptive_uncertainty",
+                "history_weight": 0.3,
+                "n_positions": len(positions),
+            },
+            "positions": positions,
+        }

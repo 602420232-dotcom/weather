@@ -38,7 +38,12 @@ class UNetWeatherPredictor:
             output = self._bilinear_upsample(input_field, self.scale_factor)
         else:
             output = self._forward(input_field)
-        return {"output_field": output.tolist(), "input_shape": list(input_field.shape), "output_shape": list(output.shape), "scale_factor": self.scale_factor}
+        return {
+            "output_field": output.tolist(),
+            "input_shape": list(input_field.shape),
+            "output_shape": list(output.shape),
+            "scale_factor": self.scale_factor,
+        }
 
     def _bilinear_upsample(self, field, scale):
         """Fallback: simple bilinear upsampling."""

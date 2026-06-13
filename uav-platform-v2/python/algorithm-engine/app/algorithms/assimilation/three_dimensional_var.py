@@ -53,15 +53,14 @@ class ThreeDimensionalVAR:
         if background.ndim == 0:
             background = background.reshape(1)
 
-        n = background.size
         xb = background.flatten()
 
-        y_obs, H = self._build_observation_operator(xb, observations, background.shape)
+        y_obs, H = self._build_observation_operator(xb, observations, background.shape)  # noqa: N806
 
         def cost_gradient(x):
             dx = x - xb
             grad_b = dx / (self.sigma_b ** 2)
-            Hx = H @ x
+            Hx = H @ x  # noqa: N806
             dy = Hx - y_obs
             grad_o = H.T @ (dy / self.observation_error_scale**2)
             return grad_b + grad_o
@@ -92,7 +91,7 @@ class ThreeDimensionalVAR:
         n = len(xb)
         m = len(observations)
         y_obs = np.zeros(m)
-        H = np.zeros((m, n))
+        H = np.zeros((m, n))  # noqa: N806
         for j, obs in enumerate(observations):
             pos = obs.get("position", [0] * len(shape))
             value = obs.get("value", 0.0)

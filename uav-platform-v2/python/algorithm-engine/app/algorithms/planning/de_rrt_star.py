@@ -32,9 +32,22 @@ class DERRTStarPlanner:
             if random.random() < 0.1:
                 rand_point = self.goal
             else:
-                rand_point = (random.uniform(min(self.start[0], self.goal[0]) - 5, max(self.start[0], self.goal[0]) + 5),
-                              random.uniform(min(self.start[1], self.goal[1]) - 5, max(self.start[1], self.goal[1]) + 5))
-            nearest_idx = min(range(len(nodes)), key=lambda i: np.linalg.norm(np.array(nodes[i]) - np.array(rand_point)))
+                rand_point = (
+                    random.uniform(
+                        min(self.start[0], self.goal[0]) - 5,
+                        max(self.start[0], self.goal[0]) + 5,
+                    ),
+                    random.uniform(
+                        min(self.start[1], self.goal[1]) - 5,
+                        max(self.start[1], self.goal[1]) + 5,
+                    ),
+                )
+            nearest_idx = min(
+                range(len(nodes)),
+                key=lambda i: np.linalg.norm(
+                    np.array(nodes[i]) - np.array(rand_point)
+                ),
+            )
             nearest = np.array(nodes[nearest_idx])
             rand_arr = np.array(rand_point)
             direction = rand_arr - nearest
