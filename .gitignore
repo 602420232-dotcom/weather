@@ -135,7 +135,6 @@ yarn-error.log*
 .yarn-integrity
 .cache/
 yarn.lock
-package-lock.json
 
 # -----------------
 # Go
