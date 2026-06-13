@@ -3,9 +3,11 @@
 Migrated from: path-planning-service/src/main/python/planners/rrt_star.py
 """
 from __future__ import annotations
+
 import logging
 import random
 from typing import Any
+
 import numpy as np
 
 logger = logging.getLogger(__name__)

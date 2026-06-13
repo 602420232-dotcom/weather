@@ -4,11 +4,9 @@ Pydantic v2 data models for UAV Platform API.
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
-
 
 # ============================================================
 # Common / Shared

@@ -5,8 +5,10 @@ Migrated from: edge-cloud-coordinator/federated_learning.py
 Supports FedAvg and FedProx aggregation strategies.
 """
 from __future__ import annotations
+
 import logging
 from typing import Any, Optional
+
 import numpy as np
 
 logger = logging.getLogger(__name__)

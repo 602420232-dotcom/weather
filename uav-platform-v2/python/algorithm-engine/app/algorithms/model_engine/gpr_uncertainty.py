@@ -5,8 +5,10 @@ Migrated from: model-engine/gpr_risk/model.py
 Original: GPRegressionModel using GPyTorch. Standalone numpy/scipy implementation.
 """
 from __future__ import annotations
+
 import logging
 from typing import Any, Optional
+
 import numpy as np
 from scipy.spatial.distance import cdist
 

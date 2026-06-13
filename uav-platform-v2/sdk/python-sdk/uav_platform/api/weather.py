@@ -7,8 +7,6 @@ regional grids, wind profiles, and multi-source fusion.
 
 from __future__ import annotations
 
-from typing import Any
-
 from uav_platform.http import AsyncHttpClient, HttpClient
 from uav_platform.models import (
     RegionQueryParams,

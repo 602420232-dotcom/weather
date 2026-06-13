@@ -12,8 +12,8 @@ from uav_platform.models import (
     MissionPlan,
     PathResult,
     PlanMissionRequest,
-    PlanPathRequest,
     PlanningTask,
+    PlanPathRequest,
 )
 
 

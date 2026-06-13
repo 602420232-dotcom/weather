@@ -32,8 +32,8 @@ class HybridAssimilation:
 
     def assimilate(self, params: dict[str, Any]) -> dict[str, Any]:
         """Run hybrid assimilation."""
-        from app.algorithms.assimilation.three_dimensional_var import ThreeDimensionalVAR
         from app.algorithms.assimilation.ensemble_kalman_filter import EnKF
+        from app.algorithms.assimilation.three_dimensional_var import ThreeDimensionalVAR
 
         custom_weights = params.get("weights")
         if custom_weights:

@@ -13,10 +13,10 @@ from typing import AsyncGenerator
 
 from fastapi import FastAPI
 
+from app.api.routes import router, set_scheduler
 from app.config import get_settings
 from app.core.registry import get_registry
 from app.core.scheduler import TaskScheduler
-from app.api.routes import router, set_scheduler
 
 logging.basicConfig(
     level=logging.INFO,
@@ -50,18 +50,32 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 def _register_builtin_algorithms() -> None:
     """Register all built-in algorithm adapters with the global registry."""
     from app.adapters.assimilation_adapter import (
-        ThreeDimensionalVarAdapter, FourDimensionalVarAdapter, FiveDimensionalVarAdapter,
-        EnKFAdapter, HybridAssimilationAdapter, EnhancedBayesianAdapter,
-    )
-    from app.adapters.planning_adapter import (
-        VRPTWAdapter, DERRTStarAdapter, DWAAdapter, MPCAdapter,
-        AStarAdapter, DijkstraAdapter, RRTStarAdapter,
-    )
-    from app.adapters.risk_adapter import (
-        WeatherRiskAdapter, TerrainRiskAdapter, AirspaceRiskAdapter, CompositeRiskAdapter,
+        EnhancedBayesianAdapter,
+        EnKFAdapter,
+        FiveDimensionalVarAdapter,
+        FourDimensionalVarAdapter,
+        HybridAssimilationAdapter,
+        ThreeDimensionalVarAdapter,
     )
     from app.adapters.observation_adapter import (
-        InformationGainAdapter, AdaptiveObservationAdapter, SensorSchedulingAdapter,
+        AdaptiveObservationAdapter,
+        InformationGainAdapter,
+        SensorSchedulingAdapter,
+    )
+    from app.adapters.planning_adapter import (
+        AStarAdapter,
+        DERRTStarAdapter,
+        DijkstraAdapter,
+        DWAAdapter,
+        MPCAdapter,
+        RRTStarAdapter,
+        VRPTWAdapter,
+    )
+    from app.adapters.risk_adapter import (
+        AirspaceRiskAdapter,
+        CompositeRiskAdapter,
+        TerrainRiskAdapter,
+        WeatherRiskAdapter,
     )
 
     registry = get_registry()

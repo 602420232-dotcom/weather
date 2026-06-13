@@ -3,8 +3,10 @@
 Migrated from: model-engine/control/mpc.py
 """
 from __future__ import annotations
+
 import logging
 from typing import Any
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -37,7 +39,12 @@ class MPCPlanner:
                 velocity = self._avoid_risk(current, velocity, np.asarray(self.risk_field))
             current = current + velocity * self.dt
             path.append(current.tolist())
-        return {"path": path, "control_sequence": control_sequence, "steps": len(path) - 1, "final_distance": float(np.linalg.norm(current - goal))}
+        return {
+            "path": path,
+            "control_sequence": control_sequence,
+            "steps": len(path) - 1,
+            "final_distance": float(np.linalg.norm(current - goal)),
+        }
 
     def _avoid_risk(self, position, velocity, risk_field):
         shape = risk_field.shape

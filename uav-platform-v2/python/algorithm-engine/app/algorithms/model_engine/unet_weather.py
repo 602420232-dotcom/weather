@@ -6,8 +6,10 @@ Original: UNetDownscaler for 3km->1km super-resolution.
 Skeleton implementation (full model requires PyTorch).
 """
 from __future__ import annotations
+
 import logging
 from typing import Any, Optional
+
 import numpy as np
 
 logger = logging.getLogger(__name__)

@@ -3,10 +3,10 @@
 Migrated from: path-planning-service/src/main/python/planners/
 """
 from __future__ import annotations
+
 import heapq
 import logging
 from typing import Any
-import numpy as np
 
 logger = logging.getLogger(__name__)
 

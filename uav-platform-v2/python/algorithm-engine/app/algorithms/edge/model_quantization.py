@@ -6,8 +6,10 @@ Supports INT8 and FP16 quantization.
 TODO: Full implementation requires PyTorch/TensorRT.
 """
 from __future__ import annotations
+
 import logging
 from typing import Any, Optional
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
