@@ -26,7 +26,7 @@ class CMakeBuild(build_ext):
 
     def build_extension(self, ext: CMakeExtension) -> None:
         ext_fullpath = os.path.abspath(
-            os.path.join(self.build_lib, *ext.name.split('.'))
+            os.path.join(self.build_lib, *ext.name.split('.'))  # type: ignore[reportCallIssue, reportArgumentType]  # noqa: E501
         )
         extdir = os.path.dirname(ext_fullpath)
 
@@ -38,8 +38,8 @@ class CMakeBuild(build_ext):
 
         build_args = ['--config', 'Release']
 
-        if not os.path.exists(self.build_temp):
-            os.makedirs(self.build_temp)
+        if not os.path.exists(self.build_temp):  # type: ignore[reportArgumentType]
+            os.makedirs(self.build_temp)  # type: ignore[reportArgumentType]
 
         subprocess.run(
             ['cmake', ext.sourcedir, '-DCMAKE_BUILD_TYPE=Release'] + cmake_args,

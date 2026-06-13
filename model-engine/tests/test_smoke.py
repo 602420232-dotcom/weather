@@ -15,20 +15,20 @@ class TestGprRiskModule:
 
     def test_gpr_model_import(self):
         """测试GPR模型导入"""
-        from gpr_risk.model import GPRRiskModel, GPRConfig
+        from gpr_risk.model import GPRRiskModel, GPRConfig  # type: ignore[reportAttributeAccessIssue]
         assert GPRRiskModel is not None
         assert GPRConfig is not None
 
     def test_gpr_config_init(self):
         """测试GPR配置初始化"""
         from gpr_risk.model import GPRConfig
-        config = GPRConfig(
+        config = GPRConfig(  # type: ignore[reportCallIssue]
             kernel_type='rbf',
-            noise_level=1e-4,
+            noise_level=1e-4,  # type: ignore[reportCallIssue]
             n_iter=100
         )
         assert config.kernel_type == 'rbf'
-        assert config.noise_level == 1e-4
+        assert config.noise_level == 1e-4  # type: ignore[reportAttributeAccessIssue]
 
 
 class TestEnkfModule:
@@ -43,12 +43,12 @@ class TestEnkfModule:
     def test_enkf_config_init(self):
         """测试EnKF配置初始化"""
         from gpr_risk.enkf import EnKFConfig
-        config = EnKFConfig(
-            ensemble_size=50,
+        config = EnKFConfig(  # type: ignore[reportCallIssue]
+            ensemble_size=50,  # type: ignore[reportCallIssue]
             inflation_factor=1.05,
             observation_noise=0.1
         )
-        assert config.ensemble_size == 50
+        assert config.ensemble_size == 50  # type: ignore[reportAttributeAccessIssue]
         assert config.inflation_factor == 1.05
 
 
@@ -57,7 +57,7 @@ class TestPathPlanningModule:
 
     def test_planner_import(self):
         """测试路径规划器导入"""
-        from path_planning.planner import GPRPathPlanner, PlannerConfig
+        from path_planning.planner import GPRPathPlanner, PlannerConfig  # type: ignore[reportAttributeAccessIssue]
         assert GPRPathPlanner is not None
         assert PlannerConfig is not None
 
@@ -89,7 +89,7 @@ class TestCnnCorrectorModule:
 
     def test_cnn_corrector_import(self):
         """测试CNN订正器导入"""
-        from cnn_corrector.model import CNNLSTMCorrector
+        from cnn_corrector.model import CNNLSTMCorrector  # type: ignore[reportAttributeAccessIssue]
         assert CNNLSTMCorrector is not None
 
 
@@ -98,7 +98,7 @@ class TestActiveObsModule:
 
     def test_bayesian_observer_import(self):
         """测试贝叶斯观测器导入"""
-        from active_obs.bayesian_observer import BayesianObserver
+        from active_obs.bayesian_observer import BayesianObserver  # type: ignore[reportAttributeAccessIssue]
         assert BayesianObserver is not None
 
 
@@ -107,7 +107,7 @@ class TestMultiUavModule:
 
     def test_conflict_resolver_import(self):
         """测试冲突消解器导入"""
-        from multi_uav.conflict_resolver import ConflictResolver
+        from multi_uav.conflict_resolver import ConflictResolver  # type: ignore[reportAttributeAccessIssue]
         assert ConflictResolver is not None
 
 

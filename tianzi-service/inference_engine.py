@@ -72,12 +72,12 @@ class TianZiEngine:
             output_names = [o.name for o in self._session.get_outputs()]
             outputs = self._session.run(output_names, {input_name: observation_data})
             result = {
-                'u10': outputs[0][0],
-                'v10': outputs[1][0],
-                't2m': outputs[2][0],
-                'msl': outputs[3][0],
-                'rh2m': outputs[4][0],
-                'precip': outputs[5][0],
+                'u10': outputs[0][0],  # type: ignore[reportIndexIssue]
+                'v10': outputs[1][0],  # type: ignore[reportIndexIssue]
+                't2m': outputs[2][0],  # type: ignore[reportIndexIssue]
+                'msl': outputs[3][0],  # type: ignore[reportIndexIssue]
+                'rh2m': outputs[4][0],  # type: ignore[reportIndexIssue]
+                'precip': outputs[5][0],  # type: ignore[reportIndexIssue]
             }
             return self._downscale(result, resolution_km)
         except Exception as e:

@@ -430,14 +430,4 @@ export interface HistoryQueryParams {
   size?: number
 }
 
-// ==================== 导出类型 ====================
-
-export type {
-  DroneType,
-  DroneStatus,
-  TaskType,
-  TaskStatus,
-  TaskPriority,
-  DataSourceType,
-  DataSourceStatus
-}
+// ==================== 类型已在文件内通过 export type 内联导出，无需重复声明 ====================

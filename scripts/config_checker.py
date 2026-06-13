@@ -64,10 +64,10 @@ class ConfigChecker:
                 return
 
             # 检查敏感配置
-            self._check_security_config(yaml_file, config)
+            self._check_security_config(yaml_file, config)  # type: ignore[reportArgumentType]
 
             # 检查配置一致性
-            self._check_config_consistency(yaml_file, config)
+            self._check_config_consistency(yaml_file, config)  # type: ignore[reportArgumentType]
 
         except Exception as e:
             self.warnings.append({
@@ -128,6 +128,8 @@ class ConfigChecker:
         """检查配置一致性"""
         # 检查重复配置
         config_str = yaml.dump(config)
+        if not isinstance(config_str, str):
+            return
 
         # 检查硬编码URL
         if 'url' in config or 'endpoint' in config:

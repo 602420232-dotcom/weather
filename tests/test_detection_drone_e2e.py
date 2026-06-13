@@ -115,15 +115,15 @@ def api_url(port, path):
 
 
 def post(port, path, data, timeout=30):
-    return requests.post(api_url(port, path), json=data, timeout=timeout)
+    return requests.post(api_url(port, path), json=data, timeout=timeout)  # type: ignore[reportOptionalMemberAccess]
 
 
 def get(port, path, params=None, timeout=30):
-    return requests.get(api_url(port, path), params=params, timeout=timeout)
+    return requests.get(api_url(port, path), params=params, timeout=timeout)  # type: ignore[reportOptionalMemberAccess]
 
 
 def put(port, path, data=None, timeout=30):
-    return requests.put(api_url(port, path), json=data, timeout=timeout)
+    return requests.put(api_url(port, path), json=data, timeout=timeout)  # type: ignore[reportOptionalMemberAccess]
 
 
 def assert_ok(resp, step_name):
@@ -171,7 +171,7 @@ def step1_create_mission():
         route_count = body.get("routeCount", 0)  # type: ignore[union-attr]
         info(f"任务ID: {mission_id}, 航线航点数: {route_count}")
         return mission_id
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.ConnectionError:  # type: ignore[reportOptionalMemberAccess]
         fail(f"无法连接 detection-drone-service ({config.DETECTION_DRONE_PORT})，请确认服务已启动")
         return None
 
@@ -189,7 +189,7 @@ def step2_simulate_flight(mission_id):
                     f"/api/detection/mission/{mission_id}/status",
                     {"status": "IN_FLIGHT"})
         assert_ok(resp, "更新任务状态为 IN_FLIGHT")
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.ConnectionError:  # type: ignore[reportOptionalMemberAccess]
         fail("无法连接 detection-drone-service")
         return [], []
 
@@ -256,7 +256,7 @@ def step2_simulate_flight(mission_id):
                     f"/api/detection/mission/{mission_id}/status",
                     {"status": "LANDED"})
         assert_ok(resp, "更新任务状态为 LANDED")
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.ConnectionError:  # type: ignore[reportOptionalMemberAccess]
         pass
 
     info(f"模拟网络断开，样本暂存离线缓存 ({len(offline_samples)} 条)")
@@ -291,7 +291,7 @@ def step3_network_restore_and_upload(mission_id, offline_samples):
             body = assert_ok(resp, f"上传批次 {i // config.BATCH_SIZE + 1}/{(len(offline_samples) - 1) // config.BATCH_SIZE + 1}")
             if body:
                 uploaded_count += body.get("uploadedCount", len(batch))
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.ConnectionError:  # type: ignore[reportOptionalMemberAccess]
             fail("上传失败: detection-drone-service 不可达")
             return 0
 
@@ -301,7 +301,7 @@ def step3_network_restore_and_upload(mission_id, offline_samples):
                     f"/api/detection/mission/{mission_id}/status",
                     {"status": "COMPLETED"})
         assert_ok(resp, "更新任务状态为 COMPLETED")
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.ConnectionError:  # type: ignore[reportOptionalMemberAccess]
         pass
 
     ok(f"离线数据上传完成: {uploaded_count}/{len(offline_samples)} 条")
@@ -328,7 +328,7 @@ def step4_trigger_assimilation(mission_id, samples):
             ok("WRF 背景场已获取")
         else:
             info("WRF 背景场不可用，使用模拟数据")
-    except (requests.exceptions.ConnectionError, Exception):
+    except (requests.exceptions.ConnectionError, Exception):  # type: ignore[reportOptionalMemberAccess]
         info("WRF 处理器不可达，使用模拟背景场")
 
     if bg_grid is None:
@@ -351,7 +351,7 @@ def step4_trigger_assimilation(mission_id, samples):
         else:
             info(f"同化服务不可用 (HTTP {resp.status_code})，执行本地同化")
             return _local_assimilation(bg_grid, obs_grid), bg_grid, obs_grid
-    except (requests.exceptions.ConnectionError, Exception) as e:
+    except (requests.exceptions.ConnectionError, Exception) as e:  # type: ignore[reportOptionalMemberAccess]
         info(f"同化服务不可达 ({e})，执行本地同化")
         return _local_assimilation(bg_grid, obs_grid), bg_grid, obs_grid
 

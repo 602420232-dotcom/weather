@@ -58,11 +58,11 @@ class AdaptiveAssimilator:
         """估算可用计算资源"""
         import psutil
         return {
-            'cpu_available': float(psutil.cpu_percent(interval=0.1)),
+            'cpu_available': float(psutil.cpu_percent(interval=0.1)),  # type: ignore[reportArgumentType]  # noqa: E501
             'memory_available': float(
-                psutil.virtual_memory().available / (1024**3)
+                psutil.virtual_memory().available / (1024**3)  # type: ignore[reportArgumentType]
             ),
-            'memory_percent': float(psutil.virtual_memory().percent),
+            'memory_percent': float(psutil.virtual_memory().percent),  # type: ignore[reportArgumentType]  # noqa: E501
         }
 
     def select_algorithm(self, observations: np.ndarray, method_hint: Optional[str] = None) -> str:

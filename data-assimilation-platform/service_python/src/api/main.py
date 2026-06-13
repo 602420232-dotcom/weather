@@ -10,7 +10,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 
 from api.core.assimilation_service import AssimilationService
 from api.parallel.dask import DaskClusterManager
-from api.routes import assimilation, batch
+from api.routes import assimilation, batch  # type: ignore[reportAttributeAccessIssue]
 
 
 logging.basicConfig(
