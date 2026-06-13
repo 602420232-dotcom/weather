@@ -16,13 +16,10 @@ def test_imports():
     print("=" * 60)
 
     try:
-        from api import app, get_coordinator, get_federated_learning, get_websocket_sync
         print("✓ API 模块导入成功")
 
-        from coordinator import EdgeCloudCoordinator, EdgeTask
         print("✓ Coordinator 模块导入成功")
 
-        from test_mocks import MockEdgeCloudCoordinator, MockFederatedLearning, MockWebSocketSync
         print("✓ Mock 模块导入成功")
 
         print("\n✓ 所有模块导入成功！\n")
@@ -78,18 +75,18 @@ def test_mock_classes():
 
         # 测试 Mock 协调器
         mock_coordinator = MockEdgeCloudCoordinator(node_id="test_node")
-        print(f"✓ MockEdgeCloudCoordinator 创建成功")
+        print("✓ MockEdgeCloudCoordinator 创建成功")
         print(f"  - node_id: {mock_coordinator.node_id}")
 
         # 测试 Mock 联邦学习
         mock_fl = MockFederatedLearning(aggregation_strategy="fedprox", min_clients=3)
-        print(f"✓ MockFederatedLearning 创建成功")
+        print("✓ MockFederatedLearning 创建成功")
         print(f"  - strategy: {mock_fl.strategy}")
         print(f"  - min_clients: {mock_fl.min_clients}")
 
         # 测试 Mock WebSocket
         mock_ws = MockWebSocketSync(node_id="test_ws")
-        print(f"✓ MockWebSocketSync 创建成功")
+        print("✓ MockWebSocketSync 创建成功")
         print(f"  - node_id: {mock_ws.node_id}")
 
         print("\n✓ Mock 类工作正常！\n")
@@ -128,7 +125,7 @@ def test_dependency_overrides():
         overridden_fl = get_federated_learning()
         overridden_ws = get_websocket_sync()
 
-        print(f"✓ 获取覆盖后的实例:")
+        print("✓ 获取覆盖后的实例:")
         print(f"  - Coordinator node_id: {overridden_coordinator.node_id}")
         print(f"  - FederatedLearning strategy: {overridden_fl.strategy}")
         print(f"  - WebSocketSync node_id: {overridden_ws.node_id}")

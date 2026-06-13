@@ -43,11 +43,10 @@ import numpy as np  # noqa: E402
 from scipy.optimize import minimize  # noqa: E402
 from scipy.ndimage import gaussian_filter  # noqa: E402
 from typing import Dict, List, Tuple, Optional, Any, Callable  # noqa: E402
-from dataclasses import dataclass, field  # noqa: E402
+from dataclasses import dataclass  # noqa: E402
 from datetime import datetime  # noqa: E402
 import logging  # noqa: E402
 
-from bayesian_assimilation.core.base import AssimilationBase  # noqa: E402
 from bayesian_assimilation.models.four_dimensional_var import FourDimensionalVar  # noqa: E402
 
 logger = logging.getLogger(__name__)
@@ -991,7 +990,7 @@ class FiveDimensionalVar(FourDimensionalVar):
                     * risk_adjustment
                 )
             }
-            logger.info(f"方差场计算完成 (含风险调整)")
+            logger.info("方差场计算完成 (含风险调整)")
         except Exception as e:
             logger.warning(f"方差场计算失败: {e}")
             variance_field = {
@@ -1148,12 +1147,12 @@ if __name__ == "__main__":
 
     print(f"\nAI修正参数: {analysis['ai_correction']}")
 
-    print(f"\n代价分解:")
+    print("\n代价分解:")
     for k, v in analysis['cost_breakdown'].items():
         print(f"  {k}: {v:.6f}")
 
     risk = analysis['risk_field']
-    print(f"\n风险场摘要:")
+    print("\n风险场摘要:")
     print(f"  平均风险: {risk['summary']['avg_risk']:.3f}")
     print(f"  最大风险: {risk['summary']['max_risk']:.3f}")
     print(f"  安全区域: {risk['summary']['safe_area_ratio']:.1%}")
