@@ -5,5 +5,10 @@
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.maven.notCoveredPluginExecutionSeverity": "ignore",
     "cmake.sourceDirectory": "D:/Developer/workplace/py/iteam/trae/uav-edge-sdk",
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "python.defaultInterpreterPath": "D:/Developer/Anaconda/python.exe",
+    "python.analysis.extraPaths": [
+        "D:/Developer/Anaconda/Lib/site-packages",
+        "C:/Users/Dithiothreitol/AppData/Roaming/Python/Python313/site-packages"
+    ]
 }
