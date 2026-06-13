@@ -9,6 +9,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+
 class SensorScheduler:
     """Multi-sensor scheduling optimization for UAV fleet observation."""
 

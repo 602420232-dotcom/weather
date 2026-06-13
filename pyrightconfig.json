@@ -37,7 +37,9 @@
   ],
   "extraPaths": [
     "data-assimilation-platform/algorithm_core/src",
-    "model-engine"
+    "model-engine",
+    "D:/Developer/Anaconda/Lib/site-packages",
+    "C:/Users/Dithiothreitol/AppData/Roaming/Python/Python313/site-packages"
   ],
   "reportMissingImports": true,
   "typeCheckingMode": "basic"

@@ -29,7 +29,12 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan: start scheduler and register algorithms."""
     settings = get_settings()
-    logger.info("Starting Algorithm Engine v%s on %s:%d", settings.app_version, settings.host, settings.port)
+    logger.info(
+        "Starting Algorithm Engine v%s on %s:%d",
+        settings.app_version,
+        settings.host,
+        settings.port,
+    )
 
     scheduler = TaskScheduler(
         max_concurrent=settings.max_concurrent_tasks,

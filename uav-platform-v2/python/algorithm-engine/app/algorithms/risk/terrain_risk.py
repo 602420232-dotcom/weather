@@ -11,6 +11,7 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
+
 class TerrainRiskAssessor:
     """Terrain and obstacle risk assessment for low-altitude UAV flights."""
 

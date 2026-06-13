@@ -14,6 +14,7 @@ from scipy.spatial.distance import cdist
 
 logger = logging.getLogger(__name__)
 
+
 class GPRUncertaintyQuantifier:
     """Gaussian Process Regression for uncertainty quantification."""
 

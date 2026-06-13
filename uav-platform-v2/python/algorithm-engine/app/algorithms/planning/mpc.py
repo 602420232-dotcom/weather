@@ -11,6 +11,7 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
+
 class MPCPlanner:
     """Model Predictive Control for dynamic re-planning under uncertainty."""
 

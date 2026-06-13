@@ -9,6 +9,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+
 class AirspaceRiskAssessor:
     """Airspace restriction and conflict risk assessment."""
 

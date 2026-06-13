@@ -11,6 +11,7 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
+
 class DWAPlanner:
     """Dynamic Window Approach for local obstacle avoidance."""
 
@@ -33,8 +34,12 @@ class DWAPlanner:
                 predicted = current + np.array([v_x, v_y]) * self.predict_time
                 heading = np.linalg.norm(predicted - goal)
                 min_dist = min(
-                    np.linalg.norm(predicted - np.array(obs[:2]))
-                    - (obs[2] if len(obs) > 2 else 1.0)
+                    float(
+                        np.linalg.norm(
+                            predicted - np.array(obs[:2]),
+                        )
+                        - (obs[2] if len(obs) > 2 else 1.0),
+                    )
                     for obs in self.obstacles
                 ) if self.obstacles else 10.0
                 speed = np.sqrt(v_x**2 + v_y**2)

@@ -1,6 +1,7 @@
 """Enhanced Bayesian Assimilation Algorithm.
 
-Migrated from: data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/enhanced_bayesian.py
+Migrated from:
+    data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/enhanced_bayesian.py
 """
 
 from __future__ import annotations

@@ -1,6 +1,7 @@
 """5D-VAR Data Assimilation Algorithm.
 
-Migrated from: data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/five_dimensional_var.py
+Migrated from:
+    data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/five_dimensional_var.py
 
 Original: FiveDimensionalVar extending FourDimensionalVar with risk, drone perturbation,
 and AI parameterization dimensions.
@@ -80,7 +81,12 @@ class FiveDimensionalVAR:
         return {
             "analysis_field": analysis.tolist(),
             "cost": cost_history[-1] if cost_history else 0.0,
-            "cost_breakdown": {"J_b": float(J_b), "J_o": float(J_o), "J_risk": float(J_risk), "J_param": float(J_param)},
+            "cost_breakdown": {
+                "J_b": float(J_b),
+                "J_o": float(J_o),
+                "J_risk": float(J_risk),
+                "J_param": float(J_param),
+            },
             "iterations": len(cost_history),
             "converged": len(cost_history) < self.max_iterations,
             "grid_shape": list(background.shape),

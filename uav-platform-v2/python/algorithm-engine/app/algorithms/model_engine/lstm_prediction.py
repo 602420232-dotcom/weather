@@ -11,6 +11,7 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
+
 class LSTMPredictor:
     """LSTM based time series prediction for weather forecasting."""
 

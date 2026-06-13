@@ -11,6 +11,7 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
+
 class InformationGainOptimizer:
     """Information gain based optimal observation placement."""
 

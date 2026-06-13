@@ -1,6 +1,7 @@
 """4D-VAR Data Assimilation Algorithm.
 
-Migrated from: data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/four_dimensional_var.py
+Migrated from:
+    data-assimilation-platform/algorithm_core/src/bayesian_assimilation/models/four_dimensional_var.py
 
 Original: FourDimensionalVar class extending AssimilationBase with temporal dimension.
 """

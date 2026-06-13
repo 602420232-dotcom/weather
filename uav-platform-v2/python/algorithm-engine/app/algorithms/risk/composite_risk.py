@@ -9,6 +9,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+
 class CompositeRiskAssessor:
     """Composite risk assessment combining weather, terrain, and airspace risks."""
 
