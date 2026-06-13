@@ -4,7 +4,7 @@
  * 颜色变量沿用 theme-vars.css 的命名约定（--color-*）
  */
 
-:root {
+::root {
   /* ===== 布局尺寸（补充 theme-vars.css） ===== */
   --sidebar-width: 220px;
   --sidebar-collapsed: 64px;
@@ -22,23 +22,20 @@
   --spacing-lg: 24px;
   --spacing-xl: 32px;
 
-  /* ===== 侧边栏专用 ===== */
-  --sidebar-bg: #001529;
-  --sidebar-hover-bg: #0a1a2e;
-  --sidebar-border: #1f2a3d;
+  /* ===== 侧边栏专用（由 --color-sidebar-* 驱动，浅色模式默认） ===== */
+  --sidebar-bg: var(--color-sidebar-bg, #001529);
+  --sidebar-hover-bg: var(--color-sidebar-hover-bg, #0a1a2e);
+  --sidebar-border: var(--color-sidebar-border, #1f2a3d);
 
-  /* ===== 头部背景（受暗色影响） ===== */
-  --header-bg: #ffffff;
-  --header-border: #e5e7eb;
-}
-
-/* 暗色主题覆写（与 DefaultLayout .is-dark 类配合） */
-.is-dark {
-  --header-bg: #161b22;
-  --header-border: #30363d;
+  /* ===== 头部背景（由 --color-header-* 驱动） ===== */
+  --header-bg: var(--color-header-bg, #ffffff);
+  --header-border: var(--color-header-border, #e5e7eb);
 }
 
 /* 暗色主题下的 info-group 容器背景（被 HeaderClock / HeaderLocation / HeaderWeather 消费） */
-.is-dark .info-group-bg {
+html[data-theme='dark'] .info-group-bg {
+  background: rgba(255, 255, 255, 0.08);
+}
+html[data-theme='brand'] .info-group-bg {
   background: rgba(255, 255, 255, 0.08);
 }

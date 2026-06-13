@@ -111,7 +111,7 @@ const routes = [
         path: 'database',
         name: 'database',
         component: () => import('../views/database/DatabaseManager.vue'),
-        meta: { title: '数据库管理', icon: 'Coin,', key: 'database' }
+        meta: { title: '数据库管理', icon: 'Coin', key: 'database' }
       },
       // Docker / 服务器状态
       {

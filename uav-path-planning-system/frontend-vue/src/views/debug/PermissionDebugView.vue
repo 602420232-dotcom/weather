@@ -564,8 +564,8 @@ onMounted(() => {
 }
 
 .debug-header {
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 14px 20px;
   display: flex;
@@ -579,7 +579,7 @@ onMounted(() => {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #24292f;
+  color: var(--color-text);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -633,7 +633,7 @@ onMounted(() => {
   gap: 6px;
   font-weight: 600;
   font-size: 14px;
-  color: #24292f;
+  color: var(--color-text);
 }
 
 .search-input {
@@ -663,7 +663,7 @@ onMounted(() => {
 .console-textarea {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
   font-size: 12px;
-  background: #f6f8fa;
+  background: var(--color-input);
   resize: none;
 }
 
@@ -693,7 +693,7 @@ onMounted(() => {
 }
 
 .status-value {
-  color: #24292f;
+  color: var(--color-text);
   word-break: break-all;
 }
 
@@ -707,13 +707,13 @@ onMounted(() => {
 :deep(.is-dark) .page-title,
 :deep(.is-dark) .card-header,
 :deep(.is-dark) .status-value {
-  color: #c9d1d9;
+  color: var(--color-text);
 }
 
 :deep(.is-dark) .role-display .label,
 :deep(.is-dark) .status-label,
 :deep(.is-dark) .role-display {
-  color: #8b949e;
+  color: var(--color-text-muted);
 }
 
 :deep(.is-dark) .console-textarea {

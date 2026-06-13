@@ -29,8 +29,10 @@ export default {
   weather: {
     title: '气象数据',
     temperature: '温度',
+    temp: '温度',
     humidity: '湿度',
     windSpeed: '风速',
+    wind: '风速',
     windDirection: '风向',
     pressure: '气压',
     visibility: '能见度',
@@ -225,6 +227,7 @@ export default {
     monitoring: '系统监控',
     database: '数据库管理',
     docker: '容器管理',
+    dockerBuild: 'Docker 构建',
     apiConfig: 'API 配置',
     permissionTemplates: '权限模板',
     modelEvaluation: '模型评估',
@@ -452,17 +455,12 @@ export default {
     quickActions: '快捷操作',
     myPosts: '我的帖子',
     myFavorites: '我的收藏',
-    announcement: '公告通知',
-    techDiscuss: '技术讨论',
-    taskCollab: '任务协作',
-    knowledge: '知识库',
-    share: '分享',
-    favorite: '收藏',
-    favorited: '已收藏',
     noComments: '暂无评论，快来发表第一条评论吧！',
     submitComment: '发表评论',
     commentPlaceholder: '发表评论...',
     like: '赞',
+    favorite: '收藏',
+    favorited: '已收藏',
     cancel: '取消',
     section: '板块',
     selectSection: '请选择板块',
@@ -470,9 +468,31 @@ export default {
     titlePlaceholder: '请输入帖子标题',
     content: '内容',
     contentPlaceholder: '请输入帖子内容（支持HTML格式）',
+    feedbackPlaceholder: '请描述你遇到的问题、BUG或功能建议',
     tags: '标签',
     tagPlaceholder: '输入标签后按回车添加',
-    publish: '发布帖子'
+    publish: '发布帖子',
+    postNotFound: '帖子不存在或已被删除',
+    unknownTime: '未知时间',
+    section: {
+      announcement: '公告通知',
+      tech_discuss: '技术讨论',
+      task_collab: '任务协作',
+      knowledge: '知识库',
+      feedback: '意见反馈',
+      unknown: '未知板块'
+    },
+    status: {
+      pending: '待处理',
+      processing: '处理中',
+      solved: '已解决'
+    },
+    time: {
+      justNow: '刚刚',
+      minutesAgo: '{count}分钟前',
+      hoursAgo: '{count}小时前',
+      daysAgo: '{count}天前'
+    }
   },
   userStats: {
     title: '用户统计',

@@ -20,6 +20,14 @@ from bayesian_assimilation.models.enkf import EnKF  # noqa: E402
 from bayesian_assimilation.models.hybrid import HybridAssimilation, AdaptiveHybridAssimilation  # noqa: E402
 from bayesian_assimilation.models.enhanced_bayesian import EnhancedBayesianAssimilation  # noqa: E402
 from bayesian_assimilation.models.variance_field_optimizer import VarianceFieldOptimizer, AdaptiveVarianceField  # noqa: E402
+from bayesian_assimilation.models.five_dimensional_var import (  # noqa: E402
+    FiveDimensionalVar,
+    FiveDVarConfig,
+    RiskCostCalculator,
+    ExtendedBackgroundCovariance,
+    AICorrectionOperator,
+    five_dimensional_var,
+)
 
 
 __all__ = [
@@ -32,5 +40,11 @@ __all__ = [
     "AdaptiveHybridAssimilation",
     "EnhancedBayesianAssimilation",
     "VarianceFieldOptimizer",
-    "AdaptiveVarianceField"
+    "AdaptiveVarianceField",
+    "FiveDimensionalVar",
+    "FiveDVarConfig",
+    "RiskCostCalculator",
+    "ExtendedBackgroundCovariance",
+    "AICorrectionOperator",
+    "five_dimensional_var",
 ]

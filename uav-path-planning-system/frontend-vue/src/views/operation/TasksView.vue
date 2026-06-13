@@ -324,7 +324,7 @@ watch(dataScopeFilter, () => { currentPage.value = 1 })
 
 const activeScope = computed(() => dataScopeFilter.value || authStore.dataScope || 'personal')
 
-const emptyText = h('div', { style: 'padding: 20px; color: #909399;' }, '暂无符合条件的任务')
+const emptyText = '暂无符合条件的任务'
 
 const taskForm = reactive({
   id: '',
@@ -550,7 +550,7 @@ function exportTasks() {
 <style scoped>
 .tasks-view {
   padding: 16px 20px 24px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   min-height: 100vh;
 }
 
@@ -561,7 +561,7 @@ function exportTasks() {
 .page-title {
   font-size: 22px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0 0 6px;
 }
 
@@ -574,7 +574,7 @@ function exportTasks() {
 .toolbar-card {
   margin-bottom: 16px;
   border-radius: 8px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--color-border);
 }
 
 .scope-info {
@@ -587,7 +587,7 @@ function exportTasks() {
 
 .scope-label {
   font-size: 13px;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 
 .actions-col {
@@ -624,7 +624,7 @@ function exportTasks() {
   gap: 14px;
   padding: 4px;
   border-radius: 8px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--color-border);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   height: 100%;
 }
@@ -673,14 +673,14 @@ function exportTasks() {
 .stat-value {
   font-size: 26px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text);
   font-family: 'Courier New', monospace;
 }
 
 /* 任务表格卡片 */
 .table-card {
   border-radius: 8px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--color-border);
 }
 
 .table-card :deep(.el-card__body) {
@@ -705,5 +705,31 @@ function exportTasks() {
   .stat-value {
     font-size: 22px;
   }
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .tasks-view {
+  background: var(--bg-primary);
+}
+
+[data-theme='dark'] .task-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .task-name {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .task-meta {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .page-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .stat-value {
+  color: var(--color-text);
 }
 </style>

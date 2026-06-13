@@ -6,8 +6,39 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f0f2f5;
-  color: rgba(0, 0, 0, 0.88);
+  /* 移除浅色回退默认值，改用纯变量——深色模式下会被 theme-dark.css 及内联样式覆盖 */
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* 深色模式全局背景 */
+html[data-theme='dark'] body,
+html[data-theme='dark'] #app,
+html[data-theme='dark'] {
+  background-color: #0a0e1a !important;
+  color: #c9d1d9 !important;
+}
+
+html[data-theme='brand'] {
+  background: var(--bg-primary, #0a0e1a) !important;
+  color: var(--text-primary, #c9d1d9) !important;
+}
+
+html[data-theme='brand'] body,
+html[data-theme='brand'] #app {
+  background: var(--bg-primary, #0a0e1a) !important;
+  color: var(--text-primary, #c9d1d9) !important;
+}
+
+html[data-theme='highContrast'] {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+html[data-theme='highContrast'] body,
+html[data-theme='highContrast'] #app {
+  background: #000000 !important;
+  color: #ffffff !important;
 }
 
 * {

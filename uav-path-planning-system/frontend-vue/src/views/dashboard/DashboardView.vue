@@ -381,7 +381,7 @@ const weatherModels = [
 
 .hero-title {
   font-size: 28px;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0 0 12px;
   font-weight: 600;
   line-height: 1.35;
@@ -411,7 +411,7 @@ const weatherModels = [
 /* 标题 */
 .section-title {
   font-size: 18px;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0 0 12px;
   padding-left: 10px;
   border-left: 4px solid #409EFF;
@@ -441,7 +441,7 @@ const weatherModels = [
 
 .module-card.disabled {
   cursor: default;
-  background: #f9fafb;
+  background: var(--color-bg);
 }
 
 .module-icon {
@@ -452,7 +452,7 @@ const weatherModels = [
 .module-name {
   font-size: 14px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
   margin-bottom: 4px;
 }
 
@@ -479,7 +479,7 @@ const weatherModels = [
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .header-icon {
@@ -489,7 +489,7 @@ const weatherModels = [
 .notice-title {
   font-size: 14px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
   margin-bottom: 4px;
 }
 
@@ -510,7 +510,7 @@ const weatherModels = [
 .link-card {
   border-radius: 10px;
   height: 100%;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border);
 }
 
 .link-card-header {
@@ -527,7 +527,7 @@ const weatherModels = [
 .link-card-title {
   font-size: 15px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .link-card-subtitle {
@@ -576,15 +576,15 @@ const weatherModels = [
 }
 
 .link-row:hover {
-  background-color: #f3f4f6;
-  color: #1f2937;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 .link-row-name {
   grid-area: name;
   font-size: 13.5px;
   font-weight: 500;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .link-row-desc {
@@ -646,7 +646,7 @@ const weatherModels = [
 .model-name {
   font-size: 15px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .model-meta .meta-row {
@@ -661,7 +661,7 @@ const weatherModels = [
 }
 
 .meta-value {
-  color: #1f2937;
+  color: var(--color-text);
   font-weight: 500;
 }
 

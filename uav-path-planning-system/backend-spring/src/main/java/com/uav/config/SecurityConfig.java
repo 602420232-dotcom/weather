@@ -1,6 +1,6 @@
 package com.uav.config;
 
-import com.uav.common.security.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,7 +48,7 @@ public class SecurityConfig {
 
     @Bean
     public CookieCsrfTokenRepository cookieCsrfTokenRepository() {
-        CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnly(false);
+        CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
         repository.setCookiePath("/");
         return repository;
     }
@@ -67,6 +67,7 @@ public class SecurityConfig {
                        "/api/public/**",
                        "/api/v1/auth/**",
                        "/api/auth/**",
+                       "/api/forum/**",
                        "/actuator/**",
                        "/path-planning/history"
                    );
@@ -78,6 +79,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/forum/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/dispatcher/**").hasAnyRole("ADMIN", "DISPATCHER")

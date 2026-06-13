@@ -3,7 +3,7 @@
     <div class="forum-header">
       <div class="header-title">
         <el-icon class="title-icon"><Message /></el-icon>
-        <h1>{{ t('forum.title') }}</h1>
+        <h1>{{ pageTitle }}</h1>
       </div>
       <el-button 
         type="primary" 
@@ -24,10 +24,13 @@
             v-for="section in sections" 
             :key="section.key"
             class="section-item"
-            :class="{ active: activeSection === section.key }"
+            :class="{ 
+              active: activeSection === section.key,
+              feedback: section.key === 'feedback'
+            }"
             @click="selectSection(section.key)"
           >
-            <el-icon class="section-icon"><component :is="icons[getSectionIcon(section.key)]" /></el-icon>
+            <el-icon class="section-icon" :component="getSectionIcon(section.key)" />
             <span>{{ getSectionLabel(section.key) }}</span>
             <span class="section-count">{{ getSectionCount(section.key) }}</span>
           </div>
@@ -46,7 +49,7 @@
         </div>
       </div>
 
-      <div class="main-content">
+      <div class="main-content" id="main-content">
         <div class="filter-bar">
           <el-input 
             v-model="searchKeyword" 
@@ -75,11 +78,18 @@
           >
             <div class="post-header">
               <div class="author-info">
-                <img :src="post.author.avatar" :alt="post.author.displayName" width="40" height="40" loading="lazy" class="author-avatar" />
-                <span class="author-name">{{ post.author.displayName }}</span>
+                <img :src="post.author?.avatar || '/default-avatar.png'" :alt="post.author?.displayName || '用户'" width="40" height="40" loading="lazy" class="author-avatar" />
+                <span class="author-name">{{ post.author?.displayName || '匿名用户' }}</span>
                 <span class="post-time">{{ formatTime(post.createdAt) }}</span>
               </div>
               <div class="post-tags">
+                <span 
+                  v-if="post.feedbackStatus" 
+                  class="status-tag" 
+                  :class="getStatusClass(post.feedbackStatus)"
+                >
+                  {{ getStatusLabel(post.feedbackStatus) }}
+                </span>
                 <el-tag 
                   v-for="tag in post.tags" 
                   :key="tag" 
@@ -144,15 +154,12 @@
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import { EditPen, Search, User, Star, Check, Message } from '@element-plus/icons-vue';
-import * as ElementPlusIconsVue from '@element-plus/icons-vue';
+import { EditPen, Search, User, Star, Check, Message, Bell, ChatDotRound, Document, QuestionFilled } from '@element-plus/icons-vue';
 import forumApi, { SECTIONS } from '@/api/forum';
 import PostDetailModal from './components/PostDetailModal.vue';
 import CreatePostModal from './components/CreatePostModal.vue';
 import { ElMessage } from 'element-plus';
 
-// 将所有 Element Plus 图标注册到全局，使动态组件渲染生效
-const icons = ElementPlusIconsVue;
 const { t } = useI18n();
 const route = useRoute();
 const authStore = useAuthStore();
@@ -167,113 +174,146 @@ const total = ref(0);
 const showPostDetail = ref(false);
 const showCreatePostModal = ref(false);
 const selectedPost = ref(null);
-const sectionStats = ref({}); // 存储每个板块的帖子总数
+const sectionStats = ref({});
+const isPersonalView = ref(false);
+const personalViewType = ref('');
+
+const iconComponents = {
+  Bell,
+  ChatDotRound,
+  User,
+  Document,
+  QuestionFilled,
+  Message
+};
+
 const canPost = computed(() => {
+  if (!authStore.user) return false;
+  if (activeSection.value === SECTIONS.ANNOUNCEMENT) {
+    return authStore.hasAction('forum:post:announcement');
+  }
   return authStore.hasAction('forum:post');
 });
 
 const getSectionIcon = (section) => {
- const icons = {
-  [SECTIONS.ANNOUNCEMENT]: 'Bell',
-  [SECTIONS.TECH_DISCUSS]: 'ChatDotRound',
-  [SECTIONS.TASK_COLLAB]: 'User',
-  [SECTIONS.KNOWLEDGE]: 'Collection'
- };
- return icons[section] || 'Message';
+  const iconMap = {
+    [SECTIONS.ANNOUNCEMENT]: 'Bell',
+    [SECTIONS.TECH_DISCUSS]: 'ChatDotRound',
+    [SECTIONS.TASK_COLLAB]: 'User',
+    [SECTIONS.KNOWLEDGE]: 'Document',
+    [SECTIONS.FEEDBACK]: 'QuestionFilled'
+  };
+  const iconName = iconMap[section];
+  return iconComponents[iconName] || iconComponents.Message;
 };
 
 const getSectionLabel = (section) => {
-  // 直接使用中文标签，避免翻译键不匹配问题
   const labels = {
-    'announcement': '公告通知',
-    'announcements': '公告通知',
-    'tech_discuss': '技术讨论',
-    'tech_discussion': '技术讨论',
-    'task_collab': '任务协作',
-    'task_collaboration': '任务协作',
-    'knowledge': '知识库',
-    'knowledge_sharing': '知识库'
+    [SECTIONS.ANNOUNCEMENT]: t('forum.section.announcement'),
+    [SECTIONS.TECH_DISCUSS]: t('forum.section.tech_discuss'),
+    [SECTIONS.TASK_COLLAB]: t('forum.section.task_collab'),
+    [SECTIONS.KNOWLEDGE]: t('forum.section.knowledge'),
+    [SECTIONS.FEEDBACK]: t('forum.section.feedback')
   };
-  // 安全返回：如果section为空或undefined，返回默认文本
   if (!section) {
-    return '未知板块';
+    return t('forum.section.unknown');
   }
-  // 返回映射的标签，如果找不到则格式化section key为可读文本
-  return labels[section] || String(section).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  return labels[section] || t('forum.section.unknown');
 };
 
+const pageTitle = computed(() => {
+  if (isPersonalView.value) {
+    return personalViewType.value === 'posts' ? t('forum.myPosts') : t('forum.myFavorites');
+  }
+  return t('forum.title');
+});
+
 const getSectionCount = (section) => {
-  // 返回该板块的帖子总数
-  // 如果API返回了sectionStats，使用它；否则使用本地统计
   if (sectionStats.value && sectionStats.value[section] !== undefined) {
     return sectionStats.value[section];
   }
-  // 回退：统计当前加载的帖子
   const count = posts.value.filter(p => p.section === section).length;
   return count;
 };
+
 const selectSection = (section) => {
- activeSection.value = section;
- currentPage.value = 1;
- loadPosts();
+  isPersonalView.value = false;
+  personalViewType.value = '';
+  activeSection.value = section;
+  currentPage.value = 1;
+  searchKeyword.value = '';
+  loadPosts();
 };
+
 const handleSearch = () => {
- currentPage.value = 1;
- loadPosts();
+  currentPage.value = 1;
+  loadPosts();
 };
+
 const handlePageChange = (page) => {
- currentPage.value = page;
- loadPosts();
+  currentPage.value = page;
+  loadPosts();
 };
+
 const loadPosts = async () => {
- const params = {
- section: activeSection.value || undefined,
- search: searchKeyword.value || undefined,
- page: currentPage.value,
- pageSize: pageSize.value
- };
- const result = await forumApi.getPosts(params);
- posts.value = result.list;
- total.value = result.total;
+  const params = {
+    search: searchKeyword.value || undefined,
+    page: currentPage.value,
+    pageSize: pageSize.value,
+    sortBy: sortBy.value
+  };
+
+  let result;
+  if (isPersonalView.value) {
+    if (personalViewType.value === 'posts') {
+      result = await forumApi.getMyPosts(params);
+    } else {
+      result = await forumApi.getMyFavorites(params);
+    }
+  } else {
+    params.section = activeSection.value || undefined;
+    result = await forumApi.getPosts(params);
+  }
+
+  posts.value = result.list;
+  total.value = result.total;
 };
+
 const viewPost = async (post) => {
   selectedPost.value = post;
   showPostDetail.value = true;
 };
 
-// 根据ID加载帖子（用于通知跳转）
 const loadPostById = async (postId) => {
   try {
     const post = await forumApi.getPost(postId);
     selectedPost.value = post;
     showPostDetail.value = true;
-    // 跳转到对应板块
     if (post.section) {
       activeSection.value = post.section;
     }
   } catch (error) {
-    ElMessage.warning('帖子不存在或已被删除');
+    ElMessage.warning(t('forum.postNotFound'));
     console.warn('[ForumView] Failed to load post:', error.message);
   }
 };
 
-// 处理帖子更新（点赞、评论后更新列表）
 const handlePostUpdate = ({ id, likeCount, commentCount }) => {
   const postIndex = posts.value.findIndex(p => p.id === id);
   if (postIndex !== -1) {
     posts.value[postIndex].likeCount = likeCount;
     posts.value[postIndex].commentCount = commentCount;
   }
-  // 同时更新 selectedPost 以确保弹窗内数据一致
   if (selectedPost.value && selectedPost.value.id === id) {
     selectedPost.value.likeCount = likeCount;
     selectedPost.value.commentCount = commentCount;
   }
 };
+
 const handlePostCreated = () => {
   showCreatePostModal.value = false;
   loadPosts();
-  loadSectionStats(); // 更新板块统计
+  loadSectionStats();
 };
 
 const loadSectionStats = async () => {
@@ -285,45 +325,88 @@ const loadSectionStats = async () => {
   }
 };
 
-const showMyPosts = () => {
+const showMyPosts = async () => {
+  isPersonalView.value = true;
+  personalViewType.value = 'posts';
+  currentPage.value = 1;
+  searchKeyword.value = '';
+  await loadPosts();
 };
-const showMyFavorites = () => {
+
+const showMyFavorites = async () => {
+  isPersonalView.value = true;
+  personalViewType.value = 'favorites';
+  currentPage.value = 1;
+  searchKeyword.value = '';
+  await loadPosts();
 };
+
 const formatTime = (dateStr) => {
- const date = new Date(dateStr);
- const now = new Date();
- const diff = now - date;
- const minutes = Math.floor(diff / 60000);
- const hours = Math.floor(diff / 3600000);
- const days = Math.floor(diff / 86400000);
- if (minutes < 1)
- return '刚刚';
- if (minutes < 60)
- return `${minutes}分钟前`;
- if (hours < 24)
- return `${hours}小时前`;
- if (days < 7)
- return `${days}天前`;
- return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  if (!dateStr) {
+    return t('forum.unknownTime');
+  }
+  
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      return t('forum.unknownTime');
+    }
+    
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    
+    if (minutes < 1) return t('forum.time.justNow');
+    if (minutes < 60) return t('forum.time.minutesAgo', { count: minutes });
+    if (hours < 24) return t('forum.time.hoursAgo', { count: hours });
+    if (days < 7) return t('forum.time.daysAgo', { count: days });
+    
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  } catch (error) {
+    console.error('[ForumView] formatTime error:', error);
+    return t('forum.unknownTime');
+  }
 };
+
 const stripHtml = (html) => {
- const tmp = document.createElement('DIV');
- tmp.textContent = html;
- const text = tmp.innerHTML || '';
- return text.length > 100 ? text.substring(0, 100) + '...' : text;
+  if (!html) return '';
+  const tmp = document.createElement('DIV');
+  tmp.textContent = html;
+  const text = tmp.innerHTML || '';
+  return text.length > 100 ? text.substring(0, 100) + '...' : text;
 };
+
+const getStatusLabel = (status) => {
+  const labels = {
+    pending: t('forum.status.pending'),
+    processing: t('forum.status.processing'),
+    solved: t('forum.status.solved')
+  };
+  return labels[status] || status;
+};
+
+const getStatusClass = (status) => {
+  const classes = {
+    pending: 'status-pending',
+    processing: 'status-processing',
+    solved: 'status-solved'
+  };
+  return classes[status] || 'status-pending';
+};
+
 onMounted(async () => {
   const sectionsData = await forumApi.getSections();
   sections.value = sectionsData;
   if (sectionsData.length > 0) {
-  activeSection.value = sectionsData[0].key;
+    activeSection.value = sectionsData[0].key;
   }
   await Promise.all([
     loadPosts(),
     loadSectionStats()
   ]);
   
-  // 检查URL参数，是否有通知跳转的帖子ID
   const postId = route.query.post;
   if (postId) {
     loadPostById(postId);
@@ -334,7 +417,7 @@ onMounted(async () => {
 <style scoped>
 .forum-container {
   min-height: 100%;
-  background: #f5f7fa;
+  background: var(--color-bg);
   padding: 20px;
 }
 
@@ -379,7 +462,7 @@ onMounted(async () => {
 }
 
 .section-list {
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 10px;
   padding: 12px;
   margin-bottom: 16px;
@@ -396,12 +479,22 @@ onMounted(async () => {
 }
 
 .section-item:hover {
-  background: #f5f7fa;
+  background: var(--color-bg);
 }
 
 .section-item.active {
-  background: #ecf5ff;
+  background: var(--color-hover);
   color: #409eff;
+}
+
+.section-item.active.feedback {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.section-item.active.feedback .section-count {
+  background: #f59e0b;
+  color: #fff;
 }
 
 .section-icon {
@@ -411,8 +504,8 @@ onMounted(async () => {
 .section-count {
   margin-left: auto;
   font-size: 12px;
-  color: #909399;
-  background: #f5f7fa;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
   padding: 2px 8px;
   border-radius: 10px;
 }
@@ -423,7 +516,7 @@ onMounted(async () => {
 }
 
 .quick-actions {
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 10px;
   padding: 16px;
 }
@@ -432,7 +525,7 @@ onMounted(async () => {
   font-size: 14px;
   font-weight: 600;
   margin: 0 0 12px 0;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 
 .action-item {
@@ -446,7 +539,7 @@ onMounted(async () => {
 }
 
 .action-item:hover {
-  background: #f5f7fa;
+  background: var(--color-bg);
 }
 
 .main-content {
@@ -475,12 +568,12 @@ onMounted(async () => {
 }
 
 .post-card {
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 10px;
   padding: 20px;
   cursor: pointer;
   transition: all 0.2s;
-  border: 1px solid #e4e7ed;
+  border: 1px solid var(--color-border);
 }
 
 .post-card:hover {
@@ -511,12 +604,12 @@ onMounted(async () => {
 .author-name {
   font-size: 14px;
   font-weight: 500;
-  color: #303133;
+  color: var(--color-text);
 }
 
 .post-time {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 
 .post-tags {
@@ -525,15 +618,37 @@ onMounted(async () => {
 }
 
 .post-tag {
-  background: #ecf5ff;
+  background: var(--color-hover);
   color: #409eff;
   border: none;
+}
+
+.status-tag {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.status-pending {
+  background: #fef08a;
+  color: #854d0e;
+}
+
+.status-processing {
+  background: #bfdbfe;
+  color: #1e40af;
+}
+
+.status-solved {
+  background: #bbf7d0;
+  color: #166534;
 }
 
 .post-title {
   font-size: 18px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
   margin-bottom: 10px;
   line-height: 1.5;
 }
@@ -544,7 +659,7 @@ onMounted(async () => {
 
 .post-preview {
   font-size: 14px;
-  color: #606266;
+  color: var(--color-text-muted);
   line-height: 1.6;
   margin-bottom: 12px;
 }
@@ -552,7 +667,7 @@ onMounted(async () => {
 .post-footer {
   display: flex;
   gap: 20px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 
 .footer-item {
@@ -677,5 +792,83 @@ onMounted(async () => {
 
 .is-dark .post-footer {
   color: var(--color-text-muted);
+}
+
+.is-dark .status-pending {
+  background: rgba(251, 240, 138, 0.2);
+  color: #fde047;
+}
+
+.is-dark .status-processing {
+  background: rgba(191, 219, 254, 0.2);
+  color: #60a5fa;
+}
+
+.is-dark .status-solved {
+  background: rgba(187, 247, 208, 0.2);
+  color: #4ade80;
+}
+
+.is-dark .section-item.active.feedback {
+  background: rgba(251, 243, 199, 0.15);
+  color: #fbbf24;
+}
+
+/* 补充深色模式样式 */
+.is-dark .title-icon {
+  color: var(--color-primary);
+}
+
+.is-dark .create-btn {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.is-dark .filter-bar .search-input .el-input__wrapper,
+.is-dark .filter-bar .sort-select .el-input__wrapper {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.is-dark .filter-bar .search-input .el-input__inner,
+.is-dark .filter-bar .sort-select .el-input__inner {
+  color: var(--color-text);
+}
+
+.is-dark .action-item {
+  color: var(--color-text);
+}
+
+.is-dark .author-info {
+  color: var(--color-text-muted);
+}
+
+.is-dark .pagination {
+  color: var(--color-text-muted);
+}
+
+.is-dark .pagination .el-pager li {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text);
+}
+
+.is-dark .pagination .el-pager li:hover {
+  color: var(--color-primary);
+}
+
+.is-dark .pagination .el-pager li.is-active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.is-dark .pagination .btn-prev,
+.is-dark .pagination .btn-next {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text);
+}
+
+.is-dark .pagination .btn-prev:hover,
+.is-dark .pagination .btn-next:hover {
+  color: var(--color-primary);
 }
 </style>

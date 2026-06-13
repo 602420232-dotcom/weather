@@ -399,9 +399,9 @@ const getRoleTagType = (role) => {
     '测试': 'success',
     '部署': 'warning',
     '飞控': 'info',
-    '生产': ''
+    '生产': 'info'
   }
-  return map[role] || ''
+  return map[role] || 'info'
 }
 
 const getActionType = (action) => {
@@ -494,7 +494,7 @@ onMounted(async () => {
   justify-content: space-around;
   margin-bottom: 20px;
   padding: 20px 0;
-  background: #f5f7fa;
+  background: var(--color-bg);
   border-radius: 8px;
 }
 
@@ -510,7 +510,7 @@ onMounted(async () => {
 
 .stat-label {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
   margin-top: 4px;
 }
 
@@ -533,7 +533,7 @@ onMounted(async () => {
 .action-label {
   width: 100px;
   font-size: 14px;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 
 .action-item :deep(.el-progress) {
@@ -551,13 +551,13 @@ onMounted(async () => {
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   border-radius: 20px;
 }
 
 .location-name {
   font-size: 14px;
-  color: #303133;
+  color: var(--color-text);
 }
 
 .log-card {
@@ -577,23 +577,23 @@ onMounted(async () => {
 
 .log-user {
   font-weight: 500;
-  color: #303133;
+  color: var(--color-text);
 }
 
 .log-location {
-  color: #909399;
+  color: var(--color-text-muted);
   font-size: 12px;
 }
 
 .log-details {
-  color: #606266;
+  color: var(--color-text-muted);
   margin: 4px 0;
   font-size: 14px;
 }
 
 .log-module {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 
 .load-more {
@@ -605,7 +605,7 @@ onMounted(async () => {
   display: block;
   margin-top: 8px;
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 
 @media (max-width: 768px) {

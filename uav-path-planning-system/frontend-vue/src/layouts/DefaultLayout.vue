@@ -127,7 +127,9 @@ import { ElMessage } from 'element-plus'
 import {
   HomeFilled, PartlyCloudy, Goods, Monitor, List, Position, Connection,
   DataAnalysis, Coin, Box, Setting, Tools, Document,
-  MagicStick, InfoFilled, Cpu, ChatDotRound
+  MagicStick, InfoFilled, Cpu, ChatDotRound, Menu, Bell, MapLocation, Clock, Loading,
+  Checked, TrendCharts, PieChart, Histogram, User, Link, Share, Aim, Files,
+  SetUp, Lock, Notebook
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '../stores/auth'
 import { useAppStore } from '../stores/app'
@@ -303,7 +305,9 @@ const roleTagType = computed(() => {
 const ICON_MAP = {
   HomeFilled, PartlyCloudy, Goods, Monitor, List, Position, Connection,
   DataAnalysis, Coin, Box, Setting, Tools, Document,
-  ChatDotRound, MagicStick, InfoFilled, Cpu, Menu, Bell, MapLocation, Clock, Loading
+  ChatDotRound, MagicStick, InfoFilled, Cpu, Menu, Bell, MapLocation, Clock, Loading,
+  Checked, TrendCharts, PieChart, Histogram, User, Link, Share, Aim, Files,
+  SetUp, Lock, Notebook
 }
 
 const menuItems = computed(() => {
@@ -315,22 +319,23 @@ const menuItems = computed(() => {
     { key: 'orders', title: t('menu.orders'), icon: 'Goods', path: '/orders' },
     { key: 'cockpit', title: t('menu.cockpit'), icon: 'Monitor', path: '/cockpit' },
     { key: 'tasks', title: t('menu.tasks'), icon: 'List', path: '/tasks' },
-    { key: 'task-report', title: t('menu.taskReport'), icon: 'Document', path: '/task-report' },
-    { key: 'utm-integration', title: t('menu.utmIntegration'), icon: 'Connection', path: '/utm-integration' },
-    { key: 'path-planning', title: t('menu.pathPlanning'), icon: 'Position', path: '/path-planning' },
-    { key: 'airworthiness', title: t('menu.airworthiness'), icon: 'DataAnalysis', path: '/airworthiness' },
-    { key: 'model-evaluation', title: t('menu.modelEvaluation'), icon: 'DataAnalysis', path: '/model-evaluation' },
-    { key: 'parameter-tuning', title: t('menu.parameterTuning'), icon: 'Tools', path: '/parameter-tuning' },
-    { key: 'sensitivity-analysis', title: t('paramsTuning.sensitivity'), icon: 'DataAnalysis', path: '/sensitivity-analysis' },
-    { key: 'experiment-compare', title: t('menu.experimentCompare'), icon: 'DataAnalysis', path: '/experiment-compare' },
-    { key: 'assimilation', title: t('menu.dataAssimilation'), icon: 'Connection', path: '/assimilation' },
+    { key: 'task-report', title: t('menu.taskReport'), icon: 'Notebook', path: '/task-report' },
+    { key: 'utm-integration', title: t('menu.utmIntegration'), icon: 'Link', path: '/utm-integration' },
+    { key: 'path-planning', title: t('menu.pathPlanning'), icon: 'Aim', path: '/path-planning' },
+    { key: 'airworthiness', title: t('menu.airworthiness'), icon: 'Checked', path: '/airworthiness' },
+    { key: 'model-evaluation', title: t('menu.modelEvaluation'), icon: 'TrendCharts', path: '/model-evaluation' },
+    { key: 'parameter-tuning', title: t('menu.parameterTuning'), icon: 'SetUp', path: '/parameter-tuning' },
+    { key: 'sensitivity-analysis', title: t('paramsTuning.sensitivity'), icon: 'PieChart', path: '/sensitivity-analysis' },
+    { key: 'experiment-compare', title: t('menu.experimentCompare'), icon: 'Histogram', path: '/experiment-compare' },
+    { key: 'assimilation', title: t('menu.dataAssimilation'), icon: 'Share', path: '/assimilation' },
     { key: 'monitoring', title: t('menu.monitoring'), icon: 'DataAnalysis', path: '/monitoring' },
     { key: 'database', title: t('menu.database'), icon: 'Coin', path: '/database' },
     { key: 'docker', title: t('menu.docker'), icon: 'Box', path: '/docker' },
+    { key: 'docker-build', title: t('menu.dockerBuild'), icon: 'Files', path: '/docker-build' },
     { key: 'api-config', title: t('menu.apiConfig'), icon: 'Cpu', path: '/api-config' },
     { key: 'forum', title: t('menu.forum'), icon: 'ChatDotRound', path: '/forum' },
-    { key: 'user-stats', title: t('menu.userStats'), icon: 'DataAnalysis', path: '/user-stats', roles: ['admin'] },
-    { key: 'permission-templates', title: t('menu.permissionTemplates'), icon: 'Setting', path: '/permission-templates' }
+    { key: 'user-stats', title: t('menu.userStats'), icon: 'User', path: '/user-stats', roles: ['admin'] },
+    { key: 'permission-templates', title: t('menu.permissionTemplates'), icon: 'Lock', path: '/permission-templates' }
   ]
   return all.filter(item => authStore.hasRouteAccess(item.key))
 })
@@ -358,11 +363,11 @@ function onUserCommand(cmd) {
 <style scoped>
 .uav-layout {
   min-height: 100vh;
-  background: #f0f2f5;
+  background: var(--bg-primary);
 }
 .uav-layout.is-dark {
-  background: #0d1117;
-  color: #c9d1d9;
+  background: var(--bg-primary, #0a0e1a);
+  color: var(--text-primary, #c9d1d9);
   color-scheme: dark;
 }
 
@@ -414,8 +419,8 @@ function onUserCommand(cmd) {
 .uav-footer {
   text-align: center;
   font-size: 12px;
-  color: #8c8c8c;
-  border-top: 1px solid #e5e7eb;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -433,23 +438,23 @@ function onUserCommand(cmd) {
 }
 
 /* 暗色主题 */
-.is-dark .uav-header { background: #161b22; border-bottom-color: #30363d; }
-.is-dark .collapse-btn { color: #c9d1d9 !important; }
-.is-dark .breadcrumb-title { color: #c9d1d9; }
+.is-dark .uav-header { background: var(--color-header-bg); border-bottom-color: var(--color-header-border); }
+.is-dark .collapse-btn { color: var(--color-text) !important; }
+.is-dark .breadcrumb-title { color: var(--color-text); }
 .is-dark .theme-btn { color: #e5c07b !important; }
-.is-dark .notification-btn { color: #c9d1d9 !important; }
-.is-dark .user-info { color: #c9d1d9; }
-.is-dark .uav-footer { border-top-color: #30363d; color: #6e7681; }
-.is-dark .hamburger-btn { color: #c9d1d9 !important; }
+.is-dark .notification-btn { color: var(--color-text) !important; }
+.is-dark .user-info { color: var(--color-text); }
+.is-dark .uav-footer { border-top-color: var(--color-border); color: var(--color-text-muted); }
+.is-dark .hamburger-btn { color: var(--color-text) !important; }
 .is-dark .info-group .location-info,
 .is-dark .info-group .time-info,
 .is-dark .info-group .weather-info {
-  background: rgba(255, 255, 255, 0.08);
-  color: #c9d1d9;
+  background: var(--color-hover);
+  color: var(--color-text);
 }
-.is-dark .info-group .info-icon { color: #79c0ff; }
+.is-dark .info-group .info-icon { color: var(--color-primary); }
 .is-dark .info-group .location-info.is-clickable:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--color-hover);
 }
 
 /* 移动端 */

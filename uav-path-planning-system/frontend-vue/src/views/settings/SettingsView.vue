@@ -800,4 +800,60 @@ function goDocs() {
   font-size: 13px;
   line-height: 1.9;
 }
+
+/* ===== is-dark 深色模式补充 ===== */
+.is-dark .settings-page {
+  background: var(--bg-primary);
+}
+
+.is-dark .settings-nav {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border);
+}
+
+.is-dark .nav-menu .el-menu-item {
+  color: var(--color-text-muted);
+}
+
+.is-dark .nav-menu .el-menu-item:hover,
+.is-dark .nav-menu .el-menu-item.is-active {
+  background: rgba(96, 165, 250, 0.15);
+  color: var(--color-primary);
+}
+
+.is-dark .nav-menu .menu-divider {
+  background-color: var(--color-border);
+}
+
+.is-dark .card-panel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border);
+}
+
+.is-dark .card-panel :deep(.el-card__header) {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom-color: var(--color-border);
+}
+
+.is-dark .card-panel :deep(.el-card__body) {
+  background: transparent;
+}
+
+.is-dark .avatar-circle {
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.is-dark .module-chip {
+  background: rgba(96, 165, 250, 0.15);
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+.is-dark .license-box {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--color-border);
+}
+
+.is-dark .deps-list {
+  color: var(--color-text-muted);
+}
 </style>

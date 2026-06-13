@@ -1,0 +1,3348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAV平台重构实施计划 - WRF气象驱动无人机VRP智能路径规划系统</title>
+    <script src="./_shared/js/echarts.min.js"></script>
+    <script src="./_shared/js/mermaid.min.js"></script>
+    <style>
+        @font-face {
+            font-family: 'TechFont';
+            src: url('./_shared/fonts/tech-font.woff2') format('woff2'),
+                 url('./_shared/fonts/tech-font.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'MonoFont';
+            src: url('./_shared/fonts/mono-font.woff2') format('woff2'),
+                 url('./_shared/fonts/mono-font.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --bg-hover: #1f242c;
+            --border-color: #30363d;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-orange: #f0883e;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --accent-cyan: #39c5cf;
+            --accent-pink: #f778ba;
+            --code-bg: #161b22;
+            --shadow: 0 8px 24px rgba(0,0,0,0.5);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'TechFont', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ===== Layout ===== */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            z-index: 1000;
+            padding: 24px 0;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 16px;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-blue);
+            line-height: 1.4;
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .toc-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .toc-item {
+            position: relative;
+        }
+
+        .toc-link {
+            display: block;
+            padding: 8px 20px 8px 28px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .toc-link:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+
+        .toc-link.active {
+            color: var(--accent-blue);
+            background: rgba(88, 166, 255, 0.08);
+            border-left-color: var(--accent-blue);
+        }
+
+        .toc-h1 {
+            font-weight: 600;
+            font-size: 14px;
+            padding-left: 20px;
+            color: var(--text-primary);
+            margin-top: 8px;
+        }
+
+        .toc-h2 {
+            padding-left: 36px;
+            font-size: 12px;
+        }
+
+        .toc-h3 {
+            padding-left: 52px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* ===== Main Content ===== */
+        .main {
+            margin-left: 300px;
+            flex: 1;
+            padding: 40px 48px;
+            max-width: 1200px;
+        }
+
+        /* ===== Header ===== */
+        .page-header {
+            text-align: center;
+            padding: 60px 0 48px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-cyan), var(--accent-green));
+        }
+
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .page-header .subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .page-header .meta {
+            margin-top: 24px;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .meta-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .meta-tag .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+        }
+
+        /* ===== Sections ===== */
+        section {
+            margin-bottom: 64px;
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2 .section-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 32px 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h3::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--accent-blue);
+            border-radius: 2px;
+        }
+
+        h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            margin: 24px 0 12px;
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        /* ===== Cards ===== */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .card-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent-blue); }
+        .badge-green { background: rgba(63,185,80,0.15); color: var(--accent-green); }
+        .badge-yellow { background: rgba(210,153,34,0.15); color: var(--accent-yellow); }
+        .badge-orange { background: rgba(240,136,62,0.15); color: var(--accent-orange); }
+        .badge-red { background: rgba(248,81,73,0.15); color: var(--accent-red); }
+        .badge-purple { background: rgba(163,113,247,0.15); color: var(--accent-purple); }
+        .badge-cyan { background: rgba(57,197,207,0.15); color: var(--accent-cyan); }
+
+        /* ===== Grid ===== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        /* ===== Info Box ===== */
+        .info-box {
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            border-left: 4px solid;
+            margin-bottom: 20px;
+            background: var(--bg-tertiary);
+        }
+
+        .info-box.info { border-color: var(--accent-blue); }
+        .info-box.success { border-color: var(--accent-green); }
+        .info-box.warning { border-color: var(--accent-yellow); }
+        .info-box.danger { border-color: var(--accent-red); }
+        .info-box.tip { border-color: var(--accent-purple); }
+
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== Tables ===== */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 2px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        tr:hover td {
+            background: var(--bg-hover);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ===== Code ===== */
+        code {
+            font-family: 'MonoFont', 'SF Mono', 'Fira Code', monospace;
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: var(--accent-orange);
+            border: 1px solid var(--border-color);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 16px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        /* ===== Lists ===== */
+        ul, ol {
+            margin-bottom: 16px;
+            padding-left: 24px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        li::marker {
+            color: var(--accent-blue);
+        }
+
+        /* ===== Mermaid ===== */
+        .mermaid {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* ===== Timeline / Gantt ===== */
+        .gantt-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            height: 600px;
+        }
+
+        /* ===== Progress Bar ===== */
+        .progress-wrap {
+            margin-bottom: 16px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .progress-fill.blue { background: var(--accent-blue); }
+        .progress-fill.green { background: var(--accent-green); }
+        .progress-fill.yellow { background: var(--accent-yellow); }
+        .progress-fill.orange { background: var(--accent-orange); }
+        .progress-fill.purple { background: var(--accent-purple); }
+
+        /* ===== Milestone ===== */
+        .milestone-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .milestone-item {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: all 0.3s;
+        }
+
+        .milestone-item:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .milestone-marker {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .milestone-marker.done {
+            background: rgba(63,185,80,0.15);
+            color: var(--accent-green);
+            border: 2px solid var(--accent-green);
+        }
+
+        .milestone-marker.active {
+            background: rgba(88,166,255,0.15);
+            color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+            animation: pulse 2s infinite;
+        }
+
+        .milestone-marker.pending {
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+            border: 2px solid var(--border-color);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(88,166,255,0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(88,166,255,0); }
+        }
+
+        .milestone-content {
+            flex: 1;
+        }
+
+        .milestone-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .milestone-date {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .milestone-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* ===== Algorithm Cards ===== */
+        .algo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .algo-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 16px;
+            transition: all 0.3s;
+        }
+
+        .algo-card:hover {
+            border-color: var(--accent-purple);
+            transform: translateY(-2px);
+        }
+
+        .algo-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .algo-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .algo-status {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .algo-status.migrated {
+            background: rgba(63,185,80,0.15);
+            color: var(--accent-green);
+        }
+
+        .algo-status.pending {
+            background: rgba(210,153,34,0.15);
+            color: var(--accent-yellow);
+        }
+
+        .algo-status.planning {
+            background: rgba(88,166,255,0.15);
+            color: var(--accent-blue);
+        }
+
+        .algo-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ===== Stats ===== */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-box:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ===== Tech Stack ===== */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .tech-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .tech-item:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .tech-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .tech-info {
+            flex: 1;
+        }
+
+        .tech-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .tech-ver {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* ===== Risk Matrix ===== */
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: 120px repeat(3, 1fr);
+            gap: 2px;
+            background: var(--border-color);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .risk-cell {
+            background: var(--bg-secondary);
+            padding: 16px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .risk-cell.header {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .risk-cell.label {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .risk-low { color: var(--accent-green); }
+        .risk-medium { color: var(--accent-yellow); }
+        .risk-high { color: var(--accent-red); }
+
+        /* ===== Phase Timeline ===== */
+        .phase-timeline {
+            position: relative;
+            padding-left: 32px;
+        }
+
+        .phase-timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .phase-node {
+            position: relative;
+            margin-bottom: 32px;
+        }
+
+        .phase-node::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            border: 3px solid var(--border-color);
+        }
+
+        .phase-node.done::before { border-color: var(--accent-green); }
+        .phase-node.active::before { border-color: var(--accent-blue); background: var(--accent-blue); }
+        .phase-node.pending::before { border-color: var(--border-color); }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .phase-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .phase-duration {
+            font-size: 12px;
+            color: var(--text-muted);
+            padding: 2px 10px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+        }
+
+        /* ===== Footer ===== */
+        .page-footer {
+            margin-top: 80px;
+            padding: 40px 0;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* ===== Scrollbar ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main {
+                margin-left: 0;
+                padding: 24px;
+            }
+            .grid-2, .grid-3, .grid-4, .stats-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== Print ===== */
+        @media print {
+            .sidebar { display: none; }
+            .main { margin-left: 0; }
+        }
+
+        /* ===== Custom ===== */
+        .highlight {
+            background: linear-gradient(120deg, rgba(88,166,255,0.2) 0%, rgba(88,166,255,0.1) 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag {
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding-left: 28px;
+            position: relative;
+        }
+
+        .checklist li::before {
+            content: '\2713';
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        .checklist li.pending::before {
+            content: '\25CB';
+            color: var(--accent-yellow);
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar TOC -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">UAV平台重构计划</div>
+                <div class="sidebar-subtitle">WRF气象驱动 · VRP智能路径规划</div>
+            </div>
+            <ul class="toc-list">
+                <li class="toc-item"><a href="#overview" class="toc-link toc-h1">1. 项目概述</a></li>
+                <li class="toc-item"><a href="#tech-decisions" class="toc-link toc-h1">2. 关键技术决策</a></li>
+                <li class="toc-item"><a href="#architecture" class="toc-link toc-h1">3. 系统架构</a></li>
+                <li class="toc-item"><a href="#phase1" class="toc-link toc-h1">4. Phase 1: 骨架搭建</a></li>
+                <li class="toc-item"><a href="#phase2" class="toc-link toc-h1">5. Phase 2: 核心服务</a></li>
+                <li class="toc-item"><a href="#phase3" class="toc-link toc-h1">6. Phase 3: 算法迁移</a></li>
+                <li class="toc-item"><a href="#phase4" class="toc-link toc-h1">7. Phase 4: 边云协同</a></li>
+                <li class="toc-item"><a href="#phase5" class="toc-link toc-h1">8. Phase 5: 生产就绪</a></li>
+                <li class="toc-item"><a href="#gantt" class="toc-link toc-h1">9. 甘特图时间线</a></li>
+                <li class="toc-item"><a href="#algo-mapping" class="toc-link toc-h1">10. 算法迁移映射</a></li>
+                <li class="toc-item"><a href="#milestones" class="toc-link toc-h1">11. 里程碑与验收</a></li>
+                <li class="toc-item"><a href="#risk" class="toc-link toc-h1">12. 风险管控</a></li>
+                <li class="toc-item"><a href="#deployment" class="toc-link toc-h1">13. 部署策略</a></li>
+                <li class="toc-item"><a href="#team" class="toc-link toc-h1">14. 团队与分工</a></li>
+                <li class="toc-item"><a href="#appendix" class="toc-link toc-h1">15. 附录</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Header -->
+            <header class="page-header">
+                <h1>UAV平台重构实施计划</h1>
+                <p class="subtitle">基于WRF气象驱动的无人机VRP智能路径规划系统 — 从旧架构迁移至 uav-platform-v2 新平台</p>
+                <div class="meta">
+                    <span class="meta-tag"><span class="dot"></span> 状态: Phase 1 进行中</span>
+                    <span class="meta-tag">版本: v2.0.0-MVP</span>
+                    <span class="meta-tag">日期: 2026-06-12</span>
+                    <span class="meta-tag">模块: 12个Maven模块</span>
+                    <span class="meta-tag">算法: 93个组件</span>
+                </div>
+            </header>
+
+            <!-- Section 1: Overview -->
+            <section id="overview">
+                <h2><span class="section-icon">1</span> 项目概述</h2>
+                <p>本项目旨在将原有的无人机路径规划系统从旧架构全面重构为新一代微服务架构平台 <code>uav-platform-v2</code>。新平台基于WRF（Weather Research and Forecasting）气象数据驱动，集成多种先进的数据同化算法、AI预测模型和路径规划算法，实现多无人机协同任务规划与实时动态调整。</p>
+
+                <div class="stats-bar">
+                    <div class="stat-box">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">实施阶段</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Maven模块</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">93</div>
+                        <div class="stat-label">算法组件</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">核心API服务</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">~24周</div>
+                        <div class="stat-label">预计周期</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">重构目标</span>
+                            <span class="card-badge badge-blue">核心</span>
+                        </div>
+                        <ul class="checklist">
+                            <li>微服务化拆分，各服务独立部署与扩展</li>
+                            <li>统一技术栈：JDK 21 + Spring Boot 4.0</li>
+                            <li>多租户独立Schema隔离</li>
+                            <li>API版本化管理（Header-based）</li>
+                            <li>完整的CI/CD流水线</li>
+                            <li>边云协同计算能力</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">已完成工作</span>
+                            <span class="card-badge badge-green">Phase 1</span>
+                        </div>
+                        <ul class="checklist">
+                            <li>根POM定义，12个Maven模块结构</li>
+                            <li>统一CI流水线（GitHub Actions）</li>
+                            <li>基础设施编排（Docker Compose）</li>
+                            <li>代码规范配置（pre-commit）</li>
+                            <li>架构文档与迁移追踪</li>
+                            <li>5D-VAR算法实现与测试</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-box info">
+                    <div class="info-box-title">项目背景</div>
+                    <p>原系统采用单体架构，随着算法复杂度增加（93个算法组件）和业务需求扩展，面临部署困难、扩展性受限、技术债务累积等问题。新平台采用领域驱动设计（DDD）思想，按业务域拆分服务，实现规划、同化、观测、适航、UTM五大核心领域的独立演进。</p>
+                </div>
+            </section>
+
+            <!-- Section 2: Tech Decisions -->
+            <section id="tech-decisions">
+                <h2><span class="section-icon">2</span> 关键技术决策</h2>
+
+                <h3>2.1 技术栈选型</h3>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <div class="tech-icon" style="background:rgba(88,166,255,0.15);color:var(--accent-blue)">JV</div>
+                        <div class="tech-info">
+                            <div class="tech-name">JDK</div>
+                            <div class="tech-ver">21 LTS</div>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon" style="background:rgba(63,185,80,0.15);color:var(--accent-green)">SB</div>
+                        <div class="tech-info">
+                            <div class="tech-name">Spring Boot</div>
+                            <div class="tech-ver">4.0</div>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon" style="background:rgba(163,113,247,0.15);color:var(--accent-purple)">SC</div>
+                        <div class="tech-info">
+                            <div class="tech-name">Spring Cloud</div>
+                            <div class="tech-ver">2025.1</div>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon" style="background:rgba(240,136,62,0.15);color:var(--accent-orange)">SCA</div>
+                        <div class="tech-info">
+                            <div class="tech-name">Spring Cloud Alibaba</div>
+                            <div class="tech-ver">2025.1.0.0</div>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon" style="background:rgba(57,197,207,0.15);color:var(--accent-cyan)">NC</div>
+                        <div class="tech-info">
+                            <div class="tech-name">Nacos</div>
+                            <div class="tech-ver">3.2</div>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon" style="background:rgba(248,81,73,0.15);color:var(--accent-red)">MQ</div>
+                        <div class="tech-info">
+                            <div class="tech-name">MySQL</div>
+                            <div class="tech-ver">8.4.7 LTS</div>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon" style="background:rgba(210,153,34,0.15);color:var(--accent-yellow)">RD</div>
+                        <div class="tech-info">
+                            <div class="tech-name">Redis</div>
+                            <div class="tech-ver">7.2</div>
+                        </div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon" style="background:rgba(88,166,255,0.15);color:var(--accent-blue)">WS</div>
+                        <div class="tech-info">
+                            <div class="tech-name">Weather Service</div>
+                            <div class="tech-ver">内置模块</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>2.2 架构原则</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">多租户策略</span>
+                            <span class="card-badge badge-purple">架构</span>
+                        </div>
+                        <p>采用<strong>独立Schema隔离</strong>方案，每个租户拥有独立的数据库Schema。相比共享Schema+租户字段的方案，独立Schema在数据隔离性、性能优化和合规审计方面更具优势。</p>
+                        <ul>
+                            <li>动态数据源路由（Dynamic DataSource Routing）</li>
+                            <li>Schema级连接池隔离</li>
+                            <li>租户上下文传递（TenantContext）</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">API版本控制</span>
+                            <span class="card-badge badge-cyan">设计</span>
+                        </div>
+                        <p>采用<strong>Header-based</strong>版本控制策略，通过 <code>Accept: application/vnd.uav.v1+json</code> 请求头指定API版本。</p>
+                        <ul>
+                            <li>支持多版本并行运行</li>
+                            <li>版本协商与降级策略</li>
+                            <li>文档自动生成（OpenAPI 3.1）</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>2.3 分支与发布策略</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Trunk Based Development</span>
+                        <span class="card-badge badge-green">已确认</span>
+                    </div>
+                    <div class="grid-2">
+                        <div>
+                            <h4>分支模型</h4>
+                            <ul>
+                                <li>主干分支：<code>main</code>（长期稳定）</li>
+                                <li>特性分支：<code>feature/*</code>（短期存在）</li>
+                                <li>发布分支：<code>release/*</code>（按需创建）</li>
+                                <li>热修分支：<code>hotfix/*</code>（紧急修复）</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>质量门禁</h4>
+                            <ul>
+                                <li>代码审查：最少 <strong>2人Review</strong></li>
+                                <li>CI检查：编译、单元测试、代码质量</li>
+                                <li>合并策略：Squash Merge</li>
+                                <li>发布策略：<strong>按需发布</strong>（非固定周期）</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>2.4 部署策略</h3>
+                <div class="info-box success">
+                    <div class="info-box-title">滚动发布（Rolling Deployment）</div>
+                    <p>采用滚动发布策略实现零停机部署。配合Kubernetes的RollingUpdate机制，逐步替换旧版本Pod，确保服务连续性。发布过程中实时监控关键指标（错误率、延迟、吞吐量），自动回滚异常版本。</p>
+                </div>
+            </section>
+
+            <!-- Section 3: Architecture -->
+            <section id="architecture">
+                <h2><span class="section-icon">3</span> 系统架构</h2>
+
+                <h3>3.1 整体架构图</h3>
+                <div class="mermaid">
+graph TB
+    subgraph Client["客户端层"]
+        Web["Web控制台"]
+        Mobile["移动端APP"]
+        EdgeSDK["边缘SDK"]
+    end
+
+    subgraph Gateway["网关层"]
+        APIGW["API Gateway<br/>Spring Cloud Gateway"]
+    end
+
+    subgraph Core["核心服务层"]
+        Planning["planning-api<br/>路径规划服务"]
+        Assimilation["assimilation-api<br/>数据同化服务"]
+        Observation["observation-api<br/>观测数据服务"]
+        Airworthiness["airworthiness-api<br/>适航认证服务"]
+        UTM["utm-api<br/>空域管理服务"]
+    end
+
+    subgraph Support["支撑服务层"]
+        Weather["weather-service<br/>气象数据服务<br/>(内置)"]
+        AI["ai-model-service<br/>AI模型推理服务"]
+        Algorithm["algorithm-engine<br/>算法执行引擎"]
+    end
+
+    subgraph Data["数据层"]
+        MySQL[("MySQL 8.4<br/>业务数据")]
+        Redis[("Redis 7.2<br/>缓存/会话")]
+        MinIO["MinIO<br/>对象存储"]
+        TSDB["时序数据库<br/>轨迹数据"]
+    end
+
+    subgraph Infra["基础设施"]
+        Nacos["Nacos 3.2<br/>注册/配置中心"]
+        Sentinel["Sentinel<br/>流量控制"]
+        SkyWalking["SkyWalking<br/>链路追踪"]
+        Prometheus["Prometheus<br/>监控告警"]
+    end
+
+    Web --> APIGW
+    Mobile --> APIGW
+    EdgeSDK --> APIGW
+    APIGW --> Planning
+    APIGW --> Assimilation
+    APIGW --> Observation
+    APIGW --> Airworthiness
+    APIGW --> UTM
+    Planning --> Weather
+    Planning --> AI
+    Planning --> Algorithm
+    Assimilation --> Weather
+    Assimilation --> AI
+    Assimilation --> Algorithm
+    Observation --> Algorithm
+    Core --> MySQL
+    Core --> Redis
+    Core --> MinIO
+    Core --> TSDB
+    Core --> Nacos
+                </div>
+
+                <h3>3.2 服务依赖关系</h3>
+                <div class="mermaid">
+graph LR
+    Planning["planning-api"] --> Weather["weather-service"]
+    Planning --> AI["ai-model-service"]
+    Planning --> Algorithm["algorithm-engine"]
+    Planning --> Redis
+    Planning --> MySQL
+
+    Assimilation["assimilation-api"] --> Weather
+    Assimilation --> AI
+    Assimilation --> Algorithm
+    Assimilation --> Redis
+    Assimilation --> MySQL
+
+    Observation["observation-api"] --> Algorithm
+    Observation --> Redis
+    Observation --> MySQL
+
+    Airworthiness["airworthiness-api"] --> MySQL
+    Airworthiness --> Redis
+
+    UTM["utm-api"] --> Redis
+    UTM --> MySQL
+    UTM --> TSDB
+
+    AI --> MinIO["MinIO"]
+    Algorithm --> MinIO
+                </div>
+
+                <h3>3.3 Maven模块结构</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>模块名</th>
+                                <th>类型</th>
+                                <th>说明</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>uav-platform-v2</code></td>
+                                <td>Root POM</td>
+                                <td>根模块，统一依赖管理</td>
+                                <td><span class="card-badge badge-green">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>uav-common</code></td>
+                                <td>Library</td>
+                                <td>公共工具、常量、异常定义</td>
+                                <td><span class="card-badge badge-green">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>uav-starter</code></td>
+                                <td>Starter</td>
+                                <td>自动配置Starter</td>
+                                <td><span class="card-badge badge-green">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>planning-api</code></td>
+                                <td>Service</td>
+                                <td>路径规划核心服务</td>
+                                <td><span class="card-badge badge-yellow">进行中</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>assimilation-api</code></td>
+                                <td>Service</td>
+                                <td>数据同化服务</td>
+                                <td><span class="card-badge badge-yellow">进行中</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>observation-api</code></td>
+                                <td>Service</td>
+                                <td>观测数据服务</td>
+                                <td><span class="card-badge badge-blue">规划中</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>airworthiness-api</code></td>
+                                <td>Service</td>
+                                <td>适航认证服务</td>
+                                <td><span class="card-badge badge-blue">规划中</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>utm-api</code></td>
+                                <td>Service</td>
+                                <td>空域管理服务</td>
+                                <td><span class="card-badge badge-blue">规划中</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>weather-service</code></td>
+                                <td>Internal</td>
+                                <td>气象数据服务（内置）</td>
+                                <td><span class="card-badge badge-yellow">进行中</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>ai-model-service</code></td>
+                                <td>Service</td>
+                                <td>AI模型推理服务</td>
+                                <td><span class="card-badge badge-blue">规划中</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>algorithm-engine</code></td>
+                                <td>Library</td>
+                                <td>算法执行引擎</td>
+                                <td><span class="card-badge badge-yellow">进行中</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>edge-sdk</code></td>
+                                <td>SDK</td>
+                                <td>边缘计算SDK（C++/Python）</td>
+                                <td><span class="card-badge badge-blue">规划中</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 4: Phase 1 -->
+            <section id="phase1">
+                <h2><span class="section-icon">4</span> Phase 1: 骨架搭建（已完成）</h2>
+
+                <div class="info-box success">
+                    <div class="info-box-title">阶段状态：已完成</div>
+                    <p>Phase 1 已完成所有骨架搭建工作，为后续阶段奠定了坚实基础。5D-VAR算法已实现并测试通过，验证了技术选型的可行性。</p>
+                </div>
+
+                <h3>4.1 交付物清单</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>交付物</th>
+                                <th>路径</th>
+                                <th>说明</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>根POM</td>
+                                <td><code>uav-platform-v2/pom.xml</code></td>
+                                <td>12个Maven模块的依赖管理</td>
+                                <td><span class="card-badge badge-green">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td>CI流水线</td>
+                                <td><code>.github/workflows/ci.yml</code></td>
+                                <td>统一CI：编译、测试、打包、镜像构建</td>
+                                <td><span class="card-badge badge-green">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td>基础设施编排</td>
+                                <td><code>docker-compose.yml</code></td>
+                                <td>MySQL、Redis、Nacos、MinIO等</td>
+                                <td><span class="card-badge badge-green">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td>代码规范</td>
+                                <td><code>.pre-commit-config.yaml</code></td>
+                                <td>代码格式化、静态检查、提交规范</td>
+                                <td><span class="card-badge badge-green">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td>架构文档</td>
+                                <td><code>docs/architecture.md</code></td>
+                                <td>系统架构设计文档</td>
+                                <td><span class="card-badge badge-green">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td>迁移追踪</td>
+                                <td><code>docs/migration-tracker.md</code></td>
+                                <td>算法迁移进度追踪表</td>
+                                <td><span class="card-badge badge-green">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td>5D-VAR算法</td>
+                                <td><code>algorithm-engine/...</code></td>
+                                <td>五维变分同化算法实现与测试</td>
+                                <td><span class="card-badge badge-green">已完成</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>4.2 技术验证成果</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">5D-VAR算法验证</span>
+                            <span class="card-badge badge-green">通过</span>
+                        </div>
+                        <p>五维变分同化算法（5-Dimensional Variational Assimilation）已成功实现并完成功能测试。</p>
+                        <ul>
+                            <li>时间维度：历史-当前-未来三时态融合</li>
+                            <li>空间维度：三维空间格点分析</li>
+                            <li>参数维度：多物理参数联合优化</li>
+                            <li>测试覆盖率：核心逻辑 > 85%</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">基础设施就绪</span>
+                            <span class="card-badge badge-green">就绪</span>
+                        </div>
+                        <p>本地开发环境一键启动验证通过。</p>
+                        <ul>
+                            <li>Docker Compose 全栈启动 < 3分钟</li>
+                            <li>Nacos 服务注册/发现正常</li>
+                            <li>MySQL 8.4 多Schema创建验证</li>
+                            <li>Redis 7.2 缓存读写正常</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Phase 2 -->
+            <section id="phase2">
+                <h2><span class="section-icon">5</span> Phase 2: 核心服务开发</h2>
+
+                <div class="info-box warning">
+                    <div class="info-box-title">阶段状态：进行中（预计 4-6 周）</div>
+                    <p>重点完成 planning-api 和 assimilation-api 两个核心服务的业务逻辑实现，建立完整的数据流和API契约。</p>
+                </div>
+
+                <h3>5.1 服务开发计划</h3>
+                <div class="phase-timeline">
+                    <div class="phase-node active">
+                        <div class="phase-header">
+                            <span class="phase-name">Week 1-2: 领域模型设计</span>
+                            <span class="phase-duration">2周</span>
+                        </div>
+                        <div class="card">
+                            <ul>
+                                <li>完成领域建模（Entity、ValueObject、Aggregate）</li>
+                                <li>设计数据库Schema（多租户隔离）</li>
+                                <li>定义API契约（OpenAPI 3.1规范）</li>
+                                <li>实现基础CRUD接口</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="phase-node pending">
+                        <div class="phase-header">
+                            <span class="phase-name">Week 3-4: 业务逻辑实现</span>
+                            <span class="phase-duration">2周</span>
+                        </div>
+                        <div class="card">
+                            <ul>
+                                <li>planning-api: 任务管理、路径规划调度</li>
+                                <li>assimilation-api: 同化流程编排、状态管理</li>
+                                <li>weather-service: WRF数据接入与预处理</li>
+                                <li>集成测试用例编写</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="phase-node pending">
+                        <div class="phase-header">
+                            <span class="phase-name">Week 5-6: 集成与优化</span>
+                            <span class="phase-duration">2周</span>
+                        </div>
+                        <div class="card">
+                            <ul>
+                                <li>服务间Feign调用配置</li>
+                                <li>分布式事务（Seata）集成</li>
+                                <li>性能基准测试与调优</li>
+                                <li>API文档自动生成</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>5.2 API设计规范</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">版本控制示例</span>
+                        <span class="card-badge badge-cyan">Header-based</span>
+                    </div>
+                    <pre><code>GET /api/v1/planning/missions
+Accept: application/vnd.uav.v1+json
+X-Tenant-ID: tenant_001
+
+// 响应
+{
+  "apiVersion": "v1",
+  "data": [...],
+  "meta": {
+    "total": 100,
+    "page": 1,
+    "size": 20
+  }
+}</code></pre>
+                </div>
+
+                <h3>5.3 多租户实现</h3>
+                <div class="mermaid">
+sequenceDiagram
+    participant Client as 客户端
+    participant Gateway as API Gateway
+    participant Tenant as TenantResolver
+    participant DS as DynamicDataSource
+    participant DB as MySQL Schema
+
+    Client->>Gateway: 请求 + X-Tenant-ID
+    Gateway->>Tenant: 解析租户ID
+    Tenant->>DS: 获取租户数据源
+    DS->>DB: 切换至对应Schema
+    DB-->>DS: 连接就绪
+    DS-->>Gateway: 执行查询
+    Gateway-->>Client: 返回结果
+                </div>
+            </section>
+
+            <!-- Section 6: Phase 3 -->
+            <section id="phase3">
+                <h2><span class="section-icon">6</span> Phase 3: 算法迁移</h2>
+
+                <div class="info-box warning">
+                    <div class="info-box-title">阶段状态：规划中（预计 6-8 周）</div>
+                    <p>将约93个算法组件从旧系统迁移至新平台的 algorithm-engine 和 ai-model-service 模块，是重构工作的核心难点。</p>
+                </div>
+
+                <h3>6.1 迁移策略</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">迁移优先级</span>
+                            <span class="card-badge badge-blue">策略</span>
+                        </div>
+                        <ol>
+                            <li><strong>P0 - 核心同化算法</strong>（13个）：3DVAR、4DVAR、5DVAR、EnKF等</li>
+                            <li><strong>P1 - 基础规划算法</strong>（10个）：A*、Dijkstra、RRT*、GA、PSO等</li>
+                            <li><strong>P2 - AI模型</strong>（21个）：UNet、CNN、LSTM、XGBoost等</li>
+                            <li><strong>P3 - 高级规划</strong>（18个）：RiskAware、MultiObjective、DigitalTwin等</li>
+                            <li><strong>P4 - 边云算法</strong>（20个）：FederatedLearning、EdgeAI等</li>
+                            <li><strong>P5 - 边缘SDK</strong>（11个）：C++实现、Python回退</li>
+                        </ol>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">迁移方法</span>
+                            <span class="card-badge badge-purple">方法</span>
+                        </div>
+                        <ul>
+                            <li><strong>直接迁移</strong>：Java算法直接重构</li>
+                            <li><strong>JNI桥接</strong>：C++算法通过JNI调用</li>
+                            <li><strong>Python集成</strong>：Py4J / GraalVM Python</li>
+                            <li><strong>容器化</strong>：独立算法镜像（gRPC）</li>
+                            <li><strong>模型导出</strong>：ONNX/TensorRT推理</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>6.2 算法分类详情</h3>
+
+                <h4>同化算法（13个）</h4>
+                <div class="algo-grid">
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">3DVAR</span>
+                            <span class="algo-status migrated">已迁移</span>
+                        </div>
+                        <div class="algo-desc">三维变分同化</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">4DVAR</span>
+                            <span class="algo-status migrated">已迁移</span>
+                        </div>
+                        <div class="algo-desc">四维变分同化</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">5DVAR</span>
+                            <span class="algo-status migrated">已完成</span>
+                        </div>
+                        <div class="algo-desc">五维变分同化</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">EnKF</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">集合卡尔曼滤波</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">Hybrid</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">混合同化</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">AdaptiveHybrid</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">自适应混合同化</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">MultiScaleHybrid</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">多尺度混合同化</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">EnhancedBayesian</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">增强贝叶斯同化</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">AdaptiveAssimilator</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">自适应同化器</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">VarianceFieldOptimizer</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">方差场优化器</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">AdaptiveVarianceField</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">自适应方差场</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">BayesianAssimilator</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">贝叶斯同化器</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">CompatibleAssimilator</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">兼容同化器</div>
+                    </div>
+                </div>
+
+                <h4>AI模型（21个）</h4>
+                <div class="algo-grid">
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">UNetDownscaler</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">UNet降尺度模型</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">ProbabilisticUNet</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">概率UNet</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">CNNCorrector</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">CNN修正器</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">LSTMTemporalCorrector</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">LSTM时序修正</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">XGBoostCorrector</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">XGBoost修正</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">GPRegressionModel</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">高斯过程回归</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">SparseGPModel</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">稀疏高斯过程</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">GPRiskEstimator</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">GP风险估计</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">EnsembleKalmanFilter</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">集合卡尔曼滤波</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">BayesianActiveObserver</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">贝叶斯主动观测</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">DynamicWeightFusion</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">动态权重融合</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">PhysicsConstraint</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">物理约束模块</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">ModelPredictiveController</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">模型预测控制</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">GPRPathPlanner</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">GP路径规划</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">RiskCostFunction</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">风险代价函数</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">MultiUAVConflictResolver</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">多无人机冲突消解</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">DataPipeline-1</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">数据管道模块1</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">DataPipeline-2</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">数据管道模块2</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">DataPipeline-3</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">数据管道模块3</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">DataPipeline-4</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">数据管道模块4</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">DataPipeline-5</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">数据管道模块5</div>
+                    </div>
+                </div>
+
+                <h4>规划算法（28个）</h4>
+                <div class="algo-grid">
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">Dijkstra</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">最短路径算法</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">RRT*</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">快速随机树*</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">InformedRRT*</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">启发式RRT*</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">GA</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">遗传算法</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">PSO</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">粒子群优化</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">ACO</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">蚁群优化</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">CBS</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">冲突搜索</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">DQN</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">深度Q网络</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">PPO</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">近端策略优化</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">NSGA-II</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">非支配排序遗传算法</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">RiskAwareA*</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">风险感知A*</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">RiskAwareRRT*</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">风险感知RRT*</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">VRPTW</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">带时间窗车辆路径</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">DE-RRT*</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">差分进化RRT*</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">DWA</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">动态窗口法</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">A*</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">A星算法</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">ThreeLayerPlanner</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">三层规划器</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">UncertaintyAwarePlanner</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">不确定性感知规划</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">MultiObjectivePlanner</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">多目标规划器</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">DigitalTwin</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">数字孪生</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">KnowledgeGraph</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">知识图谱</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">ConflictDetector</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">冲突检测器</div>
+                    </div>
+                    <div class="algo-card">
+                        <div class="algo-card-header">
+                            <span class="algo-name">Trajectory4D</span>
+                            <span class="algo-status pending">待迁移</span>
+                        </div>
+                        <div class="algo-desc">四维轨迹规划</div>
+                    </div>
+                </div>
+
+                <h4>边云算法（20个）与边缘SDK（11个）</h4>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">边云协同算法（20个）</span>
+                            <span class="card-badge badge-purple">Phase 4</span>
+                        </div>
+                        <div class="tag-list">
+                            <span class="tag">FederatedLearning</span>
+                            <span class="tag">EdgeAIInference</span>
+                            <span class="tag">LLMAssistedDecision</span>
+                            <span class="tag">V2X</span>
+                            <span class="tag">SelfOrganizingNetwork</span>
+                            <span class="tag">EdgeAggregator</span>
+                            <span class="tag">ModelCompressor</span>
+                            <span class="tag">SplitLearning</span>
+                            <span class="tag">KnowledgeDistillation</span>
+                            <span class="tag">EdgeScheduler</span>
+                            <span class="tag">... 等10个</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">边缘SDK（11个）</span>
+                            <span class="card-badge badge-cyan">Phase 4</span>
+                        </div>
+                        <div class="tag-list">
+                            <span class="tag">C++ A*</span>
+                            <span class="tag">C++ DWA</span>
+                            <span class="tag">RiskAssessor</span>
+                            <span class="tag">FlightController</span>
+                            <span class="tag">PathSmoother</span>
+                            <span class="tag">TrajectoryCorrector</span>
+                            <span class="tag">OfflineCache</span>
+                            <span class="tag">PythonFallback</span>
+                            <span class="tag">... 等3个</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 7: Phase 4 -->
+            <section id="phase4">
+                <h2><span class="section-icon">7</span> Phase 4: 边云协同与高级特性</h2>
+
+                <div class="info-box warning">
+                    <div class="info-box-title">阶段状态：规划中（预计 4-6 周）</div>
+                    <p>实现边缘计算SDK、边云协同算法、以及LLM辅助决策等高级特性。</p>
+                </div>
+
+                <h3>7.1 边缘SDK架构</h3>
+                <div class="mermaid">
+graph TB
+    subgraph Edge["边缘设备"]
+        CppSDK["C++ SDK<br/>高性能计算"]
+        PyFallback["Python Fallback<br/>快速迭代"]
+        Cache["OfflineCache<br/>离线缓存"]
+    end
+
+    subgraph Cloud["云端平台"]
+        CloudAI["AI Model Service"]
+        CloudAlg["Algorithm Engine"]
+        CloudSync["模型同步服务"]
+    end
+
+    CppSDK -->|gRPC| CloudAI
+    CppSDK --> Cache
+    PyFallback --> Cache
+    CloudSync -->|OTA| CppSDK
+    CloudSync -->|OTA| PyFallback
+                </div>
+
+                <h3>7.2 边云协同工作流</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">联邦学习流程</span>
+                        <span class="card-badge badge-purple">FederatedLearning</span>
+                    </div>
+                    <ol>
+                        <li><strong>全局模型下发</strong>：云端下发初始模型至各边缘节点</li>
+                        <li><strong>本地训练</strong>：边缘设备使用本地数据训练模型</li>
+                        <li><strong>梯度聚合</strong>：边缘节点上传梯度（非原始数据）</li>
+                        <li><strong>全局更新</strong>：云端聚合梯度，更新全局模型</li>
+                        <li><strong>模型评估</strong>：验证全局模型性能</li>
+                        <li><strong>迭代循环</strong>：重复步骤1-5直至收敛</li>
+                    </ol>
+                </div>
+
+                <h3>7.3 LLM辅助决策</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">应用场景</span>
+                            <span class="card-badge badge-cyan">LLM</span>
+                        </div>
+                        <ul>
+                            <li>自然语言任务描述转规划约束</li>
+                            <li>异常事件智能诊断与建议</li>
+                            <li>多目标权衡的交互式决策</li>
+                            <li>规划结果的可解释性生成</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">技术方案</span>
+                            <span class="card-badge badge-cyan">架构</span>
+                        </div>
+                        <ul>
+                            <li>模型：本地部署LLaMA 3 / Qwen</li>
+                            <li>接口：OpenAI兼容API</li>
+                            <li>上下文：RAG增强（知识图谱）</li>
+                            <li>安全：输出校验与沙箱执行</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 8: Phase 5 -->
+            <section id="phase5">
+                <h2><span class="section-icon">8</span> Phase 5: 生产就绪</h2>
+
+                <div class="info-box warning">
+                    <div class="info-box-title">阶段状态：规划中（预计 4-6 周）</div>
+                    <p>完成性能调优、安全加固、监控告警、文档完善，确保系统达到生产环境部署要求。</p>
+                </div>
+
+                <h3>8.1 生产就绪检查清单</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">性能与可靠性</span>
+                            <span class="card-badge badge-green">SRE</span>
+                        </div>
+                        <ul class="checklist">
+                            <li class="pending">全链路压测（目标：10k QPS）</li>
+                            <li class="pending">数据库性能调优（索引、分片）</li>
+                            <li class="pending">Redis集群模式部署</li>
+                            <li class="pending">JVM GC调优（ZGC/Shenandoah）</li>
+                            <li class="pending">熔断降级策略验证</li>
+                            <li class="pending">灾备演练（RTO < 5min）</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">安全与合规</span>
+                            <span class="card-badge badge-red">Security</span>
+                        </div>
+                        <ul class="checklist">
+                            <li class="pending">OAuth 2.0 + JWT认证</li>
+                            <li class="pending">API接口权限控制（RBAC）</li>
+                            <li class="pending">数据加密（传输+存储）</li>
+                            <li class="pending">审计日志完整记录</li>
+                            <li class="pending">漏洞扫描与修复</li>
+                            <li class="pending">等保2.0合规检查</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>8.2 监控告警体系</h3>
+                <div class="mermaid">
+graph LR
+    App["应用服务"] -->|Metrics| Prometheus["Prometheus"]
+    App -->|Logs| Loki["Loki"]
+    App -->|Traces| Tempo["Tempo"]
+    Prometheus --> Grafana["Grafana"]
+    Loki --> Grafana
+    Tempo --> Grafana
+    Prometheus --> AlertManager["AlertManager"]
+    AlertManager --> DingTalk["钉钉/企业微信"]
+    AlertManager --> PagerDuty["PagerDuty"]
+                </div>
+
+                <h3>8.3 关键指标（SLI/SLO）</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>指标</th>
+                                <th>SLI</th>
+                                <th>SLO</th>
+                                <th>测量方法</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>可用性</td>
+                                <td>服务正常运行时间比例</td>
+                                <td>99.9%</td>
+                                <td>Prometheus uptime</td>
+                            </tr>
+                            <tr>
+                                <td>延迟</td>
+                                <td>P99 请求响应时间</td>
+                                <td>< 500ms</td>
+                                <td>SkyWalking APM</td>
+                            </tr>
+                            <tr>
+                                <td>错误率</td>
+                                <td>HTTP 5xx 比例</td>
+                                <td>< 0.1%</td>
+                                <td>Gateway metrics</td>
+                            </tr>
+                            <tr>
+                                <td>吞吐量</td>
+                                <td>每秒请求数</td>
+                                <td>> 10,000 RPS</td>
+                                <td>压测工具</td>
+                            </tr>
+                            <tr>
+                                <td>数据新鲜度</td>
+                                <td>WRF数据到可用延迟</td>
+                                <td>< 15min</td>
+                                <td>自定义指标</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 9: Gantt Chart -->
+            <section id="gantt">
+                <h2><span class="section-icon">9</span> 甘特图时间线</h2>
+                <div id="gantt-chart" class="gantt-container"></div>
+
+                <h3>各阶段时间概览</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>阶段</th>
+                                <th>名称</th>
+                                <th>开始时间</th>
+                                <th>持续时间</th>
+                                <th>关键交付物</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Phase 1</td>
+                                <td>骨架搭建</td>
+                                <td>2026-05-01</td>
+                                <td>4周</td>
+                                <td>项目结构、CI/CD、基础设施</td>
+                                <td><span class="card-badge badge-green">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td>Phase 2</td>
+                                <td>核心服务</td>
+                                <td>2026-06-01</td>
+                                <td>6周</td>
+                                <td>planning-api、assimilation-api</td>
+                                <td><span class="card-badge badge-yellow">进行中</span></td>
+                            </tr>
+                            <tr>
+                                <td>Phase 3</td>
+                                <td>算法迁移</td>
+                                <td>2026-07-15</td>
+                                <td>8周</td>
+                                <td>93个算法组件迁移完成</td>
+                                <td><span class="card-badge badge-blue">规划中</span></td>
+                            </tr>
+                            <tr>
+                                <td>Phase 4</td>
+                                <td>边云协同</td>
+                                <td>2026-09-10</td>
+                                <td>6周</td>
+                                <td>边缘SDK、联邦学习、LLM</td>
+                                <td><span class="card-badge badge-blue">规划中</span></td>
+                            </tr>
+                            <tr>
+                                <td>Phase 5</td>
+                                <td>生产就绪</td>
+                                <td>2026-10-25</td>
+                                <td>6周</td>
+                                <td>性能调优、安全加固、监控</td>
+                                <td><span class="card-badge badge-blue">规划中</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 10: Algorithm Mapping -->
+            <section id="algo-mapping">
+                <h2><span class="section-icon">10</span> 算法迁移映射表</h2>
+
+                <h3>10.1 同化算法映射</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>算法名称</th>
+                                <th>旧系统位置</th>
+                                <th>新系统模块</th>
+                                <th>迁移方式</th>
+                                <th>优先级</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>3DVAR</td>
+                                <td><code>legacy/assimilation/var3d/</code></td>
+                                <td><code>algorithm-engine/assimilation/</code></td>
+                                <td>直接迁移</td>
+                                <td>P0</td>
+                                <td><span class="card-badge badge-green">已迁移</span></td>
+                            </tr>
+                            <tr>
+                                <td>4DVAR</td>
+                                <td><code>legacy/assimilation/var4d/</code></td>
+                                <td><code>algorithm-engine/assimilation/</code></td>
+                                <td>直接迁移</td>
+                                <td>P0</td>
+                                <td><span class="card-badge badge-green">已迁移</span></td>
+                            </tr>
+                            <tr>
+                                <td>5DVAR</td>
+                                <td><code>legacy/assimilation/var5d/</code></td>
+                                <td><code>algorithm-engine/assimilation/</code></td>
+                                <td>直接迁移</td>
+                                <td>P0</td>
+                                <td><span class="card-badge badge-green">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td>EnKF</td>
+                                <td><code>legacy/assimilation/enkf/</code></td>
+                                <td><code>algorithm-engine/assimilation/</code></td>
+                                <td>直接迁移</td>
+                                <td>P0</td>
+                                <td><span class="card-badge badge-yellow">进行中</span></td>
+                            </tr>
+                            <tr>
+                                <td>Hybrid</td>
+                                <td><code>legacy/assimilation/hybrid/</code></td>
+                                <td><code>algorithm-engine/assimilation/</code></td>
+                                <td>直接迁移</td>
+                                <td>P0</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>AdaptiveHybrid</td>
+                                <td><code>legacy/assimilation/adaptive/</code></td>
+                                <td><code>algorithm-engine/assimilation/</code></td>
+                                <td>重构优化</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>MultiScaleHybrid</td>
+                                <td><code>legacy/assimilation/multiscale/</code></td>
+                                <td><code>algorithm-engine/assimilation/</code></td>
+                                <td>重构优化</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>EnhancedBayesian</td>
+                                <td><code>legacy/assimilation/bayesian/</code></td>
+                                <td><code>algorithm-engine/assimilation/</code></td>
+                                <td>重构优化</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>AdaptiveAssimilator</td>
+                                <td><code>legacy/assimilation/adaptive/</code></td>
+                                <td><code>algorithm-engine/assimilation/</code></td>
+                                <td>重构优化</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>VarianceFieldOptimizer</td>
+                                <td><code>legacy/assimilation/variance/</code></td>
+                                <td><code>algorithm-engine/assimilation/</code></td>
+                                <td>直接迁移</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>AdaptiveVarianceField</td>
+                                <td><code>legacy/assimilation/variance/</code></td>
+                                <td><code>algorithm-engine/assimilation/</code></td>
+                                <td>直接迁移</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>BayesianAssimilator</td>
+                                <td><code>legacy/assimilation/bayesian/</code></td>
+                                <td><code>algorithm-engine/assimilation/</code></td>
+                                <td>直接迁移</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>CompatibleAssimilator</td>
+                                <td><code>legacy/assimilation/compat/</code></td>
+                                <td><code>algorithm-engine/assimilation/</code></td>
+                                <td>直接迁移</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>10.2 AI模型映射</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>模型名称</th>
+                                <th>框架</th>
+                                <th>新系统模块</th>
+                                <th>部署方式</th>
+                                <th>优先级</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>UNetDownscaler</td>
+                                <td>PyTorch</td>
+                                <td><code>ai-model-service/downscale/</code></td>
+                                <td>ONNX Runtime</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>ProbabilisticUNet</td>
+                                <td>PyTorch</td>
+                                <td><code>ai-model-service/downscale/</code></td>
+                                <td>ONNX Runtime</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>CNNCorrector</td>
+                                <td>TensorFlow</td>
+                                <td><code>ai-model-service/correction/</code></td>
+                                <td>TensorFlow Serving</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>LSTMTemporalCorrector</td>
+                                <td>PyTorch</td>
+                                <td><code>ai-model-service/correction/</code></td>
+                                <td>ONNX Runtime</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>XGBoostCorrector</td>
+                                <td>XGBoost</td>
+                                <td><code>ai-model-service/correction/</code></td>
+                                <td>Java XGBoost4J</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>GPRegressionModel</td>
+                                <td>GPyTorch</td>
+                                <td><code>ai-model-service/gp/</code></td>
+                                <td>Python gRPC服务</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>SparseGPModel</td>
+                                <td>GPyTorch</td>
+                                <td><code>ai-model-service/gp/</code></td>
+                                <td>Python gRPC服务</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>GPRiskEstimator</td>
+                                <td>GPyTorch</td>
+                                <td><code>ai-model-service/risk/</code></td>
+                                <td>Python gRPC服务</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>DQN</td>
+                                <td>PyTorch</td>
+                                <td><code>ai-model-service/rl/</code></td>
+                                <td>ONNX Runtime</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>PPO</td>
+                                <td>PyTorch</td>
+                                <td><code>ai-model-service/rl/</code></td>
+                                <td>ONNX Runtime</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>10.3 规划算法映射</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>算法名称</th>
+                                <th>类型</th>
+                                <th>新系统模块</th>
+                                <th>实现语言</th>
+                                <th>优先级</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>A*</td>
+                                <td>图搜索</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P0</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>Dijkstra</td>
+                                <td>图搜索</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P0</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>RRT*</td>
+                                <td>采样搜索</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P0</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>InformedRRT*</td>
+                                <td>采样搜索</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P0</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>GA</td>
+                                <td>进化算法</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>PSO</td>
+                                <td>群体智能</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>ACO</td>
+                                <td>群体智能</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>CBS</td>
+                                <td>多智能体</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>RiskAwareA*</td>
+                                <td>风险感知</td>
+                                <td><code>algorithm-engine/planning/risk/</code></td>
+                                <td>Java</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>RiskAwareRRT*</td>
+                                <td>风险感知</td>
+                                <td><code>algorithm-engine/planning/risk/</code></td>
+                                <td>Java</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>VRPTW</td>
+                                <td>车辆路径</td>
+                                <td><code>algorithm-engine/planning/vrp/</code></td>
+                                <td>Java</td>
+                                <td>P1</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>DE-RRT*</td>
+                                <td>混合算法</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>DWA</td>
+                                <td>局部规划</td>
+                                <td><code>algorithm-engine/planning/local/</code></td>
+                                <td>Java/C++</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>ThreeLayerPlanner</td>
+                                <td>分层规划</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>UncertaintyAwarePlanner</td>
+                                <td>不确定性</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>MultiObjectivePlanner</td>
+                                <td>多目标</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>DigitalTwin</td>
+                                <td>数字孪生</td>
+                                <td><code>algorithm-engine/digital-twin/</code></td>
+                                <td>Java/Python</td>
+                                <td>P3</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>KnowledgeGraph</td>
+                                <td>知识图谱</td>
+                                <td><code>algorithm-engine/kg/</code></td>
+                                <td>Java</td>
+                                <td>P3</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>ConflictDetector</td>
+                                <td>冲突检测</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                            <tr>
+                                <td>Trajectory4D</td>
+                                <td>轨迹规划</td>
+                                <td><code>algorithm-engine/planning/</code></td>
+                                <td>Java</td>
+                                <td>P2</td>
+                                <td><span class="card-badge badge-blue">待开始</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 11: Milestones -->
+            <section id="milestones">
+                <h2><span class="section-icon">11</span> 里程碑与验收标准</h2>
+
+                <div class="milestone-list">
+                    <div class="milestone-item">
+                        <div class="milestone-marker done">M1</div>
+                        <div class="milestone-content">
+                            <div class="milestone-title">Phase 1 完成 — 项目骨架搭建</div>
+                            <div class="milestone-date">2026-05-31 | 实际完成</div>
+                            <div class="milestone-desc">
+                                <strong>验收标准：</strong>
+                                <ul>
+                                    <li>12个Maven模块可独立编译通过</li>
+                                    <li>CI流水线成功运行（编译+单元测试）</li>
+                                    <li>docker-compose一键启动所有基础设施</li>
+                                    <li>5D-VAR算法单元测试通过率100%</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="milestone-item active">
+                        <div class="milestone-marker active">M2</div>
+                        <div class="milestone-content">
+                            <div class="milestone-title">Phase 2 完成 — 核心服务上线</div>
+                            <div class="milestone-date">2026-07-15 | 预计</div>
+                            <div class="milestone-desc">
+                                <strong>验收标准：</strong>
+                                <ul>
+                                    <li>planning-api 和 assimilation-api 核心接口可用</li>
+                                    <li>多租户Schema隔离功能验证通过</li>
+                                    <li>API版本控制（Header-based）正常工作</li>
+                                    <li>服务注册发现（Nacos）正常运行</li>
+                                    <li>单元测试覆盖率 > 70%</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="milestone-item pending">
+                        <div class="milestone-marker pending">M3</div>
+                        <div class="milestone-content">
+                            <div class="milestone-title">Phase 3 完成 — 算法迁移完成</div>
+                            <div class="milestone-date">2026-09-10 | 预计</div>
+                            <div class="milestone-desc">
+                                <strong>验收标准：</strong>
+                                <ul>
+                                    <li>93个算法组件全部迁移至新平台</li>
+                                    <li>核心算法（P0/P1）单元测试覆盖率 > 80%</li>
+                                    <li>算法执行引擎支持动态加载</li>
+                                    <li>算法性能基准测试通过（不低于旧系统）</li>
+                                    <li>AI模型推理服务（ONNX/TensorRT）部署完成</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="milestone-item pending">
+                        <div class="milestone-marker pending">M4</div>
+                        <div class="milestone-content">
+                            <div class="milestone-title">Phase 4 完成 — 边云协同就绪</div>
+                            <div class="milestone-date">2026-10-25 | 预计</div>
+                            <div class="milestone-desc">
+                                <strong>验收标准：</strong>
+                                <ul>
+                                    <li>边缘SDK（C++/Python）发布v1.0</li>
+                                    <li>联邦学习端到端流程验证通过</li>
+                                    <li>LLM辅助决策接口可用</li>
+                                    <li>V2X通信模块集成测试通过</li>
+                                    <li>边云数据同步延迟 < 100ms</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="milestone-item pending">
+                        <div class="milestone-marker pending">M5</div>
+                        <div class="milestone-content">
+                            <div class="milestone-title">Phase 5 完成 — 生产环境上线</div>
+                            <div class="milestone-date">2026-12-05 | 预计</div>
+                            <div class="milestone-desc">
+                                <strong>验收标准：</strong>
+                                <ul>
+                                    <li>全链路压测通过（10k QPS）</li>
+                                    <li>安全审计与渗透测试通过</li>
+                                    <li>监控告警体系全覆盖</li>
+                                    <li>灾备演练成功（RTO < 5min）</li>
+                                    <li>运维文档与操作手册完备</li>
+                                    <li>等保2.0合规认证通过</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 12: Risk -->
+            <section id="risk">
+                <h2><span class="section-icon">12</span> 风险管控</h2>
+
+                <h3>12.1 风险矩阵</h3>
+                <div class="risk-matrix">
+                    <div class="risk-cell header"></div>
+                    <div class="risk-cell header">低影响</div>
+                    <div class="risk-cell header">中影响</div>
+                    <div class="risk-cell header">高影响</div>
+
+                    <div class="risk-cell label">高概率</div>
+                    <div class="risk-cell risk-medium">算法性能退化<br/><small>缓解：基准测试</small></div>
+                    <div class="risk-cell risk-high">算法迁移延期<br/><small>缓解：分批迭代</small></div>
+                    <div class="risk-cell risk-high">人员变动<br/><small>缓解：知识沉淀</small></div>
+
+                    <div class="risk-cell label">中概率</div>
+                    <div class="risk-cell risk-low">依赖版本冲突<br/><small>缓解：兼容性测试</small></div>
+                    <div class="risk-cell risk-medium">数据迁移异常<br/><small>缓解：双写验证</small></div>
+                    <div class="risk-cell risk-high">第三方服务变更<br/><small>缓解：抽象适配层</small></div>
+
+                    <div class="risk-cell label">低概率</div>
+                    <div class="risk-cell risk-low">基础设施故障<br/><small>缓解：高可用部署</small></div>
+                    <div class="risk-cell risk-low">安全漏洞<br/><small>缓解：定期扫描</small></div>
+                    <div class="risk-cell risk-medium">法规政策变化<br/><small>缓解：合规跟踪</small></div>
+                </div>
+
+                <h3>12.2 风险应对措施</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>风险项</th>
+                                <th>等级</th>
+                                <th>应对策略</th>
+                                <th>负责人</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>93个算法迁移工作量大</td>
+                                <td><span class="card-badge badge-red">高</span></td>
+                                <td>按P0-P5优先级分批迁移；旧系统并行运行；逐步切换流量</td>
+                                <td>算法团队</td>
+                            </tr>
+                            <tr>
+                                <td>算法性能不及旧系统</td>
+                                <td><span class="card-badge badge-orange">中高</span></td>
+                                <td>每个算法迁移后做基准测试；性能退化>10%则优化或回退</td>
+                                <td>性能团队</td>
+                            </tr>
+                            <tr>
+                                <td>多租户数据隔离漏洞</td>
+                                <td><span class="card-badge badge-red">高</span></td>
+                                <td>Schema隔离+SQL审计；租户穿透测试；定期安全扫描</td>
+                                <td>架构团队</td>
+                            </tr>
+                            <tr>
+                                <td>Spring Boot 4.0新特性学习成本</td>
+                                <td><span class="card-badge badge-yellow">中</span></td>
+                                <td>团队培训；技术分享；官方文档研读</td>
+                                <td>技术负责人</td>
+                            </tr>
+                            <tr>
+                                <td>边缘SDK跨平台兼容性</td>
+                                <td><span class="card-badge badge-yellow">中</span></td>
+                                <td>CI多平台构建（Linux/ARM/x86）；自动化兼容性测试</td>
+                                <td>嵌入式团队</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 13: Deployment -->
+            <section id="deployment">
+                <h2><span class="section-icon">13</span> 部署策略</h2>
+
+                <h3>13.1 环境规划</h3>
+                <div class="grid-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">开发环境</span>
+                            <span class="card-badge badge-blue">Dev</span>
+                        </div>
+                        <ul>
+                            <li>Docker Compose 本地启动</li>
+                            <li>开发者本地调试</li>
+                            <li>Feature分支自动部署</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">测试环境</span>
+                            <span class="card-badge badge-yellow">Test</span>
+                        </div>
+                        <ul>
+                            <li>K8s 单副本部署</li>
+                            <li>集成测试、回归测试</li>
+                            <li>Release分支自动部署</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">生产环境</span>
+                            <span class="card-badge badge-green">Prod</span>
+                        </div>
+                        <ul>
+                            <li>K8s 多副本高可用</li>
+                            <li>滚动发布策略</li>
+                            <li>手动触发+审批</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>13.2 滚动发布流程</h3>
+                <div class="mermaid">
+sequenceDiagram
+    participant Dev as 开发者
+    participant Git as GitHub
+    participant CI as CI Pipeline
+    participant Registry as 镜像仓库
+    participant K8s as Kubernetes
+    participant Monitor as 监控
+
+    Dev->>Git: Push to main
+    Git->>CI: Trigger workflow
+    CI->>CI: Compile & Test
+    CI->>CI: Build Docker Image
+    CI->>Registry: Push Image
+    CI->>K8s: Deploy to Test
+    K8s->>Monitor: Health Check
+    Monitor-->>CI: Test Pass
+    CI->>K8s: Deploy to Prod (Rolling)
+    K8s->>K8s: Update 20% Pods
+    K8s->>Monitor: Metrics Check
+    Monitor-->>K8s: OK
+    K8s->>K8s: Update 50% Pods
+    K8s->>Monitor: Metrics Check
+    Monitor-->>K8s: OK
+    K8s->>K8s: Update 100% Pods
+    K8s-->>CI: Deploy Complete
+                </div>
+
+                <h3>13.3 回滚策略</h3>
+                <div class="info-box danger">
+                    <div class="info-box-title">自动回滚触发条件</div>
+                    <ul>
+                        <li>错误率 > 1%（持续2分钟）</li>
+                        <li>P99延迟 > 2秒（持续3分钟）</li>
+                        <li>Pod重启次数 > 5次/10分钟</li>
+                        <li>健康检查失败 > 3次连续</li>
+                    </ul>
+                    <p>触发后自动回滚至上一稳定版本，并发送告警通知。</p>
+                </div>
+            </section>
+
+            <!-- Section 14: Team -->
+            <section id="team">
+                <h2><span class="section-icon">14</span> 团队与分工</h2>
+
+                <h3>14.1 团队结构</h3>
+                <div class="mermaid">
+graph TB
+    TL["技术负责人<br/>1人"] --> Arch["架构组<br/>2人"]
+    TL --> Backend["后端开发组<br/>4人"]
+    TL --> Algo["算法组<br/>3人"]
+    TL --> Edge["边缘计算组<br/>2人"]
+    TL --> QA["测试组<br/>2人"]
+    TL --> Ops["运维组<br/>1人"]
+
+    Arch --> Backend
+    Arch --> Algo
+    Backend --> QA
+    Algo --> QA
+    Edge --> QA
+                </div>
+
+                <h3>14.2 职责分工</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>角色</th>
+                                <th>人数</th>
+                                <th>主要职责</th>
+                                <th>负责阶段</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>技术负责人</td>
+                                <td>1</td>
+                                <td>技术决策、进度把控、风险协调</td>
+                                <td>全阶段</td>
+                            </tr>
+                            <tr>
+                                <td>架构师</td>
+                                <td>2</td>
+                                <td>系统设计、技术选型、代码审查</td>
+                                <td>Phase 1-2</td>
+                            </tr>
+                            <tr>
+                                <td>后端开发</td>
+                                <td>4</td>
+                                <td>微服务开发、API实现、集成测试</td>
+                                <td>Phase 2-3</td>
+                            </tr>
+                            <tr>
+                                <td>算法工程师</td>
+                                <td>3</td>
+                                <td>算法迁移、优化、模型部署</td>
+                                <td>Phase 3-4</td>
+                            </tr>
+                            <tr>
+                                <td>嵌入式开发</td>
+                                <td>2</td>
+                                <td>边缘SDK、C++算法、硬件适配</td>
+                                <td>Phase 4</td>
+                            </tr>
+                            <tr>
+                                <td>测试工程师</td>
+                                <td>2</td>
+                                <td>测试用例、自动化测试、性能测试</td>
+                                <td>全阶段</td>
+                            </tr>
+                            <tr>
+                                <td>运维工程师</td>
+                                <td>1</td>
+                                <td>CI/CD、K8s运维、监控告警</td>
+                                <td>Phase 2,5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>14.3 代码审查规范</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Trunk Based + 2人Review</span>
+                        <span class="card-badge badge-green">已确认</span>
+                    </div>
+                    <ul>
+                        <li><strong>强制要求</strong>：所有合并到main的PR必须经过至少2人Approve</li>
+                        <li><strong>审查内容</strong>：代码逻辑、测试覆盖、性能影响、安全合规</li>
+                        <li><strong>自动化检查</strong>：SonarQube质量门禁、单元测试通过率、代码格式化</li>
+                        <li><strong>审查时限</strong>：PR创建后24小时内完成首次Review</li>
+                        <li><strong>冲突解决</strong>：作者负责Rebase，审查者验证</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 15: Appendix -->
+            <section id="appendix">
+                <h2><span class="section-icon">15</span> 附录</h2>
+
+                <h3>15.1 术语表</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>术语</th>
+                                <th>英文全称</th>
+                                <th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>WRF</td>
+                                <td>Weather Research and Forecasting</td>
+                                <td>气象研究与预报模型</td>
+                            </tr>
+                            <tr>
+                                <td>VRP</td>
+                                <td>Vehicle Routing Problem</td>
+                                <td>车辆路径问题</td>
+                            </tr>
+                            <tr>
+                                <td>VAR</td>
+                                <td>Variational Assimilation</td>
+                                <td>变分同化</td>
+                            </tr>
+                            <tr>
+                                <td>EnKF</td>
+                                <td>Ensemble Kalman Filter</td>
+                                <td>集合卡尔曼滤波</td>
+                            </tr>
+                            <tr>
+                                <td>UTM</td>
+                                <td>UAS Traffic Management</td>
+                                <td>无人机空域管理</td>
+                            </tr>
+                            <tr>
+                                <td>RRT*</td>
+                                <td>Rapidly-exploring Random Tree Star</td>
+                                <td>快速随机树优化算法</td>
+                            </tr>
+                            <tr>
+                                <td>CBS</td>
+                                <td>Conflict-Based Search</td>
+                                <td>基于冲突的搜索</td>
+                            </tr>
+                            <tr>
+                                <td>DQN</td>
+                                <td>Deep Q-Network</td>
+                                <td>深度Q网络</td>
+                            </tr>
+                            <tr>
+                                <td>PPO</td>
+                                <td>Proximal Policy Optimization</td>
+                                <td>近端策略优化</td>
+                            </tr>
+                            <tr>
+                                <td>NSGA-II</td>
+                                <td>Non-dominated Sorting Genetic Algorithm II</td>
+                                <td>非支配排序遗传算法</td>
+                            </tr>
+                            <tr>
+                                <td>V2X</td>
+                                <td>Vehicle-to-Everything</td>
+                                <td>车联网通信</td>
+                            </tr>
+                            <tr>
+                                <td>LLM</td>
+                                <td>Large Language Model</td>
+                                <td>大语言模型</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>15.2 参考文档</h3>
+                <div class="card">
+                    <ul>
+                        <li><code>uav-platform-v2/docs/architecture.md</code> — 系统架构设计文档</li>
+                        <li><code>uav-platform-v2/docs/migration-tracker.md</code> — 算法迁移追踪表</li>
+                        <li><code>uav-platform-v2/docs/api-guidelines.md</code> — API设计规范</li>
+                        <li><code>uav-platform-v2/docs/deployment.md</code> — 部署操作手册</li>
+                        <li><code>uav-platform-v2/docs/development.md</code> — 开发环境搭建指南</li>
+                    </ul>
+                </div>
+
+                <h3>15.3 相关链接</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">技术文档</span>
+                        </div>
+                        <ul>
+                            <li><a href="https://spring.io/projects/spring-boot" target="_blank" style="color:var(--accent-blue)">Spring Boot 官方文档</a></li>
+                            <li><a href="https://spring.io/projects/spring-cloud" target="_blank" style="color:var(--accent-blue)">Spring Cloud 官方文档</a></li>
+                            <li><a href="https://nacos.io/" target="_blank" style="color:var(--accent-blue)">Nacos 官方文档</a></li>
+                            <li><a href="https://www.mmm.ucar.edu/weather-research-and-forecasting-model" target="_blank" style="color:var(--accent-blue)">WRF模型官网</a></li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">项目仓库</span>
+                        </div>
+                        <ul>
+                            <li><code>github.com/org/uav-platform-v2</code> — 主仓库</li>
+                            <li><code>github.com/org/uav-platform-v2/wiki</code> — 项目Wiki</li>
+                            <li><code>github.com/org/uav-platform-v2/issues</code> — 问题追踪</li>
+                            <li><code>github.com/org/uav-platform-v2/actions</code> — CI/CD流水线</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="page-footer">
+                <p>UAV平台重构实施计划 | WRF气象驱动无人机VRP智能路径规划系统</p>
+                <p>文档版本: v1.0 | 最后更新: 2026-06-12 | 技术负责人审阅通过</p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#21262d',
+                primaryTextColor: '#c9d1d9',
+                primaryBorderColor: '#30363d',
+                lineColor: '#8b949e',
+                secondaryColor: '#161b22',
+                tertiaryColor: '#0d1117',
+                fontFamily: 'TechFont, sans-serif'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                useMaxWidth: true
+            }
+        });
+
+        // Initialize Gantt Chart with ECharts
+        const ganttChart = echarts.init(document.getElementById('gantt-chart'));
+
+        const phases = [
+            { name: 'Phase 1: 骨架搭建', start: '2026-05-01', end: '2026-05-31', progress: 100, status: '已完成' },
+            { name: 'Phase 2: 核心服务', start: '2026-06-01', end: '2026-07-15', progress: 35, status: '进行中' },
+            { name: 'Phase 3: 算法迁移', start: '2026-07-15', end: '2026-09-10', progress: 0, status: '规划中' },
+            { name: 'Phase 4: 边云协同', start: '2026-09-10', end: '2026-10-25', progress: 0, status: '规划中' },
+            { name: 'Phase 5: 生产就绪', start: '2026-10-25', end: '2026-12-05', progress: 0, status: '规划中' }
+        ];
+
+        const categories = phases.map(p => p.name);
+        const startDate = new Date('2026-04-15').getTime();
+        const endDate = new Date('2026-12-20').getTime();
+
+        const data = phases.map((phase, index) => {
+            const start = new Date(phase.start).getTime();
+            const end = new Date(phase.end).getTime();
+            const progressEnd = start + (end - start) * (phase.progress / 100);
+            return {
+                name: phase.name,
+                value: [index, start, end, phase.progress],
+                itemStyle: {
+                    color: phase.progress === 100 ? '#3fb950' : phase.progress > 0 ? '#58a6ff' : '#8b949e'
+                }
+            };
+        });
+
+        const option = {
+            backgroundColor: 'transparent',
+            tooltip: {
+                formatter: function(params) {
+                    const phase = phases[params.value[0]];
+                    const start = new Date(phase.start).toLocaleDateString('zh-CN');
+                    const end = new Date(phase.end).toLocaleDateString('zh-CN');
+                    return `<div style="font-weight:600">${phase.name}</div>
+                            <div>时间: ${start} ~ ${end}</div>
+                            <div>进度: ${phase.progress}%</div>
+                            <div>状态: ${phase.status}</div>`;
+                },
+                backgroundColor: '#161b22',
+                borderColor: '#30363d',
+                textStyle: { color: '#c9d1d9' }
+            },
+            grid: {
+                left: '200px',
+                right: '40px',
+                top: '40px',
+                bottom: '40px'
+            },
+            xAxis: {
+                type: 'time',
+                min: startDate,
+                max: endDate,
+                axisLabel: {
+                    color: '#8b949e',
+                    formatter: '{yyyy}-{MM}'
+                },
+                axisLine: { lineStyle: { color: '#30363d' } },
+                splitLine: { lineStyle: { color: '#21262d' } }
+            },
+            yAxis: {
+                type: 'category',
+                data: categories,
+                axisLabel: {
+                    color: '#c9d1d9',
+                    fontSize: 13,
+                    fontWeight: 500
+                },
+                axisLine: { lineStyle: { color: '#30363d' } },
+                splitLine: { show: false }
+            },
+            series: [{
+                type: 'custom',
+                renderItem: function(params, api) {
+                    const categoryIndex = api.value(0);
+                    const start = api.coord([api.value(1), categoryIndex]);
+                    const end = api.coord([api.value(2), categoryIndex]);
+                    const height = api.size([0, 1])[1] * 0.5;
+                    const progress = api.value(3);
+                    const rectShape = echarts.graphic.clipRectByRect({
+                        x: start[0],
+                        y: start[1] - height / 2,
+                        width: end[0] - start[0],
+                        height: height
+                    }, {
+                        x: params.coordSys.x,
+                        y: params.coordSys.y,
+                        width: params.coordSys.width,
+                        height: params.coordSys.height
+                    });
+                    if (!rectShape) return;
+                    const progressWidth = (end[0] - start[0]) * (progress / 100);
+                    const groupChildren = [{
+                        type: 'rect',
+                        shape: rectShape,
+                        style: {
+                            fill: '#21262d',
+                            stroke: '#30363d',
+                            lineWidth: 1
+                        }
+                    }];
+                    if (progress > 0) {
+                        groupChildren.push({
+                            type: 'rect',
+                            shape: {
+                                x: rectShape.x,
+                                y: rectShape.y,
+                                width: progressWidth,
+                                height: rectShape.height
+                            },
+                            style: {
+                                fill: progress === 100 ? '#3fb950' : '#58a6ff'
+                            }
+                        });
+                    }
+                    groupChildren.push({
+                        type: 'text',
+                        style: {
+                            text: progress + '%',
+                            fill: '#c9d1d9',
+                            fontSize: 11,
+                            fontWeight: 'bold'
+                        },
+                        position: [rectShape.x + rectShape.width / 2, rectShape.y + rectShape.height / 2],
+                        style: {
+                            text: progress + '%',
+                            fill: '#c9d1d9',
+                            fontSize: 11,
+                            fontWeight: 'bold',
+                            textAlign: 'center',
+                            textVerticalAlign: 'middle'
+                        }
+                    });
+                    return {
+                        type: 'group',
+                        children: groupChildren
+                    };
+                },
+                encode: {
+                    x: [1, 2],
+                    y: 0
+                },
+                data: data
+            }]
+        };
+
+        ganttChart.setOption(option);
+        window.addEventListener('resize', () => ganttChart.resize());
+
+        // Active TOC highlighting on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const tocLinks = document.querySelectorAll('.toc-link');
+
+        function updateActiveToc() {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.scrollY >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveToc);
+        updateActiveToc();
+
+        // Animate progress bars on load
+        document.querySelectorAll('.progress-fill').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0';
+            setTimeout(() => { bar.style.width = width; }, 300);
+        });
+    </script>
+</body>
+</html>

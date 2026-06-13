@@ -455,7 +455,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .docker-status {
   padding: 16px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   min-height: 100%;
 }
 
@@ -480,7 +480,7 @@ onBeforeUnmount(() => {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
 }
 
 /* 主机概览 */
@@ -522,7 +522,7 @@ onBeforeUnmount(() => {
 .host-name {
   font-size: 15px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .host-role {
@@ -549,7 +549,7 @@ onBeforeUnmount(() => {
 }
 
 .metric-value {
-  color: #1f2937;
+  color: var(--color-text);
   font-weight: 600;
 }
 
@@ -581,7 +581,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .header-icon {
@@ -604,13 +604,13 @@ onBeforeUnmount(() => {
 
 .container-name {
   font-family: 'SFMono-Regular', Menlo, monospace;
-  color: #1f2937;
+  color: var(--color-text);
   font-weight: 500;
 }
 
 .mono {
   font-family: 'SFMono-Regular', Menlo, monospace;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .mono.small {
@@ -635,5 +635,31 @@ onBeforeUnmount(() => {
   background: #0f172a;
   color: #e2e8f0;
   line-height: 1.6;
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .docker-page {
+  background: var(--bg-primary);
+}
+
+[data-theme='dark'] .docker-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .docker-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .docker-meta {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .log-meta {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .log-textarea :deep(textarea) {
+  background: rgba(0, 0, 0, 0.3);
 }
 </style>

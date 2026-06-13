@@ -453,7 +453,7 @@ function execSql() {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 16px;
-  color: #1f2937;
+  color: var(--color-text);
   padding-left: 10px;
   border-left: 4px solid #409EFF;
 }
@@ -479,7 +479,7 @@ function execSql() {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .conn-icon {
@@ -517,7 +517,7 @@ function execSql() {
 }
 
 .conn-value {
-  color: #1f2937;
+  color: var(--color-text);
   font-weight: 500;
   font-family: 'SFMono-Regular', Menlo, monospace;
 }
@@ -537,7 +537,7 @@ function execSql() {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .header-icon {
@@ -570,18 +570,18 @@ function execSql() {
 }
 
 .table-item:hover {
-  background: #f5f7fa;
+  background: var(--color-bg);
 }
 
 .table-item.active {
-  background: #ecf5ff;
+  background: var(--color-hover);
   border-color: #409EFF;
 }
 
 .table-name {
   flex: 1;
   font-size: 13px;
-  color: #1f2937;
+  color: var(--color-text);
   font-family: 'SFMono-Regular', Menlo, monospace;
   font-weight: 500;
 }
@@ -599,12 +599,12 @@ function execSql() {
 .sub-title {
   font-size: 14px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
   margin-bottom: 10px;
 }
 
 .text-muted {
-  color: #c0c4cc;
+  color: var(--color-text-muted);
 }
 
 /* SQL 面板 */
@@ -629,13 +629,13 @@ function execSql() {
   padding: 12px;
   border: 1px dashed #e5e7eb;
   border-radius: 8px;
-  background: #fafbfc;
+  background: var(--color-bg);
 }
 
 .result-title {
   font-size: 13px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -652,7 +652,7 @@ function execSql() {
   color: #f56c6c;
   font-size: 13px;
   padding: 8px 4px;
-  background: #fef0f0;
+  background: var(--color-danger-bg);
   border-radius: 6px;
 }
 </style>

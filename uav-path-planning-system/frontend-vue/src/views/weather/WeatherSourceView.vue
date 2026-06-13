@@ -516,12 +516,12 @@ onMounted(() => {
 .stat-value {
   font-size: 28px;
   font-weight: bold;
-  color: #303133;
+  color: var(--color-text);
 }
 
 .stat-label {
   font-size: 14px;
-  color: #909399;
+  color: var(--color-text-muted);
   margin-top: 4px;
 }
 
@@ -585,13 +585,13 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #606266;
+  color: var(--color-text-muted);
   font-size: 14px;
   margin-bottom: 8px;
 }
 
 .coordinates {
-  color: #909399;
+  color: var(--color-text-muted);
   font-size: 12px;
 }
 
@@ -599,13 +599,13 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #909399;
+  color: var(--color-text-muted);
   font-size: 12px;
   margin-bottom: 12px;
 }
 
 .data-preview {
-  background: #f5f7fa;
+  background: var(--color-bg);
   border-radius: 6px;
   padding: 12px;
   margin-bottom: 12px;
@@ -613,7 +613,7 @@ onMounted(() => {
 
 .preview-title {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
   margin-bottom: 8px;
 }
 
@@ -630,19 +630,19 @@ onMounted(() => {
 }
 
 .field-label {
-  color: #606266;
+  color: var(--color-text-muted);
 }
 
 .field-value {
   font-weight: 500;
-  color: #303133;
+  color: var(--color-text);
 }
 
 .no-data {
   text-align: center;
-  color: #909399;
+  color: var(--color-text-muted);
   padding: 20px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   border-radius: 6px;
 }
 
@@ -661,7 +661,7 @@ onMounted(() => {
 .metric-label {
   width: 50px;
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 
 .metric-value {
@@ -687,13 +687,13 @@ onMounted(() => {
 .detail-section h4 {
   margin: 0 0 12px 0;
   font-size: 14px;
-  color: #303133;
+  color: var(--color-text);
 }
 
 .quality-card {
   text-align: center;
   padding: 16px;
-  background: #f5f7fa;
+  background: var(--color-bg);
   border-radius: 8px;
 }
 
@@ -705,13 +705,13 @@ onMounted(() => {
 
 .quality-label {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
   margin-top: 4px;
 }
 
 .form-tip {
   margin-left: 8px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 
 @media (max-width: 768px) {

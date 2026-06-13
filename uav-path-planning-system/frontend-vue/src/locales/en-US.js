@@ -29,8 +29,10 @@ export default {
   weather: {
     title: 'Weather Data',
     temperature: 'Temperature',
+    temp: 'Temperature',
     humidity: 'Humidity',
     windSpeed: 'Wind Speed',
+    wind: 'Wind Speed',
     windDirection: 'Wind Direction',
     pressure: 'Pressure',
     visibility: 'Visibility',
@@ -225,6 +227,7 @@ export default {
     monitoring: 'Monitoring',
     database: 'Database',
     docker: 'Docker',
+    dockerBuild: 'Docker Build',
     apiConfig: 'API Config',
     permissionTemplates: 'Permission Templates',
     modelEvaluation: 'Model Evaluation',
@@ -463,6 +466,8 @@ export default {
     submitComment: 'Submit Comment',
     commentPlaceholder: 'Write a comment...',
     like: 'Like',
+    favorite: 'Favorite',
+    favorited: 'Favorited',
     cancel: 'Cancel',
     section: 'Section',
     selectSection: 'Select a section',
@@ -472,7 +477,26 @@ export default {
     contentPlaceholder: 'Enter post content (HTML supported)',
     tags: 'Tags',
     tagPlaceholder: 'Press Enter to add tags',
-    publish: 'Publish'
+    publish: 'Publish',
+    section: {
+      announcement: 'Announcements',
+      tech_discuss: 'Tech Discussion',
+      task_collab: 'Task Collaboration',
+      knowledge: 'Knowledge Base',
+      feedback: 'Feedback',
+      unknown: 'Unknown'
+    },
+    status: {
+      pending: 'Pending',
+      processing: 'Processing',
+      solved: 'Solved'
+    },
+    time: {
+      justNow: 'Just now',
+      minutesAgo: '{n} minutes ago',
+      hoursAgo: '{n} hours ago',
+      daysAgo: '{n} days ago'
+    }
   },
   userStats: {
     title: 'User Statistics',

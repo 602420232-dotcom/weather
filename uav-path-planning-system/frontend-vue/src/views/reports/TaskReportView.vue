@@ -536,7 +536,7 @@ watch(includeCharts, v => {
   margin: 0;
   font-size: 20px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text);
   padding-left: 10px;
   border-left: 4px solid #409EFF;
 }
@@ -561,7 +561,7 @@ watch(includeCharts, v => {
   align-items: center;
   justify-content: space-between;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .print-area {
@@ -569,23 +569,23 @@ watch(includeCharts, v => {
 }
 
 .print-header {
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 10px;
   padding: 16px 20px;
   margin-bottom: 12px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--color-border);
 }
 
 .report-title {
   margin: 0 0 6px 0;
   font-size: 18px;
-  color: #1f2937;
+  color: var(--color-text);
   font-weight: 700;
 }
 
 .report-meta {
   font-size: 13px;
-  color: #606266;
+  color: var(--color-text-muted);
   display: flex;
   gap: 18px;
   flex-wrap: wrap;

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import idb, { STORE_NETCDF, STORE_TILES, STORE_OFFLINE } from '../utils/indexedDB'
 import { createHttpError } from '../utils/errorTypes'
+import { registerMockOnInstance } from '../mock/index.js'
 
 // ============ 分层缓存系统（Cache Strategy）============
 // 策略：
@@ -215,6 +216,13 @@ const api = axios.create({
   withCredentials: true
 })
 
+// 将 Mock 拦截器注册到 api 实例（全局 axios 拦截器不作用于 axios.create() 实例）
+try {
+  registerMockOnInstance(api)
+} catch (_) {
+  // Mock 模块不可用时静默跳过
+}
+
 // 请求计数器（用于生成唯一请求 ID）
 let requestCounter = 0
 
@@ -267,9 +275,40 @@ function _isLargeBinaryRequest(config) {
   return false
 }
 
+// 演示模式自动重定向到 Mock API
+function isDemoEnv() {
+  try {
+    const raw = localStorage.getItem('uav_app_v1')
+    if (!raw) return true
+    const saved = JSON.parse(raw)
+    return saved.state?.envMode !== 'dev' && saved.state?.envMode !== 'test' && saved.state?.envMode !== 'prod'
+  } catch (e) { return true }
+}
+
 // 请求拦截器
 api.interceptors.request.use(
   (config) => {
+    // 注入 Authorization token
+    try {
+      const raw = localStorage.getItem('uav_auth_token_v1')
+      if (raw) {
+        const stored = JSON.parse(raw)
+        if (stored && stored.token) {
+          config.headers = config.headers || {}
+          config.headers.Authorization = `Bearer ${stored.token}`
+        }
+      }
+    } catch (_) {}
+
+    // 演示模式：自动将 /api/v1/ 重写为 /mock-api/，走本地 Mock 数据
+    if (isDemoEnv() && config.url && !config.url.includes('/auth/')) {
+      const origUrl = config.url
+      // /api/v1/xxx -> /mock-api/xxx  (strip v1/ to match existing mock routes like /mock-api/system/health)
+      config.url = config.url.replace(/^\/?api\/v1\//, '/mock-api/')
+      if (config.url !== origUrl) {
+        console.debug('[API] 演示模式，Mock:', origUrl, '->', config.url)
+      }
+    }
     config.metadata = {
       requestId: ++requestCounter,
       startTime: Date.now()

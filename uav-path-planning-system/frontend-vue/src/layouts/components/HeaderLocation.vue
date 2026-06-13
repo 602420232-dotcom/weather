@@ -32,7 +32,7 @@ defineEmits(['fetch'])
   border-radius: 20px;
   background: rgba(0, 0, 0, 0.05);
   font-size: 13px;
-  color: #666;
+  color: var(--color-text-muted);
   transition: background 0.2s;
 }
 .location-info.is-clickable {

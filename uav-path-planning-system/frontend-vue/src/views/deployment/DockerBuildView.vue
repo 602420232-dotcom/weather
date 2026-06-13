@@ -576,7 +576,7 @@ onBeforeUnmount(() => {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 16px;
-  color: #1f2937;
+  color: var(--color-text);
   padding-left: 10px;
   border-left: 4px solid #409EFF;
 }
@@ -631,7 +631,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .header-icon {
@@ -649,7 +649,7 @@ onBeforeUnmount(() => {
 }
 
 .total-percent {
-  color: #1f2937;
+  color: var(--color-text);
   font-weight: 600;
   font-size: 15px;
 }
@@ -669,7 +669,7 @@ onBeforeUnmount(() => {
 .stage-card {
   border-radius: 10px;
   margin-bottom: 12px;
-  border: 1px solid #e4e7ed;
+  border: 1px solid var(--color-border);
   transition: all 0.25s ease;
 }
 
@@ -696,7 +696,7 @@ onBeforeUnmount(() => {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #ecf5ff;
+  background: var(--color-hover);
   color: #409eff;
   display: inline-flex;
   align-items: center;
@@ -706,17 +706,17 @@ onBeforeUnmount(() => {
 }
 
 .stage-card.active .stage-index {
-  background: #fdf6ec;
+  background: var(--color-warning-bg);
   color: #e6a23c;
 }
 
 .stage-card.done .stage-index {
-  background: #f0f9eb;
+  background: var(--color-success-bg);
   color: #67c23a;
 }
 
 .stage-card.failed .stage-index {
-  background: #fef0f0;
+  background: var(--color-danger-bg);
   color: #f56c6c;
 }
 
@@ -727,7 +727,7 @@ onBeforeUnmount(() => {
 
 .stage-name {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
   font-size: 14px;
 }
 
@@ -742,7 +742,7 @@ onBeforeUnmount(() => {
 }
 
 .stage-footer {
-  color: #909399;
+  color: var(--color-text-muted);
   font-size: 12px;
   text-align: right;
 }
@@ -815,5 +815,39 @@ onBeforeUnmount(() => {
   text-align: center;
   padding: 60px 0;
   font-style: italic;
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .build-page {
+  background: var(--bg-primary);
+}
+
+[data-theme='dark'] .build-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .build-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .build-desc {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .build-form {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme='dark'] .log-line {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .log-timestamp {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .log-empty {
+  color: var(--color-text-muted);
 }
 </style>

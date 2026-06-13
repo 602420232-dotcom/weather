@@ -531,7 +531,7 @@ watch(
 
 .drawer-toolbar {
   padding: 8px 4px 12px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid var(--color-border);
   margin-bottom: 8px;
 }
 
@@ -562,7 +562,7 @@ watch(
 
 .drawer-toolbar {
   padding: 8px 4px 12px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid var(--color-border);
   margin-bottom: 8px;
 }
 
@@ -572,20 +572,20 @@ watch(
   padding: 12px 12px;
   margin-bottom: 8px;
   border-radius: 8px;
-  background: #fafbfc;
-  border: 1px solid #e4e7ed;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .notification-card:hover {
-  background: #f0f7ff;
+  background: var(--color-hover);
   border-color: #a0cfff;
 }
 
 .notification-card.is-read {
   opacity: 0.75;
-  background: #ffffff;
+  background: var(--color-surface);
 }
 
 .notification-card.type-info {
@@ -648,7 +648,7 @@ watch(
 .card-title {
   font-size: 14px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -656,13 +656,13 @@ watch(
 
 .card-time {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
   flex-shrink: 0;
 }
 
 .card-message {
   font-size: 13px;
-  color: #606266;
+  color: var(--color-text-muted);
   line-height: 1.5;
   margin-bottom: 6px;
   word-break: break-word;
@@ -687,7 +687,7 @@ watch(
 
 .drawer-footer {
   padding-top: 12px;
-  border-top: 1px solid #ebeef5;
+  border-top: 1px solid var(--color-border);
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -700,7 +700,7 @@ watch(
 .pref-title {
   font-size: 14px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
   margin: 0 0 10px;
 }
 
@@ -718,12 +718,12 @@ watch(
 
 .pref-label {
   font-size: 13px;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 
 .pref-status {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 
 .pref-hint {
@@ -732,7 +732,7 @@ watch(
   gap: 6px;
   padding: 8px 12px;
   margin: 8px 0;
-  background: #fdf6ec;
+  background: var(--color-warning-bg);
   border-radius: 4px;
   font-size: 12px;
   color: #e6a23c;

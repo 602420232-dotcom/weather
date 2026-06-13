@@ -13,7 +13,8 @@ const i18n = createI18n({
   legacy: false,
   locale: localStorage.getItem('locale') || 'zh-CN',
   fallbackLocale: 'zh-CN',
-  messages
+  messages,
+  warnHtmlMessage: false
 })
 
 export default i18n

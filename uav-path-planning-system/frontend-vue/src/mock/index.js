@@ -514,40 +514,54 @@ mockPost('/mock-api/utm/submit', () => ({
 /* ================== 拦截器注册 ================== */
 
 let mockInterceptorId = null
+let apiInstanceInterceptorId = null
 let enabled = false
+
+function mockRequestHandler(config) {
+  const match = matchConfig(config)
+  if (!match) return config
+  const body = parseBody(config.data)
+  const result = match.route.handler(config, match.params, body)
+  const payload = result && typeof result.then === 'function' ? result : Promise.resolve(result)
+  return payload.then((data) => ({
+    ...config,
+    __uav_mock__: true,
+    adapter: () => Promise.resolve({
+      data,
+      status: 200,
+      statusText: 'OK (mock)',
+      headers: { 'x-mock': 'enabled', 'content-type': 'application/json' },
+      config
+    })
+  }))
+}
 
 function enableMockInterceptor() {
   if (enabled) return
   enabled = true
 
-  mockInterceptorId = axios.interceptors.request.use(
-    (config) => {
-      const match = matchConfig(config)
-      if (!match) return config
-      const body = parseBody(config.data)
-      const result = match.route.handler(config, match.params, body)
-      const payload = result && typeof result.then === 'function' ? result : Promise.resolve(result)
-      return payload.then((data) => ({
-        ...config,
-        __uav_mock__: true,
-        adapter: () => Promise.resolve({
-          data,
-          status: 200,
-          statusText: 'OK (mock)',
-          headers: { 'x-mock': 'enabled', 'content-type': 'application/json' },
-          config
-        })
-      }))
-    },
-    (error) => Promise.reject(error)
-  )
+  // 注册到全局 axios 实例
+  mockInterceptorId = axios.interceptors.request.use(mockRequestHandler, (error) => Promise.reject(error))
   console.info('[Mock] 已启用 mock 拦截器，共注册 ' + routes.length + ' 条路由（前缀 ' + MOCK_PREFIX + '）')
+}
+
+/**
+ * 将 Mock 拦截器注册到自定义 axios 实例（如 api/index.js 中创建的实例）
+ * 全局 axios 拦截器不会作用于 axios.create() 创建的独立实例，必须单独注册。
+ */
+function registerMockOnInstance(instance) {
+  if (!enabled) enableMockInterceptor()
+  const id = instance.interceptors.request.use(mockRequestHandler, (error) => Promise.reject(error))
+  return id
 }
 
 function disableMockInterceptor() {
   if (mockInterceptorId !== null) {
     axios.interceptors.request.eject(mockInterceptorId)
     mockInterceptorId = null
+  }
+  if (apiInstanceInterceptorId !== null) {
+    // 注意：这里无法直接 eject，需由调用方自行管理
   }
   enabled = false
 }
@@ -565,6 +579,7 @@ export {
   setupMock,
   mockGet, mockPost, mockPut, mockDelete,
   enableMockInterceptor, disableMockInterceptor,
+  registerMockOnInstance,
   routes as mockRoutes
 }
 

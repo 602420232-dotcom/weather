@@ -1104,15 +1104,15 @@ watch(activeTab, (tab) => {
 <style scoped>
 .experiment-compare {
   min-height: 100%;
-  background: #f5f7fa;
+  background: var(--color-bg);
 }
 
 .top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
-  border: 1px solid #e4e7ed;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 12px 16px;
   margin-bottom: 16px;
@@ -1129,7 +1129,7 @@ watch(activeTab, (tab) => {
 .page-title {
   font-size: 18px;
   font-weight: 600;
-  color: #24292f;
+  color: var(--color-text);
   margin: 0;
 }
 
@@ -1142,7 +1142,7 @@ watch(activeTab, (tab) => {
 
 .control-label {
   font-size: 13px;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 
 .main-body {
@@ -1152,8 +1152,8 @@ watch(activeTab, (tab) => {
 }
 
 .left-panel {
-  background: #fff;
-  border: 1px solid #e4e7ed;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 12px;
   min-height: 600px;
@@ -1171,12 +1171,12 @@ watch(activeTab, (tab) => {
 .panel-title {
   font-size: 14px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
 }
 
 .panel-sub {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
 }
 
 .empty-holder {
@@ -1184,24 +1184,24 @@ watch(activeTab, (tab) => {
 }
 
 .plan-card {
-  border: 1px solid #e4e7ed;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 10px;
   cursor: pointer;
   transition: all 0.15s ease;
-  background: #fafbfc;
+  background: var(--color-bg);
 }
 
 .plan-card:hover {
-  background: #f0f6ff;
+  background: var(--color-hover);
   border-color: #91caff;
   transform: translateY(-1px);
 }
 
 .plan-card.active {
   border-color: #1890ff;
-  background: #e6f4ff;
+  background: var(--color-hover);
   box-shadow: 0 2px 6px rgba(24, 144, 255, 0.12);
 }
 
@@ -1221,7 +1221,7 @@ watch(activeTab, (tab) => {
 .plan-name {
   font-size: 14px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1234,7 +1234,7 @@ watch(activeTab, (tab) => {
 
 .plan-card-meta {
   font-size: 12px;
-  color: #606266;
+  color: var(--color-text-muted);
   line-height: 1.6;
   margin-top: 6px;
   word-break: break-all;
@@ -1242,7 +1242,7 @@ watch(activeTab, (tab) => {
 
 .plan-card-time {
   font-size: 11px;
-  color: #909399;
+  color: var(--color-text-muted);
   margin-top: 6px;
 }
 
@@ -1251,7 +1251,7 @@ watch(activeTab, (tab) => {
   border-radius: 8px;
   padding: 20px;
   text-align: center;
-  color: #909399;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.15s ease;
   display: flex;
@@ -1264,12 +1264,12 @@ watch(activeTab, (tab) => {
 .add-card:hover {
   border-color: #1890ff;
   color: #1890ff;
-  background: #f0f6ff;
+  background: var(--color-hover);
 }
 
 .right-panel {
-  background: #fff;
-  border: 1px solid #e4e7ed;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 12px;
   min-height: 600px;
@@ -1291,7 +1291,7 @@ watch(activeTab, (tab) => {
 .best-highlight {
   color: #389e0d;
   font-weight: 700;
-  background: #f6ffed;
+  background: var(--color-success-bg);
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -1301,7 +1301,7 @@ watch(activeTab, (tab) => {
   display: flex;
   gap: 16px;
   font-size: 12px;
-  color: #606266;
+  color: var(--color-text-muted);
 }
 
 .legend-item {
@@ -1329,7 +1329,7 @@ watch(activeTab, (tab) => {
 
 .ts-hint {
   font-size: 12px;
-  color: #909399;
+  color: var(--color-text-muted);
   margin-left: 8px;
 }
 
@@ -1350,12 +1350,12 @@ watch(activeTab, (tab) => {
 }
 
 .diff-vs {
-  color: #909399;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .diff-sub {
-  color: #909399;
+  color: var(--color-text-muted);
   font-size: 12px;
   margin-left: 8px;
 }
@@ -1364,15 +1364,15 @@ watch(activeTab, (tab) => {
 .negative { color: #52c41a; font-weight: 600; }
 
 .raw-pre {
-  background: #f6f8fa;
-  border: 1px solid #e4e7ed;
+  background: var(--color-input);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   padding: 16px;
   max-height: 520px;
   overflow: auto;
   font-size: 12px;
   line-height: 1.6;
-  color: #303133;
+  color: var(--color-text);
 }
 
 @media (max-width: 980px) {
@@ -1380,5 +1380,47 @@ watch(activeTab, (tab) => {
     grid-template-columns: 1fr;
   }
   .left-panel { min-height: auto; }
+}
+
+/* ===== 深色模式 ===== */
+[data-theme='dark'] .compare-page {
+  background: var(--bg-primary);
+}
+
+[data-theme='dark'] .compare-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .compare-title {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .compare-desc {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .experiment-name {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .experiment-meta {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .metric-name {
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .metric-value {
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .diff-row {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme='dark'] .diff-label {
+  color: var(--color-text-muted);
 }
 </style>
