@@ -50,20 +50,22 @@ class FiveDimensionalVAR:
         xb = background.flatten()
         x = xb.copy()
 
-        y_obs, H = self._build_observation_operator(x, observations, background.shape)
+        y_obs, H = self._build_observation_operator(x, observations, background.shape)  # noqa: N806
 
         cost_history = []
-        J_b = J_o = J_risk = J_param = 0.0
+        J_b = J_o = J_risk = J_param = 0.0  # noqa: N806
         for i in range(self.max_iterations):
             dx = x - xb
-            J_b = 0.5 * np.sum(dx ** 2) / (self.sigma_b ** 2)
-            Hx = H @ x
+            J_b = 0.5 * np.sum(dx ** 2) / (self.sigma_b ** 2)  # noqa: N806
+            Hx = H @ x  # noqa: N806
             residual = Hx - y_obs
-            J_o = 0.5 * np.sum(residual ** 2) / (self.observation_error_scale ** 2)
+            J_o = 0.5 * np.sum(residual ** 2) / (self.observation_error_scale ** 2)  # noqa: N806
             field = x.reshape(background.shape)
             smoothed = gaussian_filter(field.astype(float), sigma=1.0)
-            J_risk = risk_weight * np.var(smoothed)
-            J_param = self.ai_param_weight * np.sum((x - ai_correction.flatten()) ** 2)
+            J_risk = risk_weight * np.var(smoothed)  # noqa: N806
+            J_param = (  # noqa: N806
+                self.ai_param_weight * np.sum((x - ai_correction.flatten()) ** 2)
+            )
             total_cost = J_b + J_o + J_risk + J_param
             cost_history.append(float(total_cost))
 
@@ -96,7 +98,7 @@ class FiveDimensionalVAR:
         n = len(xb)
         m = len(observations)
         y_obs = np.zeros(m)
-        H = np.zeros((m, n))
+        H = np.zeros((m, n))  # noqa: N806
         for j, obs in enumerate(observations):
             pos = obs.get("position", [0] * len(shape))
             y_obs[j] = obs.get("value", 0.0)

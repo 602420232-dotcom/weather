@@ -9,6 +9,7 @@ import os
 # 添加当前目录到路径
 sys.path.insert(0, os.path.dirname(__file__))
 
+
 def test_imports():
     """测试导入"""
     print("=" * 60)
@@ -36,7 +37,11 @@ def test_dependency_providers():
     print("=" * 60)
 
     try:
-        from api import get_coordinator, get_federated_learning, get_websocket_sync
+        from api import (  # type: ignore[reportAttributeAccessIssue]
+            get_coordinator,  # type: ignore[reportAttributeAccessIssue]
+            get_federated_learning,  # type: ignore[reportAttributeAccessIssue]
+            get_websocket_sync,  # type: ignore[reportAttributeAccessIssue]
+        )
 
         # 测试协调器提供函数
         coordinator = get_coordinator()
@@ -105,7 +110,12 @@ def test_dependency_overrides():
     print("=" * 60)
 
     try:
-        from api import app, get_coordinator, get_federated_learning, get_websocket_sync
+        from api import (  # type: ignore[reportAttributeAccessIssue]
+            app,  # type: ignore[reportAttributeAccessIssue]
+            get_coordinator,  # type: ignore[reportAttributeAccessIssue]
+            get_federated_learning,  # type: ignore[reportAttributeAccessIssue]
+            get_websocket_sync,  # type: ignore[reportAttributeAccessIssue]
+        )
         from test_mocks import MockEdgeCloudCoordinator, MockFederatedLearning, MockWebSocketSync
 
         # 创建 mock 实例
@@ -145,7 +155,7 @@ def test_dependency_overrides():
         # 确保清理
         try:
             app.dependency_overrides.clear()
-        except:
+        except Exception:
             pass
 
 

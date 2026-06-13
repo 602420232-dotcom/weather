@@ -13,7 +13,12 @@ from test_mocks import (
     MockFederatedLearning,
     MockWebSocketSync
 )
-from api import app, get_coordinator, get_federated_learning, get_websocket_sync
+from api import (  # type: ignore[reportAttributeAccessIssue]
+    app,  # type: ignore[reportAttributeAccessIssue]
+    get_coordinator,  # type: ignore[reportAttributeAccessIssue]
+    get_federated_learning,  # type: ignore[reportAttributeAccessIssue]
+    get_websocket_sync,  # type: ignore[reportAttributeAccessIssue]
+)
 
 
 class TestDependencyInjection:

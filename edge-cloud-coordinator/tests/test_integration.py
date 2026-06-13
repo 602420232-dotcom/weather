@@ -30,7 +30,7 @@ class TestEdgeCloudIntegration:
     def test_api_health_endpoint(self):
         """测试API健康检查端点"""
         try:
-            from api import app
+            from api import app  # type: ignore[reportAttributeAccessIssue]
             from fastapi.testclient import TestClient
 
             client = TestClient(app)
@@ -42,7 +42,7 @@ class TestEdgeCloudIntegration:
     def test_circuit_breaker_integration(self):
         """测试熔断器集成"""
         try:
-            from circuit_breaker import CircuitBreaker, CircuitState
+            from circuit_breaker import CircuitBreaker, CircuitState  # type: ignore[reportAttributeAccessIssue]
 
             cb = CircuitBreaker(
                 failure_threshold=3,
@@ -169,7 +169,7 @@ class TestDetectionDroneIntegration:
     def test_offline_data_collection(self):
         """测试离线数据收集"""
         try:
-            from detection_drone_offline_complete import OfflineDataBuffer
+            from detection_drone_offline_complete import OfflineDataBuffer  # type: ignore[reportAttributeAccessIssue]
 
             buffer = OfflineDataBuffer(mission_id=1, drone_id='test-drone')
 

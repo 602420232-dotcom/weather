@@ -29,7 +29,6 @@
     "uav-platform-service",
     "uav-weather-collector",
     "wrf-processor-service",
-    "edge-cloud-coordinator",
     "meteor-forecast-service",
     "path-planning-service",
     "data-assimilation-service",
@@ -38,6 +37,7 @@
   "extraPaths": [
     "data-assimilation-platform/algorithm_core/src",
     "model-engine",
+    "edge-cloud-coordinator",
     "D:/Developer/Anaconda/Lib/site-packages",
     "C:/Users/Dithiothreitol/AppData/Roaming/Python/Python313/site-packages"
   ],
