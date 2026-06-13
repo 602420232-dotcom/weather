@@ -369,7 +369,6 @@ class AICorrectionOperator:
         x_corrected = self.apply_correction(x_base, alpha)
         j_param = 0.0
         for obs in observations:
-            t = obs.get('time_idx', 0)
             y = obs['value']
             Hx = obs_operator(x_corrected)
             diff = Hx - y
@@ -522,6 +521,8 @@ class FiveDimensionalVar(FourDimensionalVar):
         if alpha is not None and self.ai_operator is not None:
             x0 = self.ai_operator.apply_correction(x0, alpha)
 
+        assert self.extended_covariance is not None
+
         # ── 1. 背景项 J_b ──
         Jb = 0.0
         for var in ['T', 'U', 'V', 'Ps']:
@@ -584,6 +585,8 @@ class FiveDimensionalVar(FourDimensionalVar):
 
         if alpha is not None and self.ai_operator is not None:
             x0 = self.ai_operator.apply_correction(x0, alpha)
+
+        assert self.extended_covariance is not None
 
         # ── 背景项梯度 ∇J_b ──
         grad = {}
@@ -787,12 +790,13 @@ class FiveDimensionalVar(FourDimensionalVar):
         logger.info(f"网格大小: {n_rows}x{n_cols}, 控制变量维度: {4*n}")
         logger.info(f"观测数量: {len(observations)}")
         logger.info(f"时间窗口: {self.five_d_config.time_window_steps} 步 "
-                     f"(每步 {self.five_d_config.time_step_minutes} 分钟)")
+                    f"(每步 {self.five_d_config.time_step_minutes} 分钟)")
 
         # ── 2. 初始化5D-VAR组件 ──
         self._initialize_components(grid_shape)
 
         # ── 3. 构建扩展背景协方差 ──
+        assert self.extended_covariance is not None
         B_inv_diags = self.extended_covariance.compute_B_inv_diagonal(
             self.drone_ensemble
         )
@@ -1008,11 +1012,11 @@ class FiveDimensionalVar(FourDimensionalVar):
         elapsed = end_time - start_time
         logger.info(f"5D-VAR 同化完成，耗时: {elapsed}")
         logger.info(f"  代价: {j_initial:.4f} → {j_final:.4f} "
-                     f"(降低 {(j_initial - j_final) / (j_initial + 1e-8) * 100:.1f}%)")
+                    f"(降低 {(j_initial - j_final) / (j_initial + 1e-8) * 100:.1f}%)")
         logger.info(f"  AI修正参数 α: {alpha_final}")
         logger.info(f"  风险摘要: avg={self.risk_field['summary']['avg_risk']:.3f}, "
-                     f"max={self.risk_field['summary']['max_risk']:.3f}, "
-                     f"safe={self.risk_field['summary']['safe_area_ratio']:.1%}")
+                    f"max={self.risk_field['summary']['max_risk']:.3f}, "
+                    f"safe={self.risk_field['summary']['safe_area_ratio']:.1%}")
         logger.info("=" * 60)
 
         return analysis, variance_field

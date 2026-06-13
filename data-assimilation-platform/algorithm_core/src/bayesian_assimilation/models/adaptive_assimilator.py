@@ -54,13 +54,15 @@ class AdaptiveAssimilator:
             'temporal_variability': temporal_std
         }
 
-    def estimate_compute_resources(self) -> Dict[str, float]:
+    def estimate_compute_resources(self) -> Dict[str, float]:  # type: ignore[reportReturnType]
         """估算可用计算资源"""
         import psutil
         return {
-            'cpu_available': psutil.cpu_percent(interval=0.1),
-            'memory_available': psutil.virtual_memory().available / (1024**3),
-            'memory_percent': psutil.virtual_memory().percent
+            'cpu_available': float(psutil.cpu_percent(interval=0.1)),
+            'memory_available': float(
+                psutil.virtual_memory().available / (1024**3)
+            ),
+            'memory_percent': float(psutil.virtual_memory().percent),
         }
 
     def select_algorithm(self, observations: np.ndarray, method_hint: Optional[str] = None) -> str:

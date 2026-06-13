@@ -5,7 +5,7 @@
 """
 import asyncio
 import logging
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ class EdgeCloudCoordinator:
                     return True
             return False
 
-    async def get_task_by_id(self, task_id: str) -> EdgeTask:
+    async def get_task_by_id(self, task_id: str) -> Optional[EdgeTask]:
         """根据任务ID获取任务（线程安全）"""
         async with self._lock:
             for task in self.task_queue:

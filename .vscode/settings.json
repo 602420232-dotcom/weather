@@ -9,6 +9,7 @@
     "python.defaultInterpreterPath": "D:/Developer/Anaconda/python.exe",
     "python.analysis.extraPaths": [
         "D:/Developer/Anaconda/Lib/site-packages",
-        "C:/Users/Dithiothreitol/AppData/Roaming/Python/Python313/site-packages"
+        "C:/Users/Dithiothreitol/AppData/Roaming/Python/Python313/site-packages",
+        "d:/Developer/workplace/py/iteam/trae/edge-cloud-coordinator"
     ]
 }

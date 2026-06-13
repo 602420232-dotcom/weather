@@ -24,7 +24,7 @@ def load_yaml_config(config_path: str) -> Dict[str, Any]:
     try:
         import yaml
         with open(config_path, 'r', encoding='utf-8') as f:
-            return yaml.safe_load(f) or {}
+            return yaml.safe_load(f) or {}  # type: ignore[reportReturnType]
     except ImportError:
         logger.warning("PyYAML 未安装，无法加载 YAML 配置文件")
         return {}

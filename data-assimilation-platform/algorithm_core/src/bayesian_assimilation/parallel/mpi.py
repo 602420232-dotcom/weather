@@ -213,6 +213,7 @@ class MPIParallelManager(ParallelManager):
 
             # 根进程合并结果
             if self.is_root:
+                assert all_results is not None
                 return self._merge_results(all_results, len(data))
             else:
                 return []

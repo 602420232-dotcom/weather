@@ -87,7 +87,7 @@ class TestApi:
     """api.py tests"""
 
     def test_api_imports(self):
-        from api import app
+        from api import app  # type: ignore[reportAttributeAccessIssue]
         assert app is not None
 
 
