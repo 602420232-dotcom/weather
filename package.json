@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "lint": "flake8 ."
+  },
   "dependencies": {
     "vue-i18n": "^11.4.4"
   },

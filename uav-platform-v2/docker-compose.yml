@@ -13,8 +13,11 @@ services:
       - MYSQL_SERVICE_DB_NAME=nacos
       - MYSQL_SERVICE_USER=nacos
       - MYSQL_SERVICE_PASSWORD=nacos
+      - NACOS_AUTH_TOKEN=SGVsbG9OYWNvcw==
+      - NACOS_AUTH_IDENTITY_KEY=serverIdentity
+      - NACOS_AUTH_IDENTITY_VALUE=security
     ports:
-      - "8848:8848"
+      - "8950:8848"
       - "9848:9848"
     depends_on:
       mysql:
@@ -356,7 +359,7 @@ services:
       dockerfile: Dockerfile
     container_name: uav-algorithm-engine
     ports:
-      - "9090:9090"
+      - "9095:9090"
     environment:
       - NACOS_SERVER_ADDR=nacos:8848
       - REDIS_HOST=redis
