@@ -1,95 +1,25 @@
+version: '3.8'
+
 networks:
   uav-net:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
+    name: uav-platform-v2_uav-net
+    external: true
 
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: uav-mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD must be set}
-      MYSQL_DATABASE: uav_platform
-      MYSQL_USER: uav
-      MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-      - ./uav-path-planning-system/database/create_tables.sql:/docker-entrypoint-initdb.d/init.sql
-    restart: always
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
-    networks:
-      - uav-net
-
-  redis:
-    image: redis:7.2
-    container_name: uav-redis
-    command: redis-server --databases 16 --save 900 1 --save 300 10 --save 60 10000
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    restart: always
-    healthcheck:
-      test: ["CMD", "redis-cli", "-n", "0", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-    networks:
-      - uav-net
-
-  nacos:
-    image: nacos/nacos-server:v2.3.0
-    container_name: uav-nacos
-    environment:
-      - MODE=standalone
-    ports:
-      - "8848:8848"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/"]
-      interval: 15s
-      timeout: 5s
-      retries: 10
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-        reservations:
-          memory: 512M
-    networks:
-      - uav-net
-
   api-gateway:
     build:
       context: .
       dockerfile: ./api-gateway/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/api-gateway:latest
-    container_name: uav-gateway
+    container_name: trae-uav-gateway
     ports:
       - "8088:8088"
-    depends_on:
-      nacos:
-        condition: service_healthy
     environment:
       - LOG_PATH=/logs
       - SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING=true
       - SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT=-1
-      - NACOS_SERVER=nacos:8848
-      - SPRING_DATA_REDIS_HOST=redis
+      - NACOS_SERVER=uav-nacos:8848
+      - SPRING_DATA_REDIS_HOST=uav-redis
       - UAV_JWT_SECRET=${JWT_SECRET}
     restart: always
     healthcheck:
@@ -112,29 +42,22 @@ services:
       context: .
       dockerfile: ./wrf-processor-service/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/wrf-processor:latest
-    container_name: wrf-processor
+    container_name: trae-wrf-processor
     ports:
       - "8081:8081"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      nacos:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     environment:
       LOG_PATH: /logs
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "-1"
       UAV_JWT_SECRET: ${JWT_SECRET}
       UAV_SECURITY_ACTUATOR_PUBLIC: "true"
-      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_HOST: uav-redis
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/wrf_processor?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: uav
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      NACOS_SERVER: nacos:8848
+      SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/wrf_processor?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      NACOS_SERVER: uav-nacos:8848
       JAVA_TOOL_OPTIONS: "-Xmx384m"
     restart: always
     healthcheck:
@@ -157,26 +80,21 @@ services:
       context: .
       dockerfile: ./data-assimilation-service/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/data-assimilation:latest
-    container_name: data-assimilation
+    container_name: trae-data-assimilation
     ports:
       - "8084:8084"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      nacos:
-        condition: service_healthy
     environment:
       LOG_PATH: /logs
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "-1"
       UAV_JWT_SECRET: ${JWT_SECRET}
-      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_HOST: uav-redis
       UAV_SECURITY_ACTUATOR_PUBLIC: "true"
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/data_assimilation?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: uav
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      NACOS_SERVER: nacos:8848
+      SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/data_assimilation?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      NACOS_SERVER: uav-nacos:8848
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
@@ -198,26 +116,21 @@ services:
       context: .
       dockerfile: ./meteor-forecast-service/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/meteor-forecast:latest
-    container_name: meteor-forecast
+    container_name: trae-meteor-forecast
     ports:
       - "8082:8082"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      nacos:
-        condition: service_healthy
     environment:
       LOG_PATH: /logs
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "-1"
-      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_HOST: uav-redis
       UAV_JWT_SECRET: ${JWT_SECRET}
       UAV_SECURITY_ACTUATOR_PUBLIC: "true"
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/meteor_forecast?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: uav
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      NACOS_SERVER: nacos:8848
+      SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/meteor_forecast?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      NACOS_SERVER: uav-nacos:8848
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
@@ -239,26 +152,21 @@ services:
       context: .
       dockerfile: ./path-planning-service/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/path-planning:latest
-    container_name: path-planning
+    container_name: trae-path-planning
     ports:
       - "8083:8083"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      nacos:
-        condition: service_healthy
     environment:
       LOG_PATH: /logs
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
-      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_HOST: uav-redis
       SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "-1"
       UAV_JWT_SECRET: ${JWT_SECRET}
       UAV_SECURITY_ACTUATOR_PUBLIC: "true"
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/path_planning?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: uav
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      NACOS_SERVER: nacos:8848
+      SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/path_planning?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      NACOS_SERVER: uav-nacos:8848
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
@@ -280,42 +188,27 @@ services:
       context: .
       dockerfile: ./uav-platform-service/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/uav-platform:latest
-    container_name: uav-platform
+    container_name: trae-uav-platform
     ports:
       - "8080:8080"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      nacos:
-        condition: service_healthy
-      wrf-processor:
-        condition: service_started
-      data-assimilation:
-        condition: service_started
-      meteor-forecast:
-        condition: service_started
-      path-planning:
-        condition: service_started
     environment:
       SECURITY_USER_PASSWORD: ${SECURITY_USER_PASSWORD}
       LOG_PATH: /logs
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "-1"
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/uav_platform?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: uav
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/uav_platform?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      SPRING_DATA_REDIS_HOST: uav-redis
       SPRING_DATA_REDIS_PORT: 6379
-      NACOS_SERVER: nacos:8848
-      SERVICES_WRF_PROCESSOR_URL: http://wrf-processor:8081/api/wrf
+      NACOS_SERVER: uav-nacos:8848
+      SERVICES_WRF_PROCESSOR_URL: http://trae-wrf-processor:8081/api/wrf
       UAV_JWT_SECRET: ${JWT_SECRET}
       UAV_SECURITY_ACTUATOR_PUBLIC: "true"
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
-      SERVICES_DATA_ASSIMILATION_URL: http://data-assimilation:8084/api/assimilation
-      SERVICES_METEOR_FORECAST_URL: http://meteor-forecast:8082/api/forecast
-      SERVICES_PATH_PLANNING_URL: http://path-planning:8083/api/planning
+      SERVICES_DATA_ASSIMILATION_URL: http://trae-data-assimilation:8084/api/assimilation
+      SERVICES_METEOR_FORECAST_URL: http://trae-meteor-forecast:8082/api/forecast
+      SERVICES_PATH_PLANNING_URL: http://trae-path-planning:8083/api/planning
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
@@ -337,29 +230,22 @@ services:
       context: .
       dockerfile: ./uav-weather-collector/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/weather-collector:latest
-    container_name: uav-weather
+    container_name: trae-uav-weather
     ports:
       - "8086:8086"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      nacos:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     environment:
       LOG_PATH: /logs
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "-1"
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/uav_weather?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: uav
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/uav_weather?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
       UAV_JWT_SECRET: ${JWT_SECRET}
       UAV_SECURITY_ACTUATOR_PUBLIC: "true"
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_DATA_REDIS_HOST: redis
-      NACOS_SERVER: nacos:8848
+      SPRING_DATA_REDIS_HOST: uav-redis
+      NACOS_SERVER: uav-nacos:8848
       JAVA_TOOL_OPTIONS: "-Xmx384m"
       CMA_API_KEY: ${CMA_API_KEY:-}
       OWM_API_KEY: ${OWM_API_KEY:-}
@@ -383,13 +269,13 @@ services:
   edge-cloud-coordinator:
     build: ./edge-cloud-coordinator
     image: ghcr.io/602420232-dotcom/weather/edge-cloud-coordinator:latest
-    container_name: uav-edge-cloud
+    container_name: trae-uav-edge-cloud
     ports:
       - "8000:8000"
       - "8765:8765"
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      REDIS_HOST: redis
+      KAFKA_BOOTSTRAP_SERVERS: uav-kafka:9092
+      REDIS_HOST: uav-redis
       REDIS_PORT: 6379
     restart: always
     healthcheck:
@@ -412,13 +298,10 @@ services:
       context: ./fengwu-service
       dockerfile: Dockerfile
     image: ghcr.io/602420232-dotcom/weather/fengwu-service:latest
-    container_name: uav-fengwu
+    container_name: trae-uav-fengwu
     entrypoint: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8085"]
     ports:
       - "8085:8085"
-    depends_on:
-      nacos:
-        condition: service_healthy
     volumes:
       - ${FENGWU_MODEL_DIR:-./models/fengwu}:/app/model:ro
     environment:
@@ -428,7 +311,7 @@ services:
       FENGWU_MEAN_PATH: /app/model/data_mean.npy
       FENGWU_STD_PATH: /app/model/data_std.npy
       FENGWU_NUM_THREADS: 4
-      NACOS_SERVER: nacos:8848
+      NACOS_SERVER: uav-nacos:8848
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:8085/health"]
@@ -450,25 +333,16 @@ services:
       context: ./model-engine
       dockerfile: Dockerfile
     image: ghcr.io/602420232-dotcom/weather/model-engine:latest
-    container_name: uav-model-engine
+    container_name: trae-uav-model-engine
     ports:
       - "8087:8087"
-    depends_on:
-      nacos:
-        condition: service_healthy
-      fengwu-service:
-        condition: service_started
-      tianzi-service:
-        condition: service_started
-      fenglei-service:
-        condition: service_started
     environment:
       LOG_PATH: /logs
       MODEL_PYTHON_PATH: /app/python
-      NACOS_SERVER: nacos:8848
-      FENGWU_SERVICE_URL: http://fengwu-service:8085
-      TIANZI_SERVICE_URL: http://tianzi-service:8090
-      FENGLEI_SERVICE_URL: http://fenglei-service:8091
+      NACOS_SERVER: uav-nacos:8848
+      FENGWU_SERVICE_URL: http://trae-uav-fengwu:8085
+      TIANZI_SERVICE_URL: http://uav-algorithm-engine:9090
+      FENGLEI_SERVICE_URL: http://trae-uav-fenglei:8091
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:8087/health"]
@@ -490,7 +364,7 @@ services:
       context: ./tianzi-service
       dockerfile: Dockerfile
     image: ghcr.io/602420232-dotcom/weather/tianzi-service:latest
-    container_name: uav-tianzi
+    container_name: trae-uav-tianzi
     ports:
       - "8090:8090"
     environment:
@@ -521,7 +395,7 @@ services:
       context: ./fenglei-service
       dockerfile: Dockerfile
     image: ghcr.io/602420232-dotcom/weather/fenglei-service:latest
-    container_name: uav-fenglei
+    container_name: trae-uav-fenglei
     ports:
       - "8091:8091"
     environment:
@@ -548,13 +422,12 @@ services:
     networks:
       - uav-net
 
-
   frontend:
     build:
       context: ./uav-path-planning-system/frontend-vue
       dockerfile: Dockerfile
     image: ghcr.io/602420232-dotcom/weather/frontend:latest
-    container_name: uav-frontend
+    container_name: trae-uav-frontend
     ports:
       - "3000:80"
     restart: always
@@ -568,7 +441,4 @@ services:
       - uav-net
 
 volumes:
-  mysql-data:
-  redis-data:
-  model-engine-data:
   fenglei-cache:
