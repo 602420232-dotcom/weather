@@ -1,0 +1,3 @@
+[submodule "uav-platform-v2"]
+	path = uav-platform-v2
+	url = https://github.com/602420232-dotcom/UAV-PLATFORM-V2.git
