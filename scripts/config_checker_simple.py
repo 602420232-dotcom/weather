@@ -96,7 +96,11 @@ class SimpleConfigChecker:
             if re.search(r'jwt.*secret', content, re.IGNORECASE):
                 for line in content.split('\n'):
                     if re.search(r'secret\s*[:=]', line, re.IGNORECASE):
-                        match = re.search(r'secret\s*[:=]\s*["\']?([^"\'\s]+)', line, re.IGNORECASE)
+                        match = re.search(
+                            r'secret\s*[:=]\s*["\']?([^"\'\s]+)',
+                            line,
+                            re.IGNORECASE,
+                        )
                         if match:
                             secret = match.group(1)
                             if len(secret) < 32 and not re.search(r'\$\{|ENV', secret):

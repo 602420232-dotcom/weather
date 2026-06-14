@@ -33,10 +33,12 @@ def fix_docker_compose():
     )
 
     # 3. 修复 Kafka advertised listener
+    # fmt: off
     content = content.replace(
         'KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092',
         'KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_HOST:-localhost}:9092,PLAINTEXT_INTERNAL://kafka:29092'
     )
+    # fmt: on
 
     # 4. 添加 Zookeeper healthcheck
     zk_section_old = """      ZOOKEEPER_CLIENT_PORT: 2181
@@ -56,6 +58,7 @@ def fix_docker_compose():
     # 5. 添加 Kafka healthcheck
     kafka_section_old = """      KAFKA_JMX_PORT: 9999
     deploy:"""
+    # fmt: off
     kafka_section_new = """      KAFKA_JMX_PORT: 9999
     healthcheck:
       test: ["CMD", "bash", "-c", "kafka-broker-api-versions --bootstrap-server localhost:9092 > /dev/null 2>&1"]
@@ -64,6 +67,7 @@ def fix_docker_compose():
       retries: 5
       start_period: 30s
     deploy:"""
+    # fmt: on
     content = content.replace(kafka_section_old, kafka_section_new)
 
     # 6. 添加 edge-cloud-coordinator healthcheck
@@ -200,7 +204,10 @@ def fix_env_files():
 
     # Add missing variables
     if 'MYSQL_ROOT_PASSWORD' not in content:
-        content += '\n# ===== MySQL Root Password =====\nMYSQL_ROOT_PASSWORD=your-secure-root-password\n'
+        content += (
+            '\n# ===== MySQL Root Password =====\n'
+            'MYSQL_ROOT_PASSWORD=your-secure-root-password\n'
+        )
     if 'SECURITY_USER_PASSWORD' not in content:
         content += '\n# ===== Security Default Password =====\nSECURITY_USER_PASSWORD=admin123\n'
     if 'REDIS_PASSWORD' not in content:
@@ -220,7 +227,11 @@ def fix_env_files():
         dev_content = f.read()
 
     # Add nacos healthcheck
-    if 'healthcheck' not in dev_content.split('nacos:')[1].split('uav-nacos-dev')[0] if 'nacos:' in dev_content else True:
+    if (
+        'healthcheck' not in dev_content.split('nacos:')[1].split('uav-nacos-dev')[0]
+        if 'nacos:' in dev_content
+        else True
+    ):
         nacos_old = """    environment:
       - MODE=standalone
     ports:
@@ -296,7 +307,10 @@ def fix_monitoring_dns():
     mon_path = os.path.join(PROJECT, "deployments/kubernetes/monitoring.yml")
     with open(mon_path, 'r') as f:
         content = f.read()
-    content = content.replace('uav-path-planning.svc.cluster.local', 'uav-platform.svc.cluster.local')
+    content = content.replace(
+        'uav-path-planning.svc.cluster.local',
+        'uav-platform.svc.cluster.local',
+    )
     with open(mon_path, 'w') as f:
         f.write(content)
     print("✅ monitoring.yml DNS引用已修正")
@@ -493,6 +507,7 @@ def fix_build_scripts():
         content = f.read()
 
     if 'fengwu' not in content:
+        # fmt: off
         old_services = '''services=(
     "api-gateway"
     "data-assimilation-service"
@@ -521,6 +536,7 @@ docker build -t uav-frontend:latest -f uav-path-planning-system/frontend-vue/Doc
 # Build edge SDK
 echo "[11/11] Building uav-edge-sdk..."
 docker build -t uav-edge-sdk:latest -f uav-edge-sdk/Dockerfile uav-edge-sdk'''
+        # fmt: on
 
         old_total = 'index=3\nfor service in "${services[@]}"; do\n    echo "[$index/9] Building $service..."'
         new_total = 'index=3\nfor service in "${services[@]}"; do\n    echo "[$index/11] Building $service..."'
@@ -542,7 +558,8 @@ def fix_hpa_conflicts():
         shutil.move(auto_path, auto_path + ".deprecated")
         print("✅ autoscaling.yml → autoscaling.yml.deprecated (已归档)")
 
-    # Remove inline HPA from service YAMLs (meteor-forecast-service.yml and path-planning-service.yml)
+    # Remove inline HPA from service YAMLs
+    # (meteor-forecast-service.yml and path-planning-service.yml)
     for svc_file in ["meteor-forecast-service.yml", "path-planning-service.yml"]:
         svc_path = os.path.join(k8s_dir, svc_file)
         if os.path.exists(svc_path):
@@ -565,7 +582,14 @@ def fix_sonarqube_postgres():
     with open(sq_path, 'r') as f:
         content = f.read()
 
-    if 'postgres-sonar' not in content or 'kind: Deployment' not in content.split('sonarqube\n')[0] if len(content.split('sonarqube\n')) > 1 else True:
+    if (
+        'postgres-sonar' not in content
+        or (
+            'kind: Deployment' not in content.split('sonarqube\n')[0]
+            if len(content.split('sonarqube\n')) > 1
+            else True
+        )
+    ):
         postgres_block = """---
 # PostgreSQL for SonarQube
 apiVersion: v1
@@ -653,6 +677,7 @@ spec:
 def create_docker_override():
     """创建 docker-compose.override.yml 开发覆盖"""
     override_path = os.path.join(PROJECT, "docker-compose.override.yml")
+    # fmt: off
     override = """# Docker Compose Override - 本地开发覆盖
 # docker compose -f docker-compose.yml -f docker-compose.override.yml up
 
@@ -716,6 +741,7 @@ services:
       - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket, server=y, suspend=n, address=*:5005 -Xms256m -Xmx256m -XX:+UseG1GC
       - LOG_LEVEL=DEBUG
 """
+    # fmt: on
     if not os.path.exists(override_path):
         with open(override_path, 'w') as f:
             f.write(override)
