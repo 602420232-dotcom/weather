@@ -135,6 +135,9 @@ yarn-error.log*
 .yarn-integrity
 .cache/
 yarn.lock
+.vite/
+dist/
+*.tsbuildinfo
 
 # -----------------
 # Go
