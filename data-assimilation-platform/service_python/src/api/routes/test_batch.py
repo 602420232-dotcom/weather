@@ -6,6 +6,8 @@ Generated: 2026-05-08 12:35:50
 
 # TODO: 替换为显式导入 from batch import xxx
 
+import pytest
+
 
 class TestBasic:
     """Basic test class"""
@@ -18,21 +20,25 @@ class TestBasic:
 class TestEdgeCases:
     """Edge case tests"""
 
+    @pytest.mark.skip(reason="not implemented")
     def test_none_input(self):
         """Test None input"""
         # TODO: Implement None input test
         assert True
 
+    @pytest.mark.skip(reason="not implemented")
     def test_empty_input(self):
         """Test empty input"""
         # TODO: Implement empty input test
         assert True
 
+    @pytest.mark.skip(reason="not implemented")
     def test_large_input(self):
         """Test large data input"""
         # TODO: Implement large data test
         assert True
 
+    @pytest.mark.skip(reason="not implemented")
     def test_invalid_input(self):
         """Test invalid input"""
         # TODO: Implement invalid input test

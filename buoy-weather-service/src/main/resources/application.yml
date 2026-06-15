@@ -28,7 +28,7 @@ spring:
 
 # 服务器配置
 server:
-  port: 8087
+  port: 8094
   shutdown: graceful
 
 springdoc:
@@ -36,3 +36,14 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+# Security Configuration
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: 86400000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

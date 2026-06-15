@@ -24,30 +24,35 @@ class TestJobService:
         # Initialize with default parameters for testing
         return None
 
+    @pytest.mark.skip(reason="not implemented")
     def test_create_job(self):
         """Test method: create_job"""
         # Test logic: Verify basic functionality
         # Args: self, algorithm, config
         pass  # TODO: implement test
 
+    @pytest.mark.skip(reason="not implemented")
     def test_update_status(self):
         """Test method: update_status"""
         # Test logic: Verify basic functionality
         # Args: self, job_id, status, result
         pass  # TODO: implement test
 
+    @pytest.mark.skip(reason="not implemented")
     def test_get_job(self):
         """Test method: get_job"""
         # Test logic: Verify basic functionality
         # Args: self, job_id
         pass  # TODO: implement test
 
+    @pytest.mark.skip(reason="not implemented")
     def test_list_jobs(self):
         """Test method: list_jobs"""
         # Test logic: Verify basic functionality
         # Args: self, limit
         pass  # TODO: implement test
 
+    @pytest.mark.skip(reason="not implemented")
     def test_get_stats(self):
         """Test method: get_stats"""
         # Test logic: Verify basic functionality

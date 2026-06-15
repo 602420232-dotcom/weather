@@ -25,12 +25,14 @@ class TestDaskClusterManager:
         # Initialize with default parameters for testing
         return None
 
+    @pytest.mark.skip(reason="not implemented")
     def test_status(self):
         """Test method: status"""
         # Test logic: Verify basic functionality
         # Args: self
         pass  # TODO: implement test
 
+    @pytest.mark.skip(reason="not implemented")
     def test_get_client(self):
         """Test method: get_client"""
         # Test logic: Verify basic functionality

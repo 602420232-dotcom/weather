@@ -52,7 +52,7 @@ server:
 # UAV配置
 uav:
   jwt:
-    secret: ${JWT_SECRET:uav_path_planning_jwt_secret_key_2024}
+    secret: ${JWT_SECRET}
     expiration: ${JWT_EXPIRATION:86400000}
     enabled: ${JWT_ENABLED:true}
   python:

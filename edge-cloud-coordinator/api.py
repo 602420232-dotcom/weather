@@ -336,13 +336,9 @@ if HAS_FASTAPI:
             # Use asyncio to run async method in background
             import asyncio
             try:
-                loop = asyncio.get_event_loop()
-                if loop.is_running():
-                    asyncio.create_task(coordinator.upload_edge_data())
-                else:
-                    loop.run_until_complete(coordinator.upload_edge_data())
+                loop = asyncio.get_running_loop()
+                loop.create_task(coordinator.upload_edge_data())
             except RuntimeError:
-                # If no event loop, create a new one
                 asyncio.run(coordinator.upload_edge_data())
 
         background_tasks.add_task(_upload)

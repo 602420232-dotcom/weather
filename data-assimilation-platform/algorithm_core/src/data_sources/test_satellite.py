@@ -69,21 +69,25 @@ class TestSatelliteDataSource:
 class TestEdgeCases:
     """Edge case tests"""
 
+    @pytest.mark.skip(reason="not implemented")
     def test_none_input(self):
         """Test None input"""
         # TODO: Implement None input test
         assert True
 
+    @pytest.mark.skip(reason="not implemented")
     def test_empty_input(self):
         """Test empty input"""
         # TODO: Implement empty input test
         assert True
 
+    @pytest.mark.skip(reason="not implemented")
     def test_large_input(self):
         """Test large data input"""
         # TODO: Implement large data test
         assert True
 
+    @pytest.mark.skip(reason="not implemented")
     def test_invalid_input(self):
         """Test invalid input"""
         # TODO: Implement invalid input test

@@ -2,6 +2,7 @@ package com.uav.common.utils;
 
 import com.uav.common.script.PythonScriptInvoker;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 @Deprecated
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "python.executor.enabled", havingValue = "true", matchIfMissing = false)
 public class PythonExecutor {
 
     private final PythonScriptInvoker delegate;

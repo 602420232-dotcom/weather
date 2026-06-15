@@ -1,3 +1,5 @@
+# WARNING: This file is for LOCAL DEVELOPMENT ONLY
+# Do NOT use these settings in production!
 spring:
   application:
     name: uav-path-planning
