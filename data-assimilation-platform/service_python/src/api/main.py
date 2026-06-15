@@ -1,6 +1,7 @@
 # service_python/src/api/main.py
 
 import logging
+import os
 from contextlib import asynccontextmanager
 from typing import Optional
 
@@ -11,6 +12,12 @@ from fastapi.middleware.gzip import GZipMiddleware
 from api.core.assimilation_service import AssimilationService
 from api.parallel.dask import DaskClusterManager
 from api.routes import assimilation, batch  # type: ignore[reportAttributeAccessIssue]
+
+# Environment-based feature toggle: disable Flask routes in production
+if os.environ.get("ENV", "development") == "production":
+    FLASK_ENABLED = False
+else:
+    FLASK_ENABLED = True
 
 
 logging.basicConfig(

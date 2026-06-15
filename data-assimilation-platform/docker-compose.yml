@@ -2,12 +2,14 @@ version: '3.8'
 
 services:
   bayesian-api:
-    build: ./algorithm_core/docker
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
     container_name: bayesian-api
     ports:
       - "8000:8000"
-    command: uvicorn bayesian_assimilation.api.rest:app --host 0.0.0.0 --port 8000
     environment:
       - PYTHONUNBUFFERED=1
       - LOG_LEVEL=INFO
+      - ENV=production
     restart: unless-stopped

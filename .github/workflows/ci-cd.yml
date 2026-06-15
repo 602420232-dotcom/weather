@@ -89,6 +89,11 @@ jobs:
       - name: Type check (mypy)
         run: mypy . --ignore-missing-imports --exclude "node_modules|.git|build" || true
 
+      - name: TensorFlow Compatibility Check
+        run: |
+          pip install "tensorflow>=2.15.0,<2.16.0" numpy
+          python scripts/verify-tf-compatibility.py
+
   # ============================================================
   # Frontend - Build & Lint
   # ============================================================
@@ -134,7 +139,14 @@ jobs:
           cache: maven
 
       - name: OWASP Dependency Check
-        run: mvn dependency-check:check -DskipTests=true || true
+        run: mvn dependency-check:check -DskipTests=true -DcveEnabled=true -DcisaEnabled=true
+
+      - name: Upload OWASP Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: owasp-dependency-check-report
+          path: '**/target/dependency-check-report.html'
 
       - name: Security Audit
         run: python tests/check_security.py || true

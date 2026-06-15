@@ -289,15 +289,12 @@
                         <outputDirectory>${project.build.directory}/dependency-check-reports</outputDirectory>
                         <failBuildOnCVSS>7</failBuildOnCVSS>
                         <suppressionFile>owasp-suppressions.xml</suppressionFile>
-                        <!-- Disable automatic updates to avoid network errors -->
-                        <autoUpdate>false</autoUpdate>
-                        <!-- Disable NVD and CISA data sources if they are causing errors -->
-                        <cveEnabled>false</cveEnabled>
-                        <cisaEnabled>false</cisaEnabled>
+                        <suppressionFiles>${project.basedir}/dependency-check-suppressions.xml</suppressionFiles>
+                        <!-- Enable NVD and CISA data sources for vulnerability detection -->
+                        <cveEnabled>true</cveEnabled>
+                        <cisaEnabled>true</cisaEnabled>
                         <!-- Don't fail the build if the vulnerability check fails -->
                         <failBuildOnError>false</failBuildOnError>
-                        <!-- Skip during normal builds, run via dedicated CI step -->
-                        <skip>true</skip>
                     </configuration>
                     <executions>
                         <execution>
