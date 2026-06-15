@@ -86,7 +86,7 @@ public class PythonScriptInvoker {
         } finally {
             if (process != null) process.destroy();
             if (tempFile != null) {
-                try { Files.deleteIfExists(tempFile); } catch (IOException ignored) {}
+                try { Files.deleteIfExists(tempFile); } catch (IOException e) { log.debug("Failed to delete temp file: {}", tempFile, e); }
             }
         }
     }

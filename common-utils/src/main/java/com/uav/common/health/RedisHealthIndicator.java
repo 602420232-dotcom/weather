@@ -66,7 +66,9 @@ public class RedisHealthIndicator implements HealthIndicator {
                         builder.withDetail("usedMemory", usedMemory);
                         builder.withDetail("peakMemory", peakMemory);
                     }
-                } catch (Exception ignored) { }
+                } catch (Exception e) {
+                    log.debug("Failed to retrieve Redis memory info", e);
+                }
 
                 return builder.build();
             } finally {

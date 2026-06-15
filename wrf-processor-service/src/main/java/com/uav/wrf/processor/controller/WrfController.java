@@ -213,7 +213,9 @@ public class WrfController {
                         if (h >= 0 && h <= 30000) {
                             customLayers.add(h);
                         }
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException e) {
+                        log.debug("Invalid height layer value: {}", part, e);
+                    }
                 }
                 if (!customLayers.isEmpty() && customLayers.size() <= MAX_HEIGHT_LAYERS) {
                     layers = customLayers;

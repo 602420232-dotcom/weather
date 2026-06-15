@@ -28,7 +28,7 @@ spring:
 
 # 服务器配置
 server:
-  port: 8088
+  port: 8093
   shutdown: graceful
 
 springdoc:

@@ -364,7 +364,8 @@ public class PythonScriptInvoker {
                 if (exitCode == 0) {
                     return executable;
                 }
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                log.debug("Python executable not available: {}", executable, e);
             }
         }
         throw new SecurityException("No valid Python executable found in allowed list");

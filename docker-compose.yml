@@ -56,7 +56,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/wrf_processor?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: rootpass
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-rootpass}
       NACOS_SERVER: uav-nacos:8848
       JAVA_TOOL_OPTIONS: "-Xmx384m"
     restart: always
@@ -93,7 +93,7 @@ services:
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
       SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/data_assimilation?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: rootpass
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-rootpass}
       NACOS_SERVER: uav-nacos:8848
     restart: always
     healthcheck:
@@ -129,7 +129,7 @@ services:
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
       SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/meteor_forecast?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: rootpass
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-rootpass}
       NACOS_SERVER: uav-nacos:8848
     restart: always
     healthcheck:
@@ -165,7 +165,7 @@ services:
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
       SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/path_planning?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: rootpass
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-rootpass}
       NACOS_SERVER: uav-nacos:8848
     restart: always
     healthcheck:
@@ -198,7 +198,7 @@ services:
       SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "-1"
       SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/uav_platform?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: rootpass
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-rootpass}
       SPRING_DATA_REDIS_HOST: uav-redis
       SPRING_DATA_REDIS_PORT: 6379
       NACOS_SERVER: uav-nacos:8848
@@ -239,7 +239,7 @@ services:
       SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "-1"
       SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/uav_weather?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: rootpass
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-rootpass}
       UAV_JWT_SECRET: ${JWT_SECRET}
       UAV_SECURITY_ACTUATOR_PUBLIC: "true"
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
@@ -371,7 +371,7 @@ services:
       TIANZI_API_KEY: ${TIANZI_API_KEY:-dev-key-not-for-production}
       TIANZI_MODEL_PATH: /app/model/tianzi.onnx
       TIANZI_ENV: ${TIANZI_ENV:-development}
-      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
     volumes:
       - ${TIANZI_MODEL_DIR:-./models/tianzi}:/app/model
     restart: unless-stopped
@@ -403,7 +403,7 @@ services:
       FENGLEI_CACHE_DIR: /app/cache
       FENGLEI_UPDATE_INTERVAL: ${FENGLEI_UPDATE_INTERVAL:-30}
       FENGLEI_ENV: ${FENGLEI_ENV:-development}
-      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
     volumes:
       - fenglei-cache:/app/cache
     restart: unless-stopped
