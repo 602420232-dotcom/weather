@@ -1,0 +1,177 @@
+# Resilience4j Circuit Breaker Configuration
+# 为微服务添加熔断器，防止级联故障
+
+# Circuit Breaker 配置
+resilience4j.circuitbreaker:
+  configs:
+    # 默认配置
+    default:
+      registerHealthIndicator: true
+      slidingWindowSize: 10              # 滑动窗口大小（最近N次调用）
+      minimumNumberOfCalls: 5            # 最少调用次数
+      permittedNumberOfCallsInHalfOpenState: 3  # 半开状态允许调用次数
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      waitDurationInOpenState: 10s       # 从打开到半开的等待时间
+      failureRateThreshold: 50           # 失败率阈值（超过50%则断开）
+      eventConsumerBufferSize: 10        # 事件缓冲区大小
+      
+    # 高流量服务配置
+    highVolume:
+      registerHealthIndicator: true
+      slidingWindowSize: 20              # 更大的滑动窗口
+      minimumNumberOfCalls: 10           # 更多调用次数
+      permittedNumberOfCallsInHalfOpenState: 5
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      waitDurationInOpenState: 15s
+      failureRateThreshold: 60           # 更宽松的阈值
+      eventConsumerBufferSize: 20
+        
+    # 关键服务配置
+    critical:
+      registerHealthIndicator: true
+      slidingWindowSize: 5               # 更小的窗口
+      minimumNumberOfCalls: 3           # 更少调用次数
+      permittedNumberOfCallsInHalfOpenState: 2
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      waitDurationInOpenState: 5s        # 更短的等待
+      failureRateThreshold: 40           # 更严格的阈值
+      eventConsumerBufferSize: 5
+      recordExceptions:
+        - java.io.IOException
+        - java.util.concurrent.TimeoutException
+        - com.uav.common.exception.BusinessException
+        
+  instances:
+    # 气象预报服务熔断器
+    meteor-forecast-service:
+      baseConfig: default
+      slidingWindowSize: 10
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10s
+      permittedNumberOfCallsInHalfOpenState: 3
+      recordExceptions:
+        - java.io.IOException
+        - java.net.ConnectException
+        - org.springframework.web.client.ResourceAccessException
+        
+    # 路径规划服务熔断器
+    path-planning-service:
+      baseConfig: highVolume
+      slidingWindowSize: 15
+      failureRateThreshold: 60
+      waitDurationInOpenState: 20s
+      permittedNumberOfCallsInHalfOpenState: 5
+      recordExceptions:
+        - java.io.IOException
+        - java.net.SocketTimeoutException
+        - com.uav.common.exception.PathPlanningException
+        
+    # 数据同化服务熔断器
+    data-assimilation-service:
+      baseConfig: critical
+      slidingWindowSize: 8
+      failureRateThreshold: 45
+      waitDurationInOpenState: 8s
+      permittedNumberOfCallsInHalfOpenState: 3
+      recordExceptions:
+        - java.io.IOException
+        - java.util.concurrent.TimeoutException
+        - com.uav.common.exception.DataAssimilationException
+
+# Retry 配置（配合熔断器使用）
+resilience4j.retry:
+  configs:
+    default:
+      maxAttempts: 3                    # 最大重试次数
+      waitDuration: 500ms                # 重试间隔
+      enableExponentialBackoff: true     # 指数退避
+      exponentialBackoffMultiplier: 2   # 退避倍数
+      retryExceptions:
+        - java.io.IOException
+        - java.util.concurrent.TimeoutException
+        
+    # 关键操作重试配置
+    critical:
+      maxAttempts: 5
+      waitDuration: 1s
+      enableExponentialBackoff: true
+      exponentialBackoffMultiplier: 2
+      retryExceptions:
+        - java.io.IOException
+        - com.uav.common.exception.BusinessException
+        
+  instances:
+    meteor-forecast-service:
+      baseConfig: default
+      maxAttempts: 3
+      waitDuration: 500ms
+      
+    path-planning-service:
+      baseConfig: default
+      maxAttempts: 3
+      waitDuration: 500ms
+      
+    data-assimilation-service:
+      baseConfig: critical
+      maxAttempts: 5
+      waitDuration: 1s
+
+# Rate Limiter 配置
+resilience4j.ratelimiter:
+  configs:
+    default:
+      limitForPeriod: 100               # 每周期限制100个请求
+      limitRefreshPeriod: 1s            # 刷新周期1秒
+      timeoutDuration: 500ms            # 获取许可证超时
+      eventConsumerBufferSize: 10
+        
+  instances:
+    meteor-forecast-service:
+      baseConfig: default
+      limitForPeriod: 100
+      limitRefreshPeriod: 1s
+      
+    path-planning-service:
+      baseConfig: default
+      limitForPeriod: 200               # 路径规划可以更高
+      
+    data-assimilation-service:
+      baseConfig: default
+      limitForPeriod: 50                # 数据同化需要更多资源
+
+# Thread Pool Bulkhead 配置（隔离线程池）
+resilience4j.bulkhead:
+  configs:
+    default:
+      maxConcurrentCalls: 100           # 最大并发调用数
+      maxWaitDuration: 10ms             # 等待超时
+        
+  instances:
+    meteor-forecast-service:
+      baseConfig: default
+      maxConcurrentCalls: 50
+            
+    path-planning-service:
+      baseConfig: default
+      maxConcurrentCalls: 100
+          
+    data-assimilation-service:
+      baseConfig: default
+      maxConcurrentCalls: 30            # 数据同化更耗资源
+
+# Time Limiter 配置
+resilience4j.timelimiter:
+  configs:
+    default:
+      timeoutDuration: 5s               # 默认超时5秒
+      cancelRunningFuture: true         # 超时后取消正在运行的Future
+      
+  instances:
+    meteor-forecast-service:
+      timeoutDuration: 10s              # 气象预报可能耗时较长
+      
+    path-planning-service:
+      timeoutDuration: 5s
+          
+    data-assimilation-service:
+      timeoutDuration: 30s              # 数据同化通常最耗时
