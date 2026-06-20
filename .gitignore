@@ -91,7 +91,7 @@ CPackConfig.cmake
 CPackSourceConfig.cmake
 *.cmake
 !CMakeLists.txt
-uav-edge-sdk/build/
+edge-sdk/uav-edge-sdk/build/
 
 # -----------------
 # Flutter / Dart
