@@ -286,7 +286,7 @@
                         <format>HTML,JSON</format>
                         <outputDirectory>${project.build.directory}/dependency-check-reports</outputDirectory>
                         <failBuildOnCVSS>7</failBuildOnCVSS>
-                        <suppressionFile>owasp-suppressions.xml</suppressionFile>
+                        <suppressionFile>config/owasp-suppressions.xml</suppressionFile>
                         <suppressionFiles>${project.basedir}/dependency-check-suppressions.xml</suppressionFiles>
                         <!-- Enable NVD and CISA data sources for vulnerability detection -->
                         <cveEnabled>true</cveEnabled>
