@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "forecast.python-script",
+      "type": "java.lang.String",
+      "description": "气象预测Python脚本路径"
+    },
+    {
+      "name": "forecast.timeout",
+      "type": "java.lang.Integer",
+      "description": "预测超时时间(毫秒)"
+    },
+    {
+      "name": "forecast.data-path",
+      "type": "java.lang.String",
+      "description": "气象数据存储路径"
+    }
+  ]
+}
