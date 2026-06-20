@@ -4,11 +4,11 @@ on:
   push:
     branches: [main, canary]
     paths:
-      - 'wrf-processor-service/**'
-      - 'meteor-forecast-service/**'
-      - 'path-planning-service/**'
-      - 'data-assimilation-service/**'
-      - 'uav-platform-service/**'
+      - 'services/wrf-processor/**'
+      - 'services/meteor-forecast/**'
+      - 'services/path-planning/**'
+      - 'services/data-assimilation/**'
+      - 'services/uav-platform/**'
       - 'api-gateway/**'
       - 'deployments/**'
   pull_request:
@@ -56,12 +56,12 @@ jobs:
     strategy:
       matrix:
         service:
-          - wrf-processor-service
-          - meteor-forecast-service
-          - path-planning-service
-          - data-assimilation-service
-          - uav-platform-service
-          - api-gateway
+          - services/wrf-processor
+          - services/meteor-forecast
+          - services/path-planning
+          - services/data-assimilation
+          - services/uav-platform
+          - services/api-gateway
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
@@ -90,7 +90,7 @@ jobs:
 
       - name: Update K8s Manifests
         run: |
-          for service in wrf-processor-service meteor-forecast-service path-planning-service data-assimilation-service uav-platform-service api-gateway; do
+          for service in services/wrf-processor services/meteor-forecast services/path-planning services/data-assimilation services/uav-platform services/api-gateway; do
             sed -i "s|image:.*$service.*|image: ${{ env.REGISTRY }}/${{ github.repository }}/$service:${{ env.IMAGE_TAG }}|g" \
               deployments/kubernetes/$service.yml
           done
