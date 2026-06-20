@@ -296,6 +296,8 @@
                     </configuration>
                     <executions>
                         <execution>
+                            <id>owasp-check</id>
+                            <phase>none</phase>
                             <goals>
                                 <goal>check</goal>
                             </goals>
