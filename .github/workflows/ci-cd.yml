@@ -128,6 +128,8 @@ jobs:
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
+    env:
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -139,7 +141,7 @@ jobs:
           cache: maven
 
       - name: OWASP Dependency Check
-        run: mvn dependency-check:check -DskipTests=true -DcveEnabled=true -DcisaEnabled=true || true
+        run: mvn dependency-check:check -DskipTests=true -DcveEnabled=true -DcisaEnabled=true
         continue-on-error: true
 
       - name: Upload OWASP Report
