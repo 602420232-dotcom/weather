@@ -4,24 +4,24 @@ WORKDIR /build-parent
 COPY pom.xml .
 RUN mvn install -N -B -q
 
-# Build and install common-utils (shared library)
+# Build and install common (shared library)
 WORKDIR /build-common
-COPY common-utils/pom.xml .
-COPY common-utils/src ./src
+COPY common/pom.xml .
+COPY common/src ./src
 RUN mvn install -DskipTests -B -q
 
 # Now build the service
 WORKDIR /build
-COPY path-planning-service/pom.xml .
+COPY services/path-planning/pom.xml .
 RUN mvn dependency:go-offline -B
-COPY path-planning-service/src ./src
+COPY services/path-planning/src ./src
 RUN mvn clean package -DskipTests -B
 
 FROM eclipse-temurin:17-jre-jammy
 RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip curl && rm -rf /var/lib/apt/lists/* \
     && groupadd -r appuser && useradd -r -g appuser -m -s /sbin/nologin appuser
 COPY --from=builder /build/target/*.jar app.jar
-COPY path-planning-service/src/main/python/ /app/python/
+COPY services/path-planning/src/main/python/ /app/python/
 RUN pip3 install --no-cache-dir -r /app/python/requirements.txt
 RUN chown -R appuser:appuser /app
 ENV PYTHONPATH=/app/python

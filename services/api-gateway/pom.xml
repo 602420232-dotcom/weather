@@ -8,13 +8,13 @@
         <groupId>com.uav</groupId>
         <artifactId>uav-path-planning</artifactId>
         <version>1.0.0</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>api-gateway</artifactId>
     <version>1.0.0</version>
     <name>API Gateway</name>
-    <description>无人机路径规划系统 - API 网关</description>
+    <description>无人机路径规划系�?- API 网关</description>
 
     <dependencies>
         <dependency>

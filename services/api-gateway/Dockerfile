@@ -4,17 +4,17 @@ WORKDIR /build-parent
 COPY pom.xml .
 RUN mvn install -N -B -q
 
-# Build and install common-utils (shared library)
+# Build and install common (shared library)
 WORKDIR /build-common
-COPY common-utils/pom.xml .
-COPY common-utils/src ./src
+COPY common/pom.xml .
+COPY common/src ./src
 RUN mvn install -DskipTests -B -q
 
 # Now build the service
 WORKDIR /build
-COPY api-gateway/pom.xml .
+COPY services/api-gateway/pom.xml .
 RUN mvn dependency:go-offline -B
-COPY api-gateway/src ./src
+COPY services/api-gateway/src ./src
 RUN mvn clean package -DskipTests -B
 
 FROM eclipse-temurin:17-jre

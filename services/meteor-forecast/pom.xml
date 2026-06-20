@@ -8,13 +8,13 @@
         <groupId>com.uav</groupId>
         <artifactId>uav-path-planning</artifactId>
         <version>1.0.0</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>meteor-forecast-service</artifactId>
     <version>1.0.0</version>
     <name>Meteor Forecast Service</name>
-    <description>气象预测服务 - LSTM + XGBoost + GPR 气象预测与订正</description>
+    <description>气象预测服务 - LSTM + XGBoost + GPR 气象预测与订�?/description>
 
     <dependencies>
         <dependency>

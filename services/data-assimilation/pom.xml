@@ -8,13 +8,13 @@
         <groupId>com.uav</groupId>
         <artifactId>uav-path-planning</artifactId>
         <version>1.0.0</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>data-assimilation-service</artifactId>
     <version>1.0.0</version>
     <name>Data Assimilation Service</name>
-    <description>贝叶斯同化服务 - 3D-VAR/4D-VAR/EnKF数据同化计算</description>
+    <description>贝叶斯同化服�?- 3D-VAR/4D-VAR/EnKF数据同化计算</description>
 
     <dependencies>
         <dependency>
