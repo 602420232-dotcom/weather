@@ -9,8 +9,8 @@ on:
       - 'services/path-planning/**'
       - 'services/data-assimilation/**'
       - 'services/uav-platform/**'
-      - 'api-gateway/**'
-      - 'deployments/**'
+      - 'services/api-gateway/**'
+      - 'k8s/**'
   pull_request:
     branches: [main]
 
@@ -74,7 +74,8 @@ jobs:
       - name: Build and Push ${{ matrix.service }}
         uses: docker/build-push-action@v5
         with:
-          context: ./${{ matrix.service }}
+          context: .
+          file: ./${{ matrix.service }}/Dockerfile
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}:${{ env.IMAGE_TAG }}
@@ -90,16 +91,16 @@ jobs:
 
       - name: Update K8s Manifests
         run: |
-          for service in services/wrf-processor services/meteor-forecast services/path-planning services/data-assimilation services/uav-platform services/api-gateway; do
+          for service in wrf-processor-service meteor-forecast-service path-planning-service data-assimilation-service uav-platform-service api-gateway; do
             sed -i "s|image:.*$service.*|image: ${{ env.REGISTRY }}/${{ github.repository }}/$service:${{ env.IMAGE_TAG }}|g" \
-              deployments/kubernetes/$service.yml
+              k8s/kubernetes/$service.yml
           done
 
       - name: Commit Updated Manifests
         run: |
           git config user.name "GitOps CI"
           git config user.email "ci@uav-platform.com"
-          git add deployments/kubernetes/
+          git add k8s/kubernetes/
           git commit -m "chore: auto-update images to ${{ env.IMAGE_TAG }} [skip ci]" || true
           git push
 
