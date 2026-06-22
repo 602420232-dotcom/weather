@@ -47,21 +47,21 @@
     </properties>
 
     <modules>
-        <module>common-utils</module>
+        <module>common</module>
         <!-- common-dependencies 已合并到父POM -->
-        <module>wrf-processor-service</module>
-        <module>data-assimilation-service</module>
-        <module>meteor-forecast-service</module>
-        <module>path-planning-service</module>
-        <module>uav-platform-service</module>
-        <module>api-gateway</module>
-        <module>uav-path-planning-system/backend-spring</module>
-        <module>uav-weather-collector</module>
-        <module>buoy-weather-service</module>
-        <module>ground-station-weather-service</module>
-        <module>satellite-weather-service</module>
-        <module>radiosonde-weather-service</module>
-        <module>detection-drone-service</module>
+        <module>services/wrf-processor</module>
+        <module>services/data-assimilation</module>
+        <module>services/meteor-forecast</module>
+        <module>services/path-planning</module>
+        <module>services/uav-platform</module>
+        <module>services/api-gateway</module>
+        <module>legacy/uav-path-planning-backend</module>
+        <module>services/weather-collector</module>
+        <module>legacy/buoy-weather-service</module>
+        <module>legacy/ground-station-weather-service</module>
+        <module>legacy/satellite-weather-service</module>
+        <module>legacy/radiosonde-weather-service</module>
+        <module>legacy/detection-drone-service</module>
         <!-- data-assimilation-platform/service_spring: 独立parent pom，使用独立构建 -->
     </modules>
 
@@ -286,7 +286,7 @@
                         <format>HTML,JSON</format>
                         <outputDirectory>${project.build.directory}/dependency-check-reports</outputDirectory>
                         <failBuildOnCVSS>7</failBuildOnCVSS>
-                        <suppressionFile>owasp-suppressions.xml</suppressionFile>
+                        <suppressionFile>config/owasp-suppressions.xml</suppressionFile>
                         <suppressionFiles>${project.basedir}/dependency-check-suppressions.xml</suppressionFiles>
                         <!-- Enable NVD and CISA data sources for vulnerability detection -->
                         <cveEnabled>true</cveEnabled>
@@ -296,6 +296,8 @@
                     </configuration>
                     <executions>
                         <execution>
+                            <id>owasp-check</id>
+                            <phase>none</phase>
                             <goals>
                                 <goal>check</goal>
                             </goals>

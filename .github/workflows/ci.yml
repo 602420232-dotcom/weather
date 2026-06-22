@@ -37,7 +37,7 @@ jobs:
         run: mvn install -N -B -q
 
       - name: Build common-utils
-        run: mvn install -pl common-utils -DskipTests -B -q
+        run: mvn install -pl common -DskipTests -B -q
 
       - name: Compile all modules
         run: mvn compile -B -q
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: uav-path-planning-system/frontend-vue
+        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -80,7 +80,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: uav-path-planning-system/frontend-vue/package-lock.json
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -129,7 +129,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./api-gateway/Dockerfile
+          file: ./services/api-gateway/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/api-gateway:${{ github.sha }},ghcr.io/${{ github.repository }}/api-gateway:latest
           provenance: false
@@ -139,7 +139,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./uav-platform-service/Dockerfile
+          file: ./services/uav-platform/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/uav-platform:${{ github.sha }},ghcr.io/${{ github.repository }}/uav-platform:latest
           provenance: false
@@ -149,7 +149,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./wrf-processor-service/Dockerfile
+          file: ./services/wrf-processor/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/wrf-processor:${{ github.sha }},ghcr.io/${{ github.repository }}/wrf-processor:latest
           provenance: false
@@ -159,7 +159,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./data-assimilation-service/Dockerfile
+          file: ./services/data-assimilation/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/data-assimilation:${{ github.sha }},ghcr.io/${{ github.repository }}/data-assimilation:latest
           provenance: false
@@ -169,7 +169,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./meteor-forecast-service/Dockerfile
+          file: ./services/meteor-forecast/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/meteor-forecast:${{ github.sha }},ghcr.io/${{ github.repository }}/meteor-forecast:latest
           provenance: false
@@ -179,7 +179,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./path-planning-service/Dockerfile
+          file: ./services/path-planning/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/path-planning:${{ github.sha }},ghcr.io/${{ github.repository }}/path-planning:latest
           provenance: false
@@ -189,7 +189,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./uav-weather-collector/Dockerfile
+          file: ./services/weather-collector/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/weather-collector:${{ github.sha }},ghcr.io/${{ github.repository }}/weather-collector:latest
           provenance: false
@@ -198,8 +198,8 @@ jobs:
       - name: Build & Push Frontend
         uses: docker/build-push-action@v6
         with:
-          context: ./uav-path-planning-system/frontend-vue
-          file: ./uav-path-planning-system/frontend-vue/Dockerfile
+          context: ./frontend
+          file: ./frontend/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/frontend-app:${{ github.sha }},ghcr.io/${{ github.repository }}/frontend-app:latest
           provenance: false
@@ -209,8 +209,8 @@ jobs:
       - name: Build & Push FengWu Service
         uses: docker/build-push-action@v6
         with:
-          context: ./fengwu-service
-          file: ./fengwu-service/Dockerfile
+          context: ./services/fengwu-service
+          file: ./services/fengwu-service/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/fengwu-service:${{ github.sha }},ghcr.io/${{ github.repository }}/fengwu-service:latest
           provenance: false
@@ -219,8 +219,8 @@ jobs:
       - name: Build & Push Edge-Cloud Coordinator
         uses: docker/build-push-action@v6
         with:
-          context: ./edge-cloud-coordinator
-          file: ./edge-cloud-coordinator/Dockerfile
+          context: ./services/edge-cloud-coordinator
+          file: ./services/edge-cloud-coordinator/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/edge-cloud-coordinator:${{ github.sha }},ghcr.io/${{ github.repository }}/edge-cloud-coordinator:latest
           provenance: false
@@ -229,8 +229,8 @@ jobs:
       - name: Build & Push Model Engine
         uses: docker/build-push-action@v6
         with:
-          context: ./model-engine
-          file: ./model-engine/Dockerfile
+          context: ./services/model-engine
+          file: ./services/model-engine/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/model-engine:${{ github.sha }},ghcr.io/${{ github.repository }}/model-engine:latest
           provenance: false

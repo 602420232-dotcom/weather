@@ -9,7 +9,7 @@ services:
   api-gateway:
     build:
       context: .
-      dockerfile: ./api-gateway/Dockerfile
+      dockerfile: ./services/api-gateway/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/api-gateway:latest
     container_name: trae-uav-gateway
     ports:
@@ -40,7 +40,7 @@ services:
   wrf-processor:
     build:
       context: .
-      dockerfile: ./wrf-processor-service/Dockerfile
+      dockerfile: ./services/wrf-processor/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/wrf-processor:latest
     container_name: trae-wrf-processor
     ports:
@@ -78,7 +78,7 @@ services:
   data-assimilation:
     build:
       context: .
-      dockerfile: ./data-assimilation-service/Dockerfile
+      dockerfile: ./services/data-assimilation/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/data-assimilation:latest
     container_name: trae-data-assimilation
     ports:
@@ -114,7 +114,7 @@ services:
   meteor-forecast:
     build:
       context: .
-      dockerfile: ./meteor-forecast-service/Dockerfile
+      dockerfile: ./services/meteor-forecast/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/meteor-forecast:latest
     container_name: trae-meteor-forecast
     ports:
@@ -150,7 +150,7 @@ services:
   path-planning:
     build:
       context: .
-      dockerfile: ./path-planning-service/Dockerfile
+      dockerfile: ./services/path-planning/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/path-planning:latest
     container_name: trae-path-planning
     ports:
@@ -186,7 +186,7 @@ services:
   uav-platform:
     build:
       context: .
-      dockerfile: ./uav-platform-service/Dockerfile
+      dockerfile: ./services/uav-platform/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/uav-platform:latest
     container_name: trae-uav-platform
     ports:
@@ -228,7 +228,7 @@ services:
   uav-weather-collector:
     build:
       context: .
-      dockerfile: ./uav-weather-collector/Dockerfile
+      dockerfile: ./services/weather-collector/Dockerfile
     image: ghcr.io/602420232-dotcom/weather/weather-collector:latest
     container_name: trae-uav-weather
     ports:
@@ -267,7 +267,7 @@ services:
       - uav-net
 
   edge-cloud-coordinator:
-    build: ./edge-cloud-coordinator
+    build: ./services/edge-cloud-coordinator
     image: ghcr.io/602420232-dotcom/weather/edge-cloud-coordinator:latest
     container_name: trae-uav-edge-cloud
     ports:
@@ -295,7 +295,7 @@ services:
 
   fengwu-service:
     build:
-      context: ./fengwu-service
+      context: ./services/fengwu-service
       dockerfile: Dockerfile
     image: ghcr.io/602420232-dotcom/weather/fengwu-service:latest
     container_name: trae-uav-fengwu
@@ -330,7 +330,7 @@ services:
 
   model-engine:
     build:
-      context: ./model-engine
+      context: ./services/model-engine
       dockerfile: Dockerfile
     image: ghcr.io/602420232-dotcom/weather/model-engine:latest
     container_name: trae-uav-model-engine
@@ -361,7 +361,7 @@ services:
 
   tianzi-service:
     build:
-      context: ./tianzi-service
+      context: ./services/tianzi-service
       dockerfile: Dockerfile
     image: ghcr.io/602420232-dotcom/weather/tianzi-service:latest
     container_name: trae-uav-tianzi
@@ -392,7 +392,7 @@ services:
 
   fenglei-service:
     build:
-      context: ./fenglei-service
+      context: ./services/fenglei-service
       dockerfile: Dockerfile
     image: ghcr.io/602420232-dotcom/weather/fenglei-service:latest
     container_name: trae-uav-fenglei
@@ -424,7 +424,7 @@ services:
 
   frontend:
     build:
-      context: ./uav-path-planning-system/frontend-vue
+      context: ./frontend
       dockerfile: Dockerfile
     image: ghcr.io/602420232-dotcom/weather/frontend:latest
     container_name: trae-uav-frontend
