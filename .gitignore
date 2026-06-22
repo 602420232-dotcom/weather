@@ -110,6 +110,14 @@ uav-mobile-app/.pub-cache/
 uav-mobile-app/.pub/
 uav-mobile-app/build/
 
+# Flutter ephemeral / auto-generated
+uav-mobile-app/*/Flutter/ephemeral/
+uav-mobile-app/*/flutter/ephemeral/
+
+# Flutter/Dart source - override Python 'lib/' ignore
+!uav-mobile-app/lib/
+!mobile/lib/
+
 # Android / Flutter auto-generated
 uav-mobile-app/android/.gradle/
 uav-mobile-app/android/app/src/main/res/xml/backup_rules.xml
