@@ -73,36 +73,22 @@ weather/
 │   ├── uav-platform/              # UAV 平台服务（Java，端口 8080）
 │   ├── weather-collector/         # UAV 气象数据采集服务
 │   └── wrf-processor/             # WRF 气象数据处理服务（Java，端口 8081）
+├── common/                        # 公共模块（common-utils，Maven 子模块）
 ├── frontend/                      # 前端（Vue3 + Cesium，端口 3000）
-├── mobile/                        # 跨平台移动应用（Flutter）
+├── uav-mobile-app/                # 跨平台移动应用（Flutter）
 ├── edge-sdk/                      # 端侧 SDK（C++/Python/pybind11）
-├── algorithm-engine/              # Python 路径规划算法核心
-├── common/                        # 公共工具模块（原 common-utils）
+├── models/                        # ML 模型权重（fengwu、tianzi）
 ├── config/                        # lint / 代码质量配置
-│   ├── checkstyle.xml
-│   ├── sonar-project.properties
-│   ├── qodana.yaml
-│   └── owasp-suppressions.xml
 ├── k8s/                           # Kubernetes 部署配置
 ├── docker/                        # Docker 额外配置
 ├── docs/                          # 文档中心
-├── legacy/                        # 废弃服务
-│   ├── buoy-weather-service/
-│   ├── ground-station-weather-service/
-│   ├── satellite-weather-service/
-│   ├── radiosonde-weather-service/
-│   ├── detection-drone-service/
-│   ├── uav-path-planning-backend/
-│   ├── uav-path-planning-db/
-│   └── uav-path-planning-gateway/
-├── data-assimilation-platform/    # 贝叶斯同化平台（独立子项目）
-├── uav-platform-v2/               # 基础设施子模块（Nacos/MySQL/Redis）
 ├── scripts/                       # 构建与管理脚本
 ├── tests/                         # 项目测试
-├── tools/                         # 工具集
-├── models/                        # ML 模型权重
+├── tools/                         # 工具集（mypanel）
+├── uav-platform-v2/               # 基础设施子模块（Nacos/MySQL/Redis/Kafka）
 ├── .env                           # 环境变量
 ├── docker-compose.yml             # 主 Docker Compose 配置
+├── docker-compose.dev.yml         # 开发环境基础设施
 ├── pom.xml                        # Maven 主配置
 ├── LICENSE
 └── README.md
@@ -258,7 +244,7 @@ weather/
 
 ```bash
 git clone https://github.com/602420232-dotcom/weather
-cd trae
+cd weather
 ```
 
 ### 2. 配置环境变量
@@ -309,7 +295,7 @@ docker-compose logs -f wrf-processor
 | **TianZi Service** | 8090 | 天资高分辨率气象分析服务 | `tianzi-service/` | `/health` |
 | **FengLei Service** | 8091 | 风雷区域模式数据服务 | `fenglei-service/` | `/health` |
 | **Edge Cloud Coordinator** | 8000/8765 | 边云协同框架（联邦学习/WebSocket/Kafka） | `edge-cloud-coordinator/` | `/health` |
-| **Frontend Vue** | 3000 | Vue3 Web 应用 | `uav-path-planning-system/frontend-vue/` | - |
+| **Frontend Vue** | 3000 | Vue3 Web 应用 | `frontend/` | - |
 | **MySQL** | 3306 | 关系型数据库 | 容器服务 | - |
 | **Redis** | 6379 | 缓存与消息队列 | 容器服务 | `ping` |
 | **Nacos** | 8848 | 服务发现与配置中心 | 容器服务 | `/nacos` |
@@ -339,7 +325,7 @@ docker-compose logs -f wrf-processor
 
 1. **启动基础设施服务**
     ```bash
-    docker-compose up -d mysql redis nacos
+    docker-compose -f docker-compose.dev.yml up -d
     ```
 
 2. **构建项目**
@@ -349,11 +335,7 @@ docker-compose logs -f wrf-processor
 
 3. **启动服务**
     ```bash
-    # 启动各个微服务
-    cd wrf-processor-service && mvn spring-boot:run
-    cd data-assimilation-service && mvn spring-boot:run
-    cd meteor-forecast-service && mvn spring-boot:run
-    cd path-planning-service && mvn spring-boot:run
+    docker-compose up -d
     ```
 
 4. **代码格式化**
@@ -365,7 +347,7 @@ docker-compose logs -f wrf-processor
 
 ```bash
 # 安装依赖
-cd uav-path-planning-system/frontend-vue
+cd frontend
 npm install
 
 # 启动开发服务器
@@ -511,25 +493,21 @@ docker image prune -f
 | 模块 | 文档路径 |
 |:----:|:-------:|
 | **uav-mobile-app** | [README](uav-mobile-app/README.md) |
-| **wrf-processor-service** | [README](wrf-processor-service/README.md) |
-| **data-assimilation-service** | [README](data-assimilation-service/README.md) |
-| **meteor-forecast-service** | [README](meteor-forecast-service/README.md) |
-| **path-planning-service** | [README](path-planning-service/README.md) |
-| **fengwu-service** | [README](fengwu-service/README.md) |
-| **tianzi-service** | [README](tianzi-service/README.md) |
-| **fenglei-service** | [README](fenglei-service/README.md) |
-| **buoy-weather-service** | [README](buoy-weather-service/README.md) |
-| **ground-station-weather-service** | [README](ground-station-weather-service/README.md) |
-| **satellite-weather-service** | [README](satellite-weather-service/README.md) |
-| **radiosonde-weather-service** | [README](radiosonde-weather-service/README.md) |
-| **detection-drone-service** | [README](detection-drone-service/README.md) |
-| **edge-cloud-coordinator** | [README](edge-cloud-coordinator/README.md) |
-| **model-engine** | [README](model-engine/README.md) |
-| **api-gateway** | [README](api-gateway/README.md) |
-| **common-utils** | [README](common-utils/README.md) |
-| **data-assimilation-platform** | [README](data-assimilation-platform/README.md) |
-| **frontend-vue** | [README](uav-path-planning-system/frontend-vue/README.md) |
-| **deployments** | [README](deployments/README.md) |
+| **wrf-processor** | [README](services/wrf-processor/README.md) |
+| **data-assimilation** | [README](services/data-assimilation/README.md) |
+| **meteor-forecast** | [README](services/meteor-forecast/README.md) |
+| **path-planning** | [README](services/path-planning/README.md) |
+| **uav-platform** | [README](services/uav-platform/README.md) |
+| **api-gateway** | [README](services/api-gateway/README.md) |
+| **weather-collector** | [README](services/weather-collector/README.md) |
+| **fengwu-service** | [README](services/fengwu-service/README.md) |
+| **tianzi-service** | [README](services/tianzi-service/README.md) |
+| **fenglei-service** | [README](services/fenglei-service/README.md) |
+| **edge-cloud-coordinator** | [README](services/edge-cloud-coordinator/README.md) |
+| **model-engine** | [README](services/model-engine/README.md) |
+| **common** | [README](common/README.md) |
+| **frontend** | [README](frontend/README.md) |
+| **edge-sdk** | [README](edge-sdk/README.md) |
 | **docs** | [README](docs/README.md) |
 
 ---
