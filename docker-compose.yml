@@ -20,6 +20,8 @@ services:
       - SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT=-1
       - NACOS_SERVER=uav-nacos:8848
       - SPRING_DATA_REDIS_HOST=uav-redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_PASSWORD=UavRedis2024!
       - UAV_JWT_SECRET=${JWT_SECRET}
     restart: always
     healthcheck:
@@ -52,6 +54,8 @@ services:
       UAV_JWT_SECRET: ${JWT_SECRET}
       UAV_SECURITY_ACTUATOR_PUBLIC: "true"
       SPRING_DATA_REDIS_HOST: uav-redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: UavRedis2024!
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/wrf_processor?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
@@ -89,6 +93,8 @@ services:
       SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "-1"
       UAV_JWT_SECRET: ${JWT_SECRET}
       SPRING_DATA_REDIS_HOST: uav-redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: UavRedis2024!
       UAV_SECURITY_ACTUATOR_PUBLIC: "true"
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
       SPRING_DATASOURCE_URL: jdbc:mysql://uav-mysql:3306/data_assimilation?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
@@ -124,6 +130,8 @@ services:
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "-1"
       SPRING_DATA_REDIS_HOST: uav-redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: UavRedis2024!
       UAV_JWT_SECRET: ${JWT_SECRET}
       UAV_SECURITY_ACTUATOR_PUBLIC: "true"
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
@@ -159,6 +167,8 @@ services:
       LOG_PATH: /logs
       SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: "true"
       SPRING_DATA_REDIS_HOST: uav-redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: UavRedis2024!
       SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAIL_TIMEOUT: "-1"
       UAV_JWT_SECRET: ${JWT_SECRET}
       UAV_SECURITY_ACTUATOR_PUBLIC: "true"
@@ -201,6 +211,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-rootpass}
       SPRING_DATA_REDIS_HOST: uav-redis
       SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: UavRedis2024!
       NACOS_SERVER: uav-nacos:8848
       SERVICES_WRF_PROCESSOR_URL: http://trae-wrf-processor:8081/api/wrf
       UAV_JWT_SECRET: ${JWT_SECRET}
@@ -245,6 +256,8 @@ services:
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_DATA_REDIS_HOST: uav-redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: UavRedis2024!
       NACOS_SERVER: uav-nacos:8848
       JAVA_TOOL_OPTIONS: "-Xmx384m"
       CMA_API_KEY: ${CMA_API_KEY:-}

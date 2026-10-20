@@ -52,9 +52,27 @@ _API_KEY = os.getenv("TIANZI_API_KEY", "")
 if not _API_KEY:
     logger.warning(
         "⚠  TIANZI_API_KEY not set \u2014 authentication DISABLED. "
-        "Service will run in demo mode with mock data. "
         "Set TIANZI_API_KEY environment variable for full functionality."
     )
+
+# ─── 数据来源真实性（★ 2026-09-25 核查并更正措辞）────────────────────────────
+# 核查结论：**本服务不造随机数。** `TianZiEngine.analyze()` 要求真实 ONNX 模型
+# （`TIANZI_MODEL_PATH`，默认 `/app/model/tianzi.onnx`），
+# 未加载时直接 `raise RuntimeError("Model not loaded")`。
+#
+# 但原来的启动日志写着 "Service will run in demo mode with mock data." ——
+# **这句话是错的**（没有 mock data），而它和 `fenglei-service` 里
+# "确实在造随机数"的情况**用了同一套措辞**，导致排查时分不清哪个是真的。
+# ⇒ 措辞改为如实描述：门禁是**模型文件**，不是 API Key。
+#
+# ★ 教训：**措辞不准确本身就是缺陷** —— 它会让下一个排查的人（包括我自己）
+#   把"没有 mock"和"全是 mock"混为一谈。要么都禁，要么都说清。
+_TIANZI_MODEL_PATH = os.getenv("TIANZI_MODEL_PATH", "/app/model/tianzi.onnx")
+_MODEL_PRESENT = os.path.exists(_TIANZI_MODEL_PATH)
+if not _MODEL_PRESENT:
+    logger.warning(
+        "⚠  天资模型文件不存在：%s ⇒ **数据端点会返回 503**（不返回任何占位数据）。"
+        "请把 ONNX 模型放到该路径或设 TIANZI_MODEL_PATH。", _TIANZI_MODEL_PATH)
 
 
 def verify_api_key(
@@ -254,17 +272,21 @@ async def get_status():
         "service": "tianzi-service",
         "status": "UP" if (_engine and _engine.is_loaded) else "DEGRADED",
         "api_key_configured": bool(_API_KEY),
-        "mode": "production" if _API_KEY else "demo",
-        "message": (
-            "API key not configured - running in demo mode with "
-            "limited functionality" if not _API_KEY
-            else "Service running with full functionality"
-        ),
-        "action_required": not _API_KEY,
-        "action_message": (
-            "Please configure TIANZI_API_KEY environment variable to enable full functionality"
-            if not _API_KEY else None
-        ),
+        # ★ 把"认证"与"数据真假"分开报。旧版用 api_key_configured 推 mode，
+        #   配了 Key 就显示 production/full functionality —— 但数据是否可用
+        #   取决于**模型文件在不在**，与密钥无关。
+        "auth_mode": "production" if _API_KEY else "open",
+        "data_source": ("real" if (_engine and _engine.is_loaded)
+                        else "unavailable"),
+        "model_path": _TIANZI_MODEL_PATH,
+        "model_present": _MODEL_PRESENT,
+        "message": ("天资模型已加载" if (_engine and _engine.is_loaded) else
+                    "⚠️ 模型未加载 ⇒ 数据端点返回 503（本服务**不返回**"
+                    "任何随机或占位数据）"),
+        "action_required": not (_engine and _engine.is_loaded),
+        "action_message": (None if (_engine and _engine.is_loaded) else
+                           "请提供天资 ONNX 模型（TIANZI_MODEL_PATH，"
+                           "需重庆气象局渠道）"),
     }
 
 

@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -72,6 +73,22 @@ public class PythonScriptInvoker {
     @Value("${uav.python.enabled:true}")
     private boolean enabled;
 
+    /**
+     * ★ 2026-09-28 新增：**显式指定 Python 解释器**（留空 = 维持原行为）。
+     *
+     * <p>为什么需要它：{@link #getValidPythonExecutable()} 原来的判据只是
+     * 「`--version` 能不能跑起来」，**不检查这个解释器有没有 numpy/netCDF4**。
+     * 实测本机 PATH 里第一个命中的 `python3` 是 MSYS Python 3.14（**没有 numpy**），
+     * 而真正带依赖的解释器是另一个 ⇒ 解析器会以 `ModuleNotFoundError` 失败，
+     * 或者换个 PATH 顺序就悄悄换了解释器。这正是本项目反复踩的
+     * 「机制写了、判据没拿真实状态核对」那一类问题。
+     *
+     * <p>设置后：只校验「路径存在且是普通文件」，不再走白名单扫描
+     * （白名单里只有 `python3`/`python`/几个固定路径，无法覆盖 venv 场景）。
+     */
+    @Value("${uav.python.executable:}")
+    private String pythonExecutable;
+
     @Value("${uav.python.security.hashing-enabled:true}")
     private boolean hashingEnabled;
 
@@ -131,37 +148,57 @@ public class PythonScriptInvoker {
                         action,
                         tempFile.toString()
                 );
-                pb.redirectErrorStream(true);
+                // ★ 2026-09-28 修：**不再把 stderr 并进 stdout**。
+                //   脚本自己写明「stdout 只留给 JSON，日志一律写 stderr」
+                //   （wrf_processor.py:95-104），而这里原本是
+                //   `redirectErrorStream(true)` ⇒ 日志被拼进 data。
+                //   为什么一直没暴露：Java 侧用 Jackson 读时**默认容忍尾随内容**
+                //   （FAIL_ON_TRAILING_TOKENS 默认关），所以 harness 判 PASS；
+                //   而前端是 `JSON.parse`（严格）⇒ 直接抛
+                //   `SyntaxError: Unexpected non-whitespace character after JSON`。
+                //   ⇒ 这是「测试装置的解析器比前端宽松 ⇒ 判据不等价」的典型，
+                //     修法是让数据通道与诊断通道分开，而不是放宽前端。
+                pb.redirectErrorStream(false);
                 pb.directory(new File(scriptPath));
                 pb.environment().remove("PYTHONPATH");
+                // 子进程的 stdio 编码钉成 UTF-8（Windows 默认是 GBK，
+                // 会让 `ensure_ascii=False` 的中文/特殊符号在输出途中崩掉）。
+                pb.environment().put("PYTHONIOENCODING", "utf-8");
+                pb.environment().put("PYTHONUTF8", "1");
 
                 Process process = pb.start();
 
-                Future<String> future = executorService.submit(() -> {
-                    StringBuilder output = new StringBuilder();
-                    try (BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(process.getInputStream()))) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            output.append(line).append("\n");
-                            if (output.length() > MAX_SCRIPT_SIZE_BYTES) {
-                                log.warn("Script output exceeded maximum size, truncating");
-                                break;
-                            }
-                        }
-                    }
-                    return output.toString();
-                });
+                // stderr（诊断通道）单独抽干：不并流，但也不能不读 —— 否则
+                // 缓冲区写满会把子进程卡死。
+                Future<String> errFuture = executorService.submit(
+                        () -> readStream(process.getErrorStream()));
+                Future<String> future = executorService.submit(
+                        () -> readStream(process.getInputStream()));
 
                 try {
                     String result = future.get(timeoutMs, TimeUnit.MILLISECONDS);
+                    String errText = awaitQuietly(errFuture, 3000);
                     int exitValue = process.waitFor();
 
-                    log.info("Python script completed: {} {} (exit={})",
-                            scriptName, action, exitValue);
+                    log.info("Python script completed: {} {} (exit={}, stdout={}B, stderr={}B)",
+                            scriptName, action, exitValue, result.length(),
+                            errText == null ? 0 : errText.length());
+                    if (errText != null && !errText.isBlank()) {
+                        log.info("Python stderr: {}", tail(errText, 4000));
+                    }
 
-                    if (exitValue != 0 && result.isEmpty()) {
-                        return "{\"success\": false, \"error\": \"Script execution failed with exit code: " + exitValue + "\"}";
+                    if (exitValue != 0) {
+                        // ★ 2026-09-28 修：原判据是 `exitValue != 0 && result.isEmpty()`，
+                        //   意思是「只要吐了东西就算成功」。实测后果很坏：脚本在输出
+                        //   1.1 MB 之后因编码崩溃，stdout 里留下半段 JSON，
+                        //   而这个判据把它**当成正常结果**返回；上层
+                        //   `WrfController` 再包一层 `success=true` ⇒ 接口看起来是通的。
+                        //   （正是 README 第 68 条那个陷阱：不报错、有数出、看着像真的。）
+                        //   现在：非零退出码一律返回 success=false 的 JSON，
+                        //   并把 stdout/stderr 尾部作为 output 一起带回去便于定位。
+                        log.error("Python script failed: {} {} (exit={})", scriptName, action, exitValue);
+                        return errorJson("Python 脚本以非零退出码结束: " + exitValue,
+                                (errText == null ? "" : errText) + result);
                     }
 
                     return result;
@@ -169,6 +206,7 @@ public class PythonScriptInvoker {
                 } catch (TimeoutException e) {
                     process.destroyForcibly();
                     future.cancel(true);
+                    errFuture.cancel(true);
                     log.error("Python script timeout: {} {}", scriptName, action);
                     return "{\"success\": false, \"error\": \"Execution timeout after " + timeoutMs + "ms\"}";
                 }
@@ -253,7 +291,17 @@ public class PythonScriptInvoker {
             throw new SecurityException("Path traversal attempt detected");
         }
 
-        return fullPath.toString();
+        // ★ 2026-09-28 修：**返回绝对路径**。
+        //   原实现返回相对路径（`src/main/python/wrf_processor.py`），而调用处
+        //   同时还设了 `pb.directory(new File(scriptPath))` ⇒ 相对命令路径会被
+        //   **再拼一次工作目录**，实测报错：
+        //     python.exe: can't open file
+        //       '…\wrf-processor\src\main\python\src\main\python\wrf_processor.py'
+        //     → 退出码 2（而且 stderr 才说得清，stdout 是空的）。
+        //   `uav.python.script-path` 的默认值就是相对的 `src/main/python`
+        //   ⇒ 任何"没显式改成绝对路径"的部署都会踩到（配置看起来完全正常）。
+        //   绝对化后，命令路径与工作目录解耦，这个坑消失。
+        return fullPath.toAbsolutePath().normalize().toString();
     }
 
     public boolean isPythonAvailable() {
@@ -337,6 +385,69 @@ public class PythonScriptInvoker {
         }
     }
 
+    /**
+     * 抽干一个子进程流并按 **UTF-8** 解码（★ 2026-09-26/28 两处修复的落点）。
+     *
+     * <p>原实现用的是平台默认字符集（Windows = GBK），而子进程按 UTF-8 输出
+     * （脚本里有中文 warnings/notes 且 `ensure_ascii=False`）⇒ 中文变乱码，
+     * 但 JSON 结构侥幸还在 ⇒ **不报错、只静默损坏数据**。
+     */
+    private String readStream(java.io.InputStream in) throws java.io.IOException {
+        StringBuilder output = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+                if (output.length() > MAX_SCRIPT_SIZE_BYTES) {
+                    log.warn("Script stream exceeded maximum size, truncating");
+                    break;
+                }
+            }
+        }
+        return output.toString();
+    }
+
+    /** 取一个已完成 Future 的值；超时/异常都不影响主流程（诊断信息而已）。 */
+    private String awaitQuietly(Future<String> future, long millis) {
+        try {
+            return future.get(millis, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            log.debug("读取子进程 stderr 失败/超时: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private static String tail(String s, int max) {
+        if (s == null) {
+            return "";
+        }
+        return s.length() <= max ? s : s.substring(s.length() - max);
+    }
+
+    /**
+     * 构造「失败」响应（JSON 字符串）。
+     *
+     * <p>用 ObjectMapper 而不是手工拼字符串：Traceback 里有引号、换行、中文，
+     * 拼接会让 JSON 结构本身破掉 —— 而调用方（前端 `unwrapParserPayload`）
+     * 恰恰要 `JSON.parse` 它。
+     */
+    private String errorJson(String message, String outputTail) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("success", false);
+        payload.put("error", message);
+        if (outputTail != null && !outputTail.isEmpty()) {
+            payload.put("output", outputTail.length() > 2000
+                    ? outputTail.substring(outputTail.length() - 2000) : outputTail);
+        }
+        try {
+            return objectMapper.writeValueAsString(payload);
+        } catch (Exception e) {
+            log.warn("序列化失败响应时出错: {}", e.getMessage());
+            return "{\"success\": false, \"error\": \"Python script execution failed\"}";
+        }
+    }
+
     private void validateScriptFile(String scriptPath) throws Exception {
         Path path = Paths.get(scriptPath);
         
@@ -355,6 +466,16 @@ public class PythonScriptInvoker {
     }
 
     private String getValidPythonExecutable() {
+        // ★ 2026-09-28：显式配置优先（见 pythonExecutable 字段注释）。
+        if (pythonExecutable != null && !pythonExecutable.isBlank()) {
+            Path configured = Paths.get(pythonExecutable).toAbsolutePath().normalize();
+            if (!Files.isRegularFile(configured)) {
+                throw new SecurityException(
+                        "配置的 Python 解释器不存在或不是普通文件: " + configured);
+            }
+            log.info("Using configured Python interpreter: {}", configured);
+            return configured.toString();
+        }
         for (String executable : ALLOWED_EXECUTABLES) {
             try {
                 Process process = new ProcessBuilder(executable, "--version")
@@ -362,6 +483,9 @@ public class PythonScriptInvoker {
                         .start();
                 int exitCode = process.waitFor();
                 if (exitCode == 0) {
+                    log.info("Using auto-detected Python interpreter: {} "
+                            + "(未配置 uav.python.executable：仅探测了能否启动，"
+                            + "未校验 numpy/netCDF4 依赖是否齐备)", executable);
                     return executable;
                 }
             } catch (Exception e) {
