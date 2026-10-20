@@ -124,18 +124,6 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
 
-        <!-- Docker Java 客户端 -->
-        <dependency>
-            <groupId>com.github.docker-java</groupId>
-            <artifactId>docker-java-core</artifactId>
-            <version>3.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.docker-java</groupId>
-            <artifactId>docker-java-transport-httpclient5</artifactId>
-            <version>3.4.0</version>
-        </dependency>
-
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty-shaded</artifactId>

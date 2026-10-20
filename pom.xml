@@ -55,14 +55,7 @@
         <module>services/path-planning</module>
         <module>services/uav-platform</module>
         <module>services/api-gateway</module>
-        <module>legacy/uav-path-planning-backend</module>
         <module>services/weather-collector</module>
-        <module>legacy/buoy-weather-service</module>
-        <module>legacy/ground-station-weather-service</module>
-        <module>legacy/satellite-weather-service</module>
-        <module>legacy/radiosonde-weather-service</module>
-        <module>legacy/detection-drone-service</module>
-        <!-- data-assimilation-platform/service_spring: 独立parent pom，使用独立构建 -->
     </modules>
 
     <dependencyManagement>
