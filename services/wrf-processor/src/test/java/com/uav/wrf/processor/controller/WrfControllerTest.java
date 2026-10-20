@@ -56,7 +56,7 @@ class WrfControllerTest {
         when(mockFile.getOriginalFilename()).thenReturn(null);
 
         // When
-        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100);
+        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100, null);
 
         // Then
         assertEquals(false, response.get("success"));
@@ -70,7 +70,7 @@ class WrfControllerTest {
         when(mockFile.getOriginalFilename()).thenReturn("");
 
         // When
-        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100);
+        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100, null);
 
         // Then
         assertEquals(false, response.get("success"));
@@ -84,7 +84,7 @@ class WrfControllerTest {
         when(mockFile.getOriginalFilename()).thenReturn("   ");
 
         // When
-        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100);
+        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100, null);
 
         // Then
         assertEquals(false, response.get("success"));
@@ -98,7 +98,7 @@ class WrfControllerTest {
         when(mockFile.getOriginalFilename()).thenReturn("../malicious.nc");
 
         // When
-        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100);
+        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100, null);
 
         // Then
         assertEquals(false, response.get("success"));
@@ -112,7 +112,7 @@ class WrfControllerTest {
         when(mockFile.getOriginalFilename()).thenReturn("dir/file.nc");
 
         // When
-        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100);
+        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100, null);
 
         // Then
         assertEquals(false, response.get("success"));
@@ -126,7 +126,7 @@ class WrfControllerTest {
         when(mockFile.getOriginalFilename()).thenReturn("dir\\file.nc");
 
         // When
-        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100);
+        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100, null);
 
         // Then
         assertEquals(false, response.get("success"));
@@ -140,7 +140,7 @@ class WrfControllerTest {
         when(mockFile.getOriginalFilename()).thenReturn("malicious.txt");
 
         // When
-        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100);
+        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100, null);
 
         // Then
         assertEquals(false, response.get("success"));
@@ -153,7 +153,7 @@ class WrfControllerTest {
         when(mockFile.getOriginalFilename()).thenReturn("wrf_output.netcdf");
 
         try {
-            Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100);
+            Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100, null);
             assertTrue(response.containsKey("success"));
         } catch (Exception e) {
             assertTrue(true);
@@ -166,7 +166,7 @@ class WrfControllerTest {
         when(mockFile.getOriginalFilename()).thenReturn("wrf_output.nc");
 
         try {
-            Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100);
+            Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100, null);
             assertTrue(response.containsKey("success"));
         } catch (Exception e) {
             assertTrue(true);
@@ -179,7 +179,7 @@ class WrfControllerTest {
         ReflectionTestUtils.setField(wrfController, "pythonScriptPath", "");
         when(mockFile.getOriginalFilename()).thenReturn("valid.nc");
 
-        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100);
+        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100, null);
 
         assertEquals(false, response.get("success"));
         assertTrue(response.get("error").toString().contains("安全验证失败"));
@@ -191,7 +191,7 @@ class WrfControllerTest {
         ReflectionTestUtils.setField(wrfController, "pythonScriptPath", "../malicious.py");
         when(mockFile.getOriginalFilename()).thenReturn("valid.nc");
 
-        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100);
+        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100, null);
 
         assertEquals(false, response.get("success"));
         assertTrue(response.get("error").toString().contains("安全验证失败"));
@@ -203,7 +203,7 @@ class WrfControllerTest {
         ReflectionTestUtils.setField(wrfController, "pythonScriptPath", "malicious.py");
         when(mockFile.getOriginalFilename()).thenReturn("valid.nc");
 
-        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100);
+        Map<String, Object> response = wrfController.parseWrfFile(mockFile, 100, null);
 
         assertEquals(false, response.get("success"));
         assertTrue(response.get("error").toString().contains("安全验证失败"));

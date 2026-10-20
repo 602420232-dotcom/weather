@@ -70,7 +70,7 @@ class WrfControllerEnhancedTest {
     @DisplayName("空文件名返回错误")
     void testEmptyFilename() {
         MockMultipartFile file = new MockMultipartFile("file", "", "application/octet-stream", new byte[0]);
-        Map<String, Object> result = wrfController.parseWrfFile(file, 100);
+        Map<String, Object> result = wrfController.parseWrfFile(file, 100, null);
         assertFalse((Boolean) result.get("success"));
         assertEquals("文件名不能为空", result.get("error"));
     }
@@ -79,7 +79,7 @@ class WrfControllerEnhancedTest {
     @DisplayName("null文件名返回错误")
     void testNullFilename() {
         MockMultipartFile file = new MockMultipartFile("file", (String) null, "application/octet-stream", new byte[0]);
-        Map<String, Object> result = wrfController.parseWrfFile(file, 100);
+        Map<String, Object> result = wrfController.parseWrfFile(file, 100, null);
         assertFalse((Boolean) result.get("success"));
         assertEquals("文件名不能为空", result.get("error"));
     }
@@ -88,7 +88,7 @@ class WrfControllerEnhancedTest {
     @DisplayName("文件名包含路径遍历返回错误")
     void testPathTraversalInFilename() {
         MockMultipartFile file = new MockMultipartFile("file", "../malicious.nc", "application/octet-stream", new byte[0]);
-        Map<String, Object> result = wrfController.parseWrfFile(file, 100);
+        Map<String, Object> result = wrfController.parseWrfFile(file, 100, null);
         assertFalse((Boolean) result.get("success"));
         assertTrue(result.get("error").toString().contains("非法字符"));
     }
@@ -97,7 +97,7 @@ class WrfControllerEnhancedTest {
     @DisplayName("非NetCDF格式返回错误")
     void testNonNetCdfFormat() {
         MockMultipartFile file = new MockMultipartFile("file", "data.txt", "text/plain", "test".getBytes());
-        Map<String, Object> result = wrfController.parseWrfFile(file, 100);
+        Map<String, Object> result = wrfController.parseWrfFile(file, 100, null);
         assertFalse((Boolean) result.get("success"));
         assertTrue(result.get("error").toString().contains("仅支持NetCDF"));
     }
