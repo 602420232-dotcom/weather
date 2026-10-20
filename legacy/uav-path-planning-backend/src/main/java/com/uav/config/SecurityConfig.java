@@ -66,6 +66,7 @@ public class SecurityConfig {
                    .ignoringRequestMatchers(
                        "/api/public/**",
                        "/api/v1/auth/**",
+                       "/api/v1/docker/**",
                        "/api/auth/**",
                        "/api/forum/**",
                        "/actuator/**",
@@ -78,6 +79,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/docker/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/forum/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
