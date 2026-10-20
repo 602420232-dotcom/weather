@@ -349,3 +349,13 @@ Dockerfile.*.quick
 # Maven effective-pom (generated)
 effective-pom
 **/effective-pom
+
+# ===== 2026-10-20 补：tools/verify 的运行产物与数据（非源码）=====
+tools/verify/data/
+tools/verify/classes/
+tools/verify/evidence/
+tools/verify/archive_*/
+tools/verify/*.log
+tools/verify/*_result.txt
+# ===== 本地备份目录 =====
+.d2_backup_*/
