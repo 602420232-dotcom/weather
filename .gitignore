@@ -357,3 +357,25 @@ tools/verify/*.log
 tools/verify/*_result.txt
 # ===== 本地备份目录 =====
 .d2_backup_*/
+
+# ===== 2026-10-20 收口：防把历史垃圾/残骸误提交 =====
+# data-assimilation-platform/ 里 44.1 MB 是历史垃圾（538 日志 / 383 pyc /
+# .npy / .png / __pycache__ / .pytest_cache / .idea），真源码仅 ~0.8 MB
+# ⇒ 只忽略垃圾，源码保持可见（是否入库由维护者决定）
+data-assimilation-platform/**/*.log
+data-assimilation-platform/**/*.pyc
+data-assimilation-platform/**/__pycache__/
+data-assimilation-platform/**/.pytest_cache/
+data-assimilation-platform/**/.idea/
+data-assimilation-platform/**/*.npy
+data-assimilation-platform/**/*.png
+data-assimilation-platform/.flutter-plugins-dependencies
+
+# mobile/ 是 flutter create 生成的残骸（仅 1 个真 dart 文件），
+# 真正的移动端工程是 uav-mobile-app/ ⇒ 整目录忽略
+mobile/
+
+# 通用
+*.log
+*.tar.gz
+*.zip
