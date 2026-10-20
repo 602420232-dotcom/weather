@@ -352,3 +352,14 @@ effective-pom
 #   data-assimilation-platform/  (45.6 MB, 0 source files: only json outputs/logs/pyc/caches)
 #   mobile/                      (flutter scaffold; its only real file duplicated uav-mobile-app)
 #   archived outside the repo at py/iteam/_removed_20261020/
+
+# ===== 2026-10-20 补：tools/verify 的运行产物与数据（非源码）=====
+tools/verify/data/
+tools/verify/classes/
+tools/verify/evidence/
+tools/verify/archive_*/
+tools/verify/*.log
+tools/verify/*_result.txt
+# ===== 本地备份目录 =====
+.d2_backup_*/
+
