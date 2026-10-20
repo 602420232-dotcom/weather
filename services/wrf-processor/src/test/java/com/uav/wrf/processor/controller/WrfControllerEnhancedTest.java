@@ -12,6 +12,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.uav.common.script.PythonScriptInvoker;
+import com.uav.wrf.processor.service.WrfChunkUploadService;
 import com.uav.wrf.processor.service.WrfDataService;
 
 import java.util.Map;
@@ -33,9 +34,13 @@ class WrfControllerEnhancedTest {
     @Mock
     private PythonScriptInvoker pythonScriptInvoker;
 
+    /** ★ 2026-09-28：C3 之后 WrfController 多了分片上传服务这个依赖（第 3 个构造参数）。 */
+    @Mock
+    private WrfChunkUploadService chunkUploadService;
+
     @BeforeEach
     void setUp() {
-        wrfController = new WrfController(wrfDataService, pythonScriptInvoker);
+        wrfController = new WrfController(wrfDataService, pythonScriptInvoker, chunkUploadService);
         ReflectionTestUtils.setField(wrfController, "pythonScriptPath", "wrf_processor.py");
         ReflectionTestUtils.setField(wrfController, "dataPath", "./data");
 

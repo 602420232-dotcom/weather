@@ -7,7 +7,21 @@ spring:
     exclude:
       - io.github.resilience4j.bulkhead.autoconfigure.BulkheadAutoConfiguration
       - io.github.resilience4j.timelimiter.autoconfigure.TimeLimiterAutoConfiguration
-  
+
+  # ★ 2026-09-28 新增：multipart 上限。
+  #   本服务用 Undertow（spring-boot-starter-undertow），而**此前没有任何 multipart 配置**
+  #   ⇒ Undertow 的默认「单个文件 1 MB」生效，前端整文件 POST
+  #      （`NetCDFChunkUploader.vue` 的 MAX_FILE_SIZE = 2 GB，分片 5 MB）在真实服务上
+  #      一律 500：`UT000054: The maximum size 1048576 for an individual file in a
+  #      multipart request was exceeded`。
+  #   ⚠️ 这个缺陷在自写 harness（JDK HttpServer + MockMultipartFile）里**看不见**，
+  #      只有走真实 Undertow 的集成测试才会暴露（`WrfPlatformIntegrationTest`）。
+  #   取值与前端 MAX_FILE_SIZE 对齐。
+  servlet:
+    multipart:
+      max-file-size: 2048MB
+      max-request-size: 2048MB
+
   # 数据库配置
   datasource:
     url: jdbc:mysql://localhost:3306/wrf_processor?useSSL=false&serverTimezone=UTC

@@ -4,6 +4,12 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
+  # ★ 2026-09-28：与 src/main/resources/application.yml 保持一致。
+  #   本文件会**整份替换**主配置 ⇒ 不写在这里，集成测试里 Undertow 又会退回默认 1 MB 上限。
+  servlet:
+    multipart:
+      max-file-size: 2048MB
+      max-request-size: 2048MB
   jpa:
     hibernate:
       ddl-auto: create-drop
