@@ -136,6 +136,31 @@ export default defineConfig({
       }
     }
   },
+  preview: {
+    port: 3000,
+    proxy: {
+      '/v1': {
+        target: 'http://localhost:5005',
+        changeOrigin: true
+      },
+      '/api/v1': {
+        target: 'http://localhost:5005',
+        changeOrigin: true
+      },
+      '/api': {
+        target: 'http://localhost:5005',
+        changeOrigin: true
+      },
+      '/actuator': {
+        target: 'http://localhost:5005',
+        changeOrigin: true
+      },
+      '/nacos': {
+        target: 'http://localhost:8950',
+        changeOrigin: true
+      }
+    }
+  },
   build: {
     minify: 'esbuild',
     chunkSizeWarningLimit: 1000,

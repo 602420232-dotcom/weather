@@ -630,7 +630,7 @@ function initLeaflet() {
     attributionControl: false
   }).setView([CENTER_BJ.lat, CENTER_BJ.lng], 12)
 
-  leafletTileLayer = new CachedTileLayer(isDarkTheme() ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  leafletTileLayer = new CachedTileLayer(isDarkTheme() ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     subdomains: 'abc',
     maxZoom: 19
   }).addTo(leafletMap)
@@ -682,7 +682,7 @@ function initCesium() {
 
   try {
     const imagery = new Cesium.UrlTemplateImageryProvider({
-      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
       subdomains: ['a', 'b', 'c'],
       maximumLevel: 19
     })
@@ -690,7 +690,7 @@ function initCesium() {
     // ========== IndexedDB 瓦片缓存：拦截 requestImage ==========
     const originalRequestImage = imagery.requestImage.bind(imagery)
     imagery.requestImage = function (x, y, level, request) {
-      const url = `https://a.tile.openstreetmap.org/${level}/${x}/${y}.png`
+      const url = `https://a.basemaps.cartocdn.com/light_all/${level}/${x}/${y}.png`
       // 先查 IndexedDB
       return getTileBlob(url).then((blob) => {
         if (blob) {
@@ -1081,7 +1081,7 @@ onMounted(async () => {
       try { leafletMap.removeLayer(leafletTileLayer) } catch (_) {}
       const dark = isDarkTheme()
       leafletTileLayer = new CachedTileLayer(
-        dark ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        dark ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
         { subdomains: 'abc', maxZoom: 19 }
       ).addTo(leafletMap)
       leafletTileLayer.bringToBack()

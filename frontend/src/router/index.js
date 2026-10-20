@@ -194,6 +194,18 @@ const routes = [
           roles: ['tester', 'deployment', 'admin']
         }
       },
+      // ★ 2026-09-26（C1/C3）新增：NetCDF 剖面预览。
+      //   这个页面（NetCDFPreview.vue）此前**不在路由表里、也没被任何组件 import**，
+      //   而且它 import 上传组件的相对路径是错的 ⇒ 是一条谁也没打开过的死链路，
+      //   这正是「前端从不调后端」能藏这么久的原因。
+      //   刻意**不设 meta.key**：菜单项由 DefaultLayout 的硬编码 menuItems 决定，
+      //   这里只是让页面可以直接用 URL 访问，不改动侧边栏。
+      {
+        path: 'netcdf-preview',
+        name: 'netcdf-preview',
+        component: () => import('../views/weather/NetCDFPreview.vue'),
+        meta: { title: 'NetCDF 剖面预览', icon: 'Document' }
+      },
       // 适航性评估
       {
         path: 'airworthiness',

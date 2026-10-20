@@ -69,7 +69,7 @@
         />
 
         <!-- markdown rendered content -->
-        <article class="docs-article" v-html="renderedHtml"></article>
+        <article class="docs-article" v-html="renderedHtml" @click="onDocClick"></article>
       </main>
     </div>
   </div>
@@ -82,7 +82,7 @@ import { Lightning, UserFilled, PartlyCloudy, Position, Connection, Cpu, Questio
 import { sanitizeHtml } from '@/utils/sanitize'
 
 const defaultRemoteUrl =
-  'https://raw.githubusercontent.com/602420232-dotcom/weather/main/docs/usage.md'
+  'https://raw.githubusercontent.com/602420232-dotcom/weather/main/QUICKSTART.md'
 
 const activeSection = ref('quickstart')
 const mdText = ref('')
@@ -264,8 +264,14 @@ appStore.setLanguage('en')  // English
 
 const renderedHtml = computed(() => {
   if (!mdText.value) return ''
-  const html = marked.parse(mdText.value)
-  return sanitizeHtml(html)
+  let html = marked.parse(mdText.value)
+  html = sanitizeHtml(html)
+  // 相对路径链接 → GitHub 浏览页（新窗口打开）
+  html = html.replace(
+    /<a\s+href="(?!https?:\/\/|\/|#|mailto:)([^"]+)"/g,
+    '<a href="https://github.com/602420232-dotcom/weather/blob/main/$1" target="_blank" rel="noopener noreferrer"'
+  )
+  return html
 })
 
 async function fetchRemoteDoc() {
@@ -316,6 +322,24 @@ function onSelectSection(index) {
   const headings = article.querySelectorAll('h1, h2')
   for (const h of headings) {
     if (h.textContent && h.textContent.trim() === title) {
+      h.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+  }
+}
+
+function onDocClick(e) {
+  const a = e.target.closest('a')
+  if (!a) return
+  const href = a.getAttribute('href')
+  if (!href || !href.startsWith('#')) return
+  e.preventDefault()
+  const anchorText = decodeURIComponent(href.slice(1))
+  const article = document.querySelector('.docs-article')
+  if (!article) return
+  const headings = article.querySelectorAll('h1, h2, h3')
+  for (const h of headings) {
+    if (h.textContent && h.textContent.trim() === anchorText) {
       h.scrollIntoView({ behavior: 'smooth', block: 'start' })
       return
     }

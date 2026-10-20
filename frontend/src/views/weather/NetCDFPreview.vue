@@ -111,7 +111,10 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import * as echarts from 'echarts'
-import NetCDFChunkUploader from '../components/shared/NetCDFChunkUploader.vue'
+// ★ 2026-09-26（C1/C3）修：原为 '../components/shared/NetCDFChunkUploader.vue'，
+//   从 views/weather/ 出发会解析到 **不存在的** views/components/shared/ ⇒ 该页面
+//   根本编译不过。这也是它一直没被人发现"没接后端"的原因之一：没人能打开它。
+import NetCDFChunkUploader from '../../components/shared/NetCDFChunkUploader.vue'
 
 const payload = ref(null)
 const loading = ref(false)

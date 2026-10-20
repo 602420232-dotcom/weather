@@ -25,6 +25,7 @@
         :auto-upload="false"
         :show-file-list="false"
         :before-upload="beforeUpload"
+        :on-change="onFileChange"
         accept=".nc,.nc4"
       >
         <div class="uploader-drag">
@@ -86,6 +87,36 @@
             inactive-text="实际上传"
           />
         </el-form-item>
+
+        <!-- ★ 2026-09-28（C1 判据）：回退到 mock 必须是**显式**的。
+             改前是「后端失败就悄悄换成 generateMockPayload()」，页面上看起来一样，
+             只有一条 3 秒就消失的 warning —— 正是 C1 判据（"页面上出现真实解析结果，
+             不是 mock"）想防的事。现在默认**不允许**回退：失败就是失败，
+             错误信息留在页面上（alert 不会自动消失）。 -->
+        <el-form-item v-if="!demoMode">
+          <el-switch
+            v-model="allowMockFallback"
+            active-text="后端失败时允许回退演示数据（仅用于离线演示）"
+            inactive-text="后端失败即报错（默认）"
+          />
+        </el-form-item>
+
+        <el-alert
+          v-if="lastError"
+          type="error"
+          show-icon
+          :closable="false"
+          class="fallback-alert"
+          :title="'后端解析失败：' + lastError"
+        />
+        <el-alert
+          v-if="fellBackToMock"
+          type="warning"
+          show-icon
+          :closable="false"
+          class="fallback-alert"
+          title="⚠️ 当前页面显示的是**演示数据**（不是后端真实解析结果）—— 因为你显式打开了回退开关"
+        />
       </el-form>
 
       <div class="progress-area" v-if="state !== 'idle' || file">
@@ -181,6 +212,7 @@ import { ref, reactive, computed, onUnmounted, watch, onMounted, onBeforeUnmount
 import { ElMessage } from 'element-plus'
 import { UploadFilled, Clock } from '@element-plus/icons-vue'
 import idb, { STORE_NETCDF } from '../../utils/indexedDB'
+import { useTokenManager } from '../../stores/tokenManager'
 
 const emit = defineEmits(['success', 'progress', 'error'])
 
@@ -191,7 +223,50 @@ const NETCDF_TTL = 7 * 24 * 60 * 60 * 1000 // 7 天
 
 const file = ref(null)
 const state = ref('idle')
-const demoMode = ref(true)
+// ★ 2026-09-26（C1）：默认由 true 改为 false。
+//   改前默认走 mock（"安全默认"），结果是「真实链路」需要人工去关开关才可能被走到，
+//   于是它从未被走到过。C1 的验收判据就是「关掉 demoMode 后页面上出现真实解析结果」，
+//   而"关掉"这件事必须成为默认路径，否则下一个人还是不会碰到它。
+//   仍保留开关：演示/离线环境可以显式切回纯本地模拟。
+const demoMode = ref(false)
+
+/**
+ * ★ 2026-09-28（C1）：后端失败时**是否允许**回退到本地演示数据。默认 **false**。
+ * 判据是「页面上出现真实解析结果（不是 mock）」⇒ 回退必须是显式选择，
+ * 而且回退发生时页面上要留一条不会消失的告警（见模板里的 fallback-alert）。
+ */
+const allowMockFallback = ref(false)
+/** 最近一次后端失败的原因；留在页面上，不自动消失。 */
+const lastError = ref('')
+/** 本次结果是否其实来自本地 mock（必须让用户看得见）。 */
+const fellBackToMock = ref(false)
+
+// ── 鉴权：复用项目既有的 token 存取工具（Pinia store `useTokenManager`）──
+//   ★ 为什么必须补这一段：本组件的 6 处后端调用是**裸 fetch**，不走
+//     `src/api/index.js` 里那个会自动注入 `Authorization` 的 axios 实例；
+//     而服务端 `common/.../security/JwtSecurityConfig` 对 `/api/**` 要求
+//     authenticated ⇒ 不带头直接 401。改前这条链路在真实服务上根本走不通。
+const tokenManager = useTokenManager()
+
+/** 取当前可用的 Bearer token（会先从 localStorage 恢复一次，幂等）。 */
+function authHeaders () {
+  try {
+    tokenManager.restoreToken()
+  } catch (e) {
+    console.warn('[NetCDF] 恢复 token 失败:', e && e.message)
+  }
+  const t = tokenManager.token
+  return t ? { Authorization: `Bearer ${t}` } : {}
+}
+
+// ★ 2026-09-26（C3）：分片 SHA-256 台账，合并时交给后端逐片复核。
+const chunkHashes = ref({})
+
+// ★★ 2026-10-01 新增：高度层默认值 —— **与后端 `WrfController.DEFAULT_HEIGHT_LAYERS`
+//    以及 Python `wrf_processor.DEFAULT_LEVELS_M` 三处必须一致**。
+//    修复前这三处分别是 12 / 9 / 1 层，同一个产品里"高度层"有三个答案。
+//    ⚠️ 改这里也要同步改那两处（或反过来把三处收敛成从后端 API 取）。
+const DEFAULT_HEIGHT_LEVELS = [2, 10, 50, 100, 200, 300, 500, 800, 1000, 1500, 2000, 3000]
 
 // SHA-256 Web Worker 实例（分片哈希计算在 Worker 线程执行）
 let hashWorker = null
@@ -304,8 +379,22 @@ function formatEta(sec) {
   return Math.floor(sec / 60) + ' 分 ' + Math.ceil(sec % 60) + ' 秒'
 }
 
+/**
+ * 生成断点续传用的 fileKey。
+ *
+ * ★ 2026-09-28（C3）修：后端 `WrfChunkUploadService.SAFE_KEY` 只接受
+ *   `^[A-Za-z0-9_-]{1,128}$`（因为 fileKey 会被**直接当成磁盘目录名**，
+ *   见 `WrfChunkUploadService.java:57-79`），而这里原来生成的是
+ *   `名字.后缀_大小_时间戳` —— **含 `.`** ⇒ 真实链路上每个分片都被后端拒绝
+ *   （HTTP 200 + `success:false`），前端重试 3 次后整单失败。
+ *   实测证据：浏览器 E2E 日志里连续 3 条 `Receiving chunk 1/4 …` 然后无后续。
+ *   ⚠️ 自写 harness 用的是 `harnessKey0001` / `nodecheck…` 这类**合法**键
+ *   ⇒ 这个缺陷只有"真前端 + 真后端"才照得出来。
+ *   现在：白名单化（保持确定性 ⇒ 同一文件仍映射到同一个 key，断点续传不受影响）。
+ */
 function genFileKey(f) {
-  return (f.name || 'file') + '_' + f.size + '_' + (f.lastModified || 0)
+  const raw = (f.name || 'file') + '_' + f.size + '_' + (f.lastModified || 0)
+  return raw.replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 128)
 }
 
 function saveState() {
@@ -425,6 +514,27 @@ async function writeNetCDFToIDB(blob, name) {
   }
 }
 
+/**
+ * ★ 2026-09-26（C1 浏览器联调抓出的**真 bug**）：
+ *   `<el-upload :auto-upload="false">` 下 Element Plus **不会调用 `before-upload`**
+ *   —— 那个钩子只在真正开始上传（或手动 `submit()`）时才触发。而这个组件既没有
+ *   给 el-upload 挂 ref 去 submit()，也没有 `on-change`，于是：
+ *       **选中文件后什么都不会发生**，`file` 永远是 null，
+ *       `.progress-area` 的 `v-if="state !== 'idle' || file"` 恒为假
+ *       ⇒「开始」按钮**根本不渲染** ⇒ 整条上传 + 后端解析链路
+ *         **在 UI 上完全走不到**（连"演示模式"都点不动）。
+ *   这解释了为什么「前端从不调后端」能一直藏着：不是没人想调，是调不到。
+ *
+ *   修法：用 `on-change` 把选文件事件接上（Element Plus 里 on-change 是
+ *   (uploadFile, uploadFiles)，原始 File 在 `uploadFile.raw`）。
+ *   `before-upload` 保留，作为将来改成 auto-upload 时的双保险。
+ */
+function onFileChange(uploadFile) {
+  const raw = uploadFile && uploadFile.raw
+  if (!raw) return
+  beforeUpload(raw)
+}
+
 function beforeUpload(f) {
   if (f.size > MAX_FILE_SIZE) {
     ElMessage.error('文件大小超过 2GB 限制')
@@ -448,6 +558,7 @@ function beforeUpload(f) {
   speedWindow = []
   pausedFlag = false
   cancelledFlag = false
+  chunkHashes.value = {}
 
   const saved = loadResume(f)
   if (saved && saved.uploadedChunks && saved.uploadedChunks.length > 0 && saved.uploadedChunks.length < saved.totalChunks) {
@@ -460,10 +571,33 @@ function beforeUpload(f) {
       totalChunks: saved.totalChunks
     }
     Object.assign(params, saved.params || {})
+    // ★ 2026-09-26（C3）：localStorage 只是**客户端记忆**，服务端可能早就被清理过
+    //   （合并成功、或运维删了 chunks 目录）。真实模式下用后端状态校正一次，
+    //   否则会「跳过」一批其实不存在的分片，合并必然失败。
+    if (!demoMode.value) reconcileWithServer(f)
   } else {
     resumeInfo.value = null
   }
   return false
+}
+
+/** 用服务端 /upload/status 校正本地的断点记录（best-effort，不阻塞选文件）。 */
+async function reconcileWithServer(f) {
+  const key = genFileKey(f)
+  const total = totalChunks.value
+  try {
+    const st = await fetchUploadStatus(key, total)
+    const serverHas = new Set(st.receivedChunks || [])
+    uploadedChunks.value = serverHas
+    uploadedBytes.value = Math.min(totalBytes.value, serverHas.size * CHUNK_SIZE)
+    currentChunk.value = serverHas.size
+    resumeInfo.value = serverHas.size > 0 && serverHas.size < total
+      ? { fileName: f.name, uploadedChunks: serverHas.size, totalChunks: total }
+      : null
+    console.log(`[NetCDF] 服务端已有 ${serverHas.size}/${total} 片`)
+  } catch (e) {
+    console.warn('[NetCDF] 从后端同步断点状态失败，沿用本地记录:', e.message)
+  }
 }
 
 async function sleep(ms) {
@@ -517,6 +651,8 @@ async function startUpload() {
   cancelledFlag = false
   state.value = 'uploading'
   resumeInfo.value = null
+  lastError.value = ''
+  fellBackToMock.value = false
 
   try {
     for (let i = 0; i < totalChunks.value; i++) {
@@ -545,7 +681,46 @@ async function startUpload() {
 
     if (!cancelledFlag) {
       state.value = 'done'
-      const payload = generateMockPayload()
+      // ★ 2026-09-24 接入真实后端解析。
+      //   改动前这里是 `const payload = generateMockPayload()` —— 分片上传是模拟的
+      //   （realUploadChunk 只 sleep 不发送），解析结果也是本地 mock
+      //   ⇒ **整条 NetCDF 预览链路从未调用过任何后端**，
+      //     后端 /api/wrf/parse 也因此一直没被验证过。
+      //   现在：非演示模式走真实 POST；失败或演示模式回退到 mock，保证页面可用。
+      // ★ 2026-09-26（C3）：真实模式下的首选路径改为
+      //   「分片已真上传 → 后端合并 → 按 fileId 解析」，避免把同一份文件再传一遍；
+      //   合并/按 fileId 解析失败才回退到 C1 那条整文件 POST。
+      let payload = null
+      if (!demoMode.value && file.value) {
+        try {
+          const merged = await mergeChunksOnBackend()
+          payload = await parseUploadedViaBackend(merged.fileId)
+          ElMessage.success('分片合并完成，已由后端解析 wrfout')
+        } catch (e) {
+          console.warn('[NetCDF] 分片合并/按 fileId 解析失败，改走整文件 POST:', e)
+          try {
+            payload = await parseViaBackend(file.value)
+            ElMessage.success('已由后端解析 wrfout（整文件上传）')
+          } catch (e2) {
+            const reason = (e2 && e2.message) || String(e2)
+            lastError.value = reason
+            console.error('[NetCDF] 后端解析失败:', e2)
+            if (!allowMockFallback.value) {
+              // ★ 判据（C1）：页面上必须是**真实**解析结果。
+              //   所以默认路径是"明确失败"：状态置 error、原因留在页面上
+              //   （模板里的 error alert 不会自动消失），**不**静默换成 mock。
+              state.value = 'error'
+              emit('error', '后端解析失败：' + reason)
+              ElMessage.error('后端解析失败：' + reason)
+              return
+            }
+            // 只有显式打开开关才回退，而且页面上会挂一条不会消失的告警。
+            fellBackToMock.value = true
+            ElMessage.warning('后端解析失败，按显式开关回退演示数据：' + reason)
+          }
+        }
+      }
+      if (!payload) payload = generateMockPayload()
       try {
         localStorage.removeItem('netcdf_upload_state_' + fileKey)
       } catch (e) {}
@@ -565,12 +740,22 @@ async function startUpload() {
 
 async function realUploadChunk(index, blob) {
   // 计算分片哈希（Worker 线程执行，不阻塞 UI）
-  let chunkHash = null
+  //
+  // ★★ 2026-10-01 修：哈希失败**不再降级上传**。
+  //    修复前是 `catch { console.warn(...) }` 然后照样 POST（不带 chunkHash），
+  //    而服务端当时的校验写作 `expectedHash == null || … || 相等`
+  //    ⇒ **不传哈希就整体跳过完整性校验**，C3 的「篡改被拒」判据静默失效。
+  //    现在：算不出哈希 = 异常状态 ⇒ **硬失败并中止**，由调用方展示给用户。
+  //    （服务端另有 `wrf.require-chunk-hash`（默认 true）做同一件事的第二道闸门。）
   if (!hashWorker) initHashWorker()
+  let chunkHash
   try {
     chunkHash = await computeChunkHash(blob, index)
   } catch (e) {
-    console.warn('[NetCDF] 分片哈希计算失败:', e.message)
+    throw new Error(`分片 ${index} 的 SHA-256 计算失败：${e.message} —— 已中止上传（拒绝无校验分片）`)
+  }
+  if (!chunkHash) {
+    throw new Error(`分片 ${index} 未取得 SHA-256 —— 已中止上传（拒绝无校验分片）`)
   }
 
   const fd = new FormData()
@@ -578,18 +763,100 @@ async function realUploadChunk(index, blob) {
   fd.append('totalChunks', totalChunks.value)
   fd.append('fileKey', fileKey)
   fd.append('fileName', file.value.name)
-  if (chunkHash) {
-    fd.append('chunkHash', chunkHash)
-  }
-  fd.append('file', blob)
+  fd.append('chunkHash', chunkHash)
+  fd.append('file', blob, `${file.value.name}.part${index}`)
+
+  // ★ 2026-09-26（C3）真正的改动在这一段。
+  //   改前这里是 `await sleep(100 + Math.random()*200); return` —— 组装好的
+  //   FormData **从不发送**，所以「支持断点续传的分片上传」只是 UI 文案。
+  //   现在打 POST /api/wrf/upload/chunk（后端已同步新增该端点）。
+  let lastError = null
   for (let attempt = 1; attempt <= MAX_RETRY; attempt++) {
+    if (cancelledFlag) throw new Error('已取消')
     try {
-      await sleep(100 + Math.random() * 200)
-      return
+      const resp = await fetch('/api/wrf/upload/chunk', { method: 'POST', body: fd, headers: authHeaders() })
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+      const body = await resp.json()
+      if (!body.success) throw new Error(body.error || '分片被后端拒绝')
+      if (chunkHash) chunkHashes.value[index] = chunkHash
+      return body
     } catch (e) {
-      if (attempt >= MAX_RETRY) throw e
+      lastError = e
+      if (attempt >= MAX_RETRY) break
       await sleep(300 * attempt)
     }
+  }
+  throw lastError || new Error('分片上传失败')
+}
+
+/**
+ * 合并分片（★ 2026-09-26 C3 新增）。
+ * 后端会逐片复核 SHA-256、复核总字节数，成功才落地并返回 fileId。
+ */
+async function mergeChunksOnBackend() {
+  const resp = await fetch('/api/wrf/upload/merge', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({
+      fileKey,
+      fileName: file.value.name,
+      totalChunks: totalChunks.value,
+      chunkHashes: chunkHashes.value
+    })
+  })
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+  const body = await resp.json()
+  if (!body.success) throw new Error(body.error || '合并失败')
+  return body.data
+}
+
+/**
+ * 按 fileId 让后端解析**它已经持有**的文件（★ 2026-09-26 C3 新增）。
+ *
+ * 为什么需要它：分片上传之后文件已经在服务器磁盘上了，再整文件 POST 一遍
+ * 等于 2 倍流量。后端 `/parse-uploaded` 只接受 fileId，路径由服务端查库得到
+ * （`/parse/advanced` 接受客户端给的 filePath，那是任意文件读取面，不能用）。
+ * 返回结构与 `/parse` 一致，所以下面复用同一段解包逻辑。
+ */
+async function parseUploadedViaBackend(fileId) {
+  const resp = await fetch('/api/wrf/parse-uploaded', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ fileId })
+  })
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+  const body = await resp.json()
+  if (!body.success) throw new Error(body.error || '后端处理失败')
+  return unwrapParserPayload(body.data)
+}
+
+/** `/parse` 与 `/parse-uploaded` 的 data 都是 Python stdout 原始字符串 ⇒ 统一解包。 */
+function unwrapParserPayload(data) {
+  const parsed = typeof data === 'string' ? JSON.parse(data) : data
+  if (!parsed || parsed.success !== true) {
+    throw new Error((parsed && parsed.error) || '解析器返回失败')
+  }
+  if (!parsed.payload) throw new Error('返回里没有 payload 字段')
+  return parsed.payload
+}
+
+/** 问后端「这个 fileKey 已经收到哪几片」——断点续传的真凭据在服务器上。 */
+async function fetchUploadStatus(key, total) {
+  const resp = await fetch(
+    `/api/wrf/upload/status?fileKey=${encodeURIComponent(key)}&totalChunks=${total}`,
+    { headers: authHeaders() })
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+  const body = await resp.json()
+  if (!body.success) throw new Error(body.error || '查询失败')
+  return body
+}
+
+/** 取消上传时清掉服务端的分片，别在磁盘上留一份等量垃圾。 */
+async function discardChunksOnBackend(key) {
+  try {
+    await fetch(`/api/wrf/upload/chunk?fileKey=${encodeURIComponent(key)}`, { method: 'DELETE', headers: authHeaders() })
+  } catch (e) {
+    console.warn('[NetCDF] 清理服务端分片失败:', e.message)
   }
 }
 
@@ -611,6 +878,11 @@ function cancelUpload() {
   cancelledFlag = true
   pausedFlag = false
   state.value = 'idle'
+  // ★ 2026-09-26（C3）：真实模式下要同时清掉服务端的分片目录，
+  //   否则每取消一次就在服务器上留一份等量垃圾（分片只有在 merge 时才清）。
+  if (!demoMode.value && fileKey) {
+    discardChunksOnBackend(fileKey)
+  }
   file.value = null
   uploadedChunks.value = new Set()
   uploadedBytes.value = 0
@@ -623,6 +895,42 @@ function cancelUpload() {
     if (fileKey) localStorage.removeItem('netcdf_upload_state_' + fileKey)
   } catch (e) {}
   ElMessage.info('已取消上传，断点记录已清除')
+}
+
+/**
+ * 调后端解析 wrfout（★ 2026-09-24 新增）。
+ *
+ * 链路：前端 → Java /api/wrf/parse (multipart) → 子进程 wrf_processor.py → JSON
+ * ⚠️ 两个必须知道的契约细节：
+ *  ① Java 侧 `Map.of("success", true, "data", result, ...)` 里的 `data` 是
+ *     **Python stdout 的原始字符串**，不是对象 ⇒ 必须 JSON.parse 一次。
+ *     因为 `WrfController` 没有做反序列化，只是转发。
+ *  ② 后端只接受 .nc/.netcdf，且 `height` 会被校验在 1~30000。
+ *     `PythonScriptInvoker` 的默认超时是 30 s（`uav.python.timeout`），
+ *     实测本解析器跑成都域 149×129 约 **1 秒**，余量充足。
+ *
+ * ★ 2026-09-26（C3）：真实模式下这已是**回退路径** —— 首选是「分片上传 → 合并 →
+ *   按 fileId 解析」（`mergeChunksOnBackend` + `parseUploadedViaBackend`），
+ *   只在合并/按 fileId 解析失败时才整文件 POST 一次。
+ */
+async function parseViaBackend (f) {
+  const fd = new FormData()
+  fd.append('file', f, f.name)
+  // ★★ 2026-10-01 修（原为 `?height=100`，只返回 1 层）：
+  //   后端 Python 的 `levels` **优先于** `height`，而传单个 `height` 会被
+  //   `wrf_processor.py` 转成 `levels=[100.0]` ⇒ **只出 1 层**，页面高度层滑块
+  //   因此只有一格。改传一组层即可，**不需要改 Python**。
+  //   ⚠️ 这一组要与 `WrfController.DEFAULT_HEIGHT_LAYERS`（12 层）保持一致 ——
+  //      同一个产品里"高度层"曾经有三个不同答案（Python 12 / Java 9 / 前端 1），
+  //      现在统一到这一处。
+  //   `height` 仍然保留：它是"安全参考面"的单值，后端用于 headline。
+  const resp = await fetch('/api/wrf/parse?height=100&levels=' + DEFAULT_HEIGHT_LEVELS.join(','),
+    { method: 'POST', body: fd, headers: authHeaders() })
+  if (resp.status === 401) throw new Error('未登录或登录已过期（401）—— 请重新登录后再上传')
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+  const body = await resp.json()
+  if (!body.success) throw new Error(body.error || '后端处理失败')
+  return unwrapParserPayload(body.data)
 }
 
 function generateMockPayload() {
